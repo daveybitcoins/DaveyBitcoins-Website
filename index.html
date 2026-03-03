@@ -95,6 +95,14 @@
     <canvas id="riskCanvas" width="1380" height="340"></canvas>
     <div class="tooltip" id="riskTip"><div class="tt-date"></div><div>Risk: <span class="tt-risk"></span></div></div>
   </div>
+  <div class="chart-panel">
+    <div class="chart-header">
+      <div class="chart-label">Median 1-Year Forward Return by Risk Decile</div>
+      <div class="chart-note">Historical backtest · color = risk level</div>
+    </div>
+    <canvas id="returnsCanvas" width="1380" height="360"></canvas>
+    <div class="tooltip" id="returnsTip"><div class="tt-date"></div><div class="tt-price"></div></div>
+  </div>
   <div class="update-status" id="updateStatus" style="display:none"></div>
   <div class="methodology">
     <h3>Methodology (Combined Risk — Live)</h3>
@@ -395,6 +403,82 @@ async function main() {
     ctx.fillText('ACCUMULATE',W-P.r-4,yOf(0.10));
   }
 
+  // ====== FORWARD RETURNS BAR CHART ======
+  function renderReturnsChart() {
+    const cv=document.getElementById('returnsCanvas'), ctx=cv.getContext('2d');
+    const W=cv.width, H=cv.height;
+    const P={t:28,r:40,b:52,l:80};
+    const cw=W-P.l-P.r, ch=H-P.t-P.b;
+
+    ctx.fillStyle='#122240'; ctx.fillRect(0,0,W,H);
+
+    // Compute 1-year forward returns per decile (start after rolling window fills)
+    const FWD=365;
+    const buckets=[];
+    for(let d=0;d<10;d++) buckets.push([]);
+    for(let i=WINDOW;i<n-FWD;i++){
+      const decile=Math.min(9,Math.floor(pts[i].riskCombo*10));
+      const ret=(pts[i+FWD].price/pts[i].price-1)*100;
+      buckets[decile].push(ret);
+    }
+    const medians=buckets.map(b=>{
+      if(!b.length) return 0;
+      b.sort((a,c)=>a-c);
+      const m=Math.floor(b.length/2);
+      return b.length%2?b[m]:(b[m-1]+b[m])/2;
+    });
+    const counts=buckets.map(b=>b.length);
+
+    // Y scale
+    const maxY=Math.max(...medians.map(Math.abs),50);
+    const yOf=v=>P.t+ch/2-((v/maxY)*(ch/2));
+
+    // Grid lines
+    ctx.textAlign='right';ctx.font='10px JetBrains Mono';
+    const gridVals=[-100,-50,0,50,100,150,200,300,400,500].filter(v=>Math.abs(v)<=maxY*1.1);
+    gridVals.forEach(v=>{
+      const y=yOf(v);
+      if(y<P.t-5||y>H-P.b+5) return;
+      ctx.strokeStyle=v===0?'#3a5580':'#1e3460';ctx.lineWidth=v===0?1.5:1;
+      ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke();
+      ctx.fillStyle='#5a7498';ctx.fillText(v>0?'+'+v+'%':v+'%',P.l-8,y+3);
+    });
+
+    // Bars
+    const barW=cw/10*0.7;
+    const gap=cw/10*0.15;
+    for(let d=0;d<10;d++){
+      const x=P.l+d*(cw/10)+gap;
+      const median=medians[d];
+      const y0=yOf(0);
+      const y1=yOf(median);
+      const midRisk=(d+0.5)/10;
+      ctx.fillStyle=riskColor(midRisk,0.85);
+      ctx.beginPath();
+      const r=4;
+      const barTop=Math.min(y0,y1);
+      const barH=Math.abs(y1-y0);
+      // Rounded rect
+      ctx.moveTo(x+r,barTop);ctx.lineTo(x+barW-r,barTop);ctx.quadraticCurveTo(x+barW,barTop,x+barW,barTop+r);
+      ctx.lineTo(x+barW,barTop+barH-r);ctx.quadraticCurveTo(x+barW,barTop+barH,x+barW-r,barTop+barH);
+      ctx.lineTo(x+r,barTop+barH);ctx.quadraticCurveTo(x,barTop+barH,x,barTop+barH-r);
+      ctx.lineTo(x,barTop+r);ctx.quadraticCurveTo(x,barTop,x+r,barTop);
+      ctx.fill();
+
+      // Value label on bar
+      ctx.fillStyle='#fff';ctx.font='bold 11px JetBrains Mono';ctx.textAlign='center';
+      const labelY=median>=0?y1-8:y1+14;
+      ctx.fillText((median>=0?'+':'')+Math.round(median)+'%',x+barW/2,labelY);
+
+      // Decile label + count
+      ctx.fillStyle='#7a90b0';ctx.font='10px JetBrains Mono';
+      const lo=(d/10).toFixed(1), hi=((d+1)/10).toFixed(1);
+      ctx.fillText(lo+'–'+hi,x+barW/2,H-P.b+16);
+      ctx.fillStyle='#4a6890';ctx.font='9px JetBrains Mono';
+      ctx.fillText('n='+counts[d],x+barW/2,H-P.b+30);
+    }
+  }
+
   // ====== RENDER ALL ======
   function renderAll() {
     renderPriceChart();
@@ -526,6 +610,7 @@ async function main() {
 
   // ====== INIT ======
   renderAll();
+  renderReturnsChart();
   attachZoomPan('priceCanvas', 'priceTip');
   attachZoomPan('riskCanvas', 'riskTip');
   addZoomButtons();
