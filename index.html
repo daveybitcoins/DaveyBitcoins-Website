@@ -80,7 +80,7 @@
   <div class="chart-panel">
     <div class="chart-header">
       <div class="chart-label">Risk Oscillator (0 – 1)</div>
-      <div class="chart-note">Combined = avg(Structural, Momentum)</div>
+      <div class="chart-note">Combined = √(Structural × Momentum)</div>
     </div>
     <canvas id="riskCanvas" width="1380" height="340"></canvas>
     <div class="tooltip" id="riskTip"><div class="tt-date"></div><div>Risk: <span class="tt-risk"></span></div></div>
@@ -91,7 +91,7 @@
     <p><span class="hl">Power-Law Regression:</span> <code>log₁₀(price)</code> vs <code>log₁₀(days since Jan 3 2009)</code>. The residual measures deviation from the long-run trend.</p>
     <p><span class="hl">Structural Risk (Min/Max):</span> Normalizes the residual against all-time extremes. Macro positioning signal.</p>
     <p><span class="hl">Momentum Risk (Rolling Z-Score → CDF):</span> 4-year rolling z-score mapped through Gaussian CDF. Cycle-sensitive, adapts to declining volatility.</p>
-    <p><span class="hl">Combined:</span> Simple average of both. Backtested across all deciles with strongly monotonic forward returns.</p>
+    <p><span class="hl">Combined:</span> Geometric mean √(S × M) of both. Pulls toward the lower signal — if either frame says low risk, that's more informative. Backtested across all deciles with strongly monotonic forward returns.</p>
     <p><span class="hl">Live Updates:</span> On page load, fetches current BTC price from CoinGecko free API and appends it to the historical dataset. Refresh page for latest reading.</p>
   </div>
   <footer>Not financial advice · Combined structural + momentum · CoinGecko API + TradingView historical data</footer>
@@ -151,7 +151,7 @@ function buildDataset(rawData) {
   }
 
   pts.forEach(p => {
-    p.riskCombo = (p.riskMM + p.riskZS) / 2;
+    p.riskCombo = Math.sqrt(p.riskMM * p.riskZS);
   });
 
   return { pts, slope, intercept, minRes, maxRes };
@@ -292,13 +292,23 @@ async function main() {
       ctx.beginPath();ctx.moveTo(xOf(prev),yOf(pts[prev].price));ctx.lineTo(xOf(i),yOf(pts[i].price));ctx.stroke();
     }
 
-    // Risk-level price labels on right axis (structural risk)
+    // Risk-level price labels on right axis (combined risk)
     const resRange = maxRes - minRes;
     const lastReg = last.regLogPrice;
+    const lastRollMean = (() => { const res=pts.map(p=>p.residual); let s=0; for(let i=Math.max(0,n-WINDOW);i<n;i++) s+=res[i]; return s/Math.min(n,WINDOW); })();
+    const lastRollStd = last.rollStd;
     const oneYearIdx = Math.max(s, n - 1 - 365);
     ctx.font='9px JetBrains Mono';ctx.textAlign='left';
     for(let r=0.10; r<=0.901; r+=0.05){
-      const residual = r * resRange + minRes;
+      // Solve sqrt(S(res)*M(res))=r via binary search
+      let lo=minRes, hi=maxRes;
+      for(let it=0;it<80;it++){
+        const mid=(lo+hi)/2;
+        const S=(mid-minRes)/resRange;
+        const M=normCdf((mid-lastRollMean)/lastRollStd);
+        if(Math.sqrt(S*M)<r) lo=mid; else hi=mid;
+      }
+      const residual=(lo+hi)/2;
       const price = Math.pow(10, residual + lastReg);
       const y = yOf(price);
       if(y < P.t || y > H - P.b) continue;
