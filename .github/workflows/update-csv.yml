@@ -1,0 +1,56 @@
+name: Update BTC price data
+
+on:
+  schedule:
+    - cron: '30 0 * * *'   # daily at 00:30 UTC (after daily close)
+  workflow_dispatch:         # manual trigger
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch latest daily close and append to CSV
+        run: |
+          LAST_DATE=$(tail -1 data.csv | cut -d',' -f1)
+          echo "Last date in CSV: $LAST_DATE"
+
+          # Fetch recent daily data from CoinGecko (free, no key needed)
+          JSON=$(curl -sf "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=7&interval=daily")
+          if [ -z "$JSON" ]; then
+            echo "API call failed, skipping"
+            exit 0
+          fi
+
+          # Parse prices and append any new dates
+          ADDED=0
+          while IFS= read -r line; do
+            TS=$(echo "$line" | cut -d'|' -f1)
+            PRICE=$(echo "$line" | cut -d'|' -f2)
+            DATE=$(date -u -d @"$TS" +%Y-%m-%d 2>/dev/null || date -u -r "$TS" +%Y-%m-%d)
+            if [[ "$DATE" > "$LAST_DATE" ]]; then
+              echo "${DATE},${PRICE}" >> data.csv
+              ADDED=$((ADDED+1))
+              echo "Added: $DATE, $PRICE"
+            fi
+          done < <(echo "$JSON" | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          for ts_ms, price in data['prices']:
+              ts = int(ts_ms / 1000)
+              print(f'{ts}|{round(price, 2)}')
+          ")
+
+          echo "Added $ADDED new entries"
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data.csv
+          git diff --cached --quiet && echo "No changes" && exit 0
+          git commit -m "Update BTC price data $(date -u +%Y-%m-%d)"
+          git push
