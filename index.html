@@ -48,6 +48,14 @@
   .update-status{font-size:0.6rem;color:#5a7498;text-align:center;margin-top:8px}
   .update-status.live{color:#22c55e}
   .update-status.error{color:#f97316}
+  .risk-table-wrap{background:#142642;border:1px solid #243a5c;border-radius:14px;padding:20px 24px;margin-bottom:36px;overflow-x:auto}
+  .risk-table-wrap h4{font-family:'Outfit',sans-serif;font-size:0.65rem;font-weight:600;color:#7a90b0;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;text-align:center}
+  .risk-table{display:grid;grid-template-columns:repeat(16,1fr);gap:6px;text-align:center}
+  .risk-cell{padding:8px 4px;border-radius:8px;background:#101e36;border:1px solid #1e3460}
+  .risk-cell .rc-risk{font-family:'Outfit',sans-serif;font-size:0.85rem;font-weight:600;line-height:1.3}
+  .risk-cell .rc-price{font-size:0.62rem;color:#90a8c8;margin-top:3px;letter-spacing:0.5px}
+  @media(max-width:900px){.risk-table{grid-template-columns:repeat(8,1fr)}}
+  @media(max-width:500px){.risk-table{grid-template-columns:repeat(4,1fr)}}
   footer{text-align:center;margin-top:36px;padding-bottom:20px;font-size:0.58rem;color:#4a6890;letter-spacing:1.5px}
 </style>
 </head>
@@ -65,8 +73,10 @@
       <div class="zone-labels"><span>Accumulate</span><span>Neutral</span><span>Caution</span></div></div>
     <div class="card" style="--glow:#10b981"><div class="card-label">Fair Value</div><div class="card-value" id="vFair" style="--val-color:#10b981">—</div><div class="card-sub" id="vGrowth"></div></div>
     <div class="card" style="--glow:#a78bfa"><div class="card-label">Deviation</div><div class="card-value" id="vDev" style="--val-color:#a78bfa">—</div><div class="card-sub" id="vPoints"></div></div>
-    <div class="card" style="--glow:#06b6d4"><div class="card-label">Structural</div><div class="card-value" id="vMM" style="--val-color:#06b6d4">—</div><div class="card-sub">all-time position</div></div>
-    <div class="card" style="--glow:#84cc16"><div class="card-label">Momentum</div><div class="card-value" id="vZS" style="--val-color:#84cc16">—</div><div class="card-sub">4yr rolling context</div></div>
+  </div>
+  <div class="risk-table-wrap">
+    <h4>Price at Each Risk Level (Combined)</h4>
+    <div class="risk-table" id="riskTable"></div>
   </div>
   <div class="chart-panel">
     <div class="chart-header">
@@ -217,8 +227,32 @@ async function main() {
   const devPct = ((last.price/last.regPrice-1)*100).toFixed(1);
   document.getElementById('vDev').textContent = (devPct>0?'+':'') + devPct + '%';
   document.getElementById('needle').style.left = (last.riskCombo*100)+'%';
-  document.getElementById('vMM').textContent = last.riskMM.toFixed(3);
-  document.getElementById('vZS').textContent = last.riskZS.toFixed(3);
+
+  // Risk-price table
+  {
+    const resRange = maxRes - minRes;
+    const lastReg = last.regLogPrice;
+    const residuals = pts.map(p=>p.residual);
+    let rSum=0; for(let i=Math.max(0,n-WINDOW);i<n;i++) rSum+=residuals[i];
+    const rollMean = rSum/Math.min(n,WINDOW);
+    const rollStd = last.rollStd;
+    const tbl = document.getElementById('riskTable');
+    for(let r=0.10; r<=0.851; r+=0.05){
+      let lo=minRes, hi=maxRes;
+      for(let it=0;it<80;it++){
+        const mid=(lo+hi)/2;
+        const S=(mid-minRes)/resRange;
+        const M=normCdf((mid-rollMean)/rollStd);
+        if(Math.sqrt(S*M)<r) lo=mid; else hi=mid;
+      }
+      const price=Math.pow(10,(lo+hi)/2+lastReg);
+      const cell=document.createElement('div');
+      cell.className='risk-cell';
+      const pStr=price>=1e6?'$'+(price/1e6).toFixed(1)+'M':price>=1e3?'$'+Math.round(price/1e3)+'K':'$'+Math.round(price);
+      cell.innerHTML='<div class="rc-risk" style="color:'+riskColor(r)+'">'+r.toFixed(2)+'</div><div class="rc-price">'+pStr+'</div>';
+      tbl.appendChild(cell);
+    }
+  }
 
   // ====== ZOOM/PAN STATE (shared between both charts) ======
   const view = { startIdx: 0, endIdx: n-1 };
@@ -237,7 +271,7 @@ async function main() {
   function renderPriceChart() {
     const cv=document.getElementById('priceCanvas'), ctx=cv.getContext('2d');
     const W=cv.width, H=cv.height;
-    const P={t:24,r:110,b:48,l:80};
+    const P={t:24,r:60,b:48,l:80};
     const cw=W-P.l-P.r, ch=H-P.t-P.b;
     const { s, e } = getVisibleRange();
     const S = visibleSample();
@@ -290,44 +324,6 @@ async function main() {
       const prev=Math.max(s,i-S);
       ctx.strokeStyle=riskColor(pts[i].riskCombo);ctx.lineWidth=2.5;
       ctx.beginPath();ctx.moveTo(xOf(prev),yOf(pts[prev].price));ctx.lineTo(xOf(i),yOf(pts[i].price));ctx.stroke();
-    }
-
-    // Risk-level price labels on right axis (combined risk)
-    const resRange = maxRes - minRes;
-    const lastReg = last.regLogPrice;
-    const lastRollMean = (() => { const res=pts.map(p=>p.residual); let s=0; for(let i=Math.max(0,n-WINDOW);i<n;i++) s+=res[i]; return s/Math.min(n,WINDOW); })();
-    const lastRollStd = last.rollStd;
-    const oneYearIdx = Math.max(s, n - 1 - 365);
-    ctx.font='9px JetBrains Mono';ctx.textAlign='left';
-    for(let r=0.10; r<=0.901; r+=0.05){
-      // Solve sqrt(S(res)*M(res))=r via binary search
-      let lo=minRes, hi=maxRes;
-      for(let it=0;it<80;it++){
-        const mid=(lo+hi)/2;
-        const S=(mid-minRes)/resRange;
-        const M=normCdf((mid-lastRollMean)/lastRollStd);
-        if(Math.sqrt(S*M)<r) lo=mid; else hi=mid;
-      }
-      const residual=(lo+hi)/2;
-      const price = Math.pow(10, residual + lastReg);
-      const y = yOf(price);
-      if(y < P.t || y > H - P.b) continue;
-      const col = riskColor(r, 0.35);
-      // 1-year horizontal line
-      const xStart = xOf(Math.max(s, oneYearIdx));
-      const xEnd = W - P.r;
-      if(xStart < xEnd){
-        ctx.strokeStyle=col;ctx.lineWidth=0.7;
-        ctx.beginPath();ctx.moveTo(xStart, y);ctx.lineTo(xEnd, y);ctx.stroke();
-      }
-      // Tick mark
-      const tickCol = riskColor(r, 0.75);
-      ctx.strokeStyle=tickCol;ctx.lineWidth=1;
-      ctx.beginPath();ctx.moveTo(W-P.r, y);ctx.lineTo(W-P.r+5, y);ctx.stroke();
-      // Label
-      ctx.fillStyle=tickCol;
-      const pStr = price>=1e6?'$'+(price/1e6).toFixed(1)+'M':price>=1e3?'$'+Math.round(price/1e3)+'K':'$'+Math.round(price);
-      ctx.fillText(pStr+' '+r.toFixed(2), W-P.r+8, y+3);
     }
   }
 
@@ -409,7 +405,7 @@ async function main() {
   function attachZoomPan(canvasId, tipId) {
     const cv = document.getElementById(canvasId);
     const W = cv.width;
-    const P = { l:80, r: canvasId === 'priceCanvas' ? 110 : 76 };
+    const P = { l:80, r: canvasId === 'priceCanvas' ? 60 : 76 };
     const cw = W - P.l - P.r;
     let dragging = false, dragStartX = 0, dragStartView = {};
 
