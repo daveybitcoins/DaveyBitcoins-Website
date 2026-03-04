@@ -3,68 +3,110 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bitcoin Combined Risk Metric — Live</title>
+<title>Bitcoin Combined Risk Metric</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+  :root{
+    --bg:#101e36;--bg-card:#142642;--bg-canvas:#122240;
+    --border:#243a5c;--border-light:#1e3460;--border-accent:#2a4468;
+    --text:#c8cad0;--text-dim:#7a90b0;--text-dimmer:#5a7498;
+    --text-bright:#b8d0e8;--text-heading:#fff;
+    --accent-blue:#4af;--accent-purple:#a78bfa;
+    --header-line:linear-gradient(90deg,transparent,#3a6090,transparent);
+    --tooltip-bg:#1e3460;--footer-text:#4a6890;--meth-text:#90a8c8;
+    --rc-bg:#101e36;--rc-border:#1e3460;
+    --btn-bg:#1e3460;--btn-text:#8a9dba;--btn-border:#2a4468;--btn-hover:#2a4468;--btn-hover-text:#fff;
+  }
+  [data-theme="light"]{
+    --bg:#f5f7fa;--bg-card:#ffffff;--bg-canvas:#f0f3f6;
+    --border:#d0d7de;--border-light:#e1e6ed;--border-accent:#c0c8d4;
+    --text:#2c3e50;--text-dim:#656d76;--text-dimmer:#8892a0;
+    --text-bright:#2c3e50;--text-heading:#1a1a2e;
+    --accent-blue:#0969da;--accent-purple:#8250df;
+    --header-line:linear-gradient(90deg,transparent,#c0c8d4,transparent);
+    --tooltip-bg:#ffffff;--footer-text:#8892a0;--meth-text:#4a5568;
+    --rc-bg:#f0f3f6;--rc-border:#d0d7de;
+    --btn-bg:#e8ecf0;--btn-text:#4a5568;--btn-border:#d0d7de;--btn-hover:#d8dce0;--btn-hover-text:#1a1a2e;
+  }
+
   *{margin:0;padding:0;box-sizing:border-box}
-  body{background:#101e36;color:#c8cad0;font-family:'JetBrains Mono',monospace;min-height:100vh}
+  body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;min-height:100vh;transition:background 0.3s,color 0.3s}
   .noise-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+  [data-theme="light"] .noise-overlay{opacity:0}
   .container{max-width:1440px;margin:0 auto;padding:36px 28px;position:relative;z-index:1}
-  header{text-align:center;margin-bottom:44px}
-  header::after{content:'';display:block;width:120px;height:1px;background:linear-gradient(90deg,transparent,#3a6090,transparent);margin:20px auto 0}
-  h1{font-family:'Outfit',sans-serif;font-size:2.6rem;font-weight:700;letter-spacing:-2px;color:#fff;margin-bottom:6px}
+  header{text-align:center;margin-bottom:44px;position:relative}
+  header::after{content:'';display:block;width:120px;height:1px;background:var(--header-line);margin:20px auto 0}
+  .header-nav{position:absolute;top:0;right:0;display:flex;align-items:center;gap:12px}
+  .header-nav a{color:var(--accent-blue);text-decoration:none;font-size:0.72rem;letter-spacing:1px}
+  .header-nav a:hover{text-decoration:underline}
+  .theme-toggle{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:0.3rem 0.5rem;cursor:pointer;color:var(--text);font-size:1rem;line-height:1;transition:background 0.15s,border-color 0.15s}
+  .theme-toggle:hover{background:var(--bg-card);border-color:var(--accent-blue)}
+  h1{font-family:'Outfit',sans-serif;font-size:2.6rem;font-weight:700;letter-spacing:-2px;color:var(--text-heading);margin-bottom:6px}
   h1 span{background:linear-gradient(135deg,#4af,#a78bfa,#f87171);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-  .subtitle{font-size:0.72rem;color:#8a9dba;letter-spacing:3px;text-transform:uppercase}
+  [data-theme="light"] h1 span{background:linear-gradient(135deg,#0969da,#8250df,#cf222e);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  [data-theme="light"] #vPrice{color:#1a1a2e}
+  .subtitle{font-size:0.72rem;color:var(--text-dim);letter-spacing:3px;text-transform:uppercase}
   .live-dot{display:inline-block;width:6px;height:6px;background:#22c55e;border-radius:50%;margin-right:6px;animation:pulse 2s infinite}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
   .dashboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:36px}
-  .card{background:#142642;border:1px solid #243a5c;border-radius:14px;padding:24px 28px;text-align:center;position:relative;overflow:hidden}
-  .card::before{content:'';position:absolute;top:0;left:20%;right:20%;height:1px;background:var(--glow,#243a5c)}
-  .card-label{font-size:0.58rem;color:#7a90b0;text-transform:uppercase;letter-spacing:2.5px;margin-bottom:10px}
-  .card-value{font-family:'Outfit',sans-serif;font-size:1.8rem;font-weight:600;color:var(--val-color,#fff)}
-  .card-sub{font-size:0.55rem;color:#5a7498;margin-top:5px}
+  .card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:24px 28px;text-align:center;position:relative;overflow:hidden;transition:background 0.3s,border-color 0.3s}
+  .card::before{content:'';position:absolute;top:0;left:20%;right:20%;height:1px;background:var(--glow,var(--border))}
+  .card-label{font-size:0.58rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:2.5px;margin-bottom:10px}
+  .card-value{font-family:'Outfit',sans-serif;font-size:1.8rem;font-weight:600;color:var(--val-color,var(--text-heading))}
+  .card-sub{font-size:0.55rem;color:var(--text-dimmer);margin-top:5px}
   .risk-bar-wrap{margin-top:14px;position:relative;height:8px;border-radius:4px;overflow:visible}
   .risk-bar-bg{position:absolute;top:0;left:0;right:0;bottom:0;border-radius:4px;background:linear-gradient(90deg,#2563eb 0%,#06b6d4 15%,#10b981 30%,#84cc16 45%,#eab308 60%,#f97316 75%,#ef4444 90%,#991b1b 100%)}
   .risk-bar-needle{position:absolute;top:-5px;width:3px;height:18px;background:#fff;border-radius:2px;box-shadow:0 0 10px rgba(255,255,255,0.5);transform:translateX(-50%);transition:left 0.6s cubic-bezier(0.16,1,0.3,1)}
+  [data-theme="light"] .risk-bar-needle{background:#1a1a2e;box-shadow:0 0 10px rgba(0,0,0,0.3)}
   .zone-labels{display:flex;justify-content:space-between;margin-top:6px}
-  .zone-labels span{font-size:0.5rem;color:#5a7498}
-  .chart-panel{background:#142642;border:1px solid #243a5c;border-radius:14px;padding:28px;margin-bottom:24px;position:relative}
+  .zone-labels span{font-size:0.5rem;color:var(--text-dimmer)}
+  .chart-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:24px;position:relative;transition:background 0.3s,border-color 0.3s}
   .chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:8px}
-  .chart-label{font-size:0.68rem;color:#7a90b0;text-transform:uppercase;letter-spacing:2.5px}
-  .chart-note{font-size:0.6rem;color:#5a7498}
+  .chart-label{font-size:0.68rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:2.5px}
+  .chart-note{font-size:0.6rem;color:var(--text-dimmer)}
   canvas{width:100%!important;display:block}
   .legend-bar{display:flex;justify-content:center;align-items:center;gap:3px;margin-top:18px;flex-wrap:wrap}
   .legend-bar .swatch{width:24px;height:12px;border-radius:2px}
-  .legend-bar .lbl{font-size:0.58rem;color:#7a90b0;margin:0 6px}
-  .methodology{background:#142642;border:1px solid #243a5c;border-radius:14px;padding:28px 32px;margin-top:24px}
-  .methodology h3{font-family:'Outfit',sans-serif;font-size:0.85rem;font-weight:600;color:#a78bfa;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px}
-  .methodology p{font-size:0.78rem;color:#90a8c8;line-height:1.9;margin-bottom:10px}
-  .methodology code{background:#101e36;border:1px solid #2a4468;padding:2px 7px;border-radius:4px;color:#4af;font-size:0.72rem}
-  .methodology .hl{color:#b8d0e8;font-weight:500}
-  .tooltip{position:absolute;background:#1e3460;border:1px solid #2a4468;border-radius:8px;padding:10px 14px;font-size:0.65rem;color:#b8d0e8;pointer-events:none;display:none;z-index:10;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.4)}
-  .tooltip .tt-date{color:#7a90b0;margin-bottom:4px}
-  .tooltip .tt-price{color:#fff;font-weight:600;font-size:0.75rem}
+  .legend-bar .lbl{font-size:0.58rem;color:var(--text-dim);margin:0 6px}
+  .methodology{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:28px 32px;margin-top:24px;transition:background 0.3s,border-color 0.3s}
+  .methodology h3{font-family:'Outfit',sans-serif;font-size:0.85rem;font-weight:600;color:var(--accent-purple);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px}
+  .methodology p{font-size:0.78rem;color:var(--meth-text);line-height:1.9;margin-bottom:10px}
+  .methodology code{background:var(--bg);border:1px solid var(--border-accent);padding:2px 7px;border-radius:4px;color:var(--accent-blue);font-size:0.72rem}
+  .methodology .hl{color:var(--text-bright);font-weight:500}
+  .tooltip{position:absolute;background:var(--tooltip-bg);border:1px solid var(--border-accent);border-radius:8px;padding:10px 14px;font-size:0.65rem;color:var(--text-bright);pointer-events:none;display:none;z-index:10;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.4)}
+  .tooltip .tt-date{color:var(--text-dim);margin-bottom:4px}
+  .tooltip .tt-price{color:var(--text-heading);font-weight:600;font-size:0.75rem}
   .tooltip .tt-risk{font-weight:600}
-  .update-status{font-size:0.6rem;color:#5a7498;text-align:center;margin-top:8px}
+  .update-status{font-size:0.6rem;color:var(--text-dimmer);text-align:center;margin-top:8px}
   .update-status.live{color:#22c55e}
   .update-status.error{color:#f97316}
-  .risk-table-wrap{background:#142642;border:1px solid #243a5c;border-radius:14px;padding:20px 24px;margin-bottom:36px;overflow-x:auto}
-  .risk-table-wrap h4{font-family:'Outfit',sans-serif;font-size:0.65rem;font-weight:600;color:#7a90b0;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;text-align:center}
+  .risk-table-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:36px;overflow-x:auto;transition:background 0.3s,border-color 0.3s}
+  .risk-table-wrap h4{font-family:'Outfit',sans-serif;font-size:0.65rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;text-align:center}
   .risk-table{display:grid;grid-template-columns:repeat(16,1fr);gap:6px;text-align:center}
-  .risk-cell{padding:8px 4px;border-radius:8px;background:#101e36;border:1px solid #1e3460}
+  .risk-cell{padding:8px 4px;border-radius:8px;background:var(--rc-bg);border:1px solid var(--rc-border)}
   .risk-cell .rc-risk{font-family:'Outfit',sans-serif;font-size:0.85rem;font-weight:600;line-height:1.3}
-  .risk-cell .rc-price{font-size:0.62rem;color:#90a8c8;margin-top:3px;letter-spacing:0.5px}
+  .risk-cell .rc-price{font-size:0.62rem;color:var(--meth-text);margin-top:3px;letter-spacing:0.5px}
   @media(max-width:900px){.risk-table{grid-template-columns:repeat(8,1fr)}}
   @media(max-width:500px){.risk-table{grid-template-columns:repeat(4,1fr)}}
-  footer{text-align:center;margin-top:36px;padding-bottom:20px;font-size:0.58rem;color:#4a6890;letter-spacing:1.5px}
+  .zoom-btn{background:var(--btn-bg);color:var(--btn-text);border:1px solid var(--btn-border);border-radius:6px;padding:4px 14px;font:11px JetBrains Mono,monospace;cursor:pointer;transition:all 0.2s}
+  .zoom-btn:hover{background:var(--btn-hover);color:var(--btn-hover-text)}
+  .zoom-btn.active{background:var(--btn-hover);color:var(--btn-hover-text)}
+  footer{text-align:center;margin-top:36px;padding-bottom:20px;font-size:0.58rem;color:var(--footer-text);letter-spacing:1.5px}
 </style>
 </head>
 <body>
 <div class="noise-overlay"></div>
 <div class="container">
   <header>
+    <div class="header-nav">
+      <a href="/">Home</a>
+      <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark mode" aria-label="Toggle theme">
+        <span id="theme-icon">&#9789;</span>
+      </button>
+    </div>
     <h1>₿ <span>Bitcoin Risk Metric</span></h1>
-    <div class="subtitle"><span class="live-dot"></span>Combined Structural + Momentum · Power-Law Regression · Live</div>
+    <div class="subtitle"><span class="live-dot"></span>Combined Structural + Momentum · Power-Law Regression</div>
   </header>
   <div class="dashboard">
     <div class="card" style="--glow:#555"><div class="card-label">Price</div><div class="card-value" id="vPrice" style="--val-color:#e2e4ea">—</div><div class="card-sub" id="vDate"></div></div>
@@ -105,19 +147,44 @@
   </div>
   <div class="update-status" id="updateStatus" style="display:none"></div>
   <div class="methodology">
-    <h3>Methodology (Combined Risk — Live)</h3>
+    <h3>Methodology (Combined Risk)</h3>
     <p><span class="hl">Power-Law Regression:</span> <code>log₁₀(price)</code> vs <code>log₁₀(days since Jan 3 2009)</code>. The residual measures deviation from the long-run trend.</p>
     <p><span class="hl">Structural Risk (Min/Max):</span> Normalizes the residual against all-time extremes. Macro positioning signal.</p>
     <p><span class="hl">Momentum Risk (Rolling Z-Score → CDF):</span> 4-year rolling z-score mapped through Gaussian CDF. Cycle-sensitive, adapts to declining volatility.</p>
     <p><span class="hl">Combined:</span> Geometric mean √(S × M) of both. Pulls toward the lower signal — if either frame says low risk, that's more informative. Backtested across all deciles with strongly monotonic forward returns.</p>
-    <p><span class="hl">Live Updates:</span> On page load, fetches current BTC price from CoinGecko free API and appends it to the historical dataset. Refresh page for latest reading.</p>
+    <p><span class="hl">Updates:</span> On page load, fetches current BTC price from CoinGecko free API and appends it to the historical dataset. Refresh page for latest reading.</p>
   </div>
   <footer>
-    <div style="margin-bottom:8px"><a href="/" style="color:#58a6ff;text-decoration:none;font-size:0.65rem;letter-spacing:1px;">← Home</a></div>
-    Not financial advice · Combined structural + momentum · CoinGecko API + TradingView historical data
+    Not financial advice
   </footer>
 </div>
 <script>
+// Restore theme before render
+(function(){var t=localStorage.getItem('risk-theme');if(t)document.documentElement.setAttribute('data-theme',t);})();
+
+// ====== THEME-AWARE CANVAS COLORS ======
+function themeColors() {
+  const light = document.documentElement.getAttribute('data-theme') === 'light';
+  return {
+    canvasBg: light ? '#f0f3f6' : '#122240',
+    gridLine: light ? '#e1e6ed' : '#1e3460',
+    gridLineMinor: light ? '#e8ecf0' : '#1a2c52',
+    gridZero: light ? '#b8c0cc' : '#3a5580',
+    axisText: light ? '#656d76' : '#5a7498',
+    regressionLine: light ? 'rgba(80,120,180,0.50)' : 'rgba(140,190,255,0.50)',
+    zoneLabels: light ? '#8892a0' : '#4a6890',
+    zoneA: light ? 'rgba(37,99,235,0.05)' : 'rgba(37,99,235,0.08)',
+    zoneB: light ? 'rgba(132,204,22,0.03)' : 'rgba(132,204,22,0.04)',
+    zoneC: light ? 'rgba(234,179,8,0.03)' : 'rgba(234,179,8,0.04)',
+    zoneD: light ? 'rgba(239,68,68,0.05)' : 'rgba(239,68,68,0.08)',
+    zoneDash: light ? '#c0c8d4' : '#2a4468',
+    barValueText: light ? '#1f2328' : '#fff',
+    areaGrad0: light ? 'rgba(239,68,68,0.15)' : 'rgba(239,68,68,0.20)',
+    areaGrad5: light ? 'rgba(234,179,8,0.07)' : 'rgba(234,179,8,0.10)',
+    areaGrad1: light ? 'rgba(37,99,235,0.04)' : 'rgba(37,99,235,0.06)',
+  };
+}
+
 // ====== LOAD DATA FROM CSV ======
 async function loadCSV() {
   const resp = await fetch('data.csv');
@@ -231,7 +298,7 @@ async function main() {
 
   // Dashboard
   document.getElementById('vPrice').textContent = '$' + last.price.toLocaleString(undefined,{maximumFractionDigits:0});
-  document.getElementById('vDate').textContent = 'as of ' + last.date + (isLive ? ' (live)' : '');
+  document.getElementById('vDate').textContent = 'as of ' + last.date;
   document.getElementById('vRisk').textContent = last.riskCombo.toFixed(3);
   document.getElementById('vRisk').style.setProperty('--val-color', riskColor(last.riskCombo));
   document.getElementById('vFair').textContent = '$' + last.regPrice.toLocaleString(undefined,{maximumFractionDigits:0});
@@ -280,6 +347,7 @@ async function main() {
 
   // ====== RENDER PRICE CHART ======
   function renderPriceChart() {
+    const tc = themeColors();
     const cv=document.getElementById('priceCanvas'), ctx=cv.getContext('2d');
     const W=cv.width, H=cv.height;
     const P={t:24,r:60,b:48,l:80};
@@ -287,7 +355,7 @@ async function main() {
     const { s, e } = getVisibleRange();
     const S = visibleSample();
 
-    ctx.fillStyle='#122240'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle=tc.canvasBg; ctx.fillRect(0,0,W,H);
 
     const xOf=i=>P.l+((i-s)/(e-s))*cw;
     const visPrices = pts.slice(s,e+1).map(p=>p.price);
@@ -299,10 +367,10 @@ async function main() {
     ctx.textAlign='right'; ctx.font='10px JetBrains Mono';
     for(let e2=minE;e2<=maxE;e2++){
       const y=yOf(Math.pow(10,e2));
-      ctx.strokeStyle='#1e3460';ctx.lineWidth=1;
+      ctx.strokeStyle=tc.gridLine;ctx.lineWidth=1;
       ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke();
-      if(e2<maxE){const y3=yOf(3*Math.pow(10,e2));ctx.strokeStyle='#1a2c52';ctx.beginPath();ctx.moveTo(P.l,y3);ctx.lineTo(W-P.r,y3);ctx.stroke();}
-      ctx.fillStyle='#5a7498';
+      if(e2<maxE){const y3=yOf(3*Math.pow(10,e2));ctx.strokeStyle=tc.gridLineMinor;ctx.beginPath();ctx.moveTo(P.l,y3);ctx.lineTo(W-P.r,y3);ctx.stroke();}
+      ctx.fillStyle=tc.axisText;
       const val=Math.pow(10,e2);
       ctx.fillText(val>=1000?'$'+val.toLocaleString():val>=1?'$'+val:'$'+val.toFixed(4),P.l-8,y+3);
     }
@@ -317,15 +385,15 @@ async function main() {
       if(!seenYr.has(key)){
         if(showMonth ? mo%3===1 : true) {
           seenYr.add(key);const x=xOf(i);
-          ctx.strokeStyle='#1e3460';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,H-P.b);ctx.stroke();
-          ctx.fillStyle='#5a7498';ctx.font='10px JetBrains Mono';
+          ctx.strokeStyle=tc.gridLine;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,H-P.b);ctx.stroke();
+          ctx.fillStyle=tc.axisText;ctx.font='10px JetBrains Mono';
           ctx.fillText(showMonth?pts[i].date.slice(0,7):yr,x,H-P.b+18);
         }
       }
     }
 
     // Regression
-    ctx.strokeStyle='rgba(140,190,255,0.50)';ctx.lineWidth=1.5;ctx.setLineDash([8,5]);
+    ctx.strokeStyle=tc.regressionLine;ctx.lineWidth=1.5;ctx.setLineDash([8,5]);
     ctx.beginPath();
     for(let i=s;i<=e;i+=S){const x=xOf(i),y=yOf(pts[i].regPrice);i===s?ctx.moveTo(x,y):ctx.lineTo(x,y);}
     ctx.stroke();ctx.setLineDash([]);
@@ -340,6 +408,7 @@ async function main() {
 
   // ====== RENDER RISK CHART ======
   function renderRiskChart() {
+    const tc = themeColors();
     const cv=document.getElementById('riskCanvas'), ctx=cv.getContext('2d');
     const W=cv.width, H=cv.height;
     const P={t:16,r:76,b:48,l:80};
@@ -347,23 +416,23 @@ async function main() {
     const { s, e } = getVisibleRange();
     const S = visibleSample();
 
-    ctx.fillStyle='#122240'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle=tc.canvasBg; ctx.fillRect(0,0,W,H);
     const xOf=i=>P.l+((i-s)/(e-s))*cw;
     const yOf=r=>P.t+ch*(1-r);
 
     // Zone fills
-    [[0,0.20,'rgba(37,99,235,0.08)'],[0.20,0.50,'rgba(132,204,22,0.04)'],[0.50,0.80,'rgba(234,179,8,0.04)'],[0.80,1,'rgba(239,68,68,0.08)']].forEach(([lo,hi,c])=>{
+    [[0,0.20,tc.zoneA],[0.20,0.50,tc.zoneB],[0.50,0.80,tc.zoneC],[0.80,1,tc.zoneD]].forEach(([lo,hi,c])=>{
       ctx.fillStyle=c;ctx.fillRect(P.l,yOf(hi),cw,yOf(lo)-yOf(hi));
     });
     [0.20,0.50,0.80].forEach(v=>{
-      ctx.strokeStyle='#2a4468';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+      ctx.strokeStyle=tc.zoneDash;ctx.lineWidth=1;ctx.setLineDash([4,4]);
       ctx.beginPath();ctx.moveTo(P.l,yOf(v));ctx.lineTo(W-P.r,yOf(v));ctx.stroke();ctx.setLineDash([]);
     });
     ctx.textAlign='right';ctx.font='10px JetBrains Mono';
     [0,0.25,0.5,0.75,1.0].forEach(v=>{
-      const y=yOf(v);ctx.strokeStyle='#1e3460';ctx.lineWidth=1;
+      const y=yOf(v);ctx.strokeStyle=tc.gridLine;ctx.lineWidth=1;
       ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke();
-      ctx.fillStyle='#5a7498';ctx.fillText(v.toFixed(2),P.l-8,y+3);
+      ctx.fillStyle=tc.axisText;ctx.fillText(v.toFixed(2),P.l-8,y+3);
     });
 
     // Year grid
@@ -375,9 +444,9 @@ async function main() {
       const key=showMonth?pts[i].date.slice(0,7):''+yr;
       if(!seenYr.has(key)){
         if(showMonth?mo%3===1:true){
-          seenYr.add(key);ctx.strokeStyle='#1e3460';
+          seenYr.add(key);ctx.strokeStyle=tc.gridLine;
           ctx.beginPath();ctx.moveTo(xOf(i),P.t);ctx.lineTo(xOf(i),H-P.b);ctx.stroke();
-          ctx.fillStyle='#5a7498';ctx.font='10px JetBrains Mono';
+          ctx.fillStyle=tc.axisText;ctx.font='10px JetBrains Mono';
           ctx.fillText(showMonth?pts[i].date.slice(0,7):yr,xOf(i),H-P.b+18);
         }
       }
@@ -388,7 +457,7 @@ async function main() {
     for(let i=s;i<=e;i+=S) ctx.lineTo(xOf(i),yOf(pts[i].riskCombo));
     ctx.lineTo(xOf(e),yOf(0));ctx.closePath();
     const grd=ctx.createLinearGradient(0,yOf(1),0,yOf(0));
-    grd.addColorStop(0,'rgba(239,68,68,0.20)');grd.addColorStop(0.5,'rgba(234,179,8,0.10)');grd.addColorStop(1,'rgba(37,99,235,0.06)');
+    grd.addColorStop(0,tc.areaGrad0);grd.addColorStop(0.5,tc.areaGrad5);grd.addColorStop(1,tc.areaGrad1);
     ctx.fillStyle=grd;ctx.fill();
 
     // Combined (bold colored)
@@ -399,7 +468,7 @@ async function main() {
     }
 
     // Zone labels
-    ctx.fillStyle='#4a6890';ctx.font='9px JetBrains Mono';ctx.textAlign='right';
+    ctx.fillStyle=tc.zoneLabels;ctx.font='9px JetBrains Mono';ctx.textAlign='right';
     ctx.fillText('EUPHORIA',W-P.r-4,yOf(0.90));
     ctx.fillText('ELEVATED',W-P.r-4,yOf(0.65));
     ctx.fillText('NEUTRAL',W-P.r-4,yOf(0.35));
@@ -409,15 +478,15 @@ async function main() {
   // ====== FORWARD RETURNS BAR CHART ======
   let activeFwd=365;
   function renderReturnsChart(fwdDays) {
+    const tc = themeColors();
     fwdDays=fwdDays||activeFwd;
     activeFwd=fwdDays;
     const labels={365:'1-Year',730:'2-Year',1460:'4-Year'};
     document.getElementById('returnsLabel').textContent='Median '+labels[fwdDays]+' Forward Return by Risk Decile';
     // Update button active states
     document.querySelectorAll('#fwdButtons button').forEach(b=>{
-      const active=parseInt(b.dataset.fwd)===fwdDays;
-      b.style.background=active?'#2a4468':'#1e3460';
-      b.style.color=active?'#fff':'#8a9dba';
+      if(parseInt(b.dataset.fwd)===fwdDays) b.classList.add('active');
+      else b.classList.remove('active');
     });
 
     const cv=document.getElementById('returnsCanvas'), ctx=cv.getContext('2d');
@@ -425,7 +494,7 @@ async function main() {
     const P={t:28,r:40,b:52,l:80};
     const cw=W-P.l-P.r, ch=H-P.t-P.b;
 
-    ctx.fillStyle='#122240'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle=tc.canvasBg; ctx.fillRect(0,0,W,H);
 
     // Compute forward returns per decile (start after rolling window fills)
     const FWD=fwdDays;
@@ -454,9 +523,9 @@ async function main() {
     gridVals.forEach(v=>{
       const y=yOf(v);
       if(y<P.t-5||y>H-P.b+5) return;
-      ctx.strokeStyle=v===0?'#3a5580':'#1e3460';ctx.lineWidth=v===0?1.5:1;
+      ctx.strokeStyle=v===0?tc.gridZero:tc.gridLine;ctx.lineWidth=v===0?1.5:1;
       ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke();
-      ctx.fillStyle='#5a7498';ctx.fillText(v>0?'+'+v+'%':v+'%',P.l-8,y+3);
+      ctx.fillStyle=tc.axisText;ctx.fillText(v>0?'+'+v+'%':v+'%',P.l-8,y+3);
     });
 
     // Bars
@@ -481,7 +550,7 @@ async function main() {
       ctx.fill();
 
       // Value label on bar
-      ctx.fillStyle='#fff';ctx.font='bold 11px JetBrains Mono';ctx.textAlign='center';
+      ctx.fillStyle=tc.barValueText;ctx.font='bold 11px JetBrains Mono';ctx.textAlign='center';
       const labelY=median>=0?y1-8:y1+14;
       ctx.fillText((median>=0?'+':'')+Math.round(median)+'%',x+barW/2,labelY);
 
@@ -602,9 +671,7 @@ async function main() {
     btns.forEach(([label, days]) => {
       const b = document.createElement('button');
       b.textContent = label;
-      b.style.cssText = 'background:#1e3460;color:#8a9dba;border:1px solid #2a4468;border-radius:6px;padding:4px 14px;font:11px JetBrains Mono;cursor:pointer;transition:all 0.2s;';
-      b.addEventListener('mouseenter', () => { b.style.background='#2a4468'; b.style.color='#fff'; });
-      b.addEventListener('mouseleave', () => { b.style.background='#1e3460'; b.style.color='#8a9dba'; });
+      b.className = 'zoom-btn';
       b.addEventListener('click', () => {
         if (days === -1 || days >= n) {
           view.startIdx = 0; view.endIdx = n-1;
@@ -629,7 +696,7 @@ async function main() {
     [[365,'1Y'],[730,'2Y'],[1460,'4Y']].forEach(([days,label])=>{
       const b=document.createElement('button');
       b.textContent=label;b.dataset.fwd=days;
-      b.style.cssText='background:#1e3460;color:#8a9dba;border:1px solid #2a4468;border-radius:6px;padding:4px 14px;font:11px JetBrains Mono;cursor:pointer;transition:all 0.2s;';
+      b.className='zoom-btn';
       b.addEventListener('click',()=>renderReturnsChart(days));
       bar.appendChild(b);
     });
@@ -645,6 +712,25 @@ async function main() {
     el.innerHTML='<span class="lbl">Low Risk</span>';
     for(let i=0;i<=24;i++){const d=document.createElement('div');d.className='swatch';d.style.background=riskColor(i/24);el.appendChild(d);}
     el.innerHTML+='<span class="lbl">High Risk</span>';
+  })();
+
+  // ====== THEME TOGGLE ======
+  (function(){
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function updateIcon() {
+      icon.textContent = document.documentElement.getAttribute('data-theme') === 'light' ? '\u2600' : '\u263D';
+    }
+    updateIcon();
+    btn.addEventListener('click', function() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('risk-theme', next);
+      updateIcon();
+      renderAll();
+      renderReturnsChart();
+    });
   })();
 }
 
