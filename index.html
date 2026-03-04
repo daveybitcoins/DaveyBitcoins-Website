@@ -3,54 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weekly EMA Strategy Scanner</title>
+    <title>DaveyBitcoins</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .landing-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .landing-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .landing-title h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .landing-title p {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+        }
+
+        .tiles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .tile {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 2rem;
+            text-decoration: none;
+            color: var(--text);
+            transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .tile:hover {
+            border-color: var(--blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .tile-icon {
+            font-size: 2rem;
+            line-height: 1;
+        }
+
+        .tile-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .tile-desc {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .tile-tag {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            width: fit-content;
+        }
+
+        .tag-weekly {
+            background: var(--green-dim);
+            color: #fff;
+        }
+
+        .tag-live {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            .landing-container { padding: 2rem 1rem; }
+            .tiles { grid-template-columns: 1fr; }
+            .landing-title h1 { font-size: 1.5rem; }
+        }
+    </style>
 </head>
 <body>
     <header>
         <div class="header-content">
             <div class="header-top">
                 <div>
-                    <h1>Weekly EMA Strategy Scanner</h1>
-                    <p class="subtitle">8W / 13W / 21W &mdash; Top 200 by Market Cap</p>
-                    <p class="data-date" id="data-date"></p>
+                    <h1>DaveyBitcoins</h1>
                 </div>
-                <div style="display:flex;align-items:center;gap:12px;">
-                    <a href="risk-metric.html" style="color:var(--blue, #58a6ff);text-decoration:none;font-size:0.85rem;font-weight:500;white-space:nowrap;">₿ Risk Metric</a>
-                    <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark mode" aria-label="Toggle theme">
-                        <span class="theme-icon" id="theme-icon">&#9789;</span>
-                    </button>
-                </div>
+                <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark mode" aria-label="Toggle theme">
+                    <span class="theme-icon" id="theme-icon">&#9789;</span>
+                </button>
             </div>
         </div>
     </header>
 
-    <nav class="tab-bar" id="tab-bar">
-        <button class="tab active" data-tab="dashboard">Dashboard</button>
-        <button class="tab" data-tab="scanner">Full Scanner</button>
-        <button class="tab" data-tab="pullbacks">Pullbacks &amp; Entries</button>
-        <button class="tab" data-tab="momentum">Momentum Leaders</button>
-        <button class="tab" data-tab="bears">Bear List</button>
-        <button class="tab" data-tab="sectors">Sector Heatmap</button>
-        <button class="tab" data-tab="crossovers">Crossover Alerts</button>
-    </nav>
-
-    <main id="main-content">
-        <div class="loading" id="loading">Loading data&hellip;</div>
-
-        <section class="tab-content active" id="tab-dashboard"></section>
-        <section class="tab-content" id="tab-scanner"></section>
-        <section class="tab-content" id="tab-pullbacks"></section>
-        <section class="tab-content" id="tab-momentum"></section>
-        <section class="tab-content" id="tab-bears"></section>
-        <section class="tab-content" id="tab-sectors"></section>
-        <section class="tab-content" id="tab-crossovers"></section>
-    </main>
+    <div class="landing-container">
+        <div class="tiles">
+            <a href="ema-scanner.html" class="tile">
+                <div class="tile-icon">📊</div>
+                <span class="tile-tag tag-weekly">Updated Weekly</span>
+                <div class="tile-name">Weekly EMA Strategy Scanner</div>
+                <div class="tile-desc">8W / 13W / 21W EMA analysis across the top 200 stocks by market cap. Dashboard, pullback setups, momentum leaders, sector heatmap, and crossover alerts.</div>
+            </a>
+            <a href="risk-metric.html" class="tile">
+                <div class="tile-icon">₿</div>
+                <span class="tile-tag tag-live">Live</span>
+                <div class="tile-name">Bitcoin Risk Metric</div>
+                <div class="tile-desc">Combined structural and momentum risk score using power-law regression. Interactive price and risk charts with forward return analysis by risk decile.</div>
+            </a>
+        </div>
+    </div>
 
     <footer>
-        <p>Data sourced from TradingView. Updated weekly on Mondays.</p>
+        <p>Not financial advice.</p>
     </footer>
 
-    <script src="js/app.js"></script>
+    <script>
+        // Theme toggle (shared logic)
+        const toggle = document.getElementById('theme-toggle');
+        const icon = document.getElementById('theme-icon');
+        const saved = localStorage.getItem('ema-theme');
+        if (saved) {
+            document.documentElement.setAttribute('data-theme', saved);
+            icon.innerHTML = saved === 'light' ? '&#9789;' : '&#9788;';
+        }
+        toggle.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('ema-theme', next);
+            icon.innerHTML = next === 'light' ? '&#9789;' : '&#9788;';
+        });
+    </script>
 </body>
 </html>

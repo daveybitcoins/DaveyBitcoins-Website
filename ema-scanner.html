@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly EMA Strategy Scanner</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="header-top">
+                <div>
+                    <h1>Weekly EMA Strategy Scanner</h1>
+                    <p class="subtitle">8W / 13W / 21W &mdash; Top 200 by Market Cap</p>
+                    <p class="data-date" id="data-date"></p>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <a href="/" style="color:var(--blue, #58a6ff);text-decoration:none;font-size:0.85rem;font-weight:500;white-space:nowrap;">Home</a>
+                    <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark mode" aria-label="Toggle theme">
+                        <span class="theme-icon" id="theme-icon">&#9789;</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="tab-bar" id="tab-bar">
+        <button class="tab active" data-tab="dashboard">Dashboard</button>
+        <button class="tab" data-tab="scanner">Full Scanner</button>
+        <button class="tab" data-tab="pullbacks">Pullbacks &amp; Entries</button>
+        <button class="tab" data-tab="momentum">Momentum Leaders</button>
+        <button class="tab" data-tab="bears">Bear List</button>
+        <button class="tab" data-tab="sectors">Sector Heatmap</button>
+        <button class="tab" data-tab="crossovers">Crossover Alerts</button>
+    </nav>
+
+    <main id="main-content">
+        <div class="loading" id="loading">Loading data&hellip;</div>
+
+        <section class="tab-content active" id="tab-dashboard"></section>
+        <section class="tab-content" id="tab-scanner"></section>
+        <section class="tab-content" id="tab-pullbacks"></section>
+        <section class="tab-content" id="tab-momentum"></section>
+        <section class="tab-content" id="tab-bears"></section>
+        <section class="tab-content" id="tab-sectors"></section>
+        <section class="tab-content" id="tab-crossovers"></section>
+    </main>
+
+    <footer>
+        <p>Data sourced from TradingView. Updated weekly on Mondays.</p>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
