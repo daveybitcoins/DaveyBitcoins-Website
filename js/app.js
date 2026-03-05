@@ -128,6 +128,36 @@
         el.innerHTML = html;
     }
 
+    function riskColor(r) {
+        const stops = [[0,[37,99,235]],[0.12,[6,182,212]],[0.25,[16,185,129]],[0.40,[132,204,22]],[0.55,[234,179,8]],[0.70,[249,115,22]],[0.85,[239,68,68]],[1,[153,27,27]]];
+        let lo = stops[0], hi = stops[stops.length - 1];
+        for (let i = 0; i < stops.length - 1; i++) {
+            if (r >= stops[i][0] && r <= stops[i + 1][0]) { lo = stops[i]; hi = stops[i + 1]; break; }
+        }
+        const t = (r - lo[0]) / (hi[0] - lo[0] || 1);
+        const c = lo[1].map((v, j) => Math.round(v + t * (hi[1][j] - v)));
+        return `rgb(${c[0]},${c[1]},${c[2]})`;
+    }
+
+    function renderBtcRisk(idx) {
+        if (idx.risk_combo == null) return "";
+        const r = idx.risk_combo;
+        const color = riskColor(r);
+        const barGrad = "linear-gradient(90deg,#2563eb 0%,#06b6d4 15%,#10b981 30%,#84cc16 45%,#eab308 60%,#f97316 75%,#ef4444 90%,#991b1b 100%)";
+        return `
+            <div style="margin-top:0.5rem;padding:0.4rem 0.5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);">
+                <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;">
+                    <span style="color:var(--text-dim);">Combined Risk</span>
+                    <strong style="color:${color};font-family:'JetBrains Mono',monospace;font-size:0.85rem;">${r.toFixed(3)}</strong>
+                </div>
+                <div style="position:relative;height:6px;margin:0.3rem 0;border-radius:3px;background:${barGrad};">
+                    <div style="position:absolute;top:-2px;left:${r*100}%;width:2px;height:10px;background:#fff;border-radius:1px;transform:translateX(-1px);box-shadow:0 0 3px rgba(0,0,0,0.5);"></div>
+                </div>
+                <div style="text-align:center;font-size:0.7rem;font-weight:600;color:${idx.zone_color || color};letter-spacing:0.05em;">${(idx.zone || "").toUpperCase()}</div>
+                <a href="risk-metric.html" style="display:block;text-align:center;margin-top:0.3rem;font-size:0.65rem;color:var(--accent);text-decoration:none;opacity:0.8;">View Full BTC Metrics \u2192</a>
+            </div>`;
+    }
+
     function renderIndexCard() {
         if (!DATA.index_context || DATA.index_context.length === 0) return "";
         return `
@@ -137,7 +167,7 @@
                     ${DATA.index_context.map(idx => `
                         <div class="stat-box">
                             <div class="value" style="font-size:1.2rem;">
-                                ${idx.symbol} ${signalBadge(idx.signal)}
+                                ${idx.symbol === 'BTC' ? `<a href="risk-metric.html" style="color:inherit;text-decoration:none;">${idx.symbol}</a>` : idx.symbol} ${signalBadge(idx.signal)}
                             </div>
                             <div class="label">${fmtPrice(idx.price)}</div>
                             <div style="font-size:0.75rem;margin-top:0.4rem;color:var(--text-dim);font-family:'JetBrains Mono',monospace;">
@@ -154,6 +184,7 @@
                                 1M: <span class="${colorClass(idx.chg_1m)}">${fmtPct(idx.chg_1m)}</span>
                             </div>
                             ${idx.crossover_alert ? `<div class="alert-text" style="font-size:0.72rem;margin:0.4rem auto 0;padding:0.35rem 0.5rem;text-align:center;border:1px solid var(--border);border-radius:4px;background:var(--bg);">${formatAlert(idx.crossover_alert)}</div>` : ''}
+                            ${idx.symbol === 'BTC' ? renderBtcRisk(idx) : ''}
                         </div>
                     `).join("")}
                 </div>

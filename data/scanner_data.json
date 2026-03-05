@@ -2,7 +2,7 @@
   "meta": {
     "date": "2026-03-05",
     "total_stocks": 300,
-    "generated_at": "2026-03-05T10:57:44.542542",
+    "generated_at": "2026-03-05T11:12:17.057016",
     "index_etfs": [
       "SPY",
       "QQQ",
@@ -65,7 +65,14 @@
       "chg_1d": 6.84,
       "chg_1w": 6.03,
       "chg_1m": -4.34,
-      "crossover_alert": null
+      "crossover_alert": null,
+      "risk_combo": 0.229,
+      "risk_mm": 0.356,
+      "risk_zs": 0.148,
+      "fair_value": 128523.22,
+      "dev_pct": -43.6,
+      "zone": "Accumulate",
+      "zone_color": "#2563eb"
     }
   ],
   "dashboard": {

@@ -11,6 +11,7 @@ Usage: python3 scripts/process_ema.py
 import csv
 import json
 import glob
+import math
 import os
 import re
 from datetime import datetime, timedelta
@@ -344,6 +345,116 @@ def build_index_context():
     return context
 
 
+GENESIS_MS = datetime(2009, 1, 3).timestamp() * 1000  # BTC genesis date
+RISK_WINDOW = 1460  # 4-year rolling window (days)
+
+
+def _norm_cdf(z):
+    """Gaussian CDF via Abramowitz & Stegun approximation (matches risk-metric.html)."""
+    t = 1.0 / (1.0 + 0.2316419 * abs(z))
+    d = 0.3989422804 * math.exp(-z * z / 2)
+    p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.8212560 + t * 1.330274))))
+    return 1 - p if z > 0 else p
+
+
+def _calc_btc_risk(daily):
+    """Calculate BTC Combined Risk Score matching risk-metric.html logic.
+
+    Returns dict with risk_combo, risk_mm, risk_zs, fair_value, dev_pct, zone, zone_color
+    or None if insufficient data.
+    """
+    # Build points with log-log values
+    pts = []
+    for date, price in daily:
+        ms = date.timestamp() * 1000
+        days = (ms - GENESIS_MS) / 864e5
+        if days > 0 and price > 0:
+            pts.append({
+                "days": days,
+                "log_days": math.log10(days),
+                "log_price": math.log10(price),
+                "price": price,
+            })
+
+    if len(pts) < RISK_WINDOW:
+        return None
+
+    n = len(pts)
+
+    # Linear regression on log-log scale
+    sx = sy = sxy = sxx = 0
+    for p in pts:
+        sx += p["log_days"]
+        sy += p["log_price"]
+        sxy += p["log_days"] * p["log_price"]
+        sxx += p["log_days"] * p["log_days"]
+    slope = (n * sxy - sx * sy) / (n * sxx - sx * sx)
+    intercept = (sy - slope * sx) / n
+
+    # Calculate residuals and find extremes
+    min_res = float("inf")
+    max_res = float("-inf")
+    for p in pts:
+        p["reg_log_price"] = slope * p["log_days"] + intercept
+        p["reg_price"] = 10 ** p["reg_log_price"]
+        p["residual"] = p["log_price"] - p["reg_log_price"]
+        if p["residual"] < min_res:
+            min_res = p["residual"]
+        if p["residual"] > max_res:
+            max_res = p["residual"]
+
+    # Structural risk (min-max normalization)
+    res_range = max_res - min_res
+    for p in pts:
+        p["risk_mm"] = max(0, min(1, (p["residual"] - min_res) / res_range))
+
+    # Momentum risk (rolling z-score → Gaussian CDF)
+    residuals = [p["residual"] for p in pts]
+    r_sum = 0.0
+    r_sum_sq = 0.0
+    for i in range(n):
+        r_sum += residuals[i]
+        r_sum_sq += residuals[i] * residuals[i]
+        if i >= RISK_WINDOW:
+            r_sum -= residuals[i - RISK_WINDOW]
+            r_sum_sq -= residuals[i - RISK_WINDOW] * residuals[i - RISK_WINDOW]
+        cnt = min(i + 1, RISK_WINDOW)
+        mean = r_sum / cnt
+        vari = max(0.0001, r_sum_sq / cnt - mean * mean)
+        std = math.sqrt(vari)
+        z = (residuals[i] - mean) / std
+        pts[i]["risk_zs"] = _norm_cdf(z)
+
+    # Combined risk (geometric mean)
+    for p in pts:
+        p["risk_combo"] = math.sqrt(p["risk_mm"] * p["risk_zs"])
+
+    last = pts[-1]
+    risk_combo = round(last["risk_combo"], 3)
+    fair_value = round(last["reg_price"], 2)
+    dev_pct = round((last["price"] / last["reg_price"] - 1) * 100, 1)
+
+    # Zone classification
+    if risk_combo < 0.25:
+        zone, zone_color = "Accumulate", "#2563eb"
+    elif risk_combo < 0.50:
+        zone, zone_color = "Neutral", "#10b981"
+    elif risk_combo < 0.75:
+        zone, zone_color = "Caution", "#eab308"
+    else:
+        zone, zone_color = "Euphoria", "#ef4444"
+
+    return {
+        "risk_combo": risk_combo,
+        "risk_mm": round(last["risk_mm"], 3),
+        "risk_zs": round(last["risk_zs"], 3),
+        "fair_value": fair_value,
+        "dev_pct": dev_pct,
+        "zone": zone,
+        "zone_color": zone_color,
+    }
+
+
 def _calc_ema(closes, period):
     """Calculate EMA from a list of closes. Seed with SMA of first `period` values."""
     if len(closes) < period:
@@ -450,7 +561,10 @@ def build_btc_context():
         else:
             alert_parts.append(f"13W just below 21W ({gap_13_21:.2f}%) \u2014 bullish cross potential")
 
-    return {
+    # Calculate Combined Risk Score
+    risk_data = _calc_btc_risk(daily)
+
+    result = {
         "symbol": "BTC",
         "name": "Bitcoin",
         "price": price,
@@ -469,6 +583,11 @@ def build_btc_context():
         "chg_1m": chg_1m,
         "crossover_alert": "; ".join(alert_parts) if alert_parts else None,
     }
+
+    if risk_data:
+        result.update(risk_data)
+
+    return result
 
 
 def main():
