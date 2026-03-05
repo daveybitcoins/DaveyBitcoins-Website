@@ -9,7 +9,7 @@
     // === INIT ===
     async function init() {
         try {
-            const resp = await fetch("data/scanner_data.json");
+            const resp = await fetch("data/scanner_data.json?v=" + Date.now());
             DATA = await resp.json();
             document.getElementById("loading").style.display = "none";
             document.getElementById("data-date").textContent =
