@@ -340,6 +340,16 @@ def main():
     # Load index ETF context
     index_context = build_index_context()
 
+    # Preserve existing ai_summary if present
+    existing_summary = None
+    if os.path.exists(OUTPUT_FILE):
+        try:
+            with open(OUTPUT_FILE, "r") as f:
+                existing = json.load(f)
+            existing_summary = existing.get("ai_summary")
+        except (json.JSONDecodeError, IOError):
+            pass
+
     output = {
         "meta": {
             "date": data_date,
@@ -356,6 +366,9 @@ def main():
         "sector_heatmap": build_sector_heatmap(stocks),
         "crossover_alerts": build_crossover_alerts(stocks),
     }
+
+    if existing_summary:
+        output["ai_summary"] = existing_summary
 
     os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
     with open(OUTPUT_FILE, "w") as f:

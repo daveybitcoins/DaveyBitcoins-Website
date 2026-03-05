@@ -15743,5 +15743,141 @@
       "gap_13_21": 3.88,
       "alert": "8W just above 13W (0.98%) \u2014 bearish cross risk"
     }
-  ]
+  ],
+  "ai_summary": {
+    "market_overview": {
+      "bias": "bullish",
+      "bias_label": "Leaning Bullish",
+      "headline": "Market showing healthy bull structure with 45% in Full Bull mode and strong sector rotation into commodities and industrials.",
+      "detail": "SPY in Bull Pullback mode while QQQ unstacked but above 21W suggests tech digesting gains while broader market remains constructive. Only 19% in Full Bear with energy and materials leading performance.",
+      "index_signals": {
+        "SPY": "Bull Pullback \u2192 13W",
+        "QQQ": "Bullish (unstacked)"
+      }
+    },
+    "reversal_candidates": {
+      "headline": "Bear Rally Reversal Watch",
+      "items": [
+        {
+          "symbol": "META",
+          "name": "Meta Platforms, Inc.",
+          "signal": "Bear Rally above 13W",
+          "crossover_detail": "8W just below 13W (0.00%) \u2014 bullish cross potential; 13W just below 21W (0.02%) \u2014 bullish cross potential",
+          "note": "Mega-cap tech showing early reversal signs with price holding above 13W and EMAs coiling for potential bullish breaks.",
+          "type": "bull"
+        },
+        {
+          "symbol": "ICE",
+          "name": "Intercontinental Exchange Inc.",
+          "signal": "Bear Rally above 13W",
+          "crossover_detail": "8W just below 13W (0.00%) \u2014 bullish cross potential; 13W just below 21W (0.25%) \u2014 bullish cross potential",
+          "note": "Strong rally off lows with dual bullish crossover potential setting up clean reversal structure.",
+          "type": "bull"
+        },
+        {
+          "symbol": "NFLX",
+          "name": "Netflix, Inc.",
+          "signal": "Bear Rally above 13W",
+          "crossover_detail": null,
+          "note": "Streaming giant showing strongest bear rally momentum at +10% from 8W, testing for full reversal.",
+          "type": "bull"
+        }
+      ]
+    },
+    "pullback_setups": {
+      "headline": "Quality Pullback Entries",
+      "items": [
+        {
+          "symbol": "LRCX",
+          "name": "Lam Research Corporation",
+          "signal": "Bull Pullback \u2192 13W",
+          "price_vs_21w": 14.94,
+          "note": "Semiconductor equipment leader showing textbook pullback structure in strong uptrend, +15% above 21W.",
+          "type": "bull"
+        },
+        {
+          "symbol": "UPS",
+          "name": "United Parcel Service, Inc.",
+          "signal": "Bull Pullback \u2192 13W",
+          "price_vs_21w": 4.77,
+          "note": "Logistics giant pulling back to 13W support in established uptrend, good risk-reward at current levels.",
+          "type": "bull"
+        }
+      ]
+    },
+    "momentum_themes": {
+      "headline": "Semiconductor & Memory Acceleration",
+      "detail": "Electronic technology leading momentum with memory stocks (WDC, MU) and semiconductor equipment (LRCX, AMAT) showing explosive acceleration. Copper mining also surging with commodity reflation theme gaining steam.",
+      "top_names": [
+        "WDC",
+        "MU",
+        "AMAT",
+        "SCCO",
+        "GLW"
+      ]
+    },
+    "sector_analysis": {
+      "headline": "Commodity Sectors Dominating",
+      "strongest": [
+        {
+          "sector": "Energy minerals",
+          "net_score": 100.0,
+          "bull_pct": 100.0,
+          "note": "Perfect bullish structure with all 9 stocks in uptrends, averaging +12.5% above 21W."
+        },
+        {
+          "sector": "Non-energy minerals",
+          "net_score": 100.0,
+          "bull_pct": 100.0,
+          "note": "Mining and materials showing explosive momentum with +17.8% average gains above 21W."
+        },
+        {
+          "sector": "Distribution services",
+          "net_score": 100.0,
+          "bull_pct": 100.0,
+          "note": "Small but strong sector with logistics and distribution companies in clean uptrends."
+        }
+      ],
+      "weakest": [
+        {
+          "sector": "Technology services",
+          "net_score": -81.0,
+          "bear_pct": 90.5,
+          "note": "Software and cloud stocks under severe pressure with 90% in bearish structure, -9.5% below 21W average."
+        },
+        {
+          "sector": "Commercial services",
+          "net_score": -100.0,
+          "bear_pct": 100.0,
+          "note": "Complete sector breakdown with all stocks in bearish trends."
+        },
+        {
+          "sector": "Consumer durables",
+          "net_score": -80.0,
+          "bear_pct": 80.0,
+          "note": "Auto and appliance stocks struggling with demand concerns and rate sensitivity."
+        }
+      ],
+      "detail": "Clear rotation from growth/tech into value/commodities with industrials and materials leading. Finance sector mixed but improving with 45% bullish participation."
+    },
+    "risk_warnings": {
+      "headline": "Key Risks to Monitor",
+      "items": [
+        {
+          "text": "Technology services sector in deep bear structure (-81% net score) could drag broader market if selling accelerates",
+          "type": "caution"
+        },
+        {
+          "text": "25 Bull Breakdowns suggest some uptrends starting to crack under pressure",
+          "type": "caution"
+        },
+        {
+          "text": "QQQ unstacked structure shows tech leadership remains fragile despite recent bounce",
+          "type": "caution"
+        }
+      ]
+    },
+    "generated_at": "2026-03-04T22:10:53.733792",
+    "model": "claude-sonnet-4-20250514"
+  }
 }
