@@ -1,0 +1,48 @@
+name: Update EMA Scanner
+
+on:
+  workflow_run:
+    workflows: ["Update BTC price data"]
+    types: [completed]
+  workflow_dispatch:         # manual trigger
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main          # ensure we get latest (including any data.csv changes)
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install tradingview-screener anthropic
+
+      - name: Fetch & process EMA data
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python scripts/fetch_ema.py --process
+          python scripts/generate_summary.py --force
+
+      - name: Update cache-bust timestamps
+        run: |
+          STAMP=$(date +%Y%m%d%H%M)
+          sed -i "s/app\.js?v=[0-9]*/app.js?v=${STAMP}/" ema-scanner.html
+          sed -i "s/style\.css?v=[0-9]*/style.css?v=${STAMP}/" ema-scanner.html
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add csv/ data/scanner_data.json ema-scanner.html
+          git diff --cached --quiet && echo "No changes" && exit 0
+          git commit -m "Update EMA scanner data $(date -u +%Y-%m-%d %H:%M)"
+          git push

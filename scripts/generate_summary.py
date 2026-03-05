@@ -4,8 +4,9 @@ AI Market Summary Generator
 Reads scanner_data.json, sends key data to Claude, and writes an AI-generated
 market summary back into scanner_data.json for the website.
 
-Usage: python3 scripts/generate_summary.py
+Usage: python3 scripts/generate_summary.py [--force]
   - Requires ANTHROPIC_API_KEY environment variable
+  - Use --force to regenerate even if summary already exists for today
   - Reads data/scanner_data.json (must exist)
   - Adds "ai_summary" key to scanner_data.json
 """
@@ -287,6 +288,8 @@ def validate_summary(summary):
 
 
 def main():
+    force = "--force" in sys.argv
+
     # Check for API key
     if not os.environ.get("ANTHROPIC_API_KEY"):
         print("Warning: ANTHROPIC_API_KEY not set. Skipping AI summary generation.")
@@ -300,10 +303,10 @@ def main():
     with open(DATA_FILE, "r") as f:
         data = json.load(f)
 
-    # Check if summary already exists for this date
+    # Check if summary already exists for this date (skip unless --force)
     existing = data.get("ai_summary", {})
-    if existing.get("generated_at", "").startswith(data["meta"]["date"]):
-        print(f"AI summary already generated for {data['meta']['date']}. Skipping.")
+    if not force and existing.get("generated_at", "").startswith(data["meta"]["date"]):
+        print(f"AI summary already generated for {data['meta']['date']}. Skipping. (use --force to override)")
         return 0
 
     try:
