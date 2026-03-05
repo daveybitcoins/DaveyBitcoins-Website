@@ -114,6 +114,7 @@ def parse_csv(filepath):
                 analyst = row.get("Analyst Rating", "").strip()
                 chg_1d = float(row.get("Price Change % 1 day", 0) or 0)
                 chg_1w = float(row.get("Change from Open % 1 week", 0) or 0)
+                chg_1m = float(row.get("Performance % 1 month", 0) or 0)
                 rel_vol = float(row.get("Relative Volume 1 day", 0) or 0)
 
                 signal = classify_signal(price, ema8, ema13, ema21)
@@ -137,6 +138,7 @@ def parse_csv(filepath):
                     "analyst": analyst,
                     "chg_1d": round(chg_1d, 2),
                     "chg_1w": round(chg_1w, 2),
+                    "chg_1m": round(chg_1m, 2),
                     "rel_vol": round(rel_vol, 2),
                     "signal": signal,
                     "price_vs_8w": price_vs_8w,
@@ -303,6 +305,21 @@ def build_index_context():
     index_stocks = parse_csv(index_csv)
     context = []
     for s in index_stocks:
+        # Build crossover alert (same logic as build_crossover_alerts)
+        gap_8_13 = abs(s["ema8_vs_13"])
+        gap_13_21 = abs(s["ema13_vs_21"])
+        alert_parts = []
+        if gap_8_13 < CROSSOVER_THRESHOLD:
+            if s["ema8"] > s["ema13"]:
+                alert_parts.append(f"8W just above 13W ({gap_8_13:.2f}%) \u2014 bearish cross risk")
+            else:
+                alert_parts.append(f"8W just below 13W ({gap_8_13:.2f}%) \u2014 bullish cross potential")
+        if gap_13_21 < CROSSOVER_THRESHOLD:
+            if s["ema13"] > s["ema21"]:
+                alert_parts.append(f"13W just above 21W ({gap_13_21:.2f}%) \u2014 bearish cross risk")
+            else:
+                alert_parts.append(f"13W just below 21W ({gap_13_21:.2f}%) \u2014 bullish cross potential")
+
         context.append({
             "symbol": s["symbol"],
             "name": s["name"],
@@ -319,6 +336,8 @@ def build_index_context():
             "spread_score": s["spread_score"],
             "chg_1d": s["chg_1d"],
             "chg_1w": s["chg_1w"],
+            "chg_1m": s["chg_1m"],
+            "crossover_alert": "; ".join(alert_parts) if alert_parts else None,
         })
     print(f"Loaded {len(context)} index ETFs: {', '.join(s['symbol'] for s in context)}")
     return context

@@ -44,6 +44,7 @@ API_FIELDS = [
     "EMA13|1W",             # Exponential Moving Average (13) 1 week
     "EMA21|1W",             # Exponential Moving Average (21) 1 week
     "change_from_open|1W",  # Change from Open % 1 week
+    "Perf.1M",              # Performance % 1 month
 ]
 
 CSV_COLUMNS = [
@@ -62,6 +63,7 @@ CSV_COLUMNS = [
     "Exponential Moving Average (13) 1 week",
     "Exponential Moving Average (21) 1 week",
     "Change from Open % 1 week",
+    "Performance % 1 month",
 ]
 
 # Batch size for API requests (API max is ~5000 per request)
@@ -140,6 +142,7 @@ def build_csv_rows(df):
             "Exponential Moving Average (13) 1 week": ema13,
             "Exponential Moving Average (21) 1 week": ema21,
             "Change from Open % 1 week": row.get("change_from_open|1W", 0) or 0,
+            "Performance % 1 month": row.get("Perf.1M", 0) or 0,
         }
         rows.append(csv_row)
 
