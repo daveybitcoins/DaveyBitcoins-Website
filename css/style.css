@@ -133,8 +133,9 @@ header {
 }
 
 .data-date {
-    display: inline-flex;
+    display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 6px;
     color: var(--blue);
     font-size: 0.75rem;
