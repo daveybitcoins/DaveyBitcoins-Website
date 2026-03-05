@@ -32,11 +32,13 @@ They especially value:
 - Sector rotation themes and momentum acceleration
 - Risk warnings about deteriorating trends
 
-You will also receive EMA positioning data for SPY (S&P 500) and QQQ (Nasdaq 100) as market context.
+You will also receive EMA positioning data for SPY (S&P 500), QQQ (Nasdaq 100), and BTC (Bitcoin) as market context.
 Use their EMA structure to inform your overall market bias. For example:
 - Both Full Bull = strong broad market uptrend, pullbacks are higher conviction
 - SPY Full Bull but QQQ in pullback = tech rotation out
 - Both in bear structure = defensive market environment
+- BTC Full Bull with SPY Full Bull = max risk-on environment
+- BTC in bear structure while SPY bull = divergence, watch for correlation snap
 
 Be direct, use trader language, and focus on actionable observations.
 Concise bullet points preferred over long paragraphs.
@@ -50,7 +52,8 @@ SCHEMA = {
         "detail": "1-2 sentences with key stats backing the headline",
         "index_signals": {
             "SPY": "signal string e.g. Full Bull",
-            "QQQ": "signal string e.g. Bull Pullback \u2192 13W"
+            "QQQ": "signal string e.g. Bull Pullback \u2192 13W",
+            "BTC": "signal string e.g. Full Bear"
         }
     },
     "reversal_candidates": {
@@ -175,9 +178,9 @@ def build_user_prompt(d):
     index_section = ""
     if d.get("index_context"):
         index_section = f"""
-## Market Index ETF Context (SPY & QQQ)
+## Market Index Context (SPY, QQQ & BTC)
 {json.dumps(d['index_context'], indent=2)}
-These represent the broad market (S&P 500) and tech-heavy (Nasdaq 100) trend context.
+These represent the broad market (S&P 500), tech-heavy (Nasdaq 100), and crypto (Bitcoin) trend context.
 Factor their EMA positioning into your overall market bias assessment.
 Include their exact signal strings in market_overview.index_signals.
 """
@@ -213,7 +216,7 @@ Return ONLY valid JSON matching this exact structure (no markdown, no code fence
 {json.dumps(SCHEMA, indent=2)}
 
 Rules:
-- market_overview.index_signals: include the exact signal string for SPY and QQQ from the index context data. If no index data provided, omit this field
+- market_overview.index_signals: include the exact signal string for SPY, QQQ, and BTC from the index context data. If no index data provided, omit this field
 - market_overview.bias must be one of: "bullish", "bearish", "neutral", "mixed"
 - market_overview.bias_label: human-readable like "Leaning Bullish", "Cautiously Bearish", "Neutral / Mixed"
 - reversal_candidates.items: Focus on Bear Rally stocks that also have bullish crossover alerts. Max 5 items. If none exist, include the most notable Bear Rally stocks. Each item.type = "bull". Skip preferred shares (tickers with / or .)

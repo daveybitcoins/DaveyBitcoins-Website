@@ -13,13 +13,14 @@ import json
 import glob
 import os
 import re
-from datetime import datetime
-from collections import defaultdict
+from datetime import datetime, timedelta
+from collections import defaultdict, OrderedDict
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(SCRIPT_DIR)
 CSV_DIR = os.path.join(PROJECT_DIR, "csv")
 OUTPUT_FILE = os.path.join(PROJECT_DIR, "data", "scanner_data.json")
+BTC_CSV = os.path.join(PROJECT_DIR, "data.csv")
 
 CROSSOVER_THRESHOLD = 1.0  # percent
 TOP_N = 300  # Filter to top N stocks by market cap
@@ -343,6 +344,133 @@ def build_index_context():
     return context
 
 
+def _calc_ema(closes, period):
+    """Calculate EMA from a list of closes. Seed with SMA of first `period` values."""
+    if len(closes) < period:
+        return None
+    sma = sum(closes[:period]) / period
+    mult = 2.0 / (period + 1)
+    ema = sma
+    for close in closes[period:]:
+        ema = (close - ema) * mult + ema
+    return ema
+
+
+def _find_nearest_price(daily, target_date):
+    """Find the price closest to target_date (looking backward)."""
+    for date, price in reversed(daily):
+        if date <= target_date:
+            return price
+    return daily[0][1]  # fallback to earliest
+
+
+def build_btc_context():
+    """Calculate BTC weekly EMA context from data.csv (daily BTC prices)."""
+    if not os.path.exists(BTC_CSV):
+        print("No data.csv found, skipping BTC context")
+        return None
+
+    # Load daily data
+    daily = []
+    with open(BTC_CSV, "r") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            try:
+                date = datetime.strptime(row["date"], "%Y-%m-%d")
+                price = float(row["price"])
+                if price > 0:
+                    daily.append((date, price))
+            except (ValueError, KeyError):
+                continue
+
+    if len(daily) < 200:  # need enough history for 21-week EMA
+        print(f"Not enough BTC data for EMA calculation ({len(daily)} rows)")
+        return None
+
+    # Resample to weekly closes (ISO week, last price per week)
+    weekly = OrderedDict()
+    for date, price in daily:
+        yr, wk, _ = date.isocalendar()
+        key = (yr, wk)
+        weekly[key] = price  # last value per week wins
+
+    weekly_closes = list(weekly.values())
+
+    # Calculate EMAs on weekly closes
+    ema8 = _calc_ema(weekly_closes, 8)
+    ema13 = _calc_ema(weekly_closes, 13)
+    ema21 = _calc_ema(weekly_closes, 21)
+
+    if not all([ema8, ema13, ema21]):
+        print("Failed to calculate BTC EMAs")
+        return None
+
+    current_price = daily[-1][1]
+    prev_price = daily[-2][1] if len(daily) >= 2 else current_price
+
+    # 1D change
+    chg_1d = round(pct_diff(current_price, prev_price), 2)
+
+    # 1W change
+    target_1w = daily[-1][0] - timedelta(days=7)
+    price_1w = _find_nearest_price(daily, target_1w)
+    chg_1w = round(pct_diff(current_price, price_1w), 2)
+
+    # 1M change
+    target_1m = daily[-1][0] - timedelta(days=30)
+    price_1m = _find_nearest_price(daily, target_1m)
+    chg_1m = round(pct_diff(current_price, price_1m), 2)
+
+    price = round(current_price, 2)
+    ema8 = round(ema8, 2)
+    ema13 = round(ema13, 2)
+    ema21 = round(ema21, 2)
+
+    signal = classify_signal(price, ema8, ema13, ema21)
+
+    price_vs_8w = round(pct_diff(price, ema8), 2)
+    price_vs_13w = round(pct_diff(price, ema13), 2)
+    price_vs_21w = round(pct_diff(price, ema21), 2)
+    ema8_vs_13 = round(pct_diff(ema8, ema13), 2)
+    ema13_vs_21 = round(pct_diff(ema13, ema21), 2)
+    spread_score = round(ema8_vs_13 + ema13_vs_21, 2)
+
+    # Crossover alert
+    gap_8_13 = abs(ema8_vs_13)
+    gap_13_21 = abs(ema13_vs_21)
+    alert_parts = []
+    if gap_8_13 < CROSSOVER_THRESHOLD:
+        if ema8 > ema13:
+            alert_parts.append(f"8W just above 13W ({gap_8_13:.2f}%) \u2014 bearish cross risk")
+        else:
+            alert_parts.append(f"8W just below 13W ({gap_8_13:.2f}%) \u2014 bullish cross potential")
+    if gap_13_21 < CROSSOVER_THRESHOLD:
+        if ema13 > ema21:
+            alert_parts.append(f"13W just above 21W ({gap_13_21:.2f}%) \u2014 bearish cross risk")
+        else:
+            alert_parts.append(f"13W just below 21W ({gap_13_21:.2f}%) \u2014 bullish cross potential")
+
+    return {
+        "symbol": "BTC",
+        "name": "Bitcoin",
+        "price": price,
+        "ema8": ema8,
+        "ema13": ema13,
+        "ema21": ema21,
+        "signal": signal,
+        "price_vs_8w": price_vs_8w,
+        "price_vs_13w": price_vs_13w,
+        "price_vs_21w": price_vs_21w,
+        "ema8_vs_13": ema8_vs_13,
+        "ema13_vs_21": ema13_vs_21,
+        "spread_score": spread_score,
+        "chg_1d": chg_1d,
+        "chg_1w": chg_1w,
+        "chg_1m": chg_1m,
+        "crossover_alert": "; ".join(alert_parts) if alert_parts else None,
+    }
+
+
 def main():
     csv_path = find_latest_csv()
     data_date = extract_date_from_filename(csv_path)
@@ -358,6 +486,12 @@ def main():
 
     # Load index ETF context
     index_context = build_index_context()
+
+    # Add BTC context from data.csv
+    btc_context = build_btc_context()
+    if btc_context:
+        index_context.append(btc_context)
+        print(f"Added BTC context: {btc_context['signal']} at ${btc_context['price']:,.0f}")
 
     # Preserve existing ai_summary if present
     existing_summary = None

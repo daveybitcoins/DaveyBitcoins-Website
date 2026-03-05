@@ -2,10 +2,11 @@
   "meta": {
     "date": "2026-03-05",
     "total_stocks": 300,
-    "generated_at": "2026-03-05T09:24:40.080124",
+    "generated_at": "2026-03-05T10:57:44.542542",
     "index_etfs": [
       "SPY",
-      "QQQ"
+      "QQQ",
+      "BTC"
     ]
   },
   "index_context": [
@@ -46,6 +47,25 @@
       "chg_1w": 1.99,
       "chg_1m": -1.28,
       "crossover_alert": "8W just below 13W (0.01%) \u2014 bullish cross potential; 13W just above 21W (0.76%) \u2014 bearish cross risk"
+    },
+    {
+      "symbol": "BTC",
+      "name": "Bitcoin",
+      "price": 72425.27,
+      "ema8": 74722.23,
+      "ema13": 79573.86,
+      "ema21": 85432.83,
+      "signal": "Full Bear",
+      "price_vs_8w": -3.07,
+      "price_vs_13w": -8.98,
+      "price_vs_21w": -15.23,
+      "ema8_vs_13": -6.1,
+      "ema13_vs_21": -6.86,
+      "spread_score": -12.96,
+      "chg_1d": 6.84,
+      "chg_1w": 6.03,
+      "chg_1m": -4.34,
+      "crossover_alert": null
     }
   ],
   "dashboard": {
@@ -16433,23 +16453,24 @@
   "ai_summary": {
     "market_overview": {
       "bias": "mixed",
-      "bias_label": "Cautiously Mixed",
-      "headline": "Market shows fragile bullish structure with SPY in pullback mode and tech leadership weakening.",
-      "detail": "45.7% of stocks remain in Full Bull but both SPY and QQQ showing EMA compression with bearish cross risks. Sector divergence extreme with Energy/Metals at 100% bull vs Tech Services at 90.5% bear.",
+      "bias_label": "Mixed / Cautious",
+      "headline": "Market showing mixed signals with SPY in bull pullback while tech (QQQ) loses momentum and crypto (BTC) in full bear mode.",
+      "detail": "46% of stocks in Full Bull but significant 19% in Full Bear, with major indices showing divergent EMA structures and crossover risks.",
       "index_signals": {
         "SPY": "Bull Pullback \u2192 13W",
-        "QQQ": "Bullish (unstacked)"
+        "QQQ": "Bullish (unstacked)",
+        "BTC": "Full Bear"
       }
     },
     "reversal_candidates": {
-      "headline": "Early Reversal Signals - Bear Rallies with Bullish Cross Potential",
+      "headline": "Bear Rally Reversal Setups",
       "items": [
         {
           "symbol": "META",
           "name": "Meta Platforms, Inc.",
           "signal": "Bear Rally above 13W",
           "crossover_detail": "8W just below 13W (0.00%) \u2014 bullish cross potential; 13W just below 21W (0.25%) \u2014 bullish cross potential",
-          "note": "Mega-cap tech showing early reversal signals after bear structure, bullish crossover imminent.",
+          "note": "Mega-cap tech showing potential EMA recapture after bear structure rally",
           "type": "bull"
         },
         {
@@ -16457,28 +16478,28 @@
           "name": "Intercontinental Exchange Inc.",
           "signal": "Bear Rally above 13W",
           "crossover_detail": "8W just below 13W (0.00%) \u2014 bullish cross potential; 13W just below 21W (0.25%) \u2014 bullish cross potential",
-          "note": "Financial exchange leader breaking out of bear structure with strong analyst support.",
+          "note": "Financial infrastructure play with dual bullish crossover potential",
           "type": "bull"
         },
         {
-          "symbol": "NVDA",
-          "name": "NVIDIA Corporation",
-          "signal": "Bullish (unstacked)",
-          "crossover_detail": "8W just below 13W (0.03%) \u2014 bullish cross potential",
-          "note": "AI leader showing bullish cross potential after EMA unstacking, critical reversal point.",
+          "symbol": "NFLX",
+          "name": "Netflix, Inc.",
+          "signal": "Bear Rally above 13W",
+          "crossover_detail": null,
+          "note": "Streaming giant showing strong bear rally momentum with +10% above 8W EMA",
           "type": "bull"
         }
       ]
     },
     "pullback_setups": {
-      "headline": "High-Quality Pullback Entries in Established Uptrends",
+      "headline": "Quality Bull Pullback Entries",
       "items": [
         {
           "symbol": "LRCX",
           "name": "Lam Research Corporation",
           "signal": "Bull Pullback \u2192 13W",
           "price_vs_21w": 14.94,
-          "note": "Semiconductor equipment leader pulling back to 13W support in strong uptrend, quality entry zone.",
+          "note": "Semiconductor equipment leader with strong 15% cushion above 21W EMA",
           "type": "bull"
         },
         {
@@ -16486,42 +16507,42 @@
           "name": "United Parcel Service, Inc.",
           "signal": "Bull Pullback \u2192 13W",
           "price_vs_21w": 4.77,
-          "note": "Logistics giant offering pullback entry in defensive sector rotation play.",
+          "note": "Large-cap logistics play testing 13W support in established uptrend",
           "type": "bull"
         }
       ]
     },
     "momentum_themes": {
-      "headline": "Memory/Storage Semiconductors Leading Momentum Acceleration",
-      "detail": "Memory and storage companies dominating momentum with SNDK, WDC, MU showing massive spread scores. Electronic technology sector acceleration despite broader tech weakness.",
+      "headline": "Memory/Storage Semiconductor Acceleration",
+      "detail": "Electronic technology leading with memory and storage names showing explosive momentum - SNDK up 49% vs 21W, WDC and MU both +24%.",
       "top_names": [
         "SNDK",
         "WDC",
         "MU",
-        "GLW",
-        "AMAT"
+        "AMAT",
+        "GLW"
       ]
     },
     "sector_analysis": {
-      "headline": "Extreme Sector Divergence - Commodities vs Tech Services",
+      "headline": "Sector Rotation Snapshot",
       "strongest": [
         {
           "sector": "Energy minerals",
           "net_score": 100.0,
           "bull_pct": 100.0,
-          "note": "Perfect bullish alignment with 12.5% average gains above 21W EMA."
+          "note": "Perfect bullish alignment with 12.5% average gains vs 21W EMA"
         },
         {
           "sector": "Non-energy minerals",
           "net_score": 100.0,
           "bull_pct": 100.0,
-          "note": "Mining/metals showing exceptional strength with 17.83% average performance."
+          "note": "Commodities complex showing unanimous strength at +18% vs 21W"
         },
         {
           "sector": "Distribution services",
           "net_score": 100.0,
           "bull_pct": 100.0,
-          "note": "Supply chain names benefiting from infrastructure spending themes."
+          "note": "Trade/logistics benefiting from economic expansion narrative"
         }
       ],
       "weakest": [
@@ -16529,45 +16550,45 @@
           "sector": "Technology services",
           "net_score": -81.0,
           "bear_pct": 90.5,
-          "note": "Massive tech services breakdown with 90.5% in bearish structure."
+          "note": "Software/services getting crushed with 91% bearish and -9% avg performance"
         },
         {
           "sector": "Consumer durables",
           "net_score": -80.0,
           "bear_pct": 80.0,
-          "note": "Consumer spending weakness evident in durable goods sector collapse."
+          "note": "Discretionary spending under pressure with 80% in bear structures"
         },
         {
           "sector": "Commercial services",
           "net_score": -100.0,
           "bear_pct": 100.0,
-          "note": "Small sample but complete bearish breakdown in commercial services."
+          "note": "Business services sector completely broken down"
         }
       ],
-      "detail": "Clear rotation from growth tech into value commodities and industrials. Finance sector neutral at 6.9% net score suggests transition period."
+      "detail": "Clear rotation from growth/tech into cyclicals and commodities, with finance sector (46% bull) caught in the middle showing mixed signals."
     },
     "risk_warnings": {
       "headline": "Key Risk Factors",
       "items": [
         {
-          "text": "SPY showing bearish cross risk with both 8W/13W and 13W/21W EMAs compressed",
+          "text": "Both SPY and QQQ showing bearish crossover risks with compressed EMA spreads",
           "type": "caution"
         },
         {
-          "text": "Technology Services sector in severe bear structure (90.5% bearish) despite previous leadership",
+          "text": "BTC full bear structure (-15% vs 21W) signals crypto correlation risk",
           "type": "bear"
         },
         {
-          "text": "25 Bull Breakdown names suggesting institutional uptrend deterioration accelerating",
-          "type": "caution"
+          "text": "Technology services sector 91% bearish - avoid software/SaaS names",
+          "type": "bear"
         },
         {
-          "text": "QQQ showing EMA compression with potential bearish crosses developing",
+          "text": "25 Bull Breakdown signals suggest uptrend deterioration accelerating",
           "type": "caution"
         }
       ]
     },
-    "generated_at": "2026-03-05T09:25:13.341705",
+    "generated_at": "2026-03-05T11:00:47.582738",
     "model": "claude-sonnet-4-20250514"
   }
 }
