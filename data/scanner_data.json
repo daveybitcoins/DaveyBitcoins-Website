@@ -1,8 +1,8 @@
 {
   "meta": {
-    "date": "2026-03-04",
+    "date": "2026-03-05",
     "total_stocks": 300,
-    "generated_at": "2026-03-04T22:17:52.738316",
+    "generated_at": "2026-03-05T09:24:40.080124",
     "index_etfs": [
       "SPY",
       "QQQ"
@@ -52,9 +52,9 @@
     "signals": [
       {
         "signal": "Full Bull",
-        "count": 136,
-        "pct": 0.453,
-        "avg_vs_21w": 11.15
+        "count": 137,
+        "pct": 0.457,
+        "avg_vs_21w": 11.2
       },
       {
         "signal": "Bullish (unstacked)",
@@ -64,9 +64,9 @@
       },
       {
         "signal": "Bull Pullback \u2192 13W",
-        "count": 19,
-        "pct": 0.063,
-        "avg_vs_21w": 4.42
+        "count": 18,
+        "pct": 0.06,
+        "avg_vs_21w": 4.17
       },
       {
         "signal": "Bull Pullback \u2192 21W",
@@ -112,7 +112,7 @@
       "symbol": "WFCNP",
       "name": "Wells Fargo & Co.",
       "price": 2.75,
-      "mkt_cap_b": 254.7,
+      "mkt_cap_b": 259.0,
       "ema8": 1.92,
       "ema13": 1.67,
       "ema21": 1.46,
@@ -434,7 +434,7 @@
       "symbol": "ATLFF",
       "name": "Atlas Copco AB",
       "price": 17.93,
-      "mkt_cap_b": 96.0,
+      "mkt_cap_b": 95.7,
       "ema8": 15.82,
       "ema13": 15.4,
       "ema21": 14.97,
@@ -526,7 +526,7 @@
       "symbol": "PCCYF",
       "name": "PetroChina Co., Ltd.",
       "price": 1.31,
-      "mkt_cap_b": 330.1,
+      "mkt_cap_b": 341.5,
       "ema8": 1.19,
       "ema13": 1.15,
       "ema21": 1.11,
@@ -572,7 +572,7 @@
       "symbol": "BMYMP",
       "name": "Bristol-Myers Squibb Co.",
       "price": 1050.0,
-      "mkt_cap_b": 124.7,
+      "mkt_cap_b": 126.9,
       "ema8": 955.45,
       "ema13": 921.42,
       "ema21": 891.17,
@@ -638,10 +638,33 @@
       "rank": 23
     },
     {
+      "symbol": "MSBHF",
+      "name": "Mitsubishi Corp.",
+      "price": 32.01,
+      "mkt_cap_b": 121.3,
+      "ema8": 30.6,
+      "ema13": 28.96,
+      "ema21": 27.26,
+      "sector": "Distribution services",
+      "analyst": "Buy",
+      "chg_1d": -4.42,
+      "chg_1w": -5.13,
+      "chg_1m": 19.75,
+      "rel_vol": 0.25,
+      "signal": "Full Bull",
+      "price_vs_8w": 4.62,
+      "price_vs_13w": 10.52,
+      "price_vs_21w": 17.44,
+      "ema8_vs_13": 5.64,
+      "ema13_vs_21": 6.26,
+      "spread_score": 11.9,
+      "rank": 24
+    },
+    {
       "symbol": "RTNTF",
       "name": "Rio Tinto Ltd.",
       "price": 117.9,
-      "mkt_cap_b": 164.5,
+      "mkt_cap_b": 167.3,
       "ema8": 110.9,
       "ema13": 106.27,
       "ema21": 100.4,
@@ -658,29 +681,6 @@
       "ema8_vs_13": 4.36,
       "ema13_vs_21": 5.84,
       "spread_score": 10.2,
-      "rank": 24
-    },
-    {
-      "symbol": "MSBHF",
-      "name": "Mitsubishi Corp.",
-      "price": 32.01,
-      "mkt_cap_b": 121.3,
-      "ema8": 30.71,
-      "ema13": 29.03,
-      "ema21": 27.3,
-      "sector": "Distribution services",
-      "analyst": "Buy",
-      "chg_1d": -4.42,
-      "chg_1w": -3.66,
-      "chg_1m": 19.75,
-      "rel_vol": 0.25,
-      "signal": "Full Bull",
-      "price_vs_8w": 4.25,
-      "price_vs_13w": 10.25,
-      "price_vs_21w": 17.24,
-      "ema8_vs_13": 5.76,
-      "ema13_vs_21": 6.34,
-      "spread_score": 12.1,
       "rank": 25
     },
     {
@@ -710,13 +710,13 @@
       "symbol": "DLEGF",
       "name": "Delta Electronics Thailand Public Co., Ltd.",
       "price": 7.79,
-      "mkt_cap_b": 98.8,
+      "mkt_cap_b": 93.5,
       "ema8": 7.33,
       "ema13": 6.93,
       "ema21": 6.7,
       "sector": "Electronic technology",
       "analyst": "",
-      "chg_1d": -13.5,
+      "chg_1d": -1.84,
       "chg_1w": -1.84,
       "chg_1m": 30.55,
       "rel_vol": 0.26,
@@ -728,6 +728,29 @@
       "ema13_vs_21": 3.3,
       "spread_score": 9.2,
       "rank": 27
+    },
+    {
+      "symbol": "NVSEF",
+      "name": "Novartis AG",
+      "price": 168.24,
+      "mkt_cap_b": 320.2,
+      "ema8": 158.35,
+      "ema13": 151.96,
+      "ema21": 144.95,
+      "sector": "Health technology",
+      "analyst": "Buy",
+      "chg_1d": -1.78,
+      "chg_1w": 0.0,
+      "chg_1m": 16.16,
+      "rel_vol": 1.41,
+      "signal": "Full Bull",
+      "price_vs_8w": 6.25,
+      "price_vs_13w": 10.71,
+      "price_vs_21w": 16.07,
+      "ema8_vs_13": 4.2,
+      "ema13_vs_21": 4.84,
+      "spread_score": 9.04,
+      "rank": 28
     },
     {
       "symbol": "CAT",
@@ -750,7 +773,7 @@
       "ema8_vs_13": 4.83,
       "ema13_vs_21": 6.99,
       "spread_score": 11.82,
-      "rank": 28
+      "rank": 29
     },
     {
       "symbol": "VZ",
@@ -773,7 +796,7 @@
       "ema8_vs_13": 3.64,
       "ema13_vs_21": 2.83,
       "spread_score": 6.47,
-      "rank": 29
+      "rank": 30
     },
     {
       "symbol": "WMB",
@@ -796,7 +819,7 @@
       "ema8_vs_13": 3.66,
       "ema13_vs_21": 3.53,
       "spread_score": 7.19,
-      "rank": 30
+      "rank": 31
     },
     {
       "symbol": "BAESF",
@@ -819,7 +842,7 @@
       "ema8_vs_13": 3.1,
       "ema13_vs_21": 3.01,
       "spread_score": 6.11,
-      "rank": 31
+      "rank": 32
     },
     {
       "symbol": "ADI",
@@ -842,7 +865,7 @@
       "ema8_vs_13": 4.73,
       "ema13_vs_21": 5.89,
       "spread_score": 10.62,
-      "rank": 32
+      "rank": 33
     },
     {
       "symbol": "LRCX",
@@ -857,7 +880,7 @@
       "chg_1d": 2.63,
       "chg_1w": -2.74,
       "chg_1m": -4.43,
-      "rel_vol": 0.87,
+      "rel_vol": 0.88,
       "signal": "Bull Pullback \u2192 13W",
       "price_vs_8w": -0.53,
       "price_vs_13w": 5.09,
@@ -865,7 +888,7 @@
       "ema8_vs_13": 5.65,
       "ema13_vs_21": 9.36,
       "spread_score": 15.01,
-      "rank": 33
+      "rank": 34
     },
     {
       "symbol": "VCISF",
@@ -879,7 +902,7 @@
       "analyst": "Strong buy",
       "chg_1d": 3.44,
       "chg_1w": 0.0,
-      "chg_1m": 19.94,
+      "chg_1m": 18.56,
       "rel_vol": 0.88,
       "signal": "Full Bull",
       "price_vs_8w": 9.22,
@@ -888,7 +911,7 @@
       "ema8_vs_13": 2.7,
       "ema13_vs_21": 2.4,
       "spread_score": 5.1,
-      "rank": 34
+      "rank": 35
     },
     {
       "symbol": "WEBNF",
@@ -911,7 +934,7 @@
       "ema8_vs_13": 2.7,
       "ema13_vs_21": 3.08,
       "spread_score": 5.78,
-      "rank": 35
+      "rank": 36
     },
     {
       "symbol": "DE",
@@ -934,7 +957,7 @@
       "ema8_vs_13": 4.62,
       "ema13_vs_21": 4.41,
       "spread_score": 9.03,
-      "rank": 36
+      "rank": 37
     },
     {
       "symbol": "COP",
@@ -957,13 +980,13 @@
       "ema8_vs_13": 3.51,
       "ema13_vs_21": 3.38,
       "spread_score": 6.89,
-      "rank": 37
+      "rank": 38
     },
     {
       "symbol": "ZIJMF",
       "name": "Zijin Mining Group Company Ltd.",
       "price": 5.47,
-      "mkt_cap_b": 146.8,
+      "mkt_cap_b": 147.6,
       "ema8": 5.38,
       "ema13": 5.14,
       "ema21": 4.8,
@@ -980,13 +1003,13 @@
       "ema8_vs_13": 4.61,
       "ema13_vs_21": 7.12,
       "spread_score": 11.73,
-      "rank": 38
+      "rank": 39
     },
     {
       "symbol": "RHHBF",
       "name": "Roche Holding Ltd",
       "price": 488.0,
-      "mkt_cap_b": 380.3,
+      "mkt_cap_b": 376.3,
       "ema8": 467.39,
       "ema13": 449.8,
       "ema21": 428.79,
@@ -1003,13 +1026,13 @@
       "ema8_vs_13": 3.91,
       "ema13_vs_21": 4.9,
       "spread_score": 8.81,
-      "rank": 39
+      "rank": 40
     },
     {
       "symbol": "RTPPF",
       "name": "Rio Tinto plc",
       "price": 94.54,
-      "mkt_cap_b": 161.6,
+      "mkt_cap_b": 160.6,
       "ema8": 91.9,
       "ema13": 88.13,
       "ema21": 83.15,
@@ -1017,7 +1040,7 @@
       "analyst": "Buy",
       "chg_1d": -1.85,
       "chg_1w": -1.85,
-      "chg_1m": 0.79,
+      "chg_1m": 1.38,
       "rel_vol": 0.17,
       "signal": "Full Bull",
       "price_vs_8w": 2.87,
@@ -1026,7 +1049,7 @@
       "ema8_vs_13": 4.28,
       "ema13_vs_21": 5.99,
       "spread_score": 10.27,
-      "rank": 40
+      "rank": 41
     },
     {
       "symbol": "ASMLF",
@@ -1049,7 +1072,7 @@
       "ema8_vs_13": 4.75,
       "ema13_vs_21": 7.29,
       "spread_score": 12.04,
-      "rank": 41
+      "rank": 42
     },
     {
       "symbol": "XOM",
@@ -1072,7 +1095,7 @@
       "ema8_vs_13": 4.03,
       "ema13_vs_21": 4.66,
       "spread_score": 8.69,
-      "rank": 42
+      "rank": 43
     },
     {
       "symbol": "MCK",
@@ -1095,7 +1118,7 @@
       "ema8_vs_13": 3.27,
       "ema13_vs_21": 3.92,
       "spread_score": 7.19,
-      "rank": 43
+      "rank": 44
     },
     {
       "symbol": "DELL",
@@ -1118,7 +1141,7 @@
       "ema8_vs_13": 1.18,
       "ema13_vs_21": 0.36,
       "spread_score": 1.54,
-      "rank": 44
+      "rank": 45
     },
     {
       "symbol": "GLAXF",
@@ -1141,7 +1164,7 @@
       "ema8_vs_13": 4.31,
       "ema13_vs_21": 5.35,
       "spread_score": 9.66,
-      "rank": 45
+      "rank": 46
     },
     {
       "symbol": "CHGCF",
@@ -1164,7 +1187,7 @@
       "ema8_vs_13": 3.83,
       "ema13_vs_21": 4.26,
       "spread_score": 8.09,
-      "rank": 46
+      "rank": 47
     },
     {
       "symbol": "BMY",
@@ -1187,7 +1210,7 @@
       "ema8_vs_13": 3.59,
       "ema13_vs_21": 4.16,
       "spread_score": 7.75,
-      "rank": 47
+      "rank": 48
     },
     {
       "symbol": "JNJ",
@@ -1210,7 +1233,7 @@
       "ema8_vs_13": 3.6,
       "ema13_vs_21": 4.8,
       "spread_score": 8.4,
-      "rank": 48
+      "rank": 49
     },
     {
       "symbol": "NEM",
@@ -1233,7 +1256,7 @@
       "ema8_vs_13": 4.66,
       "ema13_vs_21": 7.36,
       "spread_score": 12.02,
-      "rank": 49
+      "rank": 50
     },
     {
       "symbol": "CBAUF",
@@ -1256,7 +1279,7 @@
       "ema8_vs_13": 0.25,
       "ema13_vs_21": 1.57,
       "spread_score": 1.82,
-      "rank": 50
+      "rank": 51
     },
     {
       "symbol": "HCA",
@@ -1279,7 +1302,7 @@
       "ema8_vs_13": 2.69,
       "ema13_vs_21": 3.75,
       "spread_score": 6.44,
-      "rank": 51
+      "rank": 52
     },
     {
       "symbol": "TOELF",
@@ -1302,7 +1325,7 @@
       "ema8_vs_13": 4.57,
       "ema13_vs_21": 6.78,
       "spread_score": 11.35,
-      "rank": 52
+      "rank": 53
     },
     {
       "symbol": "HON",
@@ -1325,7 +1348,7 @@
       "ema8_vs_13": 3.45,
       "ema13_vs_21": 3.33,
       "spread_score": 6.78,
-      "rank": 53
+      "rank": 54
     },
     {
       "symbol": "MRK",
@@ -1348,7 +1371,7 @@
       "ema8_vs_13": 3.82,
       "ema13_vs_21": 5.16,
       "spread_score": 8.98,
-      "rank": 54
+      "rank": 55
     },
     {
       "symbol": "DTEGF",
@@ -1371,13 +1394,13 @@
       "ema8_vs_13": 3.17,
       "ema13_vs_21": 2.13,
       "spread_score": 5.3,
-      "rank": 55
+      "rank": 56
     },
     {
       "symbol": "EBRGF",
       "name": "Enbridge Inc.",
       "price": 15.73,
-      "mkt_cap_b": 118.5,
+      "mkt_cap_b": 118.1,
       "ema8": 14.97,
       "ema13": 14.51,
       "ema21": 14.08,
@@ -1394,7 +1417,7 @@
       "ema8_vs_13": 3.16,
       "ema13_vs_21": 3.12,
       "spread_score": 6.28,
-      "rank": 56
+      "rank": 57
     },
     {
       "symbol": "ABLZF",
@@ -1417,7 +1440,7 @@
       "ema8_vs_13": 3.9,
       "ema13_vs_21": 4.68,
       "spread_score": 8.58,
-      "rank": 57
+      "rank": 58
     },
     {
       "symbol": "KLAC",
@@ -1440,7 +1463,7 @@
       "ema8_vs_13": 3.62,
       "ema13_vs_21": 6.06,
       "spread_score": 9.68,
-      "rank": 58
+      "rank": 59
     },
     {
       "symbol": "RTX",
@@ -1463,7 +1486,7 @@
       "ema8_vs_13": 2.62,
       "ema13_vs_21": 3.95,
       "spread_score": 6.57,
-      "rank": 59
+      "rank": 60
     },
     {
       "symbol": "CME",
@@ -1486,7 +1509,7 @@
       "ema8_vs_13": 2.6,
       "ema13_vs_21": 2.45,
       "spread_score": 5.05,
-      "rank": 60
+      "rank": 61
     },
     {
       "symbol": "CVX",
@@ -1509,7 +1532,7 @@
       "ema8_vs_13": 3.14,
       "ema13_vs_21": 3.26,
       "spread_score": 6.4,
-      "rank": 61
+      "rank": 62
     },
     {
       "symbol": "GILD",
@@ -1532,7 +1555,7 @@
       "ema8_vs_13": 3.53,
       "ema13_vs_21": 4.27,
       "spread_score": 7.8,
-      "rank": 62
+      "rank": 63
     },
     {
       "symbol": "INTC",
@@ -1555,7 +1578,7 @@
       "ema8_vs_13": 3.26,
       "ema13_vs_21": 6.29,
       "spread_score": 9.55,
-      "rank": 63
+      "rank": 64
     },
     {
       "symbol": "CM",
@@ -1578,7 +1601,7 @@
       "ema8_vs_13": 2.51,
       "ema13_vs_21": 3.75,
       "spread_score": 6.26,
-      "rank": 64
+      "rank": 65
     },
     {
       "symbol": "AMGN",
@@ -1601,7 +1624,7 @@
       "ema8_vs_13": 3.05,
       "ema13_vs_21": 3.69,
       "spread_score": 6.74,
-      "rank": 65
+      "rank": 66
     },
     {
       "symbol": "TTE",
@@ -1624,13 +1647,13 @@
       "ema8_vs_13": 3.35,
       "ema13_vs_21": 3.67,
       "spread_score": 7.02,
-      "rank": 66
+      "rank": 67
     },
     {
       "symbol": "RHHVF",
       "name": "Roche Holding Ltd",
       "price": 464.19,
-      "mkt_cap_b": 370.9,
+      "mkt_cap_b": 371.5,
       "ema8": 458.07,
       "ema13": 442.11,
       "ema21": 420.75,
@@ -1647,7 +1670,7 @@
       "ema8_vs_13": 3.61,
       "ema13_vs_21": 5.08,
       "spread_score": 8.69,
-      "rank": 67
+      "rank": 68
     },
     {
       "symbol": "RYCEF",
@@ -1670,7 +1693,7 @@
       "ema8_vs_13": 2.88,
       "ema13_vs_21": 4.02,
       "spread_score": 6.9,
-      "rank": 68
+      "rank": 69
     },
     {
       "symbol": "UNP",
@@ -1693,7 +1716,7 @@
       "ema8_vs_13": 2.59,
       "ema13_vs_21": 2.46,
       "spread_score": 5.05,
-      "rank": 69
+      "rank": 70
     },
     {
       "symbol": "RYDAF",
@@ -1716,7 +1739,7 @@
       "ema8_vs_13": 1.85,
       "ema13_vs_21": 1.67,
       "spread_score": 3.52,
-      "rank": 70
+      "rank": 71
     },
     {
       "symbol": "T",
@@ -1739,7 +1762,7 @@
       "ema8_vs_13": 2.04,
       "ema13_vs_21": 0.94,
       "spread_score": 2.98,
-      "rank": 71
+      "rank": 72
     },
     {
       "symbol": "ENB",
@@ -1762,7 +1785,7 @@
       "ema8_vs_13": 2.02,
       "ema13_vs_21": 1.91,
       "spread_score": 3.93,
-      "rank": 72
+      "rank": 73
     },
     {
       "symbol": "NGGTF",
@@ -1785,7 +1808,7 @@
       "ema8_vs_13": 3.13,
       "ema13_vs_21": 3.58,
       "spread_score": 6.71,
-      "rank": 73
+      "rank": 74
     },
     {
       "symbol": "WMT",
@@ -1808,7 +1831,7 @@
       "ema8_vs_13": 2.67,
       "ema13_vs_21": 3.63,
       "spread_score": 6.3,
-      "rank": 74
+      "rank": 75
     },
     {
       "symbol": "GE",
@@ -1831,7 +1854,7 @@
       "ema8_vs_13": 2.11,
       "ema13_vs_21": 3.01,
       "spread_score": 5.12,
-      "rank": 75
+      "rank": 76
     },
     {
       "symbol": "BPAQF",
@@ -1845,7 +1868,7 @@
       "analyst": "Buy",
       "chg_1d": 1.23,
       "chg_1w": 1.23,
-      "chg_1m": 3.01,
+      "chg_1m": 3.17,
       "rel_vol": 0.43,
       "signal": "Full Bull",
       "price_vs_8w": 4.8,
@@ -1854,29 +1877,6 @@
       "ema8_vs_13": 1.91,
       "ema13_vs_21": 2.1,
       "spread_score": 4.01,
-      "rank": 76
-    },
-    {
-      "symbol": "NVSEF",
-      "name": "Novartis AG",
-      "price": 158.0,
-      "mkt_cap_b": 300.7,
-      "ema8": 158.35,
-      "ema13": 151.96,
-      "ema21": 144.95,
-      "sector": "Health technology",
-      "analyst": "Buy",
-      "chg_1d": -6.09,
-      "chg_1w": 0.0,
-      "chg_1m": 9.09,
-      "rel_vol": 0.83,
-      "signal": "Bull Pullback \u2192 13W",
-      "price_vs_8w": -0.22,
-      "price_vs_13w": 3.97,
-      "price_vs_21w": 9.0,
-      "ema8_vs_13": 4.2,
-      "ema13_vs_21": 4.84,
-      "spread_score": 9.04,
       "rank": 77
     },
     {
@@ -2182,7 +2182,7 @@
       "symbol": "IVSBF",
       "name": "Investors AB",
       "price": 39.46,
-      "mkt_cap_b": 120.5,
+      "mkt_cap_b": 120.4,
       "ema8": 39.33,
       "ema13": 38.18,
       "ema21": 36.69,
@@ -2259,7 +2259,7 @@
       "analyst": "Buy",
       "chg_1d": -7.07,
       "chg_1w": 0.0,
-      "chg_1m": -1.0,
+      "chg_1m": -2.31,
       "rel_vol": 4.0,
       "signal": "Full Bull",
       "price_vs_8w": 0.14,
@@ -2389,7 +2389,7 @@
       "symbol": "SNPMF",
       "name": "China Petroleum & Chemical Corp.",
       "price": 0.65,
-      "mkt_cap_b": 118.3,
+      "mkt_cap_b": 115.2,
       "ema8": 0.65,
       "ema13": 0.64,
       "ema21": 0.61,
@@ -2547,6 +2547,29 @@
       "rank": 106
     },
     {
+      "symbol": "KYCCF",
+      "name": "Keyence Corp.",
+      "price": 400.0,
+      "mkt_cap_b": 97.0,
+      "ema8": 387.18,
+      "ema13": 381.47,
+      "ema21": 378.93,
+      "sector": "Electronic technology",
+      "analyst": "Strong buy",
+      "chg_1d": 5.99,
+      "chg_1w": 2.04,
+      "chg_1m": -0.18,
+      "rel_vol": 0.82,
+      "signal": "Full Bull",
+      "price_vs_8w": 3.31,
+      "price_vs_13w": 4.86,
+      "price_vs_21w": 5.56,
+      "ema8_vs_13": 1.5,
+      "ema13_vs_21": 0.67,
+      "spread_score": 2.17,
+      "rank": 107
+    },
+    {
       "symbol": "ITOCF",
       "name": "Itochu Corp.",
       "price": 13.51,
@@ -2567,7 +2590,7 @@
       "ema8_vs_13": 2.59,
       "ema13_vs_21": 3.54,
       "spread_score": 6.13,
-      "rank": 107
+      "rank": 108
     },
     {
       "symbol": "COST",
@@ -2590,7 +2613,7 @@
       "ema8_vs_13": 1.66,
       "ema13_vs_21": 1.2,
       "spread_score": 2.86,
-      "rank": 108
+      "rank": 109
     },
     {
       "symbol": "ABBV",
@@ -2613,13 +2636,13 @@
       "ema8_vs_13": 0.74,
       "ema13_vs_21": 1.19,
       "spread_score": 1.93,
-      "rank": 109
+      "rank": 110
     },
     {
       "symbol": "BA/PA",
       "name": "Boeing Company (The) Depositary Shares, each representing a 1/20th interest in a share of 6.00% Series A Mandatory Convertible Preferred Stock, par value $1.00",
       "price": 76.31,
-      "mkt_cap_b": 176.0,
+      "mkt_cap_b": 178.5,
       "ema8": 74.8,
       "ema13": 73.81,
       "ema21": 72.46,
@@ -2636,13 +2659,13 @@
       "ema8_vs_13": 1.35,
       "ema13_vs_21": 1.85,
       "spread_score": 3.2,
-      "rank": 110
+      "rank": 111
     },
     {
       "symbol": "ATLPF",
       "name": "Atlas Copco AB",
       "price": 20.08,
-      "mkt_cap_b": 93.7,
+      "mkt_cap_b": 93.9,
       "ema8": 20.36,
       "ema13": 19.84,
       "ema21": 19.15,
@@ -2659,7 +2682,7 @@
       "ema8_vs_13": 2.63,
       "ema13_vs_21": 3.63,
       "spread_score": 6.26,
-      "rank": 111
+      "rank": 112
     },
     {
       "symbol": "UPS",
@@ -2682,7 +2705,7 @@
       "ema8_vs_13": 2.71,
       "ema13_vs_21": 3.27,
       "spread_score": 5.98,
-      "rank": 112
+      "rank": 113
     },
     {
       "symbol": "PM",
@@ -2705,7 +2728,7 @@
       "ema8_vs_13": 2.32,
       "ema13_vs_21": 2.3,
       "spread_score": 4.62,
-      "rank": 113
+      "rank": 114
     },
     {
       "symbol": "IBDSF",
@@ -2728,7 +2751,7 @@
       "ema8_vs_13": 2.11,
       "ema13_vs_21": 3.17,
       "spread_score": 5.28,
-      "rank": 114
+      "rank": 115
     },
     {
       "symbol": "MCD",
@@ -2751,7 +2774,7 @@
       "ema8_vs_13": 1.41,
       "ema13_vs_21": 1.37,
       "spread_score": 2.78,
-      "rank": 115
+      "rank": 116
     },
     {
       "symbol": "NEE/PS",
@@ -2774,7 +2797,7 @@
       "ema8_vs_13": 1.42,
       "ema13_vs_21": 1.75,
       "spread_score": 3.17,
-      "rank": 116
+      "rank": 117
     },
     {
       "symbol": "TT",
@@ -2797,29 +2820,6 @@
       "ema8_vs_13": 2.01,
       "ema13_vs_21": 1.57,
       "spread_score": 3.58,
-      "rank": 117
-    },
-    {
-      "symbol": "KYCCF",
-      "name": "Keyence Corp.",
-      "price": 395.0,
-      "mkt_cap_b": 95.8,
-      "ema8": 387.18,
-      "ema13": 381.47,
-      "ema21": 378.93,
-      "sector": "Electronic technology",
-      "analyst": "Strong buy",
-      "chg_1d": 4.67,
-      "chg_1w": 2.04,
-      "chg_1m": -1.43,
-      "rel_vol": 0.82,
-      "signal": "Full Bull",
-      "price_vs_8w": 2.02,
-      "price_vs_13w": 3.55,
-      "price_vs_21w": 4.24,
-      "ema8_vs_13": 1.5,
-      "ema13_vs_21": 0.67,
-      "spread_score": 2.17,
       "rank": 118
     },
     {
@@ -2918,7 +2918,7 @@
       "symbol": "CICHF",
       "name": "China Construction Bank Corp.",
       "price": 1.03,
-      "mkt_cap_b": 275.3,
+      "mkt_cap_b": 275.8,
       "ema8": 1.0,
       "ema13": 1.0,
       "ema21": 0.99,
@@ -3125,7 +3125,7 @@
       "symbol": "BACRP",
       "name": "Bank of America Corp.",
       "price": 228.0,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 223.05,
       "ema13": 222.74,
       "ema21": 222.03,
@@ -3263,7 +3263,7 @@
       "symbol": "PIAIF",
       "name": "Ping An Insurance (Group) Company of China Ltd.",
       "price": 8.45,
-      "mkt_cap_b": 158.9,
+      "mkt_cap_b": 159.9,
       "ema8": 8.78,
       "ema13": 8.61,
       "ema21": 8.28,
@@ -3286,7 +3286,7 @@
       "symbol": "IDCBF",
       "name": "Industrial and Commercial Bank of China Ltd.",
       "price": 0.81,
-      "mkt_cap_b": 345.1,
+      "mkt_cap_b": 348.3,
       "ema8": 0.82,
       "ema13": 0.81,
       "ema21": 0.8,
@@ -3309,7 +3309,7 @@
       "symbol": "GOOGL",
       "name": "Alphabet Inc.",
       "price": 303.13,
-      "mkt_cap_b": 3666.9,
+      "mkt_cap_b": 3668.7,
       "ema8": 313.39,
       "ema13": 310.24,
       "ema21": 298.51,
@@ -3332,7 +3332,7 @@
       "symbol": "GOOG",
       "name": "Alphabet Inc.",
       "price": 303.45,
-      "mkt_cap_b": 3671.0,
+      "mkt_cap_b": 3668.7,
       "ema8": 313.62,
       "ema13": 310.58,
       "ema21": 298.97,
@@ -3401,7 +3401,7 @@
       "symbol": "EBBGF",
       "name": "Enbridge Inc.",
       "price": 24.86,
-      "mkt_cap_b": 118.5,
+      "mkt_cap_b": 118.1,
       "ema8": 24.71,
       "ema13": 24.63,
       "ema21": 24.53,
@@ -3516,7 +3516,7 @@
       "symbol": "EBBNF",
       "name": "Enbridge Inc.",
       "price": 24.41,
-      "mkt_cap_b": 118.5,
+      "mkt_cap_b": 118.1,
       "ema8": 24.42,
       "ema13": 24.32,
       "ema21": 24.18,
@@ -3525,7 +3525,7 @@
       "chg_1d": -0.12,
       "chg_1w": 0.0,
       "chg_1m": 0.62,
-      "rel_vol": 2.59,
+      "rel_vol": 2.6,
       "signal": "Bull Pullback \u2192 13W",
       "price_vs_8w": -0.05,
       "price_vs_13w": 0.36,
@@ -3539,7 +3539,7 @@
       "symbol": "BACHF",
       "name": "Bank of China, Ltd.",
       "price": 0.58,
-      "mkt_cap_b": 230.9,
+      "mkt_cap_b": 232.0,
       "ema8": 0.58,
       "ema13": 0.58,
       "ema21": 0.58,
@@ -3547,7 +3547,7 @@
       "analyst": "Strong buy",
       "chg_1d": -4.13,
       "chg_1w": -4.13,
-      "chg_1m": -0.88,
+      "chg_1m": 0.83,
       "rel_vol": 0.01,
       "signal": "Full Bull",
       "price_vs_8w": 0.38,
@@ -3562,7 +3562,7 @@
       "symbol": "T/PA",
       "name": "AT&T Inc. Depositary Shares, each representing a 1/1,000th interest in a share of 5.000% Perpetual Preferred Stock, Series A",
       "price": 20.81,
-      "mkt_cap_b": 200.7,
+      "mkt_cap_b": 202.9,
       "ema8": 20.74,
       "ema13": 20.67,
       "ema21": 20.62,
@@ -3585,7 +3585,7 @@
       "symbol": "MS/PK",
       "name": "Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of Fixed-to-Floating Rate Non-Cumulative Preferred Stock, Series K",
       "price": 24.9,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 24.8,
       "ema13": 24.75,
       "ema21": 24.68,
@@ -3608,7 +3608,7 @@
       "symbol": "WFC/PY",
       "name": "Wells Fargo & Company Depositary Shares, each representing a 1/1,000th interest in a share of Non-Cumulative Perpetual",
       "price": 24.62,
-      "mkt_cap_b": 254.7,
+      "mkt_cap_b": 259.0,
       "ema8": 24.54,
       "ema13": 24.48,
       "ema21": 24.4,
@@ -3631,7 +3631,7 @@
       "symbol": "MS/PP",
       "name": "Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of 6.500% Non-Cumulative Preferred Stock, Series P",
       "price": 25.9,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 25.71,
       "ema13": 25.69,
       "ema21": 25.68,
@@ -3677,7 +3677,7 @@
       "symbol": "BAC/PK",
       "name": "Bank of America Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 5.875% Non- Cumulative Preferred Stock, Series HH",
       "price": 25.13,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 25.03,
       "ema13": 24.98,
       "ema21": 24.93,
@@ -3723,7 +3723,7 @@
       "symbol": "CILJF",
       "name": "China Life Insurance Company Limited",
       "price": 3.77,
-      "mkt_cap_b": 158.5,
+      "mkt_cap_b": 159.1,
       "ema8": 4.03,
       "ema13": 3.94,
       "ema21": 3.75,
@@ -3746,7 +3746,7 @@
       "symbol": "EBGEF",
       "name": "Enbridge Inc.",
       "price": 25.0,
-      "mkt_cap_b": 118.5,
+      "mkt_cap_b": 118.1,
       "ema8": 24.99,
       "ema13": 24.95,
       "ema21": 24.86,
@@ -3754,7 +3754,7 @@
       "analyst": "",
       "chg_1d": 0.0,
       "chg_1w": 0.0,
-      "chg_1m": -0.48,
+      "chg_1m": -0.16,
       "rel_vol": 1.09,
       "signal": "Full Bull",
       "price_vs_8w": 0.02,
@@ -3815,7 +3815,7 @@
       "symbol": "BAC/PP",
       "name": "Bank of America Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 4.125% Non-Cumulative Preferred Stock, Series PP",
       "price": 17.33,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 17.31,
       "ema13": 17.27,
       "ema21": 17.25,
@@ -3838,7 +3838,7 @@
       "symbol": "MS/PO",
       "name": "Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of 4.250% Non-Cumulative Preferred Stock, Series O",
       "price": 17.98,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 17.92,
       "ema13": 17.9,
       "ema21": 17.9,
@@ -3861,7 +3861,7 @@
       "symbol": "BAC/PS",
       "name": "Bank of America Corporation Depositary shares, each representing 1/1,000th interest in a share of 4.750% Non-Cumulative Preferred Stock, Series SS",
       "price": 19.97,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 19.93,
       "ema13": 19.9,
       "ema21": 19.88,
@@ -3907,7 +3907,7 @@
       "symbol": "MS/PI",
       "name": "Morgan Stanley Depository Shares Representing 1/1000th Preferred Series 1 Fixed to Floating Non (Cum)",
       "price": 25.32,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 25.26,
       "ema13": 25.24,
       "ema21": 25.22,
@@ -3930,7 +3930,7 @@
       "symbol": "BAC/PN",
       "name": "Bank of America Corporation Depositary shares, each representing 1/1,000th interest in a share of 5.000% Non-Cumulative Preferred Stock, Series LL",
       "price": 21.2,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 21.27,
       "ema13": 21.19,
       "ema21": 21.12,
@@ -3976,7 +3976,7 @@
       "symbol": "COF/PL",
       "name": "Capital One Financial Corporation Depositary Shares, Each Representing a 1/40th Interest in a Share of Fixed Rate Non-Cumulative Perpetual Preferred Stock, Seri",
       "price": 17.17,
-      "mkt_cap_b": 120.5,
+      "mkt_cap_b": 121.8,
       "ema8": 17.16,
       "ema13": 17.12,
       "ema21": 17.11,
@@ -3999,7 +3999,7 @@
       "symbol": "BAC/PM",
       "name": "Bank of America Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 5.375% Non-Cumulative Preferred Stock, Series KK",
       "price": 22.66,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 22.71,
       "ema13": 22.65,
       "ema21": 22.6,
@@ -4045,7 +4045,7 @@
       "symbol": "DUK/PA",
       "name": "Duke Energy Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 5.75% Series A Cumulative Redeemable Perpetual Preferred Stock",
       "price": 25.1,
-      "mkt_cap_b": 102.2,
+      "mkt_cap_b": 102.6,
       "ema8": 25.07,
       "ema13": 25.06,
       "ema21": 25.04,
@@ -4068,7 +4068,7 @@
       "symbol": "MS/PQ",
       "name": "Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of 6.625% Non-Cumulative Preferred Stock, Series Q",
       "price": 26.33,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 26.33,
       "ema13": 26.32,
       "ema21": 26.28,
@@ -4091,7 +4091,7 @@
       "symbol": "BAC/PO",
       "name": "Bank of America Corporation Depositary shares, each representing 1/1,000th interest in a share of 4.375% Non-Cumulative Preferred Stock, Series NN",
       "price": 18.27,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 18.27,
       "ema13": 18.25,
       "ema21": 18.24,
@@ -4114,7 +4114,7 @@
       "symbol": "MS/PE",
       "name": "Morgan Stanley DEPOSITARY SHARES REP 1/1000TH SHARES FIXED/FLTG PREFERRED STOCK SERIES E",
       "price": 25.59,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 25.54,
       "ema13": 25.54,
       "ema21": 25.55,
@@ -4137,7 +4137,7 @@
       "symbol": "BAC/PQ",
       "name": "Bank of America Corporation Depositary shares, each representing 1/1,000th interest in a share of 4.250% Non-Cumulative Preferred Stock, Series QQ",
       "price": 17.74,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 17.73,
       "ema13": 17.71,
       "ema21": 17.71,
@@ -4160,7 +4160,7 @@
       "symbol": "BAC/PB",
       "name": "Bank of America Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 6.000% Non-Cumulative Preferred Stock, Series GG",
       "price": 25.26,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 25.23,
       "ema13": 25.23,
       "ema21": 25.22,
@@ -4183,7 +4183,7 @@
       "symbol": "MS/PF",
       "name": "Morgan Stanley Dep Shs Rpstg 1/1000th Int Prd Ser F Fxd to Flag",
       "price": 25.35,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 25.32,
       "ema13": 25.32,
       "ema21": 25.32,
@@ -4206,7 +4206,7 @@
       "symbol": "WFC/PD",
       "name": "Wells Fargo & Company Depositary Shares, each representing a 1/1,000th interest in a share of Non-Cumulative Perpetual",
       "price": 17.76,
-      "mkt_cap_b": 254.7,
+      "mkt_cap_b": 259.0,
       "ema8": 17.82,
       "ema13": 17.78,
       "ema21": 17.74,
@@ -4229,7 +4229,7 @@
       "symbol": "JPM/PC",
       "name": "J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 6.00% Non-Cumulative Preferred Stock, Series EE",
       "price": 25.29,
-      "mkt_cap_b": 809.8,
+      "mkt_cap_b": 807.5,
       "ema8": 25.23,
       "ema13": 25.25,
       "ema21": 25.27,
@@ -4275,7 +4275,7 @@
       "symbol": "MS/PL",
       "name": "Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of 4.875% Non-Cumulative Preferred Stock, Series L",
       "price": 20.85,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 20.85,
       "ema13": 20.84,
       "ema21": 20.83,
@@ -4298,7 +4298,7 @@
       "symbol": "COF/PK",
       "name": "Capital One Financial Corporation Depositary Shares, Each Representing a 1/40th Ownership Interest in a Share of Fixed Rate Non-Cumulative Perpetual Preferred S",
       "price": 18.02,
-      "mkt_cap_b": 120.5,
+      "mkt_cap_b": 121.8,
       "ema8": 17.99,
       "ema13": 17.99,
       "ema21": 18.01,
@@ -4321,7 +4321,7 @@
       "symbol": "COF/PJ",
       "name": "Capital One Financial Corporation Depositary Shares, Each Representing a 1/40th Interest in a Share of Fixed Rate Non- Cumulative Perpetual Preferred Stock, Ser",
       "price": 18.62,
-      "mkt_cap_b": 120.5,
+      "mkt_cap_b": 121.8,
       "ema8": 18.59,
       "ema13": 18.59,
       "ema21": 18.61,
@@ -4344,7 +4344,7 @@
       "symbol": "JPM/PM",
       "name": "J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 4.20% Non-Cumulative Preferred Stock, Series MM",
       "price": 18.53,
-      "mkt_cap_b": 809.8,
+      "mkt_cap_b": 807.5,
       "ema8": 18.54,
       "ema13": 18.53,
       "ema21": 18.53,
@@ -4367,7 +4367,7 @@
       "symbol": "JPM/PD",
       "name": "J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 5.75% Non-Cumulative Preferred Stock, Series DD",
       "price": 25.01,
-      "mkt_cap_b": 809.8,
+      "mkt_cap_b": 807.5,
       "ema8": 25.02,
       "ema13": 25.03,
       "ema21": 25.01,
@@ -4390,7 +4390,7 @@
       "symbol": "T/PC",
       "name": "AT&T Inc. Depositary Shares, each representing a 1/1,000th interest in a share of 4.750% Perpetual Preferred Stock, Series C",
       "price": 19.37,
-      "mkt_cap_b": 200.7,
+      "mkt_cap_b": 202.9,
       "ema8": 19.38,
       "ema13": 19.37,
       "ema21": 19.37,
@@ -4413,7 +4413,7 @@
       "symbol": "COF/PI",
       "name": "Capital One Financial Corporation Depositary shares each representing a 1/40th interest in a share of Fixed Rate Non-Cumulative Perpetual Preferred Stock, Serie",
       "price": 19.6,
-      "mkt_cap_b": 120.5,
+      "mkt_cap_b": 121.8,
       "ema8": 19.66,
       "ema13": 19.63,
       "ema21": 19.61,
@@ -4459,7 +4459,7 @@
       "symbol": "SCHW/PD",
       "name": "The Charles Schwab Corporation Depositary Shares each representing 1/40th interest in a share of 5.95% Non-Cumulative Perpetual Preferred Stock, Series D",
       "price": 25.11,
-      "mkt_cap_b": 166.9,
+      "mkt_cap_b": 168.3,
       "ema8": 25.16,
       "ema13": 25.15,
       "ema21": 25.13,
@@ -4482,7 +4482,7 @@
       "symbol": "WFC/PZ",
       "name": "Wells Fargo & Company Depositary Shares, each representing a 1/1,000th interest in a share of Non-Cumulative Perpetual",
       "price": 19.65,
-      "mkt_cap_b": 254.7,
+      "mkt_cap_b": 259.0,
       "ema8": 19.76,
       "ema13": 19.71,
       "ema21": 19.67,
@@ -4528,7 +4528,7 @@
       "symbol": "JPM/PJ",
       "name": "J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of JPMorgan Chase & Co. 4.75% Non-Cumulative Preferred Stock, Series GG",
       "price": 20.43,
-      "mkt_cap_b": 809.8,
+      "mkt_cap_b": 807.5,
       "ema8": 20.42,
       "ema13": 20.44,
       "ema21": 20.48,
@@ -4551,7 +4551,7 @@
       "symbol": "JPM/PK",
       "name": "J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 4.55% Non-Cumulative Preferred Stock, Series JJ",
       "price": 19.53,
-      "mkt_cap_b": 809.8,
+      "mkt_cap_b": 807.5,
       "ema8": 19.55,
       "ema13": 19.57,
       "ema21": 19.59,
@@ -4666,7 +4666,7 @@
       "symbol": "JPM/PL",
       "name": "J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 4.625% Non-Cumulative Preferred Stock, Series LL",
       "price": 19.82,
-      "mkt_cap_b": 809.8,
+      "mkt_cap_b": 807.5,
       "ema8": 19.87,
       "ema13": 19.89,
       "ema21": 19.91,
@@ -4712,7 +4712,7 @@
       "symbol": "BML/PH",
       "name": "Bank of America Corporation Depositary Shares (Each representing a 1/1200th interest in a Share of Floating Rate Non-Cumulative Pref",
       "price": 19.46,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 19.45,
       "ema13": 19.45,
       "ema21": 19.56,
@@ -4735,7 +4735,7 @@
       "symbol": "WFC/PA",
       "name": "Wells Fargo & Company Depositary Shares, each representing a 1/1,000th interest in a share of Non-Cumulative Perpetual",
       "price": 19.3,
-      "mkt_cap_b": 254.7,
+      "mkt_cap_b": 259.0,
       "ema8": 19.44,
       "ema13": 19.42,
       "ema21": 19.4,
@@ -4758,7 +4758,7 @@
       "symbol": "WFC/PC",
       "name": "Wells Fargo & Company Depositary Shares, each representing a 1/1,000th interest in a share of Non-Cumulative Perpetual",
       "price": 18.04,
-      "mkt_cap_b": 254.7,
+      "mkt_cap_b": 259.0,
       "ema8": 18.18,
       "ema13": 18.16,
       "ema21": 18.13,
@@ -4804,7 +4804,7 @@
       "symbol": "BML/PG",
       "name": "Bank of America Corporation Depositary Shares (Each representing a 1/1200th interest in a share of Floating Rate Non-Cumulative Preferred Stock , Series 1)",
       "price": 19.52,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 19.53,
       "ema13": 19.54,
       "ema21": 19.68,
@@ -4827,7 +4827,7 @@
       "symbol": "COF/PN",
       "name": "Capital One Financial Corporation Depositary Shares, Each Representing a 1/40th Ownership Interest in a Share of Fixed Rate Non-Cumulative Perpetual Preferred S",
       "price": 16.65,
-      "mkt_cap_b": 120.5,
+      "mkt_cap_b": 121.8,
       "ema8": 16.69,
       "ema13": 16.73,
       "ema21": 16.79,
@@ -4850,7 +4850,7 @@
       "symbol": "MGCOF",
       "name": "Midea Group Co Ltd.",
       "price": 11.37,
-      "mkt_cap_b": 86.0,
+      "mkt_cap_b": 86.2,
       "ema8": 11.46,
       "ema13": 11.5,
       "ema21": 11.46,
@@ -4873,7 +4873,7 @@
       "symbol": "BAC/PL",
       "name": "Bank of America Corporation Non Cumulative Perpetual Conv Pfd Ser L",
       "price": 1239.0,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 1248.78,
       "ema13": 1250.57,
       "ema21": 1250.12,
@@ -4896,7 +4896,7 @@
       "symbol": "BML/PL",
       "name": "Bank of America Corporation Depositary Shares (Each representing a 1/1200th Interest in a Share of Floating Rate Non-Cumulative Pref",
       "price": 19.68,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 19.75,
       "ema13": 19.76,
       "ema21": 19.87,
@@ -4919,7 +4919,7 @@
       "symbol": "WFC/PL",
       "name": "Wells Fargo & Company 7.50% Non-Cumulative Perpetual Convertible",
       "price": 1218.31,
-      "mkt_cap_b": 254.7,
+      "mkt_cap_b": 259.0,
       "ema8": 1233.76,
       "ema13": 1232.87,
       "ema21": 1229.94,
@@ -4988,7 +4988,7 @@
       "symbol": "BAC/PE",
       "name": "Bank of America Corporation Depositary Sh repstg 1/1000th Perp Pfd Ser E",
       "price": 20.02,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 20.1,
       "ema13": 20.11,
       "ema21": 20.27,
@@ -5011,7 +5011,7 @@
       "symbol": "GS/PD",
       "name": "Goldman Sachs Group, Inc. (The) Dep Shs repstg 1/1000 Pfd Ser D Fltg",
       "price": 19.87,
-      "mkt_cap_b": 256.0,
+      "mkt_cap_b": 257.4,
       "ema8": 19.98,
       "ema13": 20.0,
       "ema21": 20.12,
@@ -5057,7 +5057,7 @@
       "symbol": "BRK.B",
       "name": "Berkshire Hathaway Inc. New",
       "price": 487.48,
-      "mkt_cap_b": 1051.1,
+      "mkt_cap_b": 1051.4,
       "ema8": 495.56,
       "ema13": 495.71,
       "ema21": 495.51,
@@ -5080,7 +5080,7 @@
       "symbol": "SCHW/PJ",
       "name": "The Charles Schwab Corporation Depositary Shares, Each Representing a 1/40th Interest in a Share of 4.450% Non-Cumulative Perpetual Preferred Stock, Series J",
       "price": 18.73,
-      "mkt_cap_b": 166.9,
+      "mkt_cap_b": 168.3,
       "ema8": 18.87,
       "ema13": 18.94,
       "ema21": 19.04,
@@ -5103,7 +5103,7 @@
       "symbol": "BRK.A",
       "name": "Berkshire Hathaway Inc.",
       "price": 730707.01,
-      "mkt_cap_b": 1051.9,
+      "mkt_cap_b": 1051.4,
       "ema8": 743865.94,
       "ema13": 744149.49,
       "ema21": 743824.33,
@@ -5172,7 +5172,7 @@
       "symbol": "MS/PA",
       "name": "Morgan Stanley Dep Shs repstg 1/1000 Pfd Ser A",
       "price": 19.88,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 19.98,
       "ema13": 20.05,
       "ema21": 20.25,
@@ -5218,7 +5218,7 @@
       "symbol": "GS/PA",
       "name": "Goldman Sachs Group, Inc. (The) Depositary Shares each representing 1/1000th Interest in a Share of Floating Rate Non-Cumulative Preferred Stock Series A",
       "price": 19.9,
-      "mkt_cap_b": 256.0,
+      "mkt_cap_b": 257.4,
       "ema8": 20.08,
       "ema13": 20.13,
       "ema21": 20.3,
@@ -5241,7 +5241,7 @@
       "symbol": "GS/PC",
       "name": "Goldman Sachs Group, Inc. (The) Depositary Share repstg 1/1000th Preferred Series C",
       "price": 20.04,
-      "mkt_cap_b": 256.0,
+      "mkt_cap_b": 257.4,
       "ema8": 20.26,
       "ema13": 20.31,
       "ema21": 20.46,
@@ -5356,7 +5356,7 @@
       "symbol": "PLDGP",
       "name": "Prologis, Inc.",
       "price": 52.71,
-      "mkt_cap_b": 134.1,
+      "mkt_cap_b": 132.6,
       "ema8": 53.4,
       "ema13": 53.88,
       "ema21": 54.32,
@@ -5494,7 +5494,7 @@
       "symbol": "CTATF",
       "name": "CONTEMPORARY AMPEREX TECHNOLOGY CO LTD",
       "price": 61.0,
-      "mkt_cap_b": 224.7,
+      "mkt_cap_b": 224.9,
       "ema8": 64.26,
       "ema13": 64.27,
       "ema21": 62.99,
@@ -5503,7 +5503,7 @@
       "chg_1d": -0.93,
       "chg_1w": -0.62,
       "chg_1m": 1.18,
-      "rel_vol": 0.85,
+      "rel_vol": 0.87,
       "signal": "Bearish (unstacked)",
       "price_vs_8w": -5.08,
       "price_vs_13w": -5.08,
@@ -5609,7 +5609,7 @@
       "symbol": "BML/PJ",
       "name": "Bank of America Corporation Depositary Shares (Each representing a 1/1200th interest in a Share of Floating Rate Non-Cumulative Pref",
       "price": 19.85,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 20.32,
       "ema13": 20.39,
       "ema21": 20.53,
@@ -5632,7 +5632,7 @@
       "symbol": "BYDDF",
       "name": "BYD Co., Ltd.",
       "price": 12.31,
-      "mkt_cap_b": 117.4,
+      "mkt_cap_b": 118.4,
       "ema8": 12.35,
       "ema13": 12.47,
       "ema21": 12.74,
@@ -5770,7 +5770,7 @@
       "symbol": "ACGBF",
       "name": "Agricultural Bank of China",
       "price": 0.67,
-      "mkt_cap_b": 331.4,
+      "mkt_cap_b": 333.9,
       "ema8": 0.7,
       "ema13": 0.71,
       "ema21": 0.7,
@@ -5931,7 +5931,7 @@
       "symbol": "BN",
       "name": "Brookfield Corporation",
       "price": 43.19,
-      "mkt_cap_b": 107.0,
+      "mkt_cap_b": 105.8,
       "ema8": 45.26,
       "ema13": 45.52,
       "ema21": 45.36,
@@ -6675,7 +6675,7 @@
       "analyst": "Strong buy",
       "chg_1d": 3.56,
       "chg_1w": -1.82,
-      "chg_1m": -14.65,
+      "chg_1m": -9.14,
       "rel_vol": 0.11,
       "signal": "Full Bear",
       "price_vs_8w": -9.27,
@@ -6737,9 +6737,9 @@
       "name": "SAP SE",
       "price": 195.15,
       "mkt_cap_b": 222.2,
-      "ema8": 209.6,
-      "ema13": 218.55,
-      "ema21": 229.51,
+      "ema8": 209.55,
+      "ema13": 218.51,
+      "ema21": 229.48,
       "sector": "Technology services",
       "analyst": "Strong buy",
       "chg_1d": 0.04,
@@ -6747,12 +6747,12 @@
       "chg_1m": -4.84,
       "rel_vol": 5.84,
       "signal": "Full Bear",
-      "price_vs_8w": -6.9,
-      "price_vs_13w": -10.71,
-      "price_vs_21w": -14.97,
-      "ema8_vs_13": -4.09,
-      "ema13_vs_21": -4.77,
-      "spread_score": -8.86,
+      "price_vs_8w": -6.87,
+      "price_vs_13w": -10.69,
+      "price_vs_21w": -14.96,
+      "ema8_vs_13": -4.1,
+      "ema13_vs_21": -4.78,
+      "spread_score": -8.88,
       "rank": 289
     },
     {
@@ -6989,7 +6989,7 @@
       "symbol": "RLLCF",
       "name": "Rolls Royce Holdings plc",
       "price": 0.0,
-      "mkt_cap_b": 146.6,
+      "mkt_cap_b": 153.5,
       "ema8": 0.0,
       "ema13": 0.0,
       "ema21": 0.0,
@@ -7023,7 +7023,7 @@
       "chg_1d": 2.63,
       "chg_1w": -2.74,
       "chg_1m": -4.43,
-      "rel_vol": 0.87,
+      "rel_vol": 0.88,
       "signal": "Bull Pullback \u2192 13W",
       "price_vs_8w": -0.53,
       "price_vs_13w": 5.09,
@@ -7031,30 +7031,7 @@
       "ema8_vs_13": 5.65,
       "ema13_vs_21": 9.36,
       "spread_score": 15.01,
-      "rank": 33
-    },
-    {
-      "symbol": "NVSEF",
-      "name": "Novartis AG",
-      "price": 158.0,
-      "mkt_cap_b": 300.7,
-      "ema8": 158.35,
-      "ema13": 151.96,
-      "ema21": 144.95,
-      "sector": "Health technology",
-      "analyst": "Buy",
-      "chg_1d": -6.09,
-      "chg_1w": 0.0,
-      "chg_1m": 9.09,
-      "rel_vol": 0.83,
-      "signal": "Bull Pullback \u2192 13W",
-      "price_vs_8w": -0.22,
-      "price_vs_13w": 3.97,
-      "price_vs_21w": 9.0,
-      "ema8_vs_13": 4.2,
-      "ema13_vs_21": 4.84,
-      "spread_score": 9.04,
-      "rank": 77
+      "rank": 34
     },
     {
       "symbol": "HBCYF",
@@ -7106,7 +7083,7 @@
       "symbol": "SNPMF",
       "name": "China Petroleum & Chemical Corp.",
       "price": 0.65,
-      "mkt_cap_b": 118.3,
+      "mkt_cap_b": 115.2,
       "ema8": 0.65,
       "ema13": 0.64,
       "ema21": 0.61,
@@ -7146,13 +7123,13 @@
       "ema8_vs_13": 2.59,
       "ema13_vs_21": 3.54,
       "spread_score": 6.13,
-      "rank": 107
+      "rank": 108
     },
     {
       "symbol": "ATLPF",
       "name": "Atlas Copco AB",
       "price": 20.08,
-      "mkt_cap_b": 93.7,
+      "mkt_cap_b": 93.9,
       "ema8": 20.36,
       "ema13": 19.84,
       "ema21": 19.15,
@@ -7169,7 +7146,7 @@
       "ema8_vs_13": 2.63,
       "ema13_vs_21": 3.63,
       "spread_score": 6.26,
-      "rank": 111
+      "rank": 112
     },
     {
       "symbol": "UPS",
@@ -7192,7 +7169,7 @@
       "ema8_vs_13": 2.71,
       "ema13_vs_21": 3.27,
       "spread_score": 5.98,
-      "rank": 112
+      "rank": 113
     },
     {
       "symbol": "IBDSF",
@@ -7215,7 +7192,7 @@
       "ema8_vs_13": 2.11,
       "ema13_vs_21": 3.17,
       "spread_score": 5.28,
-      "rank": 114
+      "rank": 115
     },
     {
       "symbol": "SBGSF",
@@ -7313,7 +7290,7 @@
       "symbol": "IDCBF",
       "name": "Industrial and Commercial Bank of China Ltd.",
       "price": 0.81,
-      "mkt_cap_b": 345.1,
+      "mkt_cap_b": 348.3,
       "ema8": 0.82,
       "ema13": 0.81,
       "ema21": 0.8,
@@ -7359,7 +7336,7 @@
       "symbol": "EBBNF",
       "name": "Enbridge Inc.",
       "price": 24.41,
-      "mkt_cap_b": 118.5,
+      "mkt_cap_b": 118.1,
       "ema8": 24.42,
       "ema13": 24.32,
       "ema21": 24.18,
@@ -7368,7 +7345,7 @@
       "chg_1d": -0.12,
       "chg_1w": 0.0,
       "chg_1m": 0.62,
-      "rel_vol": 2.59,
+      "rel_vol": 2.6,
       "signal": "Bull Pullback \u2192 13W",
       "price_vs_8w": -0.05,
       "price_vs_13w": 0.36,
@@ -7382,7 +7359,7 @@
       "symbol": "BAC/PN",
       "name": "Bank of America Corporation Depositary shares, each representing 1/1,000th interest in a share of 5.000% Non-Cumulative Preferred Stock, Series LL",
       "price": 21.2,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 21.27,
       "ema13": 21.19,
       "ema21": 21.12,
@@ -7405,7 +7382,7 @@
       "symbol": "BAC/PM",
       "name": "Bank of America Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 5.375% Non-Cumulative Preferred Stock, Series KK",
       "price": 22.66,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 22.71,
       "ema13": 22.65,
       "ema21": 22.6,
@@ -7428,7 +7405,7 @@
       "symbol": "BAC/PO",
       "name": "Bank of America Corporation Depositary shares, each representing 1/1,000th interest in a share of 4.375% Non-Cumulative Preferred Stock, Series NN",
       "price": 18.27,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 18.27,
       "ema13": 18.25,
       "ema21": 18.24,
@@ -7543,7 +7520,7 @@
       "symbol": "PIAIF",
       "name": "Ping An Insurance (Group) Company of China Ltd.",
       "price": 8.45,
-      "mkt_cap_b": 158.9,
+      "mkt_cap_b": 159.9,
       "ema8": 8.78,
       "ema13": 8.61,
       "ema21": 8.28,
@@ -7566,7 +7543,7 @@
       "symbol": "GOOGL",
       "name": "Alphabet Inc.",
       "price": 303.13,
-      "mkt_cap_b": 3666.9,
+      "mkt_cap_b": 3668.7,
       "ema8": 313.39,
       "ema13": 310.24,
       "ema21": 298.51,
@@ -7589,7 +7566,7 @@
       "symbol": "GOOG",
       "name": "Alphabet Inc.",
       "price": 303.45,
-      "mkt_cap_b": 3671.0,
+      "mkt_cap_b": 3668.7,
       "ema8": 313.62,
       "ema13": 310.58,
       "ema21": 298.97,
@@ -7750,7 +7727,7 @@
       "symbol": "CILJF",
       "name": "China Life Insurance Company Limited",
       "price": 3.77,
-      "mkt_cap_b": 158.5,
+      "mkt_cap_b": 159.1,
       "ema8": 4.03,
       "ema13": 3.94,
       "ema21": 3.75,
@@ -7819,7 +7796,7 @@
       "symbol": "WFC/PD",
       "name": "Wells Fargo & Company Depositary Shares, each representing a 1/1,000th interest in a share of Non-Cumulative Perpetual",
       "price": 17.76,
-      "mkt_cap_b": 254.7,
+      "mkt_cap_b": 259.0,
       "ema8": 17.82,
       "ema13": 17.78,
       "ema21": 17.74,
@@ -7865,7 +7842,7 @@
       "symbol": "JPM/PM",
       "name": "J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 4.20% Non-Cumulative Preferred Stock, Series MM",
       "price": 18.53,
-      "mkt_cap_b": 809.8,
+      "mkt_cap_b": 807.5,
       "ema8": 18.54,
       "ema13": 18.53,
       "ema21": 18.53,
@@ -7888,7 +7865,7 @@
       "symbol": "COF/PI",
       "name": "Capital One Financial Corporation Depositary shares each representing a 1/40th interest in a share of Fixed Rate Non-Cumulative Perpetual Preferred Stock, Serie",
       "price": 19.6,
-      "mkt_cap_b": 120.5,
+      "mkt_cap_b": 121.8,
       "ema8": 19.66,
       "ema13": 19.63,
       "ema21": 19.61,
@@ -7934,7 +7911,7 @@
       "symbol": "SCHW/PD",
       "name": "The Charles Schwab Corporation Depositary Shares each representing 1/40th interest in a share of 5.95% Non-Cumulative Perpetual Preferred Stock, Series D",
       "price": 25.11,
-      "mkt_cap_b": 166.9,
+      "mkt_cap_b": 168.3,
       "ema8": 25.16,
       "ema13": 25.15,
       "ema21": 25.13,
@@ -7957,7 +7934,7 @@
       "symbol": "WFC/PZ",
       "name": "Wells Fargo & Company Depositary Shares, each representing a 1/1,000th interest in a share of Non-Cumulative Perpetual",
       "price": 19.65,
-      "mkt_cap_b": 254.7,
+      "mkt_cap_b": 259.0,
       "ema8": 19.76,
       "ema13": 19.71,
       "ema21": 19.67,
@@ -8118,7 +8095,7 @@
       "symbol": "WFC/PA",
       "name": "Wells Fargo & Company Depositary Shares, each representing a 1/1,000th interest in a share of Non-Cumulative Perpetual",
       "price": 19.3,
-      "mkt_cap_b": 254.7,
+      "mkt_cap_b": 259.0,
       "ema8": 19.44,
       "ema13": 19.42,
       "ema21": 19.4,
@@ -8141,7 +8118,7 @@
       "symbol": "WFC/PC",
       "name": "Wells Fargo & Company Depositary Shares, each representing a 1/1,000th interest in a share of Non-Cumulative Perpetual",
       "price": 18.04,
-      "mkt_cap_b": 254.7,
+      "mkt_cap_b": 259.0,
       "ema8": 18.18,
       "ema13": 18.16,
       "ema21": 18.13,
@@ -8187,7 +8164,7 @@
       "symbol": "WFC/PL",
       "name": "Wells Fargo & Company 7.50% Non-Cumulative Perpetual Convertible",
       "price": 1218.31,
-      "mkt_cap_b": 254.7,
+      "mkt_cap_b": 259.0,
       "ema8": 1233.76,
       "ema13": 1232.87,
       "ema21": 1229.94,
@@ -8465,7 +8442,7 @@
       "symbol": "WFCNP",
       "name": "Wells Fargo & Co.",
       "price": 2.75,
-      "mkt_cap_b": 254.7,
+      "mkt_cap_b": 259.0,
       "ema8": 1.92,
       "ema13": 1.67,
       "ema21": 1.46,
@@ -8761,29 +8738,6 @@
       "rank": 12
     },
     {
-      "symbol": "MSBHF",
-      "name": "Mitsubishi Corp.",
-      "price": 32.01,
-      "mkt_cap_b": 121.3,
-      "ema8": 30.71,
-      "ema13": 29.03,
-      "ema21": 27.3,
-      "sector": "Distribution services",
-      "analyst": "Buy",
-      "chg_1d": -4.42,
-      "chg_1w": -3.66,
-      "chg_1m": 19.75,
-      "rel_vol": 0.25,
-      "signal": "Full Bull",
-      "price_vs_8w": 4.25,
-      "price_vs_13w": 10.25,
-      "price_vs_21w": 17.24,
-      "ema8_vs_13": 5.76,
-      "ema13_vs_21": 6.34,
-      "spread_score": 12.1,
-      "rank": 25
-    },
-    {
       "symbol": "ASMLF",
       "name": "ASML Holding N.V.",
       "price": 1397.15,
@@ -8804,7 +8758,7 @@
       "ema8_vs_13": 4.75,
       "ema13_vs_21": 7.29,
       "spread_score": 12.04,
-      "rank": 41
+      "rank": 42
     },
     {
       "symbol": "NEM",
@@ -8827,7 +8781,30 @@
       "ema8_vs_13": 4.66,
       "ema13_vs_21": 7.36,
       "spread_score": 12.02,
-      "rank": 49
+      "rank": 50
+    },
+    {
+      "symbol": "MSBHF",
+      "name": "Mitsubishi Corp.",
+      "price": 32.01,
+      "mkt_cap_b": 121.3,
+      "ema8": 30.6,
+      "ema13": 28.96,
+      "ema21": 27.26,
+      "sector": "Distribution services",
+      "analyst": "Buy",
+      "chg_1d": -4.42,
+      "chg_1w": -5.13,
+      "chg_1m": 19.75,
+      "rel_vol": 0.25,
+      "signal": "Full Bull",
+      "price_vs_8w": 4.62,
+      "price_vs_13w": 10.52,
+      "price_vs_21w": 17.44,
+      "ema8_vs_13": 5.64,
+      "ema13_vs_21": 6.26,
+      "spread_score": 11.9,
+      "rank": 24
     },
     {
       "symbol": "CAT",
@@ -8850,13 +8827,13 @@
       "ema8_vs_13": 4.83,
       "ema13_vs_21": 6.99,
       "spread_score": 11.82,
-      "rank": 28
+      "rank": 29
     },
     {
       "symbol": "ZIJMF",
       "name": "Zijin Mining Group Company Ltd.",
       "price": 5.47,
-      "mkt_cap_b": 146.8,
+      "mkt_cap_b": 147.6,
       "ema8": 5.38,
       "ema13": 5.14,
       "ema21": 4.8,
@@ -8873,7 +8850,7 @@
       "ema8_vs_13": 4.61,
       "ema13_vs_21": 7.12,
       "spread_score": 11.73,
-      "rank": 38
+      "rank": 39
     },
     {
       "symbol": "GEV",
@@ -8942,7 +8919,7 @@
       "ema8_vs_13": 4.57,
       "ema13_vs_21": 6.78,
       "spread_score": 11.35,
-      "rank": 52
+      "rank": 53
     },
     {
       "symbol": "BHPLF",
@@ -9011,13 +8988,13 @@
       "ema8_vs_13": 4.73,
       "ema13_vs_21": 5.89,
       "spread_score": 10.62,
-      "rank": 32
+      "rank": 33
     },
     {
       "symbol": "RTPPF",
       "name": "Rio Tinto plc",
       "price": 94.54,
-      "mkt_cap_b": 161.6,
+      "mkt_cap_b": 160.6,
       "ema8": 91.9,
       "ema13": 88.13,
       "ema21": 83.15,
@@ -9025,7 +9002,7 @@
       "analyst": "Buy",
       "chg_1d": -1.85,
       "chg_1w": -1.85,
-      "chg_1m": 0.79,
+      "chg_1m": 1.38,
       "rel_vol": 0.17,
       "signal": "Full Bull",
       "price_vs_8w": 2.87,
@@ -9034,13 +9011,13 @@
       "ema8_vs_13": 4.28,
       "ema13_vs_21": 5.99,
       "spread_score": 10.27,
-      "rank": 40
+      "rank": 41
     },
     {
       "symbol": "RTNTF",
       "name": "Rio Tinto Ltd.",
       "price": 117.9,
-      "mkt_cap_b": 164.5,
+      "mkt_cap_b": 167.3,
       "ema8": 110.9,
       "ema13": 106.27,
       "ema21": 100.4,
@@ -9057,7 +9034,7 @@
       "ema8_vs_13": 4.36,
       "ema13_vs_21": 5.84,
       "spread_score": 10.2,
-      "rank": 24
+      "rank": 25
     },
     {
       "symbol": "CNQ",
@@ -9103,7 +9080,7 @@
       "ema8_vs_13": 3.62,
       "ema13_vs_21": 6.06,
       "spread_score": 9.68,
-      "rank": 58
+      "rank": 59
     },
     {
       "symbol": "GLAXF",
@@ -9126,7 +9103,7 @@
       "ema8_vs_13": 4.31,
       "ema13_vs_21": 5.35,
       "spread_score": 9.66,
-      "rank": 45
+      "rank": 46
     },
     {
       "symbol": "HWM",
@@ -9172,19 +9149,19 @@
       "ema8_vs_13": 3.26,
       "ema13_vs_21": 6.29,
       "spread_score": 9.55,
-      "rank": 63
+      "rank": 64
     },
     {
       "symbol": "DLEGF",
       "name": "Delta Electronics Thailand Public Co., Ltd.",
       "price": 7.79,
-      "mkt_cap_b": 98.8,
+      "mkt_cap_b": 93.5,
       "ema8": 7.33,
       "ema13": 6.93,
       "ema21": 6.7,
       "sector": "Electronic technology",
       "analyst": "",
-      "chg_1d": -13.5,
+      "chg_1d": -1.84,
       "chg_1w": -1.84,
       "chg_1m": 30.55,
       "rel_vol": 0.26,
@@ -9196,6 +9173,29 @@
       "ema13_vs_21": 3.3,
       "spread_score": 9.2,
       "rank": 27
+    },
+    {
+      "symbol": "NVSEF",
+      "name": "Novartis AG",
+      "price": 168.24,
+      "mkt_cap_b": 320.2,
+      "ema8": 158.35,
+      "ema13": 151.96,
+      "ema21": 144.95,
+      "sector": "Health technology",
+      "analyst": "Buy",
+      "chg_1d": -1.78,
+      "chg_1w": 0.0,
+      "chg_1m": 16.16,
+      "rel_vol": 1.41,
+      "signal": "Full Bull",
+      "price_vs_8w": 6.25,
+      "price_vs_13w": 10.71,
+      "price_vs_21w": 16.07,
+      "ema8_vs_13": 4.2,
+      "ema13_vs_21": 4.84,
+      "spread_score": 9.04,
+      "rank": 28
     },
     {
       "symbol": "DE",
@@ -9218,7 +9218,7 @@
       "ema8_vs_13": 4.62,
       "ema13_vs_21": 4.41,
       "spread_score": 9.03,
-      "rank": 36
+      "rank": 37
     },
     {
       "symbol": "MRK",
@@ -9241,13 +9241,13 @@
       "ema8_vs_13": 3.82,
       "ema13_vs_21": 5.16,
       "spread_score": 8.98,
-      "rank": 54
+      "rank": 55
     },
     {
       "symbol": "RHHBF",
       "name": "Roche Holding Ltd",
       "price": 488.0,
-      "mkt_cap_b": 380.3,
+      "mkt_cap_b": 376.3,
       "ema8": 467.39,
       "ema13": 449.8,
       "ema21": 428.79,
@@ -9264,7 +9264,7 @@
       "ema8_vs_13": 3.91,
       "ema13_vs_21": 4.9,
       "spread_score": 8.81,
-      "rank": 39
+      "rank": 40
     },
     {
       "symbol": "XOM",
@@ -9287,13 +9287,13 @@
       "ema8_vs_13": 4.03,
       "ema13_vs_21": 4.66,
       "spread_score": 8.69,
-      "rank": 42
+      "rank": 43
     },
     {
       "symbol": "RHHVF",
       "name": "Roche Holding Ltd",
       "price": 464.19,
-      "mkt_cap_b": 370.9,
+      "mkt_cap_b": 371.5,
       "ema8": 458.07,
       "ema13": 442.11,
       "ema21": 420.75,
@@ -9310,7 +9310,7 @@
       "ema8_vs_13": 3.61,
       "ema13_vs_21": 5.08,
       "spread_score": 8.69,
-      "rank": 67
+      "rank": 68
     },
     {
       "symbol": "ABLZF",
@@ -9333,7 +9333,7 @@
       "ema8_vs_13": 3.9,
       "ema13_vs_21": 4.68,
       "spread_score": 8.58,
-      "rank": 57
+      "rank": 58
     },
     {
       "symbol": "JNJ",
@@ -9356,7 +9356,7 @@
       "ema8_vs_13": 3.6,
       "ema13_vs_21": 4.8,
       "spread_score": 8.4,
-      "rank": 48
+      "rank": 49
     },
     {
       "symbol": "NOC",
@@ -9402,7 +9402,7 @@
       "ema8_vs_13": 3.83,
       "ema13_vs_21": 4.26,
       "spread_score": 8.09,
-      "rank": 46
+      "rank": 47
     },
     {
       "symbol": "GILD",
@@ -9425,7 +9425,7 @@
       "ema8_vs_13": 3.53,
       "ema13_vs_21": 4.27,
       "spread_score": 7.8,
-      "rank": 62
+      "rank": 63
     },
     {
       "symbol": "BMY",
@@ -9448,7 +9448,7 @@
       "ema8_vs_13": 3.59,
       "ema13_vs_21": 4.16,
       "spread_score": 7.75,
-      "rank": 47
+      "rank": 48
     },
     {
       "symbol": "BUDFF",
@@ -9517,7 +9517,7 @@
       "ema8_vs_13": 3.27,
       "ema13_vs_21": 3.92,
       "spread_score": 7.19,
-      "rank": 43
+      "rank": 44
     },
     {
       "symbol": "WMB",
@@ -9540,13 +9540,13 @@
       "ema8_vs_13": 3.66,
       "ema13_vs_21": 3.53,
       "spread_score": 7.19,
-      "rank": 30
+      "rank": 31
     },
     {
       "symbol": "PCCYF",
       "name": "PetroChina Co., Ltd.",
       "price": 1.31,
-      "mkt_cap_b": 330.1,
+      "mkt_cap_b": 341.5,
       "ema8": 1.19,
       "ema13": 1.15,
       "ema21": 1.11,
@@ -9569,7 +9569,7 @@
       "symbol": "BMYMP",
       "name": "Bristol-Myers Squibb Co.",
       "price": 1050.0,
-      "mkt_cap_b": 124.7,
+      "mkt_cap_b": 126.9,
       "ema8": 955.45,
       "ema13": 921.42,
       "ema21": 891.17,
@@ -9592,7 +9592,7 @@
       "symbol": "IVSBF",
       "name": "Investors AB",
       "price": 39.46,
-      "mkt_cap_b": 120.5,
+      "mkt_cap_b": 120.4,
       "ema8": 39.33,
       "ema13": 38.18,
       "ema21": 36.69,
@@ -9623,7 +9623,7 @@
       "analyst": "Buy",
       "chg_1d": -7.07,
       "chg_1w": 0.0,
-      "chg_1m": -1.0,
+      "chg_1m": -2.31,
       "rel_vol": 4.0,
       "signal": "Full Bull",
       "price_vs_8w": 0.14,
@@ -9655,7 +9655,7 @@
       "ema8_vs_13": 3.35,
       "ema13_vs_21": 3.67,
       "spread_score": 7.02,
-      "rank": 66
+      "rank": 67
     },
     {
       "symbol": "RYCEF",
@@ -9678,7 +9678,7 @@
       "ema8_vs_13": 2.88,
       "ema13_vs_21": 4.02,
       "spread_score": 6.9,
-      "rank": 68
+      "rank": 69
     },
     {
       "symbol": "COP",
@@ -9701,7 +9701,7 @@
       "ema8_vs_13": 3.51,
       "ema13_vs_21": 3.38,
       "spread_score": 6.89,
-      "rank": 37
+      "rank": 38
     },
     {
       "symbol": "MHVYF",
@@ -9747,7 +9747,7 @@
       "ema8_vs_13": 3.45,
       "ema13_vs_21": 3.33,
       "spread_score": 6.78,
-      "rank": 53
+      "rank": 54
     },
     {
       "symbol": "AMGN",
@@ -9770,7 +9770,7 @@
       "ema8_vs_13": 3.05,
       "ema13_vs_21": 3.69,
       "spread_score": 6.74,
-      "rank": 65
+      "rank": 66
     },
     {
       "symbol": "NGGTF",
@@ -9793,7 +9793,7 @@
       "ema8_vs_13": 3.13,
       "ema13_vs_21": 3.58,
       "spread_score": 6.71,
-      "rank": 73
+      "rank": 74
     },
     {
       "symbol": "RTX",
@@ -9816,7 +9816,7 @@
       "ema8_vs_13": 2.62,
       "ema13_vs_21": 3.95,
       "spread_score": 6.57,
-      "rank": 59
+      "rank": 60
     },
     {
       "symbol": "VZ",
@@ -9839,7 +9839,7 @@
       "ema8_vs_13": 3.64,
       "ema13_vs_21": 2.83,
       "spread_score": 6.47,
-      "rank": 29
+      "rank": 30
     },
     {
       "symbol": "HCA",
@@ -9862,7 +9862,7 @@
       "ema8_vs_13": 2.69,
       "ema13_vs_21": 3.75,
       "spread_score": 6.44,
-      "rank": 51
+      "rank": 52
     },
     {
       "symbol": "CVX",
@@ -9885,7 +9885,7 @@
       "ema8_vs_13": 3.14,
       "ema13_vs_21": 3.26,
       "spread_score": 6.4,
-      "rank": 61
+      "rank": 62
     },
     {
       "symbol": "AZN",
@@ -9931,13 +9931,13 @@
       "ema8_vs_13": 2.67,
       "ema13_vs_21": 3.63,
       "spread_score": 6.3,
-      "rank": 74
+      "rank": 75
     },
     {
       "symbol": "EBRGF",
       "name": "Enbridge Inc.",
       "price": 15.73,
-      "mkt_cap_b": 118.5,
+      "mkt_cap_b": 118.1,
       "ema8": 14.97,
       "ema13": 14.51,
       "ema21": 14.08,
@@ -9954,7 +9954,7 @@
       "ema8_vs_13": 3.16,
       "ema13_vs_21": 3.12,
       "spread_score": 6.28,
-      "rank": 56
+      "rank": 57
     },
     {
       "symbol": "CM",
@@ -9977,7 +9977,7 @@
       "ema8_vs_13": 2.51,
       "ema13_vs_21": 3.75,
       "spread_score": 6.26,
-      "rank": 64
+      "rank": 65
     },
     {
       "symbol": "BAESF",
@@ -10000,7 +10000,7 @@
       "ema8_vs_13": 3.1,
       "ema13_vs_21": 3.01,
       "spread_score": 6.11,
-      "rank": 31
+      "rank": 32
     },
     {
       "symbol": "MAR",
@@ -10046,7 +10046,7 @@
       "ema8_vs_13": 2.7,
       "ema13_vs_21": 3.08,
       "spread_score": 5.78,
-      "rank": 35
+      "rank": 36
     },
     {
       "symbol": "TD",
@@ -10075,7 +10075,7 @@
       "symbol": "ATLFF",
       "name": "Atlas Copco AB",
       "price": 17.93,
-      "mkt_cap_b": 96.0,
+      "mkt_cap_b": 95.7,
       "ema8": 15.82,
       "ema13": 15.4,
       "ema21": 14.97,
@@ -10161,7 +10161,7 @@
       "ema8_vs_13": 3.17,
       "ema13_vs_21": 2.13,
       "spread_score": 5.3,
-      "rank": 55
+      "rank": 56
     },
     {
       "symbol": "NEE",
@@ -10230,7 +10230,7 @@
       "ema8_vs_13": 2.11,
       "ema13_vs_21": 3.01,
       "spread_score": 5.12,
-      "rank": 75
+      "rank": 76
     },
     {
       "symbol": "VCISF",
@@ -10244,7 +10244,7 @@
       "analyst": "Strong buy",
       "chg_1d": 3.44,
       "chg_1w": 0.0,
-      "chg_1m": 19.94,
+      "chg_1m": 18.56,
       "rel_vol": 0.88,
       "signal": "Full Bull",
       "price_vs_8w": 9.22,
@@ -10253,7 +10253,7 @@
       "ema8_vs_13": 2.7,
       "ema13_vs_21": 2.4,
       "spread_score": 5.1,
-      "rank": 34
+      "rank": 35
     },
     {
       "symbol": "BTAFF",
@@ -10299,7 +10299,7 @@
       "ema8_vs_13": 2.59,
       "ema13_vs_21": 2.46,
       "spread_score": 5.05,
-      "rank": 69
+      "rank": 70
     },
     {
       "symbol": "CME",
@@ -10322,7 +10322,7 @@
       "ema8_vs_13": 2.6,
       "ema13_vs_21": 2.45,
       "spread_score": 5.05,
-      "rank": 60
+      "rank": 61
     },
     {
       "symbol": "CB",
@@ -10368,7 +10368,7 @@
       "ema8_vs_13": 2.32,
       "ema13_vs_21": 2.3,
       "spread_score": 4.62,
-      "rank": 113
+      "rank": 114
     },
     {
       "symbol": "PEP",
@@ -10451,7 +10451,7 @@
       "analyst": "Buy",
       "chg_1d": 1.23,
       "chg_1w": 1.23,
-      "chg_1m": 3.01,
+      "chg_1m": 3.17,
       "rel_vol": 0.43,
       "signal": "Full Bull",
       "price_vs_8w": 4.8,
@@ -10460,7 +10460,7 @@
       "ema8_vs_13": 1.91,
       "ema13_vs_21": 2.1,
       "spread_score": 4.01,
-      "rank": 76
+      "rank": 77
     },
     {
       "symbol": "MO",
@@ -10506,7 +10506,7 @@
       "ema8_vs_13": 2.02,
       "ema13_vs_21": 1.91,
       "spread_score": 3.93,
-      "rank": 72
+      "rank": 73
     },
     {
       "symbol": "SBUX",
@@ -10598,7 +10598,7 @@
       "ema8_vs_13": 2.01,
       "ema13_vs_21": 1.57,
       "spread_score": 3.58,
-      "rank": 117
+      "rank": 118
     },
     {
       "symbol": "RYDAF",
@@ -10621,7 +10621,7 @@
       "ema8_vs_13": 1.85,
       "ema13_vs_21": 1.67,
       "spread_score": 3.52,
-      "rank": 70
+      "rank": 71
     },
     {
       "symbol": "CSCO",
@@ -10673,7 +10673,7 @@
       "symbol": "BA/PA",
       "name": "Boeing Company (The) Depositary Shares, each representing a 1/20th interest in a share of 6.00% Series A Mandatory Convertible Preferred Stock, par value $1.00",
       "price": 76.31,
-      "mkt_cap_b": 176.0,
+      "mkt_cap_b": 178.5,
       "ema8": 74.8,
       "ema13": 73.81,
       "ema21": 72.46,
@@ -10690,7 +10690,7 @@
       "ema8_vs_13": 1.35,
       "ema13_vs_21": 1.85,
       "spread_score": 3.2,
-      "rank": 110
+      "rank": 111
     },
     {
       "symbol": "NEE/PS",
@@ -10713,7 +10713,7 @@
       "ema8_vs_13": 1.42,
       "ema13_vs_21": 1.75,
       "spread_score": 3.17,
-      "rank": 116
+      "rank": 117
     },
     {
       "symbol": "WM",
@@ -10759,7 +10759,7 @@
       "ema8_vs_13": 2.04,
       "ema13_vs_21": 0.94,
       "spread_score": 2.98,
-      "rank": 71
+      "rank": 72
     },
     {
       "symbol": "COST",
@@ -10782,7 +10782,7 @@
       "ema8_vs_13": 1.66,
       "ema13_vs_21": 1.2,
       "spread_score": 2.86,
-      "rank": 108
+      "rank": 109
     },
     {
       "symbol": "MCD",
@@ -10805,7 +10805,7 @@
       "ema8_vs_13": 1.41,
       "ema13_vs_21": 1.37,
       "spread_score": 2.78,
-      "rank": 115
+      "rank": 116
     },
     {
       "symbol": "NEE/PT",
@@ -10925,25 +10925,25 @@
     {
       "symbol": "KYCCF",
       "name": "Keyence Corp.",
-      "price": 395.0,
-      "mkt_cap_b": 95.8,
+      "price": 400.0,
+      "mkt_cap_b": 97.0,
       "ema8": 387.18,
       "ema13": 381.47,
       "ema21": 378.93,
       "sector": "Electronic technology",
       "analyst": "Strong buy",
-      "chg_1d": 4.67,
+      "chg_1d": 5.99,
       "chg_1w": 2.04,
-      "chg_1m": -1.43,
+      "chg_1m": -0.18,
       "rel_vol": 0.82,
       "signal": "Full Bull",
-      "price_vs_8w": 2.02,
-      "price_vs_13w": 3.55,
-      "price_vs_21w": 4.24,
+      "price_vs_8w": 3.31,
+      "price_vs_13w": 4.86,
+      "price_vs_21w": 5.56,
       "ema8_vs_13": 1.5,
       "ema13_vs_21": 0.67,
       "spread_score": 2.17,
-      "rank": 118
+      "rank": 107
     },
     {
       "symbol": "SO",
@@ -10989,7 +10989,7 @@
       "ema8_vs_13": 0.74,
       "ema13_vs_21": 1.19,
       "spread_score": 1.93,
-      "rank": 109
+      "rank": 110
     },
     {
       "symbol": "CBAUF",
@@ -11012,7 +11012,7 @@
       "ema8_vs_13": 0.25,
       "ema13_vs_21": 1.57,
       "spread_score": 1.82,
-      "rank": 50
+      "rank": 51
     },
     {
       "symbol": "CVS",
@@ -11058,7 +11058,7 @@
       "ema8_vs_13": 1.18,
       "ema13_vs_21": 0.36,
       "spread_score": 1.54,
-      "rank": 44
+      "rank": 45
     },
     {
       "symbol": "AIQUF",
@@ -11087,7 +11087,7 @@
       "symbol": "CICHF",
       "name": "China Construction Bank Corp.",
       "price": 1.03,
-      "mkt_cap_b": 275.3,
+      "mkt_cap_b": 275.8,
       "ema8": 1.0,
       "ema13": 1.0,
       "ema21": 0.99,
@@ -11133,7 +11133,7 @@
       "symbol": "EBBGF",
       "name": "Enbridge Inc.",
       "price": 24.86,
-      "mkt_cap_b": 118.5,
+      "mkt_cap_b": 118.1,
       "ema8": 24.71,
       "ema13": 24.63,
       "ema21": 24.53,
@@ -11156,7 +11156,7 @@
       "symbol": "T/PA",
       "name": "AT&T Inc. Depositary Shares, each representing a 1/1,000th interest in a share of 5.000% Perpetual Preferred Stock, Series A",
       "price": 20.81,
-      "mkt_cap_b": 200.7,
+      "mkt_cap_b": 202.9,
       "ema8": 20.74,
       "ema13": 20.67,
       "ema21": 20.62,
@@ -11179,7 +11179,7 @@
       "symbol": "WFC/PY",
       "name": "Wells Fargo & Company Depositary Shares, each representing a 1/1,000th interest in a share of Non-Cumulative Perpetual",
       "price": 24.62,
-      "mkt_cap_b": 254.7,
+      "mkt_cap_b": 259.0,
       "ema8": 24.54,
       "ema13": 24.48,
       "ema21": 24.4,
@@ -11202,7 +11202,7 @@
       "symbol": "BACHF",
       "name": "Bank of China, Ltd.",
       "price": 0.58,
-      "mkt_cap_b": 230.9,
+      "mkt_cap_b": 232.0,
       "ema8": 0.58,
       "ema13": 0.58,
       "ema21": 0.58,
@@ -11210,7 +11210,7 @@
       "analyst": "Strong buy",
       "chg_1d": -4.13,
       "chg_1w": -4.13,
-      "chg_1m": -0.88,
+      "chg_1m": 0.83,
       "rel_vol": 0.01,
       "signal": "Full Bull",
       "price_vs_8w": 0.38,
@@ -11225,7 +11225,7 @@
       "symbol": "EBGEF",
       "name": "Enbridge Inc.",
       "price": 25.0,
-      "mkt_cap_b": 118.5,
+      "mkt_cap_b": 118.1,
       "ema8": 24.99,
       "ema13": 24.95,
       "ema21": 24.86,
@@ -11233,7 +11233,7 @@
       "analyst": "",
       "chg_1d": 0.0,
       "chg_1w": 0.0,
-      "chg_1m": -0.48,
+      "chg_1m": -0.16,
       "rel_vol": 1.09,
       "signal": "Full Bull",
       "price_vs_8w": 0.02,
@@ -11248,7 +11248,7 @@
       "symbol": "MS/PK",
       "name": "Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of Fixed-to-Floating Rate Non-Cumulative Preferred Stock, Series K",
       "price": 24.9,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 24.8,
       "ema13": 24.75,
       "ema21": 24.68,
@@ -11271,7 +11271,7 @@
       "symbol": "BACRP",
       "name": "Bank of America Corp.",
       "price": 228.0,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 223.05,
       "ema13": 222.74,
       "ema21": 222.03,
@@ -11294,7 +11294,7 @@
       "symbol": "BAC/PK",
       "name": "Bank of America Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 5.875% Non- Cumulative Preferred Stock, Series HH",
       "price": 25.13,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 25.03,
       "ema13": 24.98,
       "ema21": 24.93,
@@ -11317,7 +11317,7 @@
       "symbol": "BAC/PP",
       "name": "Bank of America Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 4.125% Non-Cumulative Preferred Stock, Series PP",
       "price": 17.33,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 17.31,
       "ema13": 17.27,
       "ema21": 17.25,
@@ -11340,7 +11340,7 @@
       "symbol": "COF/PL",
       "name": "Capital One Financial Corporation Depositary Shares, Each Representing a 1/40th Interest in a Share of Fixed Rate Non-Cumulative Perpetual Preferred Stock, Seri",
       "price": 17.17,
-      "mkt_cap_b": 120.5,
+      "mkt_cap_b": 121.8,
       "ema8": 17.16,
       "ema13": 17.12,
       "ema21": 17.11,
@@ -11363,7 +11363,7 @@
       "symbol": "BAC/PS",
       "name": "Bank of America Corporation Depositary shares, each representing 1/1,000th interest in a share of 4.750% Non-Cumulative Preferred Stock, Series SS",
       "price": 19.97,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 19.93,
       "ema13": 19.9,
       "ema21": 19.88,
@@ -11386,7 +11386,7 @@
       "symbol": "MS/PQ",
       "name": "Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of 6.625% Non-Cumulative Preferred Stock, Series Q",
       "price": 26.33,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 26.33,
       "ema13": 26.32,
       "ema21": 26.28,
@@ -11409,7 +11409,7 @@
       "symbol": "MS/PO",
       "name": "Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of 4.250% Non-Cumulative Preferred Stock, Series O",
       "price": 17.98,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 17.92,
       "ema13": 17.9,
       "ema21": 17.9,
@@ -11432,7 +11432,7 @@
       "symbol": "MS/PI",
       "name": "Morgan Stanley Depository Shares Representing 1/1000th Preferred Series 1 Fixed to Floating Non (Cum)",
       "price": 25.32,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 25.26,
       "ema13": 25.24,
       "ema21": 25.22,
@@ -11455,7 +11455,7 @@
       "symbol": "DUK/PA",
       "name": "Duke Energy Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 5.75% Series A Cumulative Redeemable Perpetual Preferred Stock",
       "price": 25.1,
-      "mkt_cap_b": 102.2,
+      "mkt_cap_b": 102.6,
       "ema8": 25.07,
       "ema13": 25.06,
       "ema21": 25.04,
@@ -11478,7 +11478,7 @@
       "symbol": "MS/PP",
       "name": "Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of 6.500% Non-Cumulative Preferred Stock, Series P",
       "price": 25.9,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 25.71,
       "ema13": 25.69,
       "ema21": 25.68,
@@ -11501,7 +11501,7 @@
       "symbol": "BAC/PQ",
       "name": "Bank of America Corporation Depositary shares, each representing 1/1,000th interest in a share of 4.250% Non-Cumulative Preferred Stock, Series QQ",
       "price": 17.74,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 17.73,
       "ema13": 17.71,
       "ema21": 17.71,
@@ -11524,7 +11524,7 @@
       "symbol": "MS/PL",
       "name": "Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of 4.875% Non-Cumulative Preferred Stock, Series L",
       "price": 20.85,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 20.85,
       "ema13": 20.84,
       "ema21": 20.83,
@@ -11547,7 +11547,7 @@
       "symbol": "BAC/PB",
       "name": "Bank of America Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 6.000% Non-Cumulative Preferred Stock, Series GG",
       "price": 25.26,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 25.23,
       "ema13": 25.23,
       "ema21": 25.22,
@@ -11595,7 +11595,7 @@
       "symbol": "RLLCF",
       "name": "Rolls Royce Holdings plc",
       "price": 0.0,
-      "mkt_cap_b": 146.6,
+      "mkt_cap_b": 153.5,
       "ema8": 0.0,
       "ema13": 0.0,
       "ema21": 0.0,
@@ -11741,7 +11741,7 @@
       "analyst": "Strong buy",
       "chg_1d": 3.56,
       "chg_1w": -1.82,
-      "chg_1m": -14.65,
+      "chg_1m": -9.14,
       "rel_vol": 0.11,
       "signal": "Full Bear",
       "price_vs_8w": -9.27,
@@ -11964,9 +11964,9 @@
       "name": "SAP SE",
       "price": 195.15,
       "mkt_cap_b": 222.2,
-      "ema8": 209.6,
-      "ema13": 218.55,
-      "ema21": 229.51,
+      "ema8": 209.55,
+      "ema13": 218.51,
+      "ema21": 229.48,
       "sector": "Technology services",
       "analyst": "Strong buy",
       "chg_1d": 0.04,
@@ -11974,12 +11974,12 @@
       "chg_1m": -4.84,
       "rel_vol": 5.84,
       "signal": "Full Bear",
-      "price_vs_8w": -6.9,
-      "price_vs_13w": -10.71,
-      "price_vs_21w": -14.97,
-      "ema8_vs_13": -4.09,
-      "ema13_vs_21": -4.77,
-      "spread_score": -8.86,
+      "price_vs_8w": -6.87,
+      "price_vs_13w": -10.69,
+      "price_vs_21w": -14.96,
+      "ema8_vs_13": -4.1,
+      "ema13_vs_21": -4.78,
+      "spread_score": -8.88,
       "rank": 289
     },
     {
@@ -12377,7 +12377,7 @@
       "symbol": "BML/PJ",
       "name": "Bank of America Corporation Depositary Shares (Each representing a 1/1200th interest in a Share of Floating Rate Non-Cumulative Pref",
       "price": 19.85,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 20.32,
       "ema13": 20.39,
       "ema21": 20.53,
@@ -12515,7 +12515,7 @@
       "symbol": "PLDGP",
       "name": "Prologis, Inc.",
       "price": 52.71,
-      "mkt_cap_b": 134.1,
+      "mkt_cap_b": 132.6,
       "ema8": 53.4,
       "ema13": 53.88,
       "ema21": 54.32,
@@ -12538,7 +12538,7 @@
       "symbol": "GS/PC",
       "name": "Goldman Sachs Group, Inc. (The) Depositary Share repstg 1/1000th Preferred Series C",
       "price": 20.04,
-      "mkt_cap_b": 256.0,
+      "mkt_cap_b": 257.4,
       "ema8": 20.26,
       "ema13": 20.31,
       "ema21": 20.46,
@@ -12561,7 +12561,7 @@
       "symbol": "GS/PA",
       "name": "Goldman Sachs Group, Inc. (The) Depositary Shares each representing 1/1000th Interest in a Share of Floating Rate Non-Cumulative Preferred Stock Series A",
       "price": 19.9,
-      "mkt_cap_b": 256.0,
+      "mkt_cap_b": 257.4,
       "ema8": 20.08,
       "ema13": 20.13,
       "ema21": 20.3,
@@ -12584,7 +12584,7 @@
       "symbol": "SCHW/PJ",
       "name": "The Charles Schwab Corporation Depositary Shares, Each Representing a 1/40th Interest in a Share of 4.450% Non-Cumulative Perpetual Preferred Stock, Series J",
       "price": 18.73,
-      "mkt_cap_b": 166.9,
+      "mkt_cap_b": 168.3,
       "ema8": 18.87,
       "ema13": 18.94,
       "ema21": 19.04,
@@ -12630,7 +12630,7 @@
       "symbol": "GS/PD",
       "name": "Goldman Sachs Group, Inc. (The) Dep Shs repstg 1/1000 Pfd Ser D Fltg",
       "price": 19.87,
-      "mkt_cap_b": 256.0,
+      "mkt_cap_b": 257.4,
       "ema8": 19.98,
       "ema13": 20.0,
       "ema21": 20.12,
@@ -12653,7 +12653,7 @@
       "symbol": "MS/PA",
       "name": "Morgan Stanley Dep Shs repstg 1/1000 Pfd Ser A",
       "price": 19.88,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 19.98,
       "ema13": 20.05,
       "ema21": 20.25,
@@ -12722,7 +12722,7 @@
       "symbol": "BAC/PE",
       "name": "Bank of America Corporation Depositary Sh repstg 1/1000th Perp Pfd Ser E",
       "price": 20.02,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 20.1,
       "ema13": 20.11,
       "ema21": 20.27,
@@ -12745,7 +12745,7 @@
       "symbol": "BML/PL",
       "name": "Bank of America Corporation Depositary Shares (Each representing a 1/1200th Interest in a Share of Floating Rate Non-Cumulative Pref",
       "price": 19.68,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 19.75,
       "ema13": 19.76,
       "ema21": 19.87,
@@ -12768,7 +12768,7 @@
       "symbol": "BYDDF",
       "name": "BYD Co., Ltd.",
       "price": 12.31,
-      "mkt_cap_b": 117.4,
+      "mkt_cap_b": 118.4,
       "ema8": 12.35,
       "ema13": 12.47,
       "ema21": 12.74,
@@ -12791,7 +12791,7 @@
       "symbol": "JPM/PL",
       "name": "J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 4.625% Non-Cumulative Preferred Stock, Series LL",
       "price": 19.82,
-      "mkt_cap_b": 809.8,
+      "mkt_cap_b": 807.5,
       "ema8": 19.87,
       "ema13": 19.89,
       "ema21": 19.91,
@@ -12814,7 +12814,7 @@
       "symbol": "COF/PN",
       "name": "Capital One Financial Corporation Depositary Shares, Each Representing a 1/40th Ownership Interest in a Share of Fixed Rate Non-Cumulative Perpetual Preferred S",
       "price": 16.65,
-      "mkt_cap_b": 120.5,
+      "mkt_cap_b": 121.8,
       "ema8": 16.69,
       "ema13": 16.73,
       "ema21": 16.79,
@@ -12837,7 +12837,7 @@
       "symbol": "JPM/PK",
       "name": "J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 4.55% Non-Cumulative Preferred Stock, Series JJ",
       "price": 19.53,
-      "mkt_cap_b": 809.8,
+      "mkt_cap_b": 807.5,
       "ema8": 19.55,
       "ema13": 19.57,
       "ema21": 19.59,
@@ -12860,7 +12860,7 @@
       "symbol": "BML/PG",
       "name": "Bank of America Corporation Depositary Shares (Each representing a 1/1200th interest in a share of Floating Rate Non-Cumulative Preferred Stock , Series 1)",
       "price": 19.52,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 19.53,
       "ema13": 19.54,
       "ema21": 19.68,
@@ -12940,8 +12940,8 @@
       "bull_pct": 100.0,
       "bear_pct": 0.0,
       "net_score": 100.0,
-      "avg_vs_21w": 12.06,
-      "avg_vs_8w": 3.09
+      "avg_vs_21w": 12.12,
+      "avg_vs_8w": 3.21
     },
     {
       "sector": "Industrial services",
@@ -13005,8 +13005,8 @@
       "bull_pct": 76.9,
       "bear_pct": 20.5,
       "net_score": 56.4,
-      "avg_vs_21w": 8.14,
-      "avg_vs_8w": 1.35
+      "avg_vs_21w": 8.18,
+      "avg_vs_8w": 1.38
     },
     {
       "sector": "Transportation",
@@ -13063,15 +13063,15 @@
     {
       "sector": "Health technology",
       "count": 26,
-      "full_bull": 14,
+      "full_bull": 15,
       "all_bullish": 17,
       "all_bearish": 9,
-      "pullbacks": 3,
+      "pullbacks": 2,
       "bull_pct": 65.4,
       "bear_pct": 34.6,
       "net_score": 30.8,
-      "avg_vs_21w": 2.82,
-      "avg_vs_8w": -0.47
+      "avg_vs_21w": 3.1,
+      "avg_vs_8w": -0.22
     },
     {
       "sector": "Retail trade",
@@ -13136,7 +13136,7 @@
       "bear_pct": 90.5,
       "net_score": -81.0,
       "avg_vs_21w": -9.45,
-      "avg_vs_8w": -2.97
+      "avg_vs_8w": -2.96
     },
     {
       "sector": "Commercial services",
@@ -13157,7 +13157,7 @@
       "symbol": "BAC/PB",
       "name": "Bank of America Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 6.000% Non-Cumulative Preferred Stock, Series GG",
       "price": 25.26,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 25.23,
       "ema13": 25.23,
       "ema21": 25.22,
@@ -13183,7 +13183,7 @@
       "symbol": "CTATF",
       "name": "CONTEMPORARY AMPEREX TECHNOLOGY CO LTD",
       "price": 61.0,
-      "mkt_cap_b": 224.7,
+      "mkt_cap_b": 224.9,
       "ema8": 64.26,
       "ema13": 64.27,
       "ema21": 62.99,
@@ -13192,7 +13192,7 @@
       "chg_1d": -0.93,
       "chg_1w": -0.62,
       "chg_1m": 1.18,
-      "rel_vol": 0.85,
+      "rel_vol": 0.87,
       "signal": "Bearish (unstacked)",
       "price_vs_8w": -5.08,
       "price_vs_13w": -5.08,
@@ -13235,7 +13235,7 @@
       "symbol": "JPM/PD",
       "name": "J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 5.75% Non-Cumulative Preferred Stock, Series DD",
       "price": 25.01,
-      "mkt_cap_b": 809.8,
+      "mkt_cap_b": 807.5,
       "ema8": 25.02,
       "ema13": 25.03,
       "ema21": 25.01,
@@ -13261,7 +13261,7 @@
       "symbol": "MS/PF",
       "name": "Morgan Stanley Dep Shs Rpstg 1/1000th Int Prd Ser F Fxd to Flag",
       "price": 25.35,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 25.32,
       "ema13": 25.32,
       "ema21": 25.32,
@@ -13313,7 +13313,7 @@
       "symbol": "JPM/PM",
       "name": "J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 4.20% Non-Cumulative Preferred Stock, Series MM",
       "price": 18.53,
-      "mkt_cap_b": 809.8,
+      "mkt_cap_b": 807.5,
       "ema8": 18.54,
       "ema13": 18.53,
       "ema21": 18.53,
@@ -13339,7 +13339,7 @@
       "symbol": "BAC/PQ",
       "name": "Bank of America Corporation Depositary shares, each representing 1/1,000th interest in a share of 4.250% Non-Cumulative Preferred Stock, Series QQ",
       "price": 17.74,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 17.73,
       "ema13": 17.71,
       "ema21": 17.71,
@@ -13362,36 +13362,10 @@
       "alert": "8W just above 13W (0.07%) \u2014 bearish cross risk; 13W just below 21W (0.02%) \u2014 bullish cross potential"
     },
     {
-      "symbol": "MS/PE",
-      "name": "Morgan Stanley DEPOSITARY SHARES REP 1/1000TH SHARES FIXED/FLTG PREFERRED STOCK SERIES E",
-      "price": 25.59,
-      "mkt_cap_b": 263.5,
-      "ema8": 25.54,
-      "ema13": 25.54,
-      "ema21": 25.55,
-      "sector": "Finance",
-      "analyst": "",
-      "chg_1d": 0.08,
-      "chg_1w": 0.31,
-      "chg_1m": 0.2,
-      "rel_vol": 0.53,
-      "signal": "Bear Rally above 13W",
-      "price_vs_8w": 0.21,
-      "price_vs_13w": 0.19,
-      "price_vs_21w": 0.17,
-      "ema8_vs_13": -0.02,
-      "ema13_vs_21": -0.02,
-      "spread_score": -0.04,
-      "rank": 175,
-      "gap_8_13": 0.02,
-      "gap_13_21": 0.02,
-      "alert": "8W just below 13W (0.02%) \u2014 bullish cross potential; 13W just below 21W (0.02%) \u2014 bullish cross potential"
-    },
-    {
       "symbol": "MS/PL",
       "name": "Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of 4.875% Non-Cumulative Preferred Stock, Series L",
       "price": 20.85,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 20.85,
       "ema13": 20.84,
       "ema21": 20.83,
@@ -13412,6 +13386,32 @@
       "gap_8_13": 0.02,
       "gap_13_21": 0.04,
       "alert": "8W just above 13W (0.02%) \u2014 bearish cross risk; 13W just above 21W (0.04%) \u2014 bearish cross risk"
+    },
+    {
+      "symbol": "MS/PE",
+      "name": "Morgan Stanley DEPOSITARY SHARES REP 1/1000TH SHARES FIXED/FLTG PREFERRED STOCK SERIES E",
+      "price": 25.59,
+      "mkt_cap_b": 266.1,
+      "ema8": 25.54,
+      "ema13": 25.54,
+      "ema21": 25.55,
+      "sector": "Finance",
+      "analyst": "",
+      "chg_1d": 0.08,
+      "chg_1w": 0.31,
+      "chg_1m": 0.2,
+      "rel_vol": 0.53,
+      "signal": "Bear Rally above 13W",
+      "price_vs_8w": 0.21,
+      "price_vs_13w": 0.19,
+      "price_vs_21w": 0.17,
+      "ema8_vs_13": -0.02,
+      "ema13_vs_21": -0.02,
+      "spread_score": -0.04,
+      "rank": 175,
+      "gap_8_13": 0.02,
+      "gap_13_21": 0.02,
+      "alert": "8W just below 13W (0.02%) \u2014 bullish cross potential; 13W just below 21W (0.02%) \u2014 bullish cross potential"
     },
     {
       "symbol": "EADSF",
@@ -13469,7 +13469,7 @@
       "symbol": "BRK.B",
       "name": "Berkshire Hathaway Inc. New",
       "price": 487.48,
-      "mkt_cap_b": 1051.1,
+      "mkt_cap_b": 1051.4,
       "ema8": 495.56,
       "ema13": 495.71,
       "ema21": 495.51,
@@ -13495,7 +13495,7 @@
       "symbol": "BML/PH",
       "name": "Bank of America Corporation Depositary Shares (Each representing a 1/1200th interest in a Share of Floating Rate Non-Cumulative Pref",
       "price": 19.46,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 19.45,
       "ema13": 19.45,
       "ema21": 19.56,
@@ -13521,7 +13521,7 @@
       "symbol": "MS/PO",
       "name": "Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of 4.250% Non-Cumulative Preferred Stock, Series O",
       "price": 17.98,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 17.92,
       "ema13": 17.9,
       "ema21": 17.9,
@@ -13547,7 +13547,7 @@
       "symbol": "MS/PP",
       "name": "Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of 6.500% Non-Cumulative Preferred Stock, Series P",
       "price": 25.9,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 25.71,
       "ema13": 25.69,
       "ema21": 25.68,
@@ -13573,7 +13573,7 @@
       "symbol": "SCHW/PD",
       "name": "The Charles Schwab Corporation Depositary Shares each representing 1/40th interest in a share of 5.95% Non-Cumulative Perpetual Preferred Stock, Series D",
       "price": 25.11,
-      "mkt_cap_b": 166.9,
+      "mkt_cap_b": 168.3,
       "ema8": 25.16,
       "ema13": 25.15,
       "ema21": 25.13,
@@ -13625,7 +13625,7 @@
       "symbol": "COF/PJ",
       "name": "Capital One Financial Corporation Depositary Shares, Each Representing a 1/40th Interest in a Share of Fixed Rate Non- Cumulative Perpetual Preferred Stock, Ser",
       "price": 18.62,
-      "mkt_cap_b": 120.5,
+      "mkt_cap_b": 121.8,
       "ema8": 18.59,
       "ema13": 18.59,
       "ema21": 18.61,
@@ -13651,7 +13651,7 @@
       "symbol": "BRK.A",
       "name": "Berkshire Hathaway Inc.",
       "price": 730707.01,
-      "mkt_cap_b": 1051.9,
+      "mkt_cap_b": 1051.4,
       "ema8": 743865.94,
       "ema13": 744149.49,
       "ema21": 743824.33,
@@ -13674,10 +13674,36 @@
       "alert": "8W just below 13W (0.04%) \u2014 bullish cross potential; 13W just above 21W (0.04%) \u2014 bearish cross risk"
     },
     {
+      "symbol": "BAC/PL",
+      "name": "Bank of America Corporation Non Cumulative Perpetual Conv Pfd Ser L",
+      "price": 1239.0,
+      "mkt_cap_b": 361.0,
+      "ema8": 1248.78,
+      "ema13": 1250.57,
+      "ema21": 1250.12,
+      "sector": "Finance",
+      "analyst": "",
+      "chg_1d": 0.24,
+      "chg_1w": 0.32,
+      "chg_1m": -0.88,
+      "rel_vol": 0.48,
+      "signal": "Bearish (unstacked)",
+      "price_vs_8w": -0.78,
+      "price_vs_13w": -0.92,
+      "price_vs_21w": -0.89,
+      "ema8_vs_13": -0.14,
+      "ema13_vs_21": 0.04,
+      "spread_score": -0.1,
+      "rank": 208,
+      "gap_8_13": 0.14,
+      "gap_13_21": 0.04,
+      "alert": "8W just below 13W (0.14%) \u2014 bullish cross potential; 13W just above 21W (0.04%) \u2014 bearish cross risk"
+    },
+    {
       "symbol": "BAC/PE",
       "name": "Bank of America Corporation Depositary Sh repstg 1/1000th Perp Pfd Ser E",
       "price": 20.02,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 20.1,
       "ema13": 20.11,
       "ema21": 20.27,
@@ -13703,7 +13729,7 @@
       "symbol": "BML/PG",
       "name": "Bank of America Corporation Depositary Shares (Each representing a 1/1200th interest in a share of Floating Rate Non-Cumulative Preferred Stock , Series 1)",
       "price": 19.52,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 19.53,
       "ema13": 19.54,
       "ema21": 19.68,
@@ -13726,36 +13752,10 @@
       "alert": "8W just below 13W (0.04%) \u2014 bullish cross potential; 13W just below 21W (0.69%) \u2014 bullish cross potential"
     },
     {
-      "symbol": "BAC/PL",
-      "name": "Bank of America Corporation Non Cumulative Perpetual Conv Pfd Ser L",
-      "price": 1239.0,
-      "mkt_cap_b": 358.6,
-      "ema8": 1248.78,
-      "ema13": 1250.57,
-      "ema21": 1250.12,
-      "sector": "Finance",
-      "analyst": "",
-      "chg_1d": 0.24,
-      "chg_1w": 0.32,
-      "chg_1m": -0.88,
-      "rel_vol": 0.48,
-      "signal": "Bearish (unstacked)",
-      "price_vs_8w": -0.78,
-      "price_vs_13w": -0.92,
-      "price_vs_21w": -0.89,
-      "ema8_vs_13": -0.14,
-      "ema13_vs_21": 0.04,
-      "spread_score": -0.1,
-      "rank": 208,
-      "gap_8_13": 0.14,
-      "gap_13_21": 0.04,
-      "alert": "8W just below 13W (0.14%) \u2014 bullish cross potential; 13W just above 21W (0.04%) \u2014 bearish cross risk"
-    },
-    {
       "symbol": "BML/PL",
       "name": "Bank of America Corporation Depositary Shares (Each representing a 1/1200th Interest in a Share of Floating Rate Non-Cumulative Pref",
       "price": 19.68,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 19.75,
       "ema13": 19.76,
       "ema21": 19.87,
@@ -13781,7 +13781,7 @@
       "symbol": "T/PC",
       "name": "AT&T Inc. Depositary Shares, each representing a 1/1,000th interest in a share of 4.750% Perpetual Preferred Stock, Series C",
       "price": 19.37,
-      "mkt_cap_b": 200.7,
+      "mkt_cap_b": 202.9,
       "ema8": 19.38,
       "ema13": 19.37,
       "ema21": 19.37,
@@ -13807,7 +13807,7 @@
       "symbol": "DUK/PA",
       "name": "Duke Energy Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 5.75% Series A Cumulative Redeemable Perpetual Preferred Stock",
       "price": 25.1,
-      "mkt_cap_b": 102.2,
+      "mkt_cap_b": 102.6,
       "ema8": 25.07,
       "ema13": 25.06,
       "ema21": 25.04,
@@ -13833,7 +13833,7 @@
       "symbol": "MS/PQ",
       "name": "Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of 6.625% Non-Cumulative Preferred Stock, Series Q",
       "price": 26.33,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 26.33,
       "ema13": 26.32,
       "ema21": 26.28,
@@ -13859,7 +13859,7 @@
       "symbol": "COF/PK",
       "name": "Capital One Financial Corporation Depositary Shares, Each Representing a 1/40th Ownership Interest in a Share of Fixed Rate Non-Cumulative Perpetual Preferred S",
       "price": 18.02,
-      "mkt_cap_b": 120.5,
+      "mkt_cap_b": 121.8,
       "ema8": 17.99,
       "ema13": 17.99,
       "ema21": 18.01,
@@ -13885,7 +13885,7 @@
       "symbol": "JPM/PC",
       "name": "J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 6.00% Non-Cumulative Preferred Stock, Series EE",
       "price": 25.29,
-      "mkt_cap_b": 809.8,
+      "mkt_cap_b": 807.5,
       "ema8": 25.23,
       "ema13": 25.25,
       "ema21": 25.27,
@@ -13911,7 +13911,7 @@
       "symbol": "BAC/PO",
       "name": "Bank of America Corporation Depositary shares, each representing 1/1,000th interest in a share of 4.375% Non-Cumulative Preferred Stock, Series NN",
       "price": 18.27,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 18.27,
       "ema13": 18.25,
       "ema21": 18.24,
@@ -13937,7 +13937,7 @@
       "symbol": "MS/PI",
       "name": "Morgan Stanley Depository Shares Representing 1/1000th Preferred Series 1 Fixed to Floating Non (Cum)",
       "price": 25.32,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 25.26,
       "ema13": 25.24,
       "ema21": 25.22,
@@ -13960,36 +13960,10 @@
       "alert": "8W just above 13W (0.06%) \u2014 bearish cross risk; 13W just above 21W (0.08%) \u2014 bearish cross risk"
     },
     {
-      "symbol": "COF/PL",
-      "name": "Capital One Financial Corporation Depositary Shares, Each Representing a 1/40th Interest in a Share of Fixed Rate Non-Cumulative Perpetual Preferred Stock, Seri",
-      "price": 17.17,
-      "mkt_cap_b": 120.5,
-      "ema8": 17.16,
-      "ema13": 17.12,
-      "ema21": 17.11,
-      "sector": "Finance",
-      "analyst": "",
-      "chg_1d": -0.17,
-      "chg_1w": -0.12,
-      "chg_1m": 1.06,
-      "rel_vol": 0.65,
-      "signal": "Full Bull",
-      "price_vs_8w": 0.05,
-      "price_vs_13w": 0.26,
-      "price_vs_21w": 0.32,
-      "ema8_vs_13": 0.21,
-      "ema13_vs_21": 0.06,
-      "spread_score": 0.27,
-      "rank": 169,
-      "gap_8_13": 0.21,
-      "gap_13_21": 0.06,
-      "alert": "8W just above 13W (0.21%) \u2014 bearish cross risk; 13W just above 21W (0.06%) \u2014 bearish cross risk"
-    },
-    {
       "symbol": "COF/PI",
       "name": "Capital One Financial Corporation Depositary shares each representing a 1/40th interest in a share of Fixed Rate Non-Cumulative Perpetual Preferred Stock, Serie",
       "price": 19.6,
-      "mkt_cap_b": 120.5,
+      "mkt_cap_b": 121.8,
       "ema8": 19.66,
       "ema13": 19.63,
       "ema21": 19.61,
@@ -14010,6 +13984,32 @@
       "gap_8_13": 0.17,
       "gap_13_21": 0.06,
       "alert": "8W just above 13W (0.17%) \u2014 bearish cross risk; 13W just above 21W (0.06%) \u2014 bearish cross risk"
+    },
+    {
+      "symbol": "COF/PL",
+      "name": "Capital One Financial Corporation Depositary Shares, Each Representing a 1/40th Interest in a Share of Fixed Rate Non-Cumulative Perpetual Preferred Stock, Seri",
+      "price": 17.17,
+      "mkt_cap_b": 121.8,
+      "ema8": 17.16,
+      "ema13": 17.12,
+      "ema21": 17.11,
+      "sector": "Finance",
+      "analyst": "",
+      "chg_1d": -0.17,
+      "chg_1w": -0.12,
+      "chg_1m": 1.06,
+      "rel_vol": 0.65,
+      "signal": "Full Bull",
+      "price_vs_8w": 0.05,
+      "price_vs_13w": 0.26,
+      "price_vs_21w": 0.32,
+      "ema8_vs_13": 0.21,
+      "ema13_vs_21": 0.06,
+      "spread_score": 0.27,
+      "rank": 169,
+      "gap_8_13": 0.21,
+      "gap_13_21": 0.06,
+      "alert": "8W just above 13W (0.21%) \u2014 bearish cross risk; 13W just above 21W (0.06%) \u2014 bearish cross risk"
     },
     {
       "symbol": "AAPL",
@@ -14041,7 +14041,7 @@
       "symbol": "JPM/PL",
       "name": "J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 4.625% Non-Cumulative Preferred Stock, Series LL",
       "price": 19.82,
-      "mkt_cap_b": 809.8,
+      "mkt_cap_b": 807.5,
       "ema8": 19.87,
       "ema13": 19.89,
       "ema21": 19.91,
@@ -14093,7 +14093,7 @@
       "symbol": "WFC/PL",
       "name": "Wells Fargo & Company 7.50% Non-Cumulative Perpetual Convertible",
       "price": 1218.31,
-      "mkt_cap_b": 254.7,
+      "mkt_cap_b": 259.0,
       "ema8": 1233.76,
       "ema13": 1232.87,
       "ema21": 1229.94,
@@ -14197,7 +14197,7 @@
       "symbol": "JPM/PJ",
       "name": "J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of JPMorgan Chase & Co. 4.75% Non-Cumulative Preferred Stock, Series GG",
       "price": 20.43,
-      "mkt_cap_b": 809.8,
+      "mkt_cap_b": 807.5,
       "ema8": 20.42,
       "ema13": 20.44,
       "ema21": 20.48,
@@ -14223,7 +14223,7 @@
       "symbol": "BAC/PS",
       "name": "Bank of America Corporation Depositary shares, each representing 1/1,000th interest in a share of 4.750% Non-Cumulative Preferred Stock, Series SS",
       "price": 19.97,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 19.93,
       "ema13": 19.9,
       "ema21": 19.88,
@@ -14246,36 +14246,10 @@
       "alert": "8W just above 13W (0.16%) \u2014 bearish cross risk; 13W just above 21W (0.09%) \u2014 bearish cross risk"
     },
     {
-      "symbol": "GS/PD",
-      "name": "Goldman Sachs Group, Inc. (The) Dep Shs repstg 1/1000 Pfd Ser D Fltg",
-      "price": 19.87,
-      "mkt_cap_b": 256.0,
-      "ema8": 19.98,
-      "ema13": 20.0,
-      "ema21": 20.12,
-      "sector": "Finance",
-      "analyst": "",
-      "chg_1d": 0.51,
-      "chg_1w": 0.15,
-      "chg_1m": -1.24,
-      "rel_vol": 1.64,
-      "signal": "Full Bear",
-      "price_vs_8w": -0.55,
-      "price_vs_13w": -0.64,
-      "price_vs_21w": -1.22,
-      "ema8_vs_13": -0.09,
-      "ema13_vs_21": -0.59,
-      "spread_score": -0.68,
-      "rank": 214,
-      "gap_8_13": 0.09,
-      "gap_13_21": 0.59,
-      "alert": "8W just below 13W (0.09%) \u2014 bullish cross potential; 13W just below 21W (0.59%) \u2014 bullish cross potential"
-    },
-    {
       "symbol": "WFC/PA",
       "name": "Wells Fargo & Company Depositary Shares, each representing a 1/1,000th interest in a share of Non-Cumulative Perpetual",
       "price": 19.3,
-      "mkt_cap_b": 254.7,
+      "mkt_cap_b": 259.0,
       "ema8": 19.44,
       "ema13": 19.42,
       "ema21": 19.4,
@@ -14298,10 +14272,36 @@
       "alert": "8W just above 13W (0.09%) \u2014 bearish cross risk; 13W just above 21W (0.10%) \u2014 bearish cross risk"
     },
     {
+      "symbol": "GS/PD",
+      "name": "Goldman Sachs Group, Inc. (The) Dep Shs repstg 1/1000 Pfd Ser D Fltg",
+      "price": 19.87,
+      "mkt_cap_b": 257.4,
+      "ema8": 19.98,
+      "ema13": 20.0,
+      "ema21": 20.12,
+      "sector": "Finance",
+      "analyst": "",
+      "chg_1d": 0.51,
+      "chg_1w": 0.15,
+      "chg_1m": -1.24,
+      "rel_vol": 1.64,
+      "signal": "Full Bear",
+      "price_vs_8w": -0.55,
+      "price_vs_13w": -0.64,
+      "price_vs_21w": -1.22,
+      "ema8_vs_13": -0.09,
+      "ema13_vs_21": -0.59,
+      "spread_score": -0.68,
+      "rank": 214,
+      "gap_8_13": 0.09,
+      "gap_13_21": 0.59,
+      "alert": "8W just below 13W (0.09%) \u2014 bullish cross potential; 13W just below 21W (0.59%) \u2014 bullish cross potential"
+    },
+    {
       "symbol": "JPM/PK",
       "name": "J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 4.55% Non-Cumulative Preferred Stock, Series JJ",
       "price": 19.53,
-      "mkt_cap_b": 809.8,
+      "mkt_cap_b": 807.5,
       "ema8": 19.55,
       "ema13": 19.57,
       "ema21": 19.59,
@@ -14327,7 +14327,7 @@
       "symbol": "WFC/PC",
       "name": "Wells Fargo & Company Depositary Shares, each representing a 1/1,000th interest in a share of Non-Cumulative Perpetual",
       "price": 18.04,
-      "mkt_cap_b": 254.7,
+      "mkt_cap_b": 259.0,
       "ema8": 18.18,
       "ema13": 18.16,
       "ema21": 18.13,
@@ -14353,7 +14353,7 @@
       "symbol": "BAC/PP",
       "name": "Bank of America Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 4.125% Non-Cumulative Preferred Stock, Series PP",
       "price": 17.33,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 17.31,
       "ema13": 17.27,
       "ema21": 17.25,
@@ -14379,7 +14379,7 @@
       "symbol": "BACRP",
       "name": "Bank of America Corp.",
       "price": 228.0,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 223.05,
       "ema13": 222.74,
       "ema21": 222.03,
@@ -14457,7 +14457,7 @@
       "symbol": "BACHF",
       "name": "Bank of China, Ltd.",
       "price": 0.58,
-      "mkt_cap_b": 230.9,
+      "mkt_cap_b": 232.0,
       "ema8": 0.58,
       "ema13": 0.58,
       "ema21": 0.58,
@@ -14465,7 +14465,7 @@
       "analyst": "Strong buy",
       "chg_1d": -4.13,
       "chg_1w": -4.13,
-      "chg_1m": -0.88,
+      "chg_1m": 0.83,
       "rel_vol": 0.01,
       "signal": "Full Bull",
       "price_vs_8w": 0.38,
@@ -14483,7 +14483,7 @@
       "symbol": "EBGEF",
       "name": "Enbridge Inc.",
       "price": 25.0,
-      "mkt_cap_b": 118.5,
+      "mkt_cap_b": 118.1,
       "ema8": 24.99,
       "ema13": 24.95,
       "ema21": 24.86,
@@ -14491,7 +14491,7 @@
       "analyst": "",
       "chg_1d": 0.0,
       "chg_1w": 0.0,
-      "chg_1m": -0.48,
+      "chg_1m": -0.16,
       "rel_vol": 1.09,
       "signal": "Full Bull",
       "price_vs_8w": 0.02,
@@ -14509,7 +14509,7 @@
       "symbol": "MS/PK",
       "name": "Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of Fixed-to-Floating Rate Non-Cumulative Preferred Stock, Series K",
       "price": 24.9,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 24.8,
       "ema13": 24.75,
       "ema21": 24.68,
@@ -14535,7 +14535,7 @@
       "symbol": "BAC/PK",
       "name": "Bank of America Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 5.875% Non- Cumulative Preferred Stock, Series HH",
       "price": 25.13,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 25.03,
       "ema13": 24.98,
       "ema21": 24.93,
@@ -14613,7 +14613,7 @@
       "symbol": "WFC/PZ",
       "name": "Wells Fargo & Company Depositary Shares, each representing a 1/1,000th interest in a share of Non-Cumulative Perpetual",
       "price": 19.65,
-      "mkt_cap_b": 254.7,
+      "mkt_cap_b": 259.0,
       "ema8": 19.76,
       "ema13": 19.71,
       "ema21": 19.67,
@@ -14639,7 +14639,7 @@
       "symbol": "COF/PN",
       "name": "Capital One Financial Corporation Depositary Shares, Each Representing a 1/40th Ownership Interest in a Share of Fixed Rate Non-Cumulative Perpetual Preferred S",
       "price": 16.65,
-      "mkt_cap_b": 120.5,
+      "mkt_cap_b": 121.8,
       "ema8": 16.69,
       "ema13": 16.73,
       "ema21": 16.79,
@@ -14691,7 +14691,7 @@
       "symbol": "WFC/PD",
       "name": "Wells Fargo & Company Depositary Shares, each representing a 1/1,000th interest in a share of Non-Cumulative Perpetual",
       "price": 17.76,
-      "mkt_cap_b": 254.7,
+      "mkt_cap_b": 259.0,
       "ema8": 17.82,
       "ema13": 17.78,
       "ema21": 17.74,
@@ -14743,7 +14743,7 @@
       "symbol": "BAC/PM",
       "name": "Bank of America Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 5.375% Non-Cumulative Preferred Stock, Series KK",
       "price": 22.66,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 22.71,
       "ema13": 22.65,
       "ema21": 22.6,
@@ -14821,7 +14821,7 @@
       "symbol": "GS/PA",
       "name": "Goldman Sachs Group, Inc. (The) Depositary Shares each representing 1/1000th Interest in a Share of Floating Rate Non-Cumulative Preferred Stock Series A",
       "price": 19.9,
-      "mkt_cap_b": 256.0,
+      "mkt_cap_b": 257.4,
       "ema8": 20.08,
       "ema13": 20.13,
       "ema21": 20.3,
@@ -14847,7 +14847,7 @@
       "symbol": "GS/PC",
       "name": "Goldman Sachs Group, Inc. (The) Depositary Share repstg 1/1000th Preferred Series C",
       "price": 20.04,
-      "mkt_cap_b": 256.0,
+      "mkt_cap_b": 257.4,
       "ema8": 20.26,
       "ema13": 20.31,
       "ema21": 20.46,
@@ -14890,7 +14890,7 @@
       "ema8_vs_13": 0.25,
       "ema13_vs_21": 1.57,
       "spread_score": 1.82,
-      "rank": 50,
+      "rank": 51,
       "gap_8_13": 0.25,
       "gap_13_21": 1.57,
       "alert": "8W just above 13W (0.25%) \u2014 bearish cross risk"
@@ -14899,7 +14899,7 @@
       "symbol": "WFC/PY",
       "name": "Wells Fargo & Company Depositary Shares, each representing a 1/1,000th interest in a share of Non-Cumulative Perpetual",
       "price": 24.62,
-      "mkt_cap_b": 254.7,
+      "mkt_cap_b": 259.0,
       "ema8": 24.54,
       "ema13": 24.48,
       "ema21": 24.4,
@@ -14925,7 +14925,7 @@
       "symbol": "T/PA",
       "name": "AT&T Inc. Depositary Shares, each representing a 1/1,000th interest in a share of 5.000% Perpetual Preferred Stock, Series A",
       "price": 20.81,
-      "mkt_cap_b": 200.7,
+      "mkt_cap_b": 202.9,
       "ema8": 20.74,
       "ema13": 20.67,
       "ema21": 20.62,
@@ -14977,7 +14977,7 @@
       "symbol": "MGCOF",
       "name": "Midea Group Co Ltd.",
       "price": 11.37,
-      "mkt_cap_b": 86.0,
+      "mkt_cap_b": 86.2,
       "ema8": 11.46,
       "ema13": 11.5,
       "ema21": 11.46,
@@ -15029,7 +15029,7 @@
       "symbol": "EBBGF",
       "name": "Enbridge Inc.",
       "price": 24.86,
-      "mkt_cap_b": 118.5,
+      "mkt_cap_b": 118.1,
       "ema8": 24.71,
       "ema13": 24.63,
       "ema21": 24.53,
@@ -15055,7 +15055,7 @@
       "symbol": "MS/PA",
       "name": "Morgan Stanley Dep Shs repstg 1/1000 Pfd Ser A",
       "price": 19.88,
-      "mkt_cap_b": 263.5,
+      "mkt_cap_b": 266.1,
       "ema8": 19.98,
       "ema13": 20.05,
       "ema21": 20.25,
@@ -15081,7 +15081,7 @@
       "symbol": "BML/PJ",
       "name": "Bank of America Corporation Depositary Shares (Each representing a 1/1200th interest in a Share of Floating Rate Non-Cumulative Pref",
       "price": 19.85,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 20.32,
       "ema13": 20.39,
       "ema21": 20.53,
@@ -15133,7 +15133,7 @@
       "symbol": "BAC/PN",
       "name": "Bank of America Corporation Depositary shares, each representing 1/1,000th interest in a share of 5.000% Non-Cumulative Preferred Stock, Series LL",
       "price": 21.2,
-      "mkt_cap_b": 358.6,
+      "mkt_cap_b": 361.0,
       "ema8": 21.27,
       "ema13": 21.19,
       "ema21": 21.12,
@@ -15185,7 +15185,7 @@
       "symbol": "BN",
       "name": "Brookfield Corporation",
       "price": 43.19,
-      "mkt_cap_b": 107.0,
+      "mkt_cap_b": 105.8,
       "ema8": 45.26,
       "ema13": 45.52,
       "ema21": 45.36,
@@ -15228,7 +15228,7 @@
       "ema8_vs_13": 1.18,
       "ema13_vs_21": 0.36,
       "spread_score": 1.54,
-      "rank": 44,
+      "rank": 45,
       "gap_8_13": 1.18,
       "gap_13_21": 0.36,
       "alert": "13W just above 21W (0.36%) \u2014 bearish cross risk"
@@ -15289,7 +15289,7 @@
       "symbol": "SCHW/PJ",
       "name": "The Charles Schwab Corporation Depositary Shares, Each Representing a 1/40th Interest in a Share of 4.450% Non-Cumulative Perpetual Preferred Stock, Series J",
       "price": 18.73,
-      "mkt_cap_b": 166.9,
+      "mkt_cap_b": 168.3,
       "ema8": 18.87,
       "ema13": 18.94,
       "ema21": 19.04,
@@ -15393,7 +15393,7 @@
       "symbol": "EBBNF",
       "name": "Enbridge Inc.",
       "price": 24.41,
-      "mkt_cap_b": 118.5,
+      "mkt_cap_b": 118.1,
       "ema8": 24.42,
       "ema13": 24.32,
       "ema21": 24.18,
@@ -15402,7 +15402,7 @@
       "chg_1d": -0.12,
       "chg_1w": 0.0,
       "chg_1m": 0.62,
-      "rel_vol": 2.59,
+      "rel_vol": 2.6,
       "signal": "Bull Pullback \u2192 13W",
       "price_vs_8w": -0.05,
       "price_vs_13w": 0.36,
@@ -15419,7 +15419,7 @@
       "symbol": "CICHF",
       "name": "China Construction Bank Corp.",
       "price": 1.03,
-      "mkt_cap_b": 275.3,
+      "mkt_cap_b": 275.8,
       "ema8": 1.0,
       "ema13": 1.0,
       "ema21": 0.99,
@@ -15497,7 +15497,7 @@
       "symbol": "ACGBF",
       "name": "Agricultural Bank of China",
       "price": 0.67,
-      "mkt_cap_b": 331.4,
+      "mkt_cap_b": 333.9,
       "ema8": 0.7,
       "ema13": 0.71,
       "ema21": 0.7,
@@ -15834,25 +15834,25 @@
     {
       "symbol": "KYCCF",
       "name": "Keyence Corp.",
-      "price": 395.0,
-      "mkt_cap_b": 95.8,
+      "price": 400.0,
+      "mkt_cap_b": 97.0,
       "ema8": 387.18,
       "ema13": 381.47,
       "ema21": 378.93,
       "sector": "Electronic technology",
       "analyst": "Strong buy",
-      "chg_1d": 4.67,
+      "chg_1d": 5.99,
       "chg_1w": 2.04,
-      "chg_1m": -1.43,
+      "chg_1m": -0.18,
       "rel_vol": 0.82,
       "signal": "Full Bull",
-      "price_vs_8w": 2.02,
-      "price_vs_13w": 3.55,
-      "price_vs_21w": 4.24,
+      "price_vs_8w": 3.31,
+      "price_vs_13w": 4.86,
+      "price_vs_21w": 5.56,
       "ema8_vs_13": 1.5,
       "ema13_vs_21": 0.67,
       "spread_score": 2.17,
-      "rank": 118,
+      "rank": 107,
       "gap_8_13": 1.5,
       "gap_13_21": 0.67,
       "alert": "13W just above 21W (0.67%) \u2014 bearish cross risk"
@@ -16008,7 +16008,7 @@
       "ema8_vs_13": 0.74,
       "ema13_vs_21": 1.19,
       "spread_score": 1.93,
-      "rank": 109,
+      "rank": 110,
       "gap_8_13": 0.74,
       "gap_13_21": 1.19,
       "alert": "8W just above 13W (0.74%) \u2014 bearish cross risk"
@@ -16069,7 +16069,7 @@
       "symbol": "PLDGP",
       "name": "Prologis, Inc.",
       "price": 52.71,
-      "mkt_cap_b": 134.1,
+      "mkt_cap_b": 132.6,
       "ema8": 53.4,
       "ema13": 53.88,
       "ema21": 54.32,
@@ -16320,7 +16320,7 @@
       "ema8_vs_13": 2.04,
       "ema13_vs_21": 0.94,
       "spread_score": 2.98,
-      "rank": 71,
+      "rank": 72,
       "gap_8_13": 2.04,
       "gap_13_21": 0.94,
       "alert": "13W just above 21W (0.94%) \u2014 bearish cross risk"
@@ -16381,7 +16381,7 @@
       "symbol": "BYDDF",
       "name": "BYD Co., Ltd.",
       "price": 12.31,
-      "mkt_cap_b": 117.4,
+      "mkt_cap_b": 118.4,
       "ema8": 12.35,
       "ema13": 12.47,
       "ema21": 12.74,
@@ -16407,7 +16407,7 @@
       "symbol": "GOOG",
       "name": "Alphabet Inc.",
       "price": 303.45,
-      "mkt_cap_b": 3671.0,
+      "mkt_cap_b": 3668.7,
       "ema8": 313.62,
       "ema13": 310.58,
       "ema21": 298.97,
@@ -16432,24 +16432,24 @@
   ],
   "ai_summary": {
     "market_overview": {
-      "bias": "bullish",
-      "bias_label": "Leaning Bullish",
-      "headline": "Market showing healthy bull structure with 45% in Full Bull mode and strong sector rotation into commodities and industrials.",
-      "detail": "SPY in Bull Pullback mode while QQQ unstacked but above 21W suggests tech digesting gains while broader market remains constructive. Only 19% in Full Bear with energy and materials leading performance.",
+      "bias": "mixed",
+      "bias_label": "Cautiously Mixed",
+      "headline": "Market shows fragile bullish structure with SPY in pullback mode and tech leadership weakening.",
+      "detail": "45.7% of stocks remain in Full Bull but both SPY and QQQ showing EMA compression with bearish cross risks. Sector divergence extreme with Energy/Metals at 100% bull vs Tech Services at 90.5% bear.",
       "index_signals": {
         "SPY": "Bull Pullback \u2192 13W",
         "QQQ": "Bullish (unstacked)"
       }
     },
     "reversal_candidates": {
-      "headline": "Bear Rally Reversal Watch",
+      "headline": "Early Reversal Signals - Bear Rallies with Bullish Cross Potential",
       "items": [
         {
           "symbol": "META",
           "name": "Meta Platforms, Inc.",
           "signal": "Bear Rally above 13W",
-          "crossover_detail": "8W just below 13W (0.00%) \u2014 bullish cross potential; 13W just below 21W (0.02%) \u2014 bullish cross potential",
-          "note": "Mega-cap tech showing early reversal signs with price holding above 13W and EMAs coiling for potential bullish breaks.",
+          "crossover_detail": "8W just below 13W (0.00%) \u2014 bullish cross potential; 13W just below 21W (0.25%) \u2014 bullish cross potential",
+          "note": "Mega-cap tech showing early reversal signals after bear structure, bullish crossover imminent.",
           "type": "bull"
         },
         {
@@ -16457,28 +16457,28 @@
           "name": "Intercontinental Exchange Inc.",
           "signal": "Bear Rally above 13W",
           "crossover_detail": "8W just below 13W (0.00%) \u2014 bullish cross potential; 13W just below 21W (0.25%) \u2014 bullish cross potential",
-          "note": "Strong rally off lows with dual bullish crossover potential setting up clean reversal structure.",
+          "note": "Financial exchange leader breaking out of bear structure with strong analyst support.",
           "type": "bull"
         },
         {
-          "symbol": "NFLX",
-          "name": "Netflix, Inc.",
-          "signal": "Bear Rally above 13W",
-          "crossover_detail": null,
-          "note": "Streaming giant showing strongest bear rally momentum at +10% from 8W, testing for full reversal.",
+          "symbol": "NVDA",
+          "name": "NVIDIA Corporation",
+          "signal": "Bullish (unstacked)",
+          "crossover_detail": "8W just below 13W (0.03%) \u2014 bullish cross potential",
+          "note": "AI leader showing bullish cross potential after EMA unstacking, critical reversal point.",
           "type": "bull"
         }
       ]
     },
     "pullback_setups": {
-      "headline": "Quality Pullback Entries",
+      "headline": "High-Quality Pullback Entries in Established Uptrends",
       "items": [
         {
           "symbol": "LRCX",
           "name": "Lam Research Corporation",
           "signal": "Bull Pullback \u2192 13W",
           "price_vs_21w": 14.94,
-          "note": "Semiconductor equipment leader showing textbook pullback structure in strong uptrend, +15% above 21W.",
+          "note": "Semiconductor equipment leader pulling back to 13W support in strong uptrend, quality entry zone.",
           "type": "bull"
         },
         {
@@ -16486,42 +16486,42 @@
           "name": "United Parcel Service, Inc.",
           "signal": "Bull Pullback \u2192 13W",
           "price_vs_21w": 4.77,
-          "note": "Logistics giant pulling back to 13W support in established uptrend, good risk-reward at current levels.",
+          "note": "Logistics giant offering pullback entry in defensive sector rotation play.",
           "type": "bull"
         }
       ]
     },
     "momentum_themes": {
-      "headline": "Semiconductor & Memory Acceleration",
-      "detail": "Electronic technology leading momentum with memory stocks (WDC, MU) and semiconductor equipment (LRCX, AMAT) showing explosive acceleration. Copper mining also surging with commodity reflation theme gaining steam.",
+      "headline": "Memory/Storage Semiconductors Leading Momentum Acceleration",
+      "detail": "Memory and storage companies dominating momentum with SNDK, WDC, MU showing massive spread scores. Electronic technology sector acceleration despite broader tech weakness.",
       "top_names": [
+        "SNDK",
         "WDC",
         "MU",
-        "AMAT",
-        "SCCO",
-        "GLW"
+        "GLW",
+        "AMAT"
       ]
     },
     "sector_analysis": {
-      "headline": "Commodity Sectors Dominating",
+      "headline": "Extreme Sector Divergence - Commodities vs Tech Services",
       "strongest": [
         {
           "sector": "Energy minerals",
           "net_score": 100.0,
           "bull_pct": 100.0,
-          "note": "Perfect bullish structure with all 9 stocks in uptrends, averaging +12.5% above 21W."
+          "note": "Perfect bullish alignment with 12.5% average gains above 21W EMA."
         },
         {
           "sector": "Non-energy minerals",
           "net_score": 100.0,
           "bull_pct": 100.0,
-          "note": "Mining and materials showing explosive momentum with +17.8% average gains above 21W."
+          "note": "Mining/metals showing exceptional strength with 17.83% average performance."
         },
         {
           "sector": "Distribution services",
           "net_score": 100.0,
           "bull_pct": 100.0,
-          "note": "Small but strong sector with logistics and distribution companies in clean uptrends."
+          "note": "Supply chain names benefiting from infrastructure spending themes."
         }
       ],
       "weakest": [
@@ -16529,41 +16529,45 @@
           "sector": "Technology services",
           "net_score": -81.0,
           "bear_pct": 90.5,
-          "note": "Software and cloud stocks under severe pressure with 90% in bearish structure, -9.5% below 21W average."
-        },
-        {
-          "sector": "Commercial services",
-          "net_score": -100.0,
-          "bear_pct": 100.0,
-          "note": "Complete sector breakdown with all stocks in bearish trends."
+          "note": "Massive tech services breakdown with 90.5% in bearish structure."
         },
         {
           "sector": "Consumer durables",
           "net_score": -80.0,
           "bear_pct": 80.0,
-          "note": "Auto and appliance stocks struggling with demand concerns and rate sensitivity."
+          "note": "Consumer spending weakness evident in durable goods sector collapse."
+        },
+        {
+          "sector": "Commercial services",
+          "net_score": -100.0,
+          "bear_pct": 100.0,
+          "note": "Small sample but complete bearish breakdown in commercial services."
         }
       ],
-      "detail": "Clear rotation from growth/tech into value/commodities with industrials and materials leading. Finance sector mixed but improving with 45% bullish participation."
+      "detail": "Clear rotation from growth tech into value commodities and industrials. Finance sector neutral at 6.9% net score suggests transition period."
     },
     "risk_warnings": {
-      "headline": "Key Risks to Monitor",
+      "headline": "Key Risk Factors",
       "items": [
         {
-          "text": "Technology services sector in deep bear structure (-81% net score) could drag broader market if selling accelerates",
+          "text": "SPY showing bearish cross risk with both 8W/13W and 13W/21W EMAs compressed",
           "type": "caution"
         },
         {
-          "text": "25 Bull Breakdowns suggest some uptrends starting to crack under pressure",
+          "text": "Technology Services sector in severe bear structure (90.5% bearish) despite previous leadership",
+          "type": "bear"
+        },
+        {
+          "text": "25 Bull Breakdown names suggesting institutional uptrend deterioration accelerating",
           "type": "caution"
         },
         {
-          "text": "QQQ unstacked structure shows tech leadership remains fragile despite recent bounce",
+          "text": "QQQ showing EMA compression with potential bearish crosses developing",
           "type": "caution"
         }
       ]
     },
-    "generated_at": "2026-03-04T22:10:53.733792",
+    "generated_at": "2026-03-05T09:25:13.341705",
     "model": "claude-sonnet-4-20250514"
   }
 }
