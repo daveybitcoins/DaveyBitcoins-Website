@@ -2,7 +2,7 @@ name: Update EMA Scanner
 
 on:
   schedule:
-    - cron: '15 14 * * *'   # daily at 14:15 UTC (9:15 AM EST) — fallback
+    - cron: '0 15 * * *'    # daily at 15:00 UTC (10:00 AM EST) — fallback
     - cron: '15 22 * * *'   # daily at 22:15 UTC (5:15 PM EST) — fallback
   workflow_run:
     workflows: ["Update BTC price data"]
