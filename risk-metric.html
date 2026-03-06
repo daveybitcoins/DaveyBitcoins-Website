@@ -105,6 +105,17 @@
   .card-price::after{content:'';position:absolute;inset:0;border-radius:14px;background:radial-gradient(ellipse at 50% 0%,rgba(200,212,240,0.07) 0%,transparent 65%);pointer-events:none}
   [data-theme="light"] .card-price{background:linear-gradient(140deg,#fff 0%,#eef2f8 100%)}
   [data-theme="light"] .card-price::after{background:radial-gradient(ellipse at 50% 0%,rgba(9,105,218,0.05) 0%,transparent 65%)}
+  .risk-lows-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:36px;overflow-x:auto;transition:background 0.3s,border-color 0.3s}
+  .risk-lows-wrap h4{font-family:'Outfit',sans-serif;font-size:0.65rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;text-align:center}
+  .risk-lows-table{width:100%;border-collapse:collapse}
+  .risk-lows-table th{font-size:0.55rem;color:var(--text-dimmer);text-transform:uppercase;letter-spacing:1.5px;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+  .risk-lows-table td{font-size:0.75rem;padding:10px 12px;border-bottom:1px solid var(--border-light);color:var(--text)}
+  .risk-lows-table tr:last-child td{border-bottom:none}
+  .risk-lows-table .rl-event{color:var(--text-bright);font-weight:500}
+  .risk-lows-table .rl-price{font-family:'Outfit',sans-serif;font-weight:600;color:var(--text-heading)}
+  .risk-lows-table .rl-risk{font-family:'Outfit',sans-serif;font-weight:600}
+  .risk-lows-table .rl-return{font-family:'Outfit',sans-serif;font-weight:600}
+  @media(max-width:600px){.risk-lows-table th,.risk-lows-table td{padding:6px 8px;font-size:0.65rem}}
 </style>
 </head>
 <body>
@@ -135,6 +146,15 @@
   <div class="risk-table-wrap">
     <h4>Price at Each Risk Level (Combined)</h4>
     <div class="risk-table" id="riskTable"></div>
+  </div>
+  <div class="risk-lows-wrap">
+    <h4>Historical Risk Lows — Accumulation Opportunities</h4>
+    <table class="risk-lows-table" id="riskLowsTable">
+      <thead>
+        <tr><th>Date</th><th>Event</th><th>BTC Price</th><th>Combined Risk</th><th>1Y Return</th><th>2Y Return</th><th>3Y Return</th></tr>
+      </thead>
+      <tbody id="riskLowsBody"></tbody>
+    </table>
   </div>
   <div class="chart-panel">
     <div class="chart-header">
@@ -347,6 +367,111 @@ async function main() {
       cell.innerHTML='<div class="rc-risk" style="color:'+riskColor(r)+'">'+r.toFixed(2)+'</div><div class="rc-price">'+pStr+'</div>';
       tbl.appendChild(cell);
     }
+  }
+
+  // ====== HISTORICAL RISK LOWS ======
+  {
+    const EVENT_LABELS = {
+      "2011-11": "Post-bubble crash",
+      "2012-06": "Post-2011 bubble low",
+      "2015-01": "Post Mt. Gox bear bottom",
+      "2015-08": "Post Mt. Gox bear bottom",
+      "2018-12": "2018 bear market bottom",
+      "2019-01": "2018 bear market bottom",
+      "2019-02": "2018 bear market bottom",
+      "2020-03": "COVID-19 crash",
+      "2022-11": "FTX collapse / bear bottom",
+      "2022-12": "FTX collapse / bear bottom"
+    };
+
+    function getEventLabel(dateStr) {
+      const prefix = dateStr.slice(0, 7);
+      if (EVENT_LABELS[prefix]) return EVENT_LABELS[prefix];
+      const d = new Date(dateStr + 'T00:00:00Z');
+      for (let offset = -2; offset <= 2; offset++) {
+        if (offset === 0) continue;
+        const check = new Date(d);
+        check.setUTCMonth(check.getUTCMonth() + offset);
+        const key = check.toISOString().slice(0, 7);
+        if (EVENT_LABELS[key]) return EVENT_LABELS[key];
+      }
+      return '';
+    }
+
+    function findRiskLows(data) {
+      const PEAK_THRESH = 0.65;
+      const VALLEY_MAX = 0.35;
+      const MIN_SEGMENT = 120;
+      const dn = data.length;
+
+      // Find major peaks (local max in 30-day window, risk > PEAK_THRESH)
+      const peaks = [];
+      for (let i = 30; i < dn - 30; i++) {
+        if (data[i].riskCombo < PEAK_THRESH) continue;
+        let isPeak = true;
+        for (let j = i - 30; j <= i + 30; j++) {
+          if (j !== i && data[j].riskCombo > data[i].riskCombo) { isPeak = false; break; }
+        }
+        if (!isPeak) continue;
+        if (peaks.length > 0 && i - peaks[peaks.length - 1] < 180) {
+          if (data[i].riskCombo > data[peaks[peaks.length - 1]].riskCombo) peaks[peaks.length - 1] = i;
+          continue;
+        }
+        peaks.push(i);
+      }
+
+      // Find the minimum-risk valley between each consecutive pair of peaks
+      const segments = [];
+      for (let k = 0; k < peaks.length - 1; k++) {
+        segments.push([peaks[k], peaks[k + 1]]);
+      }
+      if (peaks.length > 0 && dn - 1 - peaks[peaks.length - 1] > MIN_SEGMENT) {
+        segments.push([peaks[peaks.length - 1], dn - 1]);
+      }
+
+      const lows = [];
+      segments.forEach(function(seg) {
+        var start = seg[0], end = seg[1];
+        if (end - start < MIN_SEGMENT) return;
+        var minIdx = start;
+        for (var i = start; i <= end; i++) {
+          if (data[i].riskCombo < data[minIdx].riskCombo) minIdx = i;
+        }
+        if (data[minIdx].riskCombo < VALLEY_MAX) {
+          lows.push({ _idx: minIdx });
+        }
+      });
+
+      return lows.map(function(l) {
+        return Object.assign({}, data[l._idx], { _idx: l._idx });
+      });
+    }
+
+    const lows = findRiskLows(pts);
+    const tbody = document.getElementById('riskLowsBody');
+    lows.forEach(low => {
+      const tr = document.createElement('tr');
+      const event = getEventLabel(low.date);
+      const pStr = low.price >= 1e6 ? '$' + (low.price / 1e6).toFixed(1) + 'M' :
+                   low.price >= 1000 ? '$' + low.price.toLocaleString(undefined, { maximumFractionDigits: 0 }) :
+                   '$' + low.price.toFixed(2);
+      // Calculate forward returns for 1Y, 2Y, 3Y
+      function fwdCell(idx, years) {
+        var days = years * 365;
+        var fIdx = Math.min(idx + days, n - 1);
+        var actual = fIdx - idx;
+        if (actual < days * 0.8) return '<td class="rl-return" style="color:var(--text-dimmer)">—</td>';
+        var ret = ((pts[fIdx].price / pts[idx].price - 1) * 100);
+        var col = ret >= 0 ? '#10b981' : '#ef4444';
+        return '<td class="rl-return" style="color:' + col + '">' + (ret >= 0 ? '+' : '') + Math.round(ret) + '%</td>';
+      }
+      tr.innerHTML = '<td>' + low.date + '</td>' +
+        '<td class="rl-event">' + (event || '—') + '</td>' +
+        '<td class="rl-price">' + pStr + '</td>' +
+        '<td class="rl-risk" style="color:' + riskColor(low.riskCombo) + '">' + low.riskCombo.toFixed(3) + '</td>' +
+        fwdCell(low._idx, 1) + fwdCell(low._idx, 2) + fwdCell(low._idx, 3);
+      tbody.appendChild(tr);
+    });
   }
 
   // ====== ZOOM/PAN STATE (shared between both charts) ======
