@@ -26,8 +26,9 @@ jobs:
             exit 0
           fi
 
-          # Parse prices, keep only last price per date, append new dates
+          # Parse prices, update today's price if changed, append new dates
           ADDED=0
+          UPDATED=0
           while IFS= read -r line; do
             DATE=$(echo "$line" | cut -d'|' -f1)
             PRICE=$(echo "$line" | cut -d'|' -f2)
@@ -35,6 +36,13 @@ jobs:
               echo "${DATE},${PRICE}" >> data.csv
               ADDED=$((ADDED+1))
               echo "Added: $DATE, $PRICE"
+            elif [[ "$DATE" == "$LAST_DATE" ]]; then
+              OLD_PRICE=$(tail -1 data.csv | cut -d',' -f2)
+              if [[ "$PRICE" != "$OLD_PRICE" ]]; then
+                sed -i "$ s/.*/${DATE},${PRICE}/" data.csv
+                UPDATED=1
+                echo "Updated: $DATE, $OLD_PRICE -> $PRICE"
+              fi
             fi
           done < <(echo "$JSON" | python3 -c "
           import sys, json
@@ -49,7 +57,7 @@ jobs:
               print(f'{d}|{by_date[d]}')
           ")
 
-          echo "Added $ADDED new entries"
+          echo "Added $ADDED new entries, updated $UPDATED existing"
 
       - name: Commit and push if changed
         run: |
