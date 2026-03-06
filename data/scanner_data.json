@@ -2,7 +2,7 @@
   "meta": {
     "date": "2026-03-06",
     "total_stocks": 300,
-    "generated_at": "2026-03-06T22:24:45.439169",
+    "generated_at": "2026-03-06T23:00:21.003613",
     "index_etfs": [
       "SPY",
       "QQQ",
@@ -51,26 +51,26 @@
     {
       "symbol": "BTC",
       "name": "Bitcoin",
-      "price": 68346.8,
-      "ema8": 73815.9,
-      "ema13": 78991.23,
-      "ema21": 85062.06,
+      "price": 68426.53,
+      "ema8": 73833.62,
+      "ema13": 79002.62,
+      "ema21": 85069.31,
       "signal": "Full Bear",
-      "price_vs_8w": -7.41,
-      "price_vs_13w": -13.48,
-      "price_vs_21w": -19.65,
-      "ema8_vs_13": -6.55,
-      "ema13_vs_21": -7.14,
-      "spread_score": -13.69,
-      "chg_1d": -5.63,
-      "chg_1w": 1.3,
-      "chg_1m": -6.47,
+      "price_vs_8w": -7.32,
+      "price_vs_13w": -13.39,
+      "price_vs_21w": -19.56,
+      "ema8_vs_13": -6.54,
+      "ema13_vs_21": -7.13,
+      "spread_score": -13.67,
+      "chg_1d": -5.52,
+      "chg_1w": 1.42,
+      "chg_1m": -6.36,
       "crossover_alert": null,
-      "risk_combo": 0.193,
+      "risk_combo": 0.194,
       "risk_mm": 0.345,
-      "risk_zs": 0.108,
-      "fair_value": 128604.31,
-      "dev_pct": -46.9,
+      "risk_zs": 0.109,
+      "fair_value": 128604.37,
+      "dev_pct": -46.8,
       "zone": "Accumulate",
       "zone_color": "#2563eb"
     }
@@ -115,15 +115,15 @@
       },
       {
         "signal": "Bearish (unstacked)",
-        "count": 32,
-        "pct": 0.107,
-        "avg_vs_21w": -4.75
+        "count": 33,
+        "pct": 0.11,
+        "avg_vs_21w": -4.64
       },
       {
         "signal": "Full Bear",
-        "count": 65,
-        "pct": 0.217,
-        "avg_vs_21w": -7.89
+        "count": 64,
+        "pct": 0.213,
+        "avg_vs_21w": -8.01
       },
       {
         "signal": "Bull Breakdown",
@@ -194,7 +194,7 @@
       "chg_1d": -3.19,
       "chg_1w": -3.07,
       "chg_1m": 26.79,
-      "rel_vol": 1.31,
+      "rel_vol": 1.4,
       "signal": "Full Bull",
       "price_vs_8w": 9.35,
       "price_vs_13w": 16.62,
@@ -470,7 +470,7 @@
       "chg_1d": -6.74,
       "chg_1w": -7.76,
       "chg_1m": -9.81,
-      "rel_vol": 1.08,
+      "rel_vol": 1.09,
       "signal": "Bull Pullback \u2192 13W",
       "price_vs_8w": -3.44,
       "price_vs_13w": 3.5,
@@ -539,7 +539,7 @@
       "chg_1d": -0.12,
       "chg_1w": 2.28,
       "chg_1m": 9.29,
-      "rel_vol": 0.89,
+      "rel_vol": 0.9,
       "signal": "Full Bull",
       "price_vs_8w": 8.24,
       "price_vs_13w": 12.16,
@@ -677,7 +677,7 @@
       "chg_1d": -3.82,
       "chg_1w": -6.57,
       "chg_1m": 0.84,
-      "rel_vol": 1.55,
+      "rel_vol": 1.56,
       "signal": "Full Bull",
       "price_vs_8w": 1.49,
       "price_vs_13w": 6.88,
@@ -1091,7 +1091,7 @@
       "chg_1d": 0.17,
       "chg_1w": -11.61,
       "chg_1m": -3.71,
-      "rel_vol": 0.8,
+      "rel_vol": 0.83,
       "signal": "Bull Pullback \u2192 13W",
       "price_vs_8w": -1.54,
       "price_vs_13w": 2.85,
@@ -1459,7 +1459,7 @@
       "chg_1d": -3.57,
       "chg_1w": -7.17,
       "chg_1m": -3.69,
-      "rel_vol": 1.16,
+      "rel_vol": 1.18,
       "signal": "Bull Pullback \u2192 13W",
       "price_vs_8w": -2.38,
       "price_vs_13w": 1.8,
@@ -1620,7 +1620,7 @@
       "chg_1d": -1.3,
       "chg_1w": -3.05,
       "chg_1m": 0.76,
-      "rel_vol": 0.78,
+      "rel_vol": 1.03,
       "signal": "Full Bull",
       "price_vs_8w": 1.39,
       "price_vs_13w": 4.53,
@@ -2402,7 +2402,7 @@
       "chg_1d": 0.01,
       "chg_1w": -5.18,
       "chg_1m": -0.29,
-      "rel_vol": 0.76,
+      "rel_vol": 0.81,
       "signal": "Full Bull",
       "price_vs_8w": 0.04,
       "price_vs_13w": 2.11,
@@ -2425,7 +2425,7 @@
       "chg_1d": -1.19,
       "chg_1w": -5.37,
       "chg_1m": 4.23,
-      "rel_vol": 0.86,
+      "rel_vol": 0.92,
       "signal": "Bull Pullback \u2192 13W",
       "price_vs_8w": -0.26,
       "price_vs_13w": 1.44,
@@ -2655,7 +2655,7 @@
       "chg_1d": 0.19,
       "chg_1w": -3.81,
       "chg_1m": 2.16,
-      "rel_vol": 0.98,
+      "rel_vol": 0.99,
       "signal": "Full Bull",
       "price_vs_8w": 0.87,
       "price_vs_13w": 2.21,
@@ -3230,7 +3230,7 @@
       "chg_1d": -1.17,
       "chg_1w": -3.21,
       "chg_1m": -4.61,
-      "rel_vol": 0.88,
+      "rel_vol": 0.89,
       "signal": "Bull Pullback \u2192 21W",
       "price_vs_8w": -3.17,
       "price_vs_13w": -1.9,
@@ -3322,7 +3322,7 @@
       "chg_1d": -0.28,
       "chg_1w": 0.76,
       "chg_1m": 0.64,
-      "rel_vol": 0.95,
+      "rel_vol": 0.96,
       "signal": "Full Bull",
       "price_vs_8w": 0.17,
       "price_vs_13w": 0.33,
@@ -3793,29 +3793,6 @@
       "rank": 159
     },
     {
-      "symbol": "USB/PR",
-      "name": "U.S. Bancorp Depositary Shares, Each Representing a 1/1,000th Interest in a Share of Series M Non-Cumulative Perpetual Preferred Stock",
-      "price": 16.54,
-      "mkt_cap_b": 83.8,
-      "ema8": 16.55,
-      "ema13": 16.55,
-      "ema21": 16.57,
-      "sector": "Finance",
-      "analyst": "",
-      "chg_1d": -0.3,
-      "chg_1w": -0.18,
-      "chg_1m": 1.04,
-      "rel_vol": 0.8,
-      "signal": "Full Bear",
-      "price_vs_8w": -0.04,
-      "price_vs_13w": -0.05,
-      "price_vs_21w": -0.18,
-      "ema8_vs_13": -0.01,
-      "ema13_vs_21": -0.13,
-      "spread_score": -0.14,
-      "rank": 160
-    },
-    {
       "symbol": "MS/PQ",
       "name": "Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of 6.625% Non-Cumulative Preferred Stock, Series Q",
       "price": 26.22,
@@ -3836,7 +3813,7 @@
       "ema8_vs_13": 0.02,
       "ema13_vs_21": 0.11,
       "spread_score": 0.13,
-      "rank": 161
+      "rank": 160
     },
     {
       "symbol": "MS/PE",
@@ -3859,7 +3836,7 @@
       "ema8_vs_13": -0.05,
       "ema13_vs_21": -0.04,
       "spread_score": -0.09,
-      "rank": 162
+      "rank": 161
     },
     {
       "symbol": "LLY",
@@ -3882,7 +3859,7 @@
       "ema8_vs_13": 0.77,
       "ema13_vs_21": 2.86,
       "spread_score": 3.63,
-      "rank": 163
+      "rank": 162
     },
     {
       "symbol": "BAC/PB",
@@ -3905,7 +3882,7 @@
       "ema8_vs_13": -0.04,
       "ema13_vs_21": 0.01,
       "spread_score": -0.03,
-      "rank": 164
+      "rank": 163
     },
     {
       "symbol": "COF/PL",
@@ -3928,7 +3905,7 @@
       "ema8_vs_13": 0.16,
       "ema13_vs_21": 0.02,
       "spread_score": 0.18,
-      "rank": 165
+      "rank": 164
     },
     {
       "symbol": "BML/PG",
@@ -3951,7 +3928,7 @@
       "ema8_vs_13": -0.0,
       "ema13_vs_21": -0.66,
       "spread_score": -0.66,
-      "rank": 166
+      "rank": 165
     },
     {
       "symbol": "JPM/PM",
@@ -3974,7 +3951,7 @@
       "ema8_vs_13": 0.01,
       "ema13_vs_21": -0.01,
       "spread_score": 0.0,
-      "rank": 167
+      "rank": 166
     },
     {
       "symbol": "MS/PO",
@@ -3997,7 +3974,7 @@
       "ema8_vs_13": 0.03,
       "ema13_vs_21": -0.02,
       "spread_score": 0.01,
-      "rank": 168
+      "rank": 167
     },
     {
       "symbol": "JPM/PC",
@@ -4020,7 +3997,7 @@
       "ema8_vs_13": -0.11,
       "ema13_vs_21": -0.13,
       "spread_score": -0.24,
-      "rank": 169
+      "rank": 168
     },
     {
       "symbol": "WFC/PD",
@@ -4043,7 +4020,7 @@
       "ema8_vs_13": 0.18,
       "ema13_vs_21": 0.19,
       "spread_score": 0.37,
-      "rank": 170
+      "rank": 169
     },
     {
       "symbol": "SCHW/PD",
@@ -4066,7 +4043,7 @@
       "ema8_vs_13": 0.0,
       "ema13_vs_21": 0.04,
       "spread_score": 0.04,
-      "rank": 171
+      "rank": 170
     },
     {
       "symbol": "AIQUF",
@@ -4089,7 +4066,7 @@
       "ema8_vs_13": 0.75,
       "ema13_vs_21": 0.15,
       "spread_score": 0.9,
-      "rank": 172
+      "rank": 171
     },
     {
       "symbol": "T/PA",
@@ -4112,7 +4089,7 @@
       "ema8_vs_13": 0.22,
       "ema13_vs_21": 0.17,
       "spread_score": 0.39,
-      "rank": 173
+      "rank": 172
     },
     {
       "symbol": "CEG",
@@ -4135,7 +4112,7 @@
       "ema8_vs_13": -1.76,
       "ema13_vs_21": -1.59,
       "spread_score": -3.35,
-      "rank": 174
+      "rank": 173
     },
     {
       "symbol": "WFC/PA",
@@ -4158,7 +4135,7 @@
       "ema8_vs_13": 0.09,
       "ema13_vs_21": 0.09,
       "spread_score": 0.18,
-      "rank": 175
+      "rank": 174
     },
     {
       "symbol": "T/PC",
@@ -4181,7 +4158,7 @@
       "ema8_vs_13": 0.04,
       "ema13_vs_21": -0.07,
       "spread_score": -0.03,
-      "rank": 176
+      "rank": 175
     },
     {
       "symbol": "BAC/PS",
@@ -4204,7 +4181,7 @@
       "ema8_vs_13": 0.06,
       "ema13_vs_21": 0.03,
       "spread_score": 0.09,
-      "rank": 177
+      "rank": 176
     },
     {
       "symbol": "BAC/PN",
@@ -4227,7 +4204,7 @@
       "ema8_vs_13": 0.25,
       "ema13_vs_21": 0.28,
       "spread_score": 0.53,
-      "rank": 178
+      "rank": 177
     },
     {
       "symbol": "JPM/PD",
@@ -4250,7 +4227,7 @@
       "ema8_vs_13": -0.07,
       "ema13_vs_21": 0.01,
       "spread_score": -0.06,
-      "rank": 179
+      "rank": 178
     },
     {
       "symbol": "PLTR",
@@ -4273,7 +4250,7 @@
       "ema8_vs_13": -3.39,
       "ema13_vs_21": -2.12,
       "spread_score": -5.51,
-      "rank": 180
+      "rank": 179
     },
     {
       "symbol": "BML/PH",
@@ -4296,7 +4273,7 @@
       "ema8_vs_13": 0.01,
       "ema13_vs_21": -0.61,
       "spread_score": -0.6,
-      "rank": 181
+      "rank": 180
     },
     {
       "symbol": "COF/PK",
@@ -4319,7 +4296,7 @@
       "ema8_vs_13": -0.02,
       "ema13_vs_21": -0.17,
       "spread_score": -0.19,
-      "rank": 182
+      "rank": 181
     },
     {
       "symbol": "BAC/PO",
@@ -4342,7 +4319,7 @@
       "ema8_vs_13": 0.06,
       "ema13_vs_21": 0.01,
       "spread_score": 0.07,
-      "rank": 183
+      "rank": 182
     },
     {
       "symbol": "BAC/PM",
@@ -4365,7 +4342,7 @@
       "ema8_vs_13": 0.17,
       "ema13_vs_21": 0.17,
       "spread_score": 0.34,
-      "rank": 184
+      "rank": 183
     },
     {
       "symbol": "BAC/PQ",
@@ -4388,7 +4365,7 @@
       "ema8_vs_13": -0.02,
       "ema13_vs_21": -0.04,
       "spread_score": -0.06,
-      "rank": 185
+      "rank": 184
     },
     {
       "symbol": "COF/PI",
@@ -4411,7 +4388,7 @@
       "ema8_vs_13": 0.1,
       "ema13_vs_21": 0.02,
       "spread_score": 0.12,
-      "rank": 186
+      "rank": 185
     },
     {
       "symbol": "COF/PJ",
@@ -4434,7 +4411,7 @@
       "ema8_vs_13": -0.05,
       "ema13_vs_21": -0.2,
       "spread_score": -0.25,
-      "rank": 187
+      "rank": 186
     },
     {
       "symbol": "TXN",
@@ -4457,7 +4434,7 @@
       "ema8_vs_13": 2.46,
       "ema13_vs_21": 2.68,
       "spread_score": 5.14,
-      "rank": 188
+      "rank": 187
     },
     {
       "symbol": "SYK",
@@ -4480,7 +4457,7 @@
       "ema8_vs_13": 0.44,
       "ema13_vs_21": -0.02,
       "spread_score": 0.42,
-      "rank": 189
+      "rank": 188
     },
     {
       "symbol": "AAPL",
@@ -4503,7 +4480,7 @@
       "ema8_vs_13": -0.09,
       "ema13_vs_21": 0.99,
       "spread_score": 0.9,
-      "rank": 190
+      "rank": 189
     },
     {
       "symbol": "JPM/PK",
@@ -4526,7 +4503,7 @@
       "ema8_vs_13": -0.15,
       "ema13_vs_21": -0.17,
       "spread_score": -0.32,
-      "rank": 191
+      "rank": 190
     },
     {
       "symbol": "AVGO",
@@ -4549,30 +4526,7 @@
       "ema8_vs_13": -1.0,
       "ema13_vs_21": 0.42,
       "spread_score": -0.58,
-      "rank": 192
-    },
-    {
-      "symbol": "USB/PQ",
-      "name": "U.S. Bancorp Depositary Shares, Each Representing a 1/1,000th Interest in a Share of Series L Non-Cumulative Perpetual Preferred Stock",
-      "price": 15.38,
-      "mkt_cap_b": 83.8,
-      "ema8": 15.5,
-      "ema13": 15.51,
-      "ema21": 15.53,
-      "sector": "Finance",
-      "analyst": "",
-      "chg_1d": -0.39,
-      "chg_1w": -1.09,
-      "chg_1m": -0.13,
-      "rel_vol": 0.79,
-      "signal": "Full Bear",
-      "price_vs_8w": -0.76,
-      "price_vs_13w": -0.83,
-      "price_vs_21w": -1.0,
-      "ema8_vs_13": -0.07,
-      "ema13_vs_21": -0.17,
-      "spread_score": -0.24,
-      "rank": 193
+      "rank": 191
     },
     {
       "symbol": "WFC/PC",
@@ -4595,6 +4549,52 @@
       "ema8_vs_13": 0.07,
       "ema13_vs_21": 0.12,
       "spread_score": 0.19,
+      "rank": 192
+    },
+    {
+      "symbol": "USB/PP",
+      "name": "U.S. Bancorp Depositary Shares each representing a 1/1,000th interest in a share of Series K Non-Cumulative Perpetual Preferred Stock",
+      "price": 23.08,
+      "mkt_cap_b": 83.8,
+      "ema8": 23.31,
+      "ema13": 23.3,
+      "ema21": 23.32,
+      "sector": "Finance",
+      "analyst": "",
+      "chg_1d": -0.9,
+      "chg_1w": -1.33,
+      "chg_1m": -1.49,
+      "rel_vol": 0.77,
+      "signal": "Bearish (unstacked)",
+      "price_vs_8w": -0.97,
+      "price_vs_13w": -0.95,
+      "price_vs_21w": -1.02,
+      "ema8_vs_13": 0.01,
+      "ema13_vs_21": -0.06,
+      "spread_score": -0.05,
+      "rank": 193
+    },
+    {
+      "symbol": "USB/PA",
+      "name": "U.S. Bancorp Depositary Shares, Each representing a 1/100th interest in a share of Series A Non-CumulativePerpetual Pfd Stock",
+      "price": 779.7,
+      "mkt_cap_b": 83.8,
+      "ema8": 781.57,
+      "ema13": 782.85,
+      "ema21": 788.22,
+      "sector": "Finance",
+      "analyst": "",
+      "chg_1d": 0.01,
+      "chg_1w": -0.92,
+      "chg_1m": 0.09,
+      "rel_vol": 0.44,
+      "signal": "Full Bear",
+      "price_vs_8w": -0.24,
+      "price_vs_13w": -0.4,
+      "price_vs_21w": -1.08,
+      "ema8_vs_13": -0.16,
+      "ema13_vs_21": -0.68,
+      "spread_score": -0.84,
       "rank": 194
     },
     {
@@ -5277,7 +5277,7 @@
       "chg_1d": -1.98,
       "chg_1w": -3.64,
       "chg_1m": -11.01,
-      "rel_vol": 1.14,
+      "rel_vol": 1.15,
       "signal": "Bull Breakdown",
       "price_vs_8w": -6.47,
       "price_vs_13w": -5.69,
@@ -5484,7 +5484,7 @@
       "chg_1d": -0.73,
       "chg_1w": 0.59,
       "chg_1m": -2.98,
-      "rel_vol": 0.77,
+      "rel_vol": 0.78,
       "signal": "Full Bear",
       "price_vs_8w": -2.06,
       "price_vs_13w": -3.24,
@@ -6289,7 +6289,7 @@
       "chg_1d": -2.09,
       "chg_1w": -3.92,
       "chg_1m": -15.27,
-      "rel_vol": 0.96,
+      "rel_vol": 0.98,
       "signal": "Bearish (unstacked)",
       "price_vs_8w": -9.52,
       "price_vs_13w": -10.27,
@@ -7050,7 +7050,7 @@
       "chg_1d": -6.74,
       "chg_1w": -7.76,
       "chg_1m": -9.81,
-      "rel_vol": 1.08,
+      "rel_vol": 1.09,
       "signal": "Bull Pullback \u2192 13W",
       "price_vs_8w": -3.44,
       "price_vs_13w": 3.5,
@@ -7142,7 +7142,7 @@
       "chg_1d": 0.17,
       "chg_1w": -11.61,
       "chg_1m": -3.71,
-      "rel_vol": 0.8,
+      "rel_vol": 0.83,
       "signal": "Bull Pullback \u2192 13W",
       "price_vs_8w": -1.54,
       "price_vs_13w": 2.85,
@@ -7280,7 +7280,7 @@
       "chg_1d": -3.57,
       "chg_1w": -7.17,
       "chg_1m": -3.69,
-      "rel_vol": 1.16,
+      "rel_vol": 1.18,
       "signal": "Bull Pullback \u2192 13W",
       "price_vs_8w": -2.38,
       "price_vs_13w": 1.8,
@@ -7579,7 +7579,7 @@
       "chg_1d": -1.19,
       "chg_1w": -5.37,
       "chg_1m": 4.23,
-      "rel_vol": 0.86,
+      "rel_vol": 0.92,
       "signal": "Bull Pullback \u2192 13W",
       "price_vs_8w": -0.26,
       "price_vs_13w": 1.44,
@@ -8246,7 +8246,7 @@
       "chg_1d": -1.17,
       "chg_1w": -3.21,
       "chg_1m": -4.61,
-      "rel_vol": 0.88,
+      "rel_vol": 0.89,
       "signal": "Bull Pullback \u2192 21W",
       "price_vs_8w": -3.17,
       "price_vs_13w": -1.9,
@@ -8622,7 +8622,7 @@
       "ema8_vs_13": 0.02,
       "ema13_vs_21": 0.11,
       "spread_score": 0.13,
-      "rank": 161
+      "rank": 160
     },
     {
       "symbol": "LLY",
@@ -8645,7 +8645,7 @@
       "ema8_vs_13": 0.77,
       "ema13_vs_21": 2.86,
       "spread_score": 3.63,
-      "rank": 163
+      "rank": 162
     },
     {
       "symbol": "COF/PL",
@@ -8668,7 +8668,7 @@
       "ema8_vs_13": 0.16,
       "ema13_vs_21": 0.02,
       "spread_score": 0.18,
-      "rank": 165
+      "rank": 164
     },
     {
       "symbol": "WFC/PD",
@@ -8691,7 +8691,7 @@
       "ema8_vs_13": 0.18,
       "ema13_vs_21": 0.19,
       "spread_score": 0.37,
-      "rank": 170
+      "rank": 169
     },
     {
       "symbol": "SCHW/PD",
@@ -8714,7 +8714,7 @@
       "ema8_vs_13": 0.0,
       "ema13_vs_21": 0.04,
       "spread_score": 0.04,
-      "rank": 171
+      "rank": 170
     },
     {
       "symbol": "AIQUF",
@@ -8737,7 +8737,7 @@
       "ema8_vs_13": 0.75,
       "ema13_vs_21": 0.15,
       "spread_score": 0.9,
-      "rank": 172
+      "rank": 171
     },
     {
       "symbol": "T/PA",
@@ -8760,7 +8760,7 @@
       "ema8_vs_13": 0.22,
       "ema13_vs_21": 0.17,
       "spread_score": 0.39,
-      "rank": 173
+      "rank": 172
     },
     {
       "symbol": "WFC/PA",
@@ -8783,7 +8783,7 @@
       "ema8_vs_13": 0.09,
       "ema13_vs_21": 0.09,
       "spread_score": 0.18,
-      "rank": 175
+      "rank": 174
     },
     {
       "symbol": "BAC/PS",
@@ -8806,7 +8806,7 @@
       "ema8_vs_13": 0.06,
       "ema13_vs_21": 0.03,
       "spread_score": 0.09,
-      "rank": 177
+      "rank": 176
     },
     {
       "symbol": "BAC/PN",
@@ -8829,7 +8829,7 @@
       "ema8_vs_13": 0.25,
       "ema13_vs_21": 0.28,
       "spread_score": 0.53,
-      "rank": 178
+      "rank": 177
     },
     {
       "symbol": "BAC/PO",
@@ -8852,7 +8852,7 @@
       "ema8_vs_13": 0.06,
       "ema13_vs_21": 0.01,
       "spread_score": 0.07,
-      "rank": 183
+      "rank": 182
     },
     {
       "symbol": "BAC/PM",
@@ -8875,7 +8875,7 @@
       "ema8_vs_13": 0.17,
       "ema13_vs_21": 0.17,
       "spread_score": 0.34,
-      "rank": 184
+      "rank": 183
     },
     {
       "symbol": "COF/PI",
@@ -8898,7 +8898,7 @@
       "ema8_vs_13": 0.1,
       "ema13_vs_21": 0.02,
       "spread_score": 0.12,
-      "rank": 186
+      "rank": 185
     },
     {
       "symbol": "TXN",
@@ -8921,7 +8921,7 @@
       "ema8_vs_13": 2.46,
       "ema13_vs_21": 2.68,
       "spread_score": 5.14,
-      "rank": 188
+      "rank": 187
     },
     {
       "symbol": "WFC/PC",
@@ -8944,7 +8944,7 @@
       "ema8_vs_13": 0.07,
       "ema13_vs_21": 0.12,
       "spread_score": 0.19,
-      "rank": 194
+      "rank": 192
     },
     {
       "symbol": "ETN",
@@ -9166,7 +9166,7 @@
       "chg_1d": -1.98,
       "chg_1w": -3.64,
       "chg_1m": -11.01,
-      "rel_vol": 1.14,
+      "rel_vol": 1.15,
       "signal": "Bull Breakdown",
       "price_vs_8w": -6.47,
       "price_vs_13w": -5.69,
@@ -9467,7 +9467,7 @@
       "chg_1d": -3.19,
       "chg_1w": -3.07,
       "chg_1m": 26.79,
-      "rel_vol": 1.31,
+      "rel_vol": 1.4,
       "signal": "Full Bull",
       "price_vs_8w": 9.35,
       "price_vs_13w": 16.62,
@@ -9490,7 +9490,7 @@
       "chg_1d": -3.82,
       "chg_1w": -6.57,
       "chg_1m": 0.84,
-      "rel_vol": 1.55,
+      "rel_vol": 1.56,
       "signal": "Full Bull",
       "price_vs_8w": 1.49,
       "price_vs_13w": 6.88,
@@ -10134,7 +10134,7 @@
       "chg_1d": -0.12,
       "chg_1w": 2.28,
       "chg_1m": 9.29,
-      "rel_vol": 0.89,
+      "rel_vol": 0.9,
       "signal": "Full Bull",
       "price_vs_8w": 8.24,
       "price_vs_13w": 12.16,
@@ -10272,7 +10272,7 @@
       "chg_1d": -1.3,
       "chg_1w": -3.05,
       "chg_1m": 0.76,
-      "rel_vol": 0.78,
+      "rel_vol": 1.03,
       "signal": "Full Bull",
       "price_vs_8w": 1.39,
       "price_vs_13w": 4.53,
@@ -10617,7 +10617,7 @@
       "chg_1d": 0.01,
       "chg_1w": -5.18,
       "chg_1m": -0.29,
-      "rel_vol": 0.76,
+      "rel_vol": 0.81,
       "signal": "Full Bull",
       "price_vs_8w": 0.04,
       "price_vs_13w": 2.11,
@@ -10962,7 +10962,7 @@
       "chg_1d": 0.19,
       "chg_1w": -3.81,
       "chg_1m": 2.16,
-      "rel_vol": 0.98,
+      "rel_vol": 0.99,
       "signal": "Full Bull",
       "price_vs_8w": 0.87,
       "price_vs_13w": 2.21,
@@ -11238,7 +11238,7 @@
       "chg_1d": -0.28,
       "chg_1w": 0.76,
       "chg_1m": 0.64,
-      "rel_vol": 0.95,
+      "rel_vol": 0.96,
       "signal": "Full Bull",
       "price_vs_8w": 0.17,
       "price_vs_13w": 0.33,
@@ -12114,7 +12114,7 @@
       "chg_1d": -0.73,
       "chg_1w": 0.59,
       "chg_1m": -2.98,
-      "rel_vol": 0.77,
+      "rel_vol": 0.78,
       "signal": "Full Bear",
       "price_vs_8w": -2.06,
       "price_vs_13w": -3.24,
@@ -12490,30 +12490,7 @@
       "ema8_vs_13": -0.02,
       "ema13_vs_21": -0.04,
       "spread_score": -0.06,
-      "rank": 185
-    },
-    {
-      "symbol": "USB/PQ",
-      "name": "U.S. Bancorp Depositary Shares, Each Representing a 1/1,000th Interest in a Share of Series L Non-Cumulative Perpetual Preferred Stock",
-      "price": 15.38,
-      "mkt_cap_b": 83.8,
-      "ema8": 15.5,
-      "ema13": 15.51,
-      "ema21": 15.53,
-      "sector": "Finance",
-      "analyst": "",
-      "chg_1d": -0.39,
-      "chg_1w": -1.09,
-      "chg_1m": -0.13,
-      "rel_vol": 0.79,
-      "signal": "Full Bear",
-      "price_vs_8w": -0.76,
-      "price_vs_13w": -0.83,
-      "price_vs_21w": -1.0,
-      "ema8_vs_13": -0.07,
-      "ema13_vs_21": -0.17,
-      "spread_score": -0.24,
-      "rank": 193
+      "rank": 184
     },
     {
       "symbol": "MS/PA",
@@ -12559,7 +12536,7 @@
       "ema8_vs_13": -0.05,
       "ema13_vs_21": -0.2,
       "spread_score": -0.25,
-      "rank": 187
+      "rank": 186
     },
     {
       "symbol": "JPM/PK",
@@ -12582,7 +12559,7 @@
       "ema8_vs_13": -0.15,
       "ema13_vs_21": -0.17,
       "spread_score": -0.32,
-      "rank": 191
+      "rank": 190
     },
     {
       "symbol": "COF/PK",
@@ -12605,7 +12582,7 @@
       "ema8_vs_13": -0.02,
       "ema13_vs_21": -0.17,
       "spread_score": -0.19,
-      "rank": 182
+      "rank": 181
     },
     {
       "symbol": "BAC/PE",
@@ -12700,6 +12677,29 @@
       "rank": 252
     },
     {
+      "symbol": "USB/PA",
+      "name": "U.S. Bancorp Depositary Shares, Each representing a 1/100th interest in a share of Series A Non-CumulativePerpetual Pfd Stock",
+      "price": 779.7,
+      "mkt_cap_b": 83.8,
+      "ema8": 781.57,
+      "ema13": 782.85,
+      "ema21": 788.22,
+      "sector": "Finance",
+      "analyst": "",
+      "chg_1d": 0.01,
+      "chg_1w": -0.92,
+      "chg_1m": 0.09,
+      "rel_vol": 0.44,
+      "signal": "Full Bear",
+      "price_vs_8w": -0.24,
+      "price_vs_13w": -0.4,
+      "price_vs_21w": -1.08,
+      "ema8_vs_13": -0.16,
+      "ema13_vs_21": -0.68,
+      "spread_score": -0.84,
+      "rank": 194
+    },
+    {
       "symbol": "JPM/PC",
       "name": "J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 6.00% Non-Cumulative Preferred Stock, Series EE",
       "price": 25.14,
@@ -12720,7 +12720,7 @@
       "ema8_vs_13": -0.11,
       "ema13_vs_21": -0.13,
       "spread_score": -0.24,
-      "rank": 169
+      "rank": 168
     },
     {
       "symbol": "SHOP",
@@ -12789,30 +12789,7 @@
       "ema8_vs_13": -0.05,
       "ema13_vs_21": -0.04,
       "spread_score": -0.09,
-      "rank": 162
-    },
-    {
-      "symbol": "USB/PR",
-      "name": "U.S. Bancorp Depositary Shares, Each Representing a 1/1,000th Interest in a Share of Series M Non-Cumulative Perpetual Preferred Stock",
-      "price": 16.54,
-      "mkt_cap_b": 83.8,
-      "ema8": 16.55,
-      "ema13": 16.55,
-      "ema21": 16.57,
-      "sector": "Finance",
-      "analyst": "",
-      "chg_1d": -0.3,
-      "chg_1w": -0.18,
-      "chg_1m": 1.04,
-      "rel_vol": 0.8,
-      "signal": "Full Bear",
-      "price_vs_8w": -0.04,
-      "price_vs_13w": -0.05,
-      "price_vs_21w": -0.18,
-      "ema8_vs_13": -0.01,
-      "ema13_vs_21": -0.13,
-      "spread_score": -0.14,
-      "rank": 160
+      "rank": 161
     }
   ],
   "sector_heatmap": [
@@ -13112,7 +13089,7 @@
       "ema8_vs_13": -0.0,
       "ema13_vs_21": -0.66,
       "spread_score": -0.66,
-      "rank": 166,
+      "rank": 165,
       "gap_8_13": 0.0,
       "gap_13_21": 0.66,
       "alert": "8W just below 13W (0.00%) \u2014 bullish cross potential; 13W just below 21W (0.66%) \u2014 bullish cross potential"
@@ -13164,7 +13141,7 @@
       "ema8_vs_13": 0.0,
       "ema13_vs_21": 0.04,
       "spread_score": 0.04,
-      "rank": 171,
+      "rank": 170,
       "gap_8_13": 0.0,
       "gap_13_21": 0.04,
       "alert": "8W just below 13W (0.00%) \u2014 bullish cross potential; 13W just above 21W (0.04%) \u2014 bearish cross risk"
@@ -13190,7 +13167,7 @@
       "ema8_vs_13": 0.01,
       "ema13_vs_21": -0.01,
       "spread_score": 0.0,
-      "rank": 167,
+      "rank": 166,
       "gap_8_13": 0.01,
       "gap_13_21": 0.01,
       "alert": "8W just below 13W (0.01%) \u2014 bullish cross potential; 13W just below 21W (0.01%) \u2014 bullish cross potential"
@@ -13216,36 +13193,10 @@
       "ema8_vs_13": -0.07,
       "ema13_vs_21": 0.01,
       "spread_score": -0.06,
-      "rank": 179,
+      "rank": 178,
       "gap_8_13": 0.07,
       "gap_13_21": 0.01,
       "alert": "8W just below 13W (0.07%) \u2014 bullish cross potential; 13W just below 21W (0.01%) \u2014 bullish cross potential"
-    },
-    {
-      "symbol": "BAC/PB",
-      "name": "Bank of America Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 6.000% Non-Cumulative Preferred Stock, Series GG",
-      "price": 25.13,
-      "mkt_cap_b": 357.5,
-      "ema8": 25.2,
-      "ema13": 25.21,
-      "ema21": 25.21,
-      "sector": "Finance",
-      "analyst": "",
-      "chg_1d": -0.36,
-      "chg_1w": -0.36,
-      "chg_1m": 0.16,
-      "rel_vol": 1.27,
-      "signal": "Bearish (unstacked)",
-      "price_vs_8w": -0.28,
-      "price_vs_13w": -0.32,
-      "price_vs_21w": -0.31,
-      "ema8_vs_13": -0.04,
-      "ema13_vs_21": 0.01,
-      "spread_score": -0.03,
-      "rank": 164,
-      "gap_8_13": 0.04,
-      "gap_13_21": 0.01,
-      "alert": "8W just below 13W (0.04%) \u2014 bullish cross potential; 13W just below 21W (0.01%) \u2014 bullish cross potential"
     },
     {
       "symbol": "BAC/PO",
@@ -13268,7 +13219,7 @@
       "ema8_vs_13": 0.06,
       "ema13_vs_21": 0.01,
       "spread_score": 0.07,
-      "rank": 183,
+      "rank": 182,
       "gap_8_13": 0.06,
       "gap_13_21": 0.01,
       "alert": "8W just above 13W (0.06%) \u2014 bearish cross risk; 13W just below 21W (0.01%) \u2014 bullish cross potential"
@@ -13294,10 +13245,36 @@
       "ema8_vs_13": 0.01,
       "ema13_vs_21": -0.61,
       "spread_score": -0.6,
-      "rank": 181,
+      "rank": 180,
       "gap_8_13": 0.01,
       "gap_13_21": 0.61,
       "alert": "8W just below 13W (0.01%) \u2014 bullish cross potential; 13W just below 21W (0.61%) \u2014 bullish cross potential"
+    },
+    {
+      "symbol": "BAC/PB",
+      "name": "Bank of America Corporation Depositary Shares, each representing a 1/1,000th interest in a share of 6.000% Non-Cumulative Preferred Stock, Series GG",
+      "price": 25.13,
+      "mkt_cap_b": 357.5,
+      "ema8": 25.2,
+      "ema13": 25.21,
+      "ema21": 25.21,
+      "sector": "Finance",
+      "analyst": "",
+      "chg_1d": -0.36,
+      "chg_1w": -0.36,
+      "chg_1m": 0.16,
+      "rel_vol": 1.27,
+      "signal": "Bearish (unstacked)",
+      "price_vs_8w": -0.28,
+      "price_vs_13w": -0.32,
+      "price_vs_21w": -0.31,
+      "ema8_vs_13": -0.04,
+      "ema13_vs_21": 0.01,
+      "spread_score": -0.03,
+      "rank": 163,
+      "gap_8_13": 0.04,
+      "gap_13_21": 0.01,
+      "alert": "8W just below 13W (0.04%) \u2014 bullish cross potential; 13W just below 21W (0.01%) \u2014 bullish cross potential"
     },
     {
       "symbol": "MS/PP",
@@ -13378,30 +13355,30 @@
       "alert": "8W just below 13W (0.01%) \u2014 bullish cross potential; 13W just below 21W (0.25%) \u2014 bullish cross potential"
     },
     {
-      "symbol": "USB/PR",
-      "name": "U.S. Bancorp Depositary Shares, Each Representing a 1/1,000th Interest in a Share of Series M Non-Cumulative Perpetual Preferred Stock",
-      "price": 16.54,
+      "symbol": "USB/PP",
+      "name": "U.S. Bancorp Depositary Shares each representing a 1/1,000th interest in a share of Series K Non-Cumulative Perpetual Preferred Stock",
+      "price": 23.08,
       "mkt_cap_b": 83.8,
-      "ema8": 16.55,
-      "ema13": 16.55,
-      "ema21": 16.57,
+      "ema8": 23.31,
+      "ema13": 23.3,
+      "ema21": 23.32,
       "sector": "Finance",
       "analyst": "",
-      "chg_1d": -0.3,
-      "chg_1w": -0.18,
-      "chg_1m": 1.04,
-      "rel_vol": 0.8,
-      "signal": "Full Bear",
-      "price_vs_8w": -0.04,
-      "price_vs_13w": -0.05,
-      "price_vs_21w": -0.18,
-      "ema8_vs_13": -0.01,
-      "ema13_vs_21": -0.13,
-      "spread_score": -0.14,
-      "rank": 160,
+      "chg_1d": -0.9,
+      "chg_1w": -1.33,
+      "chg_1m": -1.49,
+      "rel_vol": 0.77,
+      "signal": "Bearish (unstacked)",
+      "price_vs_8w": -0.97,
+      "price_vs_13w": -0.95,
+      "price_vs_21w": -1.02,
+      "ema8_vs_13": 0.01,
+      "ema13_vs_21": -0.06,
+      "spread_score": -0.05,
+      "rank": 193,
       "gap_8_13": 0.01,
-      "gap_13_21": 0.13,
-      "alert": "8W just below 13W (0.01%) \u2014 bullish cross potential; 13W just below 21W (0.13%) \u2014 bullish cross potential"
+      "gap_13_21": 0.06,
+      "alert": "8W just above 13W (0.01%) \u2014 bearish cross risk; 13W just below 21W (0.06%) \u2014 bullish cross potential"
     },
     {
       "symbol": "BAC/PQ",
@@ -13424,7 +13401,7 @@
       "ema8_vs_13": -0.02,
       "ema13_vs_21": -0.04,
       "spread_score": -0.06,
-      "rank": 185,
+      "rank": 184,
       "gap_8_13": 0.02,
       "gap_13_21": 0.04,
       "alert": "8W just below 13W (0.02%) \u2014 bullish cross potential; 13W just below 21W (0.04%) \u2014 bullish cross potential"
@@ -13450,7 +13427,7 @@
       "ema8_vs_13": 0.02,
       "ema13_vs_21": 0.11,
       "spread_score": 0.13,
-      "rank": 161,
+      "rank": 160,
       "gap_8_13": 0.02,
       "gap_13_21": 0.11,
       "alert": "8W just above 13W (0.02%) \u2014 bearish cross risk; 13W just above 21W (0.11%) \u2014 bearish cross risk"
@@ -13476,7 +13453,7 @@
       "ema8_vs_13": 0.03,
       "ema13_vs_21": -0.02,
       "spread_score": 0.01,
-      "rank": 168,
+      "rank": 167,
       "gap_8_13": 0.03,
       "gap_13_21": 0.02,
       "alert": "8W just below 13W (0.03%) \u2014 bullish cross potential; 13W just below 21W (0.02%) \u2014 bullish cross potential"
@@ -13502,36 +13479,10 @@
       "ema8_vs_13": 0.44,
       "ema13_vs_21": -0.02,
       "spread_score": 0.42,
-      "rank": 189,
+      "rank": 188,
       "gap_8_13": 0.44,
       "gap_13_21": 0.02,
       "alert": "8W just above 13W (0.44%) \u2014 bearish cross risk; 13W just below 21W (0.02%) \u2014 bullish cross potential"
-    },
-    {
-      "symbol": "COF/PI",
-      "name": "Capital One Financial Corporation Depositary shares each representing a 1/40th interest in a share of Fixed Rate Non-Cumulative Perpetual Preferred Stock, Serie",
-      "price": 19.43,
-      "mkt_cap_b": 120.8,
-      "ema8": 19.62,
-      "ema13": 19.6,
-      "ema21": 19.6,
-      "sector": "Finance",
-      "analyst": "",
-      "chg_1d": -0.61,
-      "chg_1w": -0.77,
-      "chg_1m": -1.72,
-      "rel_vol": 0.8,
-      "signal": "Bull Breakdown",
-      "price_vs_8w": -0.97,
-      "price_vs_13w": -0.87,
-      "price_vs_21w": -0.86,
-      "ema8_vs_13": 0.1,
-      "ema13_vs_21": 0.02,
-      "spread_score": 0.12,
-      "rank": 186,
-      "gap_8_13": 0.1,
-      "gap_13_21": 0.02,
-      "alert": "8W just above 13W (0.10%) \u2014 bearish cross risk; 13W just below 21W (0.02%) \u2014 bullish cross potential"
     },
     {
       "symbol": "COF/PK",
@@ -13554,10 +13505,36 @@
       "ema8_vs_13": -0.02,
       "ema13_vs_21": -0.17,
       "spread_score": -0.19,
-      "rank": 182,
+      "rank": 181,
       "gap_8_13": 0.02,
       "gap_13_21": 0.17,
       "alert": "8W just below 13W (0.02%) \u2014 bullish cross potential; 13W just below 21W (0.17%) \u2014 bullish cross potential"
+    },
+    {
+      "symbol": "COF/PI",
+      "name": "Capital One Financial Corporation Depositary shares each representing a 1/40th interest in a share of Fixed Rate Non-Cumulative Perpetual Preferred Stock, Serie",
+      "price": 19.43,
+      "mkt_cap_b": 120.8,
+      "ema8": 19.62,
+      "ema13": 19.6,
+      "ema21": 19.6,
+      "sector": "Finance",
+      "analyst": "",
+      "chg_1d": -0.61,
+      "chg_1w": -0.77,
+      "chg_1m": -1.72,
+      "rel_vol": 0.8,
+      "signal": "Bull Breakdown",
+      "price_vs_8w": -0.97,
+      "price_vs_13w": -0.87,
+      "price_vs_21w": -0.86,
+      "ema8_vs_13": 0.1,
+      "ema13_vs_21": 0.02,
+      "spread_score": 0.12,
+      "rank": 185,
+      "gap_8_13": 0.1,
+      "gap_13_21": 0.02,
+      "alert": "8W just above 13W (0.10%) \u2014 bearish cross risk; 13W just below 21W (0.02%) \u2014 bullish cross potential"
     },
     {
       "symbol": "COF/PL",
@@ -13580,7 +13557,7 @@
       "ema8_vs_13": 0.16,
       "ema13_vs_21": 0.02,
       "spread_score": 0.18,
-      "rank": 165,
+      "rank": 164,
       "gap_8_13": 0.16,
       "gap_13_21": 0.02,
       "alert": "8W just above 13W (0.16%) \u2014 bearish cross risk; 13W just above 21W (0.02%) \u2014 bearish cross risk"
@@ -13606,7 +13583,7 @@
       "ema8_vs_13": 0.06,
       "ema13_vs_21": 0.03,
       "spread_score": 0.09,
-      "rank": 177,
+      "rank": 176,
       "gap_8_13": 0.06,
       "gap_13_21": 0.03,
       "alert": "8W just above 13W (0.06%) \u2014 bearish cross risk; 13W just below 21W (0.03%) \u2014 bullish cross potential"
@@ -13658,7 +13635,7 @@
       "ema8_vs_13": -0.05,
       "ema13_vs_21": -0.04,
       "spread_score": -0.09,
-      "rank": 162,
+      "rank": 161,
       "gap_8_13": 0.05,
       "gap_13_21": 0.04,
       "alert": "8W just below 13W (0.05%) \u2014 bullish cross potential; 13W just below 21W (0.04%) \u2014 bullish cross potential"
@@ -13684,36 +13661,10 @@
       "ema8_vs_13": 0.04,
       "ema13_vs_21": -0.07,
       "spread_score": -0.03,
-      "rank": 176,
+      "rank": 175,
       "gap_8_13": 0.04,
       "gap_13_21": 0.07,
       "alert": "8W just below 13W (0.04%) \u2014 bullish cross potential; 13W just below 21W (0.07%) \u2014 bullish cross potential"
-    },
-    {
-      "symbol": "BAC/PE",
-      "name": "Bank of America Corporation Depositary Sh repstg 1/1000th Perp Pfd Ser E",
-      "price": 19.99,
-      "mkt_cap_b": 357.5,
-      "ema8": 20.09,
-      "ema13": 20.1,
-      "ema21": 20.27,
-      "sector": "Finance",
-      "analyst": "",
-      "chg_1d": 0.15,
-      "chg_1w": -0.5,
-      "chg_1m": 0.45,
-      "rel_vol": 0.78,
-      "signal": "Full Bear",
-      "price_vs_8w": -0.52,
-      "price_vs_13w": -0.57,
-      "price_vs_21w": -1.37,
-      "ema8_vs_13": -0.05,
-      "ema13_vs_21": -0.8,
-      "spread_score": -0.85,
-      "rank": 198,
-      "gap_8_13": 0.05,
-      "gap_13_21": 0.8,
-      "alert": "8W just below 13W (0.05%) \u2014 bullish cross potential; 13W just below 21W (0.80%) \u2014 bullish cross potential"
     },
     {
       "symbol": "BML/PL",
@@ -13740,6 +13691,32 @@
       "gap_8_13": 0.05,
       "gap_13_21": 0.55,
       "alert": "8W just below 13W (0.05%) \u2014 bullish cross potential; 13W just below 21W (0.55%) \u2014 bullish cross potential"
+    },
+    {
+      "symbol": "BAC/PE",
+      "name": "Bank of America Corporation Depositary Sh repstg 1/1000th Perp Pfd Ser E",
+      "price": 19.99,
+      "mkt_cap_b": 357.5,
+      "ema8": 20.09,
+      "ema13": 20.1,
+      "ema21": 20.27,
+      "sector": "Finance",
+      "analyst": "",
+      "chg_1d": 0.15,
+      "chg_1w": -0.5,
+      "chg_1m": 0.45,
+      "rel_vol": 0.78,
+      "signal": "Full Bear",
+      "price_vs_8w": -0.52,
+      "price_vs_13w": -0.57,
+      "price_vs_21w": -1.37,
+      "ema8_vs_13": -0.05,
+      "ema13_vs_21": -0.8,
+      "spread_score": -0.85,
+      "rank": 198,
+      "gap_8_13": 0.05,
+      "gap_13_21": 0.8,
+      "alert": "8W just below 13W (0.05%) \u2014 bullish cross potential; 13W just below 21W (0.80%) \u2014 bullish cross potential"
     },
     {
       "symbol": "CICHF",
@@ -13866,7 +13843,7 @@
       "ema8_vs_13": -0.05,
       "ema13_vs_21": -0.2,
       "spread_score": -0.25,
-      "rank": 187,
+      "rank": 186,
       "gap_8_13": 0.05,
       "gap_13_21": 0.2,
       "alert": "8W just below 13W (0.05%) \u2014 bullish cross potential; 13W just below 21W (0.20%) \u2014 bullish cross potential"
@@ -13918,7 +13895,7 @@
       "ema8_vs_13": 0.07,
       "ema13_vs_21": 0.12,
       "spread_score": 0.19,
-      "rank": 194,
+      "rank": 192,
       "gap_8_13": 0.07,
       "gap_13_21": 0.12,
       "alert": "8W just above 13W (0.07%) \u2014 bearish cross risk; 13W just above 21W (0.12%) \u2014 bearish cross risk"
@@ -13976,32 +13953,6 @@
       "alert": "8W just above 13W (0.07%) \u2014 bearish cross risk; 13W just above 21W (0.93%) \u2014 bearish cross risk"
     },
     {
-      "symbol": "USB/PQ",
-      "name": "U.S. Bancorp Depositary Shares, Each Representing a 1/1,000th Interest in a Share of Series L Non-Cumulative Perpetual Preferred Stock",
-      "price": 15.38,
-      "mkt_cap_b": 83.8,
-      "ema8": 15.5,
-      "ema13": 15.51,
-      "ema21": 15.53,
-      "sector": "Finance",
-      "analyst": "",
-      "chg_1d": -0.39,
-      "chg_1w": -1.09,
-      "chg_1m": -0.13,
-      "rel_vol": 0.79,
-      "signal": "Full Bear",
-      "price_vs_8w": -0.76,
-      "price_vs_13w": -0.83,
-      "price_vs_21w": -1.0,
-      "ema8_vs_13": -0.07,
-      "ema13_vs_21": -0.17,
-      "spread_score": -0.24,
-      "rank": 193,
-      "gap_8_13": 0.07,
-      "gap_13_21": 0.17,
-      "alert": "8W just below 13W (0.07%) \u2014 bullish cross potential; 13W just below 21W (0.17%) \u2014 bullish cross potential"
-    },
-    {
       "symbol": "HD",
       "name": "Home Depot, Inc. (The)",
       "price": 357.92,
@@ -14048,7 +13999,7 @@
       "ema8_vs_13": -0.09,
       "ema13_vs_21": 0.99,
       "spread_score": 0.9,
-      "rank": 190,
+      "rank": 189,
       "gap_8_13": 0.09,
       "gap_13_21": 0.99,
       "alert": "8W just below 13W (0.09%) \u2014 bullish cross potential; 13W just above 21W (0.99%) \u2014 bearish cross risk"
@@ -14100,7 +14051,7 @@
       "ema8_vs_13": 0.09,
       "ema13_vs_21": 0.09,
       "spread_score": 0.18,
-      "rank": 175,
+      "rank": 174,
       "gap_8_13": 0.09,
       "gap_13_21": 0.09,
       "alert": "8W just above 13W (0.09%) \u2014 bearish cross risk; 13W just above 21W (0.09%) \u2014 bearish cross risk"
@@ -14178,7 +14129,7 @@
       "ema8_vs_13": -0.11,
       "ema13_vs_21": -0.13,
       "spread_score": -0.24,
-      "rank": 169,
+      "rank": 168,
       "gap_8_13": 0.11,
       "gap_13_21": 0.13,
       "alert": "8W just below 13W (0.11%) \u2014 bullish cross potential; 13W just below 21W (0.13%) \u2014 bullish cross potential"
@@ -14378,7 +14329,7 @@
       "chg_1d": -0.28,
       "chg_1w": 0.76,
       "chg_1m": 0.64,
-      "rel_vol": 0.95,
+      "rel_vol": 0.96,
       "signal": "Full Bull",
       "price_vs_8w": 0.17,
       "price_vs_13w": 0.33,
@@ -14412,7 +14363,7 @@
       "ema8_vs_13": -0.15,
       "ema13_vs_21": -0.17,
       "spread_score": -0.32,
-      "rank": 191,
+      "rank": 190,
       "gap_8_13": 0.15,
       "gap_13_21": 0.17,
       "alert": "8W just below 13W (0.15%) \u2014 bullish cross potential; 13W just below 21W (0.17%) \u2014 bullish cross potential"
@@ -14438,10 +14389,36 @@
       "ema8_vs_13": 0.75,
       "ema13_vs_21": 0.15,
       "spread_score": 0.9,
-      "rank": 172,
+      "rank": 171,
       "gap_8_13": 0.75,
       "gap_13_21": 0.15,
       "alert": "8W just above 13W (0.75%) \u2014 bearish cross risk; 13W just above 21W (0.15%) \u2014 bearish cross risk"
+    },
+    {
+      "symbol": "USB/PA",
+      "name": "U.S. Bancorp Depositary Shares, Each representing a 1/100th interest in a share of Series A Non-CumulativePerpetual Pfd Stock",
+      "price": 779.7,
+      "mkt_cap_b": 83.8,
+      "ema8": 781.57,
+      "ema13": 782.85,
+      "ema21": 788.22,
+      "sector": "Finance",
+      "analyst": "",
+      "chg_1d": 0.01,
+      "chg_1w": -0.92,
+      "chg_1m": 0.09,
+      "rel_vol": 0.44,
+      "signal": "Full Bear",
+      "price_vs_8w": -0.24,
+      "price_vs_13w": -0.4,
+      "price_vs_21w": -1.08,
+      "ema8_vs_13": -0.16,
+      "ema13_vs_21": -0.68,
+      "spread_score": -0.84,
+      "rank": 194,
+      "gap_8_13": 0.16,
+      "gap_13_21": 0.68,
+      "alert": "8W just below 13W (0.16%) \u2014 bullish cross potential; 13W just below 21W (0.68%) \u2014 bullish cross potential"
     },
     {
       "symbol": "BAC/PM",
@@ -14464,7 +14441,7 @@
       "ema8_vs_13": 0.17,
       "ema13_vs_21": 0.17,
       "spread_score": 0.34,
-      "rank": 184,
+      "rank": 183,
       "gap_8_13": 0.17,
       "gap_13_21": 0.17,
       "alert": "8W just above 13W (0.17%) \u2014 bearish cross risk; 13W just above 21W (0.17%) \u2014 bearish cross risk"
@@ -14516,7 +14493,7 @@
       "ema8_vs_13": 0.22,
       "ema13_vs_21": 0.17,
       "spread_score": 0.39,
-      "rank": 173,
+      "rank": 172,
       "gap_8_13": 0.22,
       "gap_13_21": 0.17,
       "alert": "8W just above 13W (0.22%) \u2014 bearish cross risk; 13W just above 21W (0.17%) \u2014 bearish cross risk"
@@ -14620,7 +14597,7 @@
       "ema8_vs_13": 0.18,
       "ema13_vs_21": 0.19,
       "spread_score": 0.37,
-      "rank": 170,
+      "rank": 169,
       "gap_8_13": 0.18,
       "gap_13_21": 0.19,
       "alert": "8W just above 13W (0.18%) \u2014 bearish cross risk; 13W just above 21W (0.19%) \u2014 bearish cross risk"
@@ -14932,7 +14909,7 @@
       "ema8_vs_13": 0.25,
       "ema13_vs_21": 0.28,
       "spread_score": 0.53,
-      "rank": 178,
+      "rank": 177,
       "gap_8_13": 0.25,
       "gap_13_21": 0.28,
       "alert": "8W just above 13W (0.25%) \u2014 bearish cross risk; 13W just above 21W (0.28%) \u2014 bearish cross risk"
@@ -15322,7 +15299,7 @@
       "ema8_vs_13": -1.0,
       "ema13_vs_21": 0.42,
       "spread_score": -0.58,
-      "rank": 192,
+      "rank": 191,
       "gap_8_13": 1.0,
       "gap_13_21": 0.42,
       "alert": "13W just above 21W (0.42%) \u2014 bearish cross risk"
@@ -15946,7 +15923,7 @@
       "ema8_vs_13": 0.77,
       "ema13_vs_21": 2.86,
       "spread_score": 3.63,
-      "rank": 163,
+      "rank": 162,
       "gap_8_13": 0.77,
       "gap_13_21": 2.86,
       "alert": "8W just above 13W (0.77%) \u2014 bearish cross risk"
@@ -16042,7 +16019,7 @@
       "chg_1d": -2.09,
       "chg_1w": -3.92,
       "chg_1m": -15.27,
-      "rel_vol": 0.96,
+      "rel_vol": 0.98,
       "signal": "Bearish (unstacked)",
       "price_vs_8w": -9.52,
       "price_vs_13w": -10.27,
@@ -16094,7 +16071,7 @@
       "chg_1d": -1.98,
       "chg_1w": -3.64,
       "chg_1m": -11.01,
-      "rel_vol": 1.14,
+      "rel_vol": 1.15,
       "signal": "Bull Breakdown",
       "price_vs_8w": -6.47,
       "price_vs_13w": -5.69,
@@ -16372,8 +16349,8 @@
     "market_overview": {
       "bias": "bearish",
       "bias_label": "Cautiously Bearish",
-      "headline": "Market structure deteriorating with SPY in Bull Breakdown and QQQ showing bearish EMA positioning.",
-      "detail": "Only 28% of stocks in Full Bull while 36% are in Full Bear or breakdown mode, with BTC's Full Bear signal (-19.7% vs 21W) confirming risk-off sentiment.",
+      "headline": "Broad market weakness with SPY in Bull Breakdown, QQQ bearish unstacked, and BTC in Full Bear territory down -46.8% from fair value.",
+      "detail": "Only 28% of stocks in Full Bull while 21.3% are Full Bear. Tech weakness evident with QQQ below all EMAs and major names like NVDA, AAPL struggling.",
       "index_signals": {
         "SPY": "Bull Breakdown",
         "QQQ": "Bearish (unstacked)",
@@ -16381,22 +16358,14 @@
       }
     },
     "reversal_candidates": {
-      "headline": "Bear Rally Reversal Watch - Crossover Alerts",
+      "headline": "Bear Rally Reversal Candidates (With Bullish Cross Alerts)",
       "items": [
         {
           "symbol": "ICE",
           "name": "Intercontinental Exchange Inc.",
           "signal": "Bear Rally above 13W",
           "crossover_detail": "8W just below 13W (0.01%) \u2014 bullish cross potential; 13W just below 21W (0.25%) \u2014 bullish cross potential",
-          "note": "Strong financial exchange showing resilience with both EMAs poised for bullish crosses.",
-          "type": "bull"
-        },
-        {
-          "symbol": "NVDA",
-          "name": "NVIDIA Corporation",
-          "signal": "Bearish (unstacked)",
-          "crossover_detail": "8W just below 13W (0.25%) \u2014 bullish cross potential; 13W just above 21W (0.88%) \u2014 bearish cross risk",
-          "note": "AI leader with potential 8W/13W bullish cross despite overall bearish structure.",
+          "note": "Quality financial exchange with strong analyst ratings showing early reversal signs",
           "type": "bull"
         },
         {
@@ -16404,7 +16373,23 @@
           "name": "Meta Platforms, Inc.",
           "signal": "Full Bear",
           "crossover_detail": "8W just below 13W (0.51%) \u2014 bullish cross potential; 13W just below 21W (0.83%) \u2014 bullish cross potential",
-          "note": "Social media giant showing potential for multiple bullish EMA crosses from deep bear territory.",
+          "note": "Mega-cap tech showing potential bottoming action with EMAs compressing",
+          "type": "bull"
+        },
+        {
+          "symbol": "NVDA",
+          "name": "NVIDIA Corporation",
+          "signal": "Bearish (unstacked)",
+          "crossover_detail": "8W just below 13W (0.25%) \u2014 bullish cross potential; 13W just above 21W (0.88%) \u2014 bearish cross risk",
+          "note": "AI leader with mixed crossover signals but strong fundamental backdrop",
+          "type": "bull"
+        },
+        {
+          "symbol": "AAPL",
+          "name": "Apple Inc.",
+          "signal": "Bearish (unstacked)",
+          "crossover_detail": "8W just below 13W (0.09%) \u2014 bullish cross potential; 13W just above 21W (0.99%) \u2014 bearish cross risk",
+          "note": "Mega-cap showing early stabilization signs despite recent weakness",
           "type": "bull"
         },
         {
@@ -16412,20 +16397,20 @@
           "name": "Amazon.com, Inc.",
           "signal": "Full Bear",
           "crossover_detail": "13W just below 21W (0.91%) \u2014 bullish cross potential",
-          "note": "E-commerce leader with 13W approaching bullish cross over 21W support.",
+          "note": "E-commerce giant with 13W/21W convergence suggesting potential trend change",
           "type": "bull"
         }
       ]
     },
     "pullback_setups": {
-      "headline": "Quality Pullback Entries in Uptrends",
+      "headline": "High-Quality Pullback Entry Opportunities",
       "items": [
         {
           "symbol": "MU",
           "name": "Micron Technology, Inc.",
           "signal": "Bull Pullback \u2192 13W",
           "price_vs_21w": 16.1,
-          "note": "Memory leader pulling back to 13W support with strong 16% buffer above 21W.",
+          "note": "Memory leader pulling back to 13W support in strong uptrend, ideal entry zone",
           "type": "bull"
         },
         {
@@ -16433,7 +16418,7 @@
           "name": "Applied Materials, Inc.",
           "signal": "Bull Pullback \u2192 13W",
           "price_vs_21w": 11.17,
-          "note": "Semiconductor equipment play testing 13W with solid uptrend structure intact.",
+          "note": "Semiconductor equipment giant offering quality entry at 13W in established uptrend",
           "type": "bull"
         },
         {
@@ -16441,7 +16426,7 @@
           "name": "Newmont Corporation",
           "signal": "Bull Pullback \u2192 13W",
           "price_vs_21w": 10.28,
-          "note": "Gold mining giant pullback represents defensive play entry in established uptrend.",
+          "note": "Gold mining leader in pullback mode within commodity sector strength",
           "type": "bull"
         },
         {
@@ -16449,41 +16434,42 @@
           "name": "Freeport-McMoRan, Inc.",
           "signal": "Bull Pullback \u2192 13W",
           "price_vs_21w": 9.05,
-          "note": "Copper miner pullback aligns with commodity strength theme and infrastructure demand.",
+          "note": "Copper play benefiting from infrastructure themes, well-positioned for bounce",
           "type": "bull"
         }
       ]
     },
     "momentum_themes": {
-      "headline": "Commodity & Infrastructure Acceleration",
-      "detail": "Energy minerals and non-energy minerals sectors showing 100% bullish readings while electronic technology maintains selective strength. Distribution services and industrial services also demonstrating broad momentum.",
+      "headline": "Momentum Concentrated in Energy & Materials",
+      "detail": "Energy minerals showing perfect 100% bull participation while non-energy minerals lead pullback opportunities. Electronic technology names like GLW and VRT showing exceptional EMA spreads.",
       "top_names": [
         "GLW",
         "VRT",
         "FDX",
-        "AEM"
+        "AEM",
+        "MSBHF"
       ]
     },
     "sector_analysis": {
-      "headline": "Sector Rotation Into Commodities & Away From Tech Services",
+      "headline": "Sector Rotation Favoring Commodities Over Growth",
       "strongest": [
         {
           "sector": "Energy minerals",
           "net_score": 100.0,
           "bull_pct": 100.0,
-          "note": "Perfect bullish setup with all names in uptrend structure."
+          "note": "Perfect bullish participation with strong momentum across all energy names"
         },
         {
           "sector": "Non-energy minerals",
           "net_score": 100.0,
           "bull_pct": 100.0,
-          "note": "Mining stocks showing complete bullish positioning amid commodity strength."
+          "note": "Mining and metals showing universal strength despite some pullback activity"
         },
         {
           "sector": "Distribution services",
           "net_score": 100.0,
           "bull_pct": 100.0,
-          "note": "Trade and logistics benefiting from economic reopening dynamics."
+          "note": "Small but perfect sector participation suggesting economic resilience"
         }
       ],
       "weakest": [
@@ -16491,45 +16477,45 @@
           "sector": "Technology services",
           "net_score": -86.4,
           "bear_pct": 90.9,
-          "note": "Massive tech services washout with 91% of stocks in bearish structure."
+          "note": "Massive growth stock selloff with 91% of names in bearish structure"
         },
         {
           "sector": "Commercial services",
           "net_score": -100.0,
           "bear_pct": 100.0,
-          "note": "Complete bearish positioning in business services space."
+          "note": "Complete sector breakdown reflecting economic growth concerns"
         },
         {
           "sector": "Finance",
           "net_score": -18.3,
           "bear_pct": 48.1,
-          "note": "Banking and financial services under pressure with negative sentiment."
+          "note": "Banking sector under pressure with nearly half of names bearish"
         }
       ],
-      "detail": "Clear rotation from growth tech into defensive commodities and materials, with financials caught in middle ground amid rate uncertainty."
+      "detail": "Clear rotation from growth/tech into defensive commodities and materials. Technology services showing extreme weakness while energy minerals remain universally bullish."
     },
     "risk_warnings": {
       "headline": "Key Risk Factors",
       "items": [
         {
-          "text": "SPY showing Bull Breakdown with bearish crossover risk on both 8W/13W and 13W/21W EMAs",
-          "type": "bear"
-        },
-        {
-          "text": "QQQ in full bearish EMA stack while BTC confirms max risk-off at -19.7% below 21W",
-          "type": "bear"
-        },
-        {
-          "text": "42 stocks in Bull Breakdown phase suggesting widespread uptrend deterioration",
+          "text": "SPY showing Bull Breakdown with crossover risk at 8W/13W levels",
           "type": "caution"
         },
         {
-          "text": "Technology services sector showing 91% bearish readings indicating potential contagion risk",
+          "text": "Technology sector in severe bear structure with 91% of tech services names bearish",
+          "type": "bear"
+        },
+        {
+          "text": "BTC at -46.8% from fair value suggesting crypto correlation risks for growth stocks",
+          "type": "bear"
+        },
+        {
+          "text": "42 Bull Breakdown signals indicate widespread uptrend deterioration across market",
           "type": "caution"
         }
       ]
     },
-    "generated_at": "2026-03-06T22:25:14.575578",
+    "generated_at": "2026-03-06T23:00:51.776513",
     "model": "claude-sonnet-4-20250514"
   }
 }
