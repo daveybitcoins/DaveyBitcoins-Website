@@ -2,7 +2,7 @@
   "meta": {
     "date": "2026-03-07",
     "total_stocks": 300,
-    "generated_at": "2026-03-07T15:46:33.952123",
+    "generated_at": "2026-03-07T22:52:15.830189",
     "index_etfs": [
       "SPY",
       "QQQ",
@@ -51,26 +51,26 @@
     {
       "symbol": "BTC",
       "name": "Bitcoin",
-      "price": 68036.15,
-      "ema8": 73746.87,
-      "ema13": 78946.85,
-      "ema21": 85033.82,
+      "price": 67278.01,
+      "ema8": 73578.39,
+      "ema13": 78838.54,
+      "ema21": 84964.9,
       "signal": "Full Bear",
-      "price_vs_8w": -7.74,
-      "price_vs_13w": -13.82,
-      "price_vs_21w": -19.99,
-      "ema8_vs_13": -6.59,
-      "ema13_vs_21": -7.16,
-      "spread_score": -13.75,
-      "chg_1d": -4.01,
-      "chg_1w": 3.27,
-      "chg_1m": 8.36,
+      "price_vs_8w": -8.56,
+      "price_vs_13w": -14.66,
+      "price_vs_21w": -20.82,
+      "ema8_vs_13": -6.67,
+      "ema13_vs_21": -7.21,
+      "spread_score": -13.88,
+      "chg_1d": -5.08,
+      "chg_1w": 2.12,
+      "chg_1m": 7.15,
       "crossover_alert": null,
-      "risk_combo": 0.19,
-      "risk_mm": 0.344,
-      "risk_zs": 0.105,
-      "fair_value": 128687.68,
-      "dev_pct": -47.1,
+      "risk_combo": 0.184,
+      "risk_mm": 0.342,
+      "risk_zs": 0.099,
+      "fair_value": 128687.04,
+      "dev_pct": -47.7,
       "zone": "Accumulate",
       "zone_color": "#2563eb"
     }
@@ -13170,32 +13170,6 @@
       "alert": "8W just below 13W (0.00%) \u2014 bullish cross potential; 13W just above 21W (0.04%) \u2014 bearish cross risk"
     },
     {
-      "symbol": "JPM/PM",
-      "name": "J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 4.20% Non-Cumulative Preferred Stock, Series MM",
-      "price": 18.44,
-      "mkt_cap_b": 780.7,
-      "ema8": 18.52,
-      "ema13": 18.52,
-      "ema21": 18.52,
-      "sector": "Finance",
-      "analyst": "",
-      "chg_1d": -0.22,
-      "chg_1w": -0.7,
-      "chg_1m": 0.05,
-      "rel_vol": 0.77,
-      "signal": "Bearish (unstacked)",
-      "price_vs_8w": -0.45,
-      "price_vs_13w": -0.44,
-      "price_vs_21w": -0.44,
-      "ema8_vs_13": 0.01,
-      "ema13_vs_21": -0.01,
-      "spread_score": 0.0,
-      "rank": 168,
-      "gap_8_13": 0.01,
-      "gap_13_21": 0.01,
-      "alert": "8W just below 13W (0.01%) \u2014 bullish cross potential; 13W just below 21W (0.01%) \u2014 bullish cross potential"
-    },
-    {
       "symbol": "JPM/PD",
       "name": "J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 5.75% Non-Cumulative Preferred Stock, Series DD",
       "price": 24.82,
@@ -13220,6 +13194,32 @@
       "gap_8_13": 0.07,
       "gap_13_21": 0.01,
       "alert": "8W just below 13W (0.07%) \u2014 bullish cross potential; 13W just below 21W (0.01%) \u2014 bullish cross potential"
+    },
+    {
+      "symbol": "JPM/PM",
+      "name": "J P Morgan Chase & Co Depositary Shares, each representing a 1/400th interest in a share of 4.20% Non-Cumulative Preferred Stock, Series MM",
+      "price": 18.44,
+      "mkt_cap_b": 780.7,
+      "ema8": 18.52,
+      "ema13": 18.52,
+      "ema21": 18.52,
+      "sector": "Finance",
+      "analyst": "",
+      "chg_1d": -0.22,
+      "chg_1w": -0.7,
+      "chg_1m": 0.05,
+      "rel_vol": 0.77,
+      "signal": "Bearish (unstacked)",
+      "price_vs_8w": -0.45,
+      "price_vs_13w": -0.44,
+      "price_vs_21w": -0.44,
+      "ema8_vs_13": 0.01,
+      "ema13_vs_21": -0.01,
+      "spread_score": 0.0,
+      "rank": 168,
+      "gap_8_13": 0.01,
+      "gap_13_21": 0.01,
+      "alert": "8W just below 13W (0.01%) \u2014 bullish cross potential; 13W just below 21W (0.01%) \u2014 bullish cross potential"
     },
     {
       "symbol": "BAC/PO",
@@ -13404,32 +13404,6 @@
       "alert": "8W just below 13W (0.02%) \u2014 bullish cross potential; 13W just below 21W (0.04%) \u2014 bullish cross potential"
     },
     {
-      "symbol": "MS/PQ",
-      "name": "Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of 6.625% Non-Cumulative Preferred Stock, Series Q",
-      "price": 26.22,
-      "mkt_cap_b": 254.5,
-      "ema8": 26.31,
-      "ema13": 26.3,
-      "ema21": 26.27,
-      "sector": "Finance",
-      "analyst": "",
-      "chg_1d": -0.27,
-      "chg_1w": -0.46,
-      "chg_1m": -0.15,
-      "rel_vol": 0.19,
-      "signal": "Bull Breakdown",
-      "price_vs_8w": -0.33,
-      "price_vs_13w": -0.31,
-      "price_vs_21w": -0.21,
-      "ema8_vs_13": 0.02,
-      "ema13_vs_21": 0.11,
-      "spread_score": 0.13,
-      "rank": 162,
-      "gap_8_13": 0.02,
-      "gap_13_21": 0.11,
-      "alert": "8W just above 13W (0.02%) \u2014 bearish cross risk; 13W just above 21W (0.11%) \u2014 bearish cross risk"
-    },
-    {
       "symbol": "MS/PO",
       "name": "Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of 4.250% Non-Cumulative Preferred Stock, Series O",
       "price": 17.8,
@@ -13456,6 +13430,32 @@
       "alert": "8W just below 13W (0.03%) \u2014 bullish cross potential; 13W just below 21W (0.02%) \u2014 bullish cross potential"
     },
     {
+      "symbol": "MS/PQ",
+      "name": "Morgan Stanley Depositary Shares, each representing 1/1,000th of a share of 6.625% Non-Cumulative Preferred Stock, Series Q",
+      "price": 26.22,
+      "mkt_cap_b": 254.5,
+      "ema8": 26.31,
+      "ema13": 26.3,
+      "ema21": 26.27,
+      "sector": "Finance",
+      "analyst": "",
+      "chg_1d": -0.27,
+      "chg_1w": -0.46,
+      "chg_1m": -0.15,
+      "rel_vol": 0.19,
+      "signal": "Bull Breakdown",
+      "price_vs_8w": -0.33,
+      "price_vs_13w": -0.31,
+      "price_vs_21w": -0.21,
+      "ema8_vs_13": 0.02,
+      "ema13_vs_21": 0.11,
+      "spread_score": 0.13,
+      "rank": 162,
+      "gap_8_13": 0.02,
+      "gap_13_21": 0.11,
+      "alert": "8W just above 13W (0.02%) \u2014 bearish cross risk; 13W just above 21W (0.11%) \u2014 bearish cross risk"
+    },
+    {
       "symbol": "SYK",
       "name": "Stryker Corporation",
       "price": 364.56,
@@ -13480,6 +13480,32 @@
       "gap_8_13": 0.44,
       "gap_13_21": 0.02,
       "alert": "8W just above 13W (0.44%) \u2014 bearish cross risk; 13W just below 21W (0.02%) \u2014 bullish cross potential"
+    },
+    {
+      "symbol": "COF/PK",
+      "name": "Capital One Financial Corporation Depositary Shares, Each Representing a 1/40th Ownership Interest in a Share of Fixed Rate Non-Cumulative Perpetual Preferred S",
+      "price": 17.86,
+      "mkt_cap_b": 116.7,
+      "ema8": 17.96,
+      "ema13": 17.96,
+      "ema21": 18.0,
+      "sector": "Finance",
+      "analyst": "",
+      "chg_1d": -0.78,
+      "chg_1w": -0.67,
+      "chg_1m": 0.0,
+      "rel_vol": 0.89,
+      "signal": "Full Bear",
+      "price_vs_8w": -0.56,
+      "price_vs_13w": -0.58,
+      "price_vs_21w": -0.75,
+      "ema8_vs_13": -0.02,
+      "ema13_vs_21": -0.17,
+      "spread_score": -0.19,
+      "rank": 183,
+      "gap_8_13": 0.02,
+      "gap_13_21": 0.17,
+      "alert": "8W just below 13W (0.02%) \u2014 bullish cross potential; 13W just below 21W (0.17%) \u2014 bullish cross potential"
     },
     {
       "symbol": "COF/PL",
@@ -13532,32 +13558,6 @@
       "gap_8_13": 0.1,
       "gap_13_21": 0.02,
       "alert": "8W just above 13W (0.10%) \u2014 bearish cross risk; 13W just below 21W (0.02%) \u2014 bullish cross potential"
-    },
-    {
-      "symbol": "COF/PK",
-      "name": "Capital One Financial Corporation Depositary Shares, Each Representing a 1/40th Ownership Interest in a Share of Fixed Rate Non-Cumulative Perpetual Preferred S",
-      "price": 17.86,
-      "mkt_cap_b": 116.7,
-      "ema8": 17.96,
-      "ema13": 17.96,
-      "ema21": 18.0,
-      "sector": "Finance",
-      "analyst": "",
-      "chg_1d": -0.78,
-      "chg_1w": -0.67,
-      "chg_1m": 0.0,
-      "rel_vol": 0.89,
-      "signal": "Full Bear",
-      "price_vs_8w": -0.56,
-      "price_vs_13w": -0.58,
-      "price_vs_21w": -0.75,
-      "ema8_vs_13": -0.02,
-      "ema13_vs_21": -0.17,
-      "spread_score": -0.19,
-      "rank": 183,
-      "gap_8_13": 0.02,
-      "gap_13_21": 0.17,
-      "alert": "8W just below 13W (0.02%) \u2014 bullish cross potential; 13W just below 21W (0.17%) \u2014 bullish cross potential"
     },
     {
       "symbol": "BAC/PS",
@@ -13664,32 +13664,6 @@
       "alert": "8W just below 13W (0.04%) \u2014 bullish cross potential; 13W just below 21W (0.07%) \u2014 bullish cross potential"
     },
     {
-      "symbol": "BML/PL",
-      "name": "Bank of America Corporation Depositary Shares (Each representing a 1/1200th Interest in a Share of Floating Rate Non-Cumulative Pref",
-      "price": 19.64,
-      "mkt_cap_b": 349.1,
-      "ema8": 19.74,
-      "ema13": 19.75,
-      "ema21": 19.86,
-      "sector": "Finance",
-      "analyst": "",
-      "chg_1d": -0.41,
-      "chg_1w": -0.2,
-      "chg_1m": -0.05,
-      "rel_vol": 0.92,
-      "signal": "Full Bear",
-      "price_vs_8w": -0.51,
-      "price_vs_13w": -0.57,
-      "price_vs_21w": -1.12,
-      "ema8_vs_13": -0.05,
-      "ema13_vs_21": -0.55,
-      "spread_score": -0.6,
-      "rank": 196,
-      "gap_8_13": 0.05,
-      "gap_13_21": 0.55,
-      "alert": "8W just below 13W (0.05%) \u2014 bullish cross potential; 13W just below 21W (0.55%) \u2014 bullish cross potential"
-    },
-    {
       "symbol": "BAC/PE",
       "name": "Bank of America Corporation Depositary Sh repstg 1/1000th Perp Pfd Ser E",
       "price": 19.99,
@@ -13714,6 +13688,32 @@
       "gap_8_13": 0.05,
       "gap_13_21": 0.8,
       "alert": "8W just below 13W (0.05%) \u2014 bullish cross potential; 13W just below 21W (0.80%) \u2014 bullish cross potential"
+    },
+    {
+      "symbol": "BML/PL",
+      "name": "Bank of America Corporation Depositary Shares (Each representing a 1/1200th Interest in a Share of Floating Rate Non-Cumulative Pref",
+      "price": 19.64,
+      "mkt_cap_b": 349.1,
+      "ema8": 19.74,
+      "ema13": 19.75,
+      "ema21": 19.86,
+      "sector": "Finance",
+      "analyst": "",
+      "chg_1d": -0.41,
+      "chg_1w": -0.2,
+      "chg_1m": -0.05,
+      "rel_vol": 0.92,
+      "signal": "Full Bear",
+      "price_vs_8w": -0.51,
+      "price_vs_13w": -0.57,
+      "price_vs_21w": -1.12,
+      "ema8_vs_13": -0.05,
+      "ema13_vs_21": -0.55,
+      "spread_score": -0.6,
+      "rank": 196,
+      "gap_8_13": 0.05,
+      "gap_13_21": 0.55,
+      "alert": "8W just below 13W (0.05%) \u2014 bullish cross potential; 13W just below 21W (0.55%) \u2014 bullish cross potential"
     },
     {
       "symbol": "CICHF",
@@ -16345,9 +16345,9 @@
   "ai_summary": {
     "market_overview": {
       "bias": "bearish",
-      "bias_label": "Cautiously Bearish",
-      "headline": "Market structure deteriorating with SPY in Bull Breakdown, QQQ unstacked bearish, and BTC in Full Bear territory.",
-      "detail": "Only 28% of top 300 stocks remain in Full Bull mode while 35% are in bearish structures (Full Bear + Bearish unstacked). Broad market weakness confirmed by index divergences and rising breakdown count.",
+      "bias_label": "Defensive Positioning",
+      "headline": "Market structure deteriorating with SPY in Bull Breakdown, QQQ bearish, and BTC in Full Bear collapse.",
+      "detail": "Only 28% of stocks remain in Full Bull (85 of 300) while 35% are in bearish structures (95 stocks). Major indices showing crossover risk with SPY 8W/13W gap at just 0.15%.",
       "index_signals": {
         "SPY": "Bull Breakdown",
         "QQQ": "Bearish (unstacked)",
@@ -16355,22 +16355,30 @@
       }
     },
     "reversal_candidates": {
-      "headline": "Bear Rally Reversals with Bullish Cross Potential",
+      "headline": "Early Reversal Signals - Bear Rallies with Bullish Crossovers",
       "items": [
         {
           "symbol": "ICE",
           "name": "Intercontinental Exchange Inc.",
           "signal": "Bear Rally above 13W",
           "crossover_detail": "8W just below 13W (0.01%) \u2014 bullish cross potential; 13W just below 21W (0.25%) \u2014 bullish cross potential",
-          "note": "Exchange operator showing strength above key resistance with imminent bullish EMA crosses.",
+          "note": "Financial exchange operator showing resilience with price above both 8W and 13W EMAs despite bearish structure",
           "type": "bull"
         },
         {
-          "symbol": "META",
-          "name": "Meta Platforms, Inc.",
-          "signal": "Full Bear",
-          "crossover_detail": "8W just below 13W (0.51%) \u2014 bullish cross potential; 13W just below 21W (0.83%) \u2014 bullish cross potential",
-          "note": "Mega-cap tech showing potential reversal signals despite bearish structure.",
+          "symbol": "SYK",
+          "name": "Stryker Corporation",
+          "signal": "Bearish (unstacked)",
+          "crossover_detail": "8W just above 13W (0.44%) \u2014 bearish cross risk; 13W just below 21W (0.02%) \u2014 bullish cross potential",
+          "note": "Medical device leader with Strong Buy rating approaching key EMA cross that could trigger reversal",
+          "type": "bull"
+        },
+        {
+          "symbol": "AAPL",
+          "name": "Apple Inc.",
+          "signal": "Bearish (unstacked)",
+          "crossover_detail": "8W just below 13W (0.09%) \u2014 bullish cross potential; 13W just above 21W (0.99%) \u2014 bearish cross risk",
+          "note": "Mega-cap tech showing potential 8W/13W bullish cross despite broader tech weakness",
           "type": "bull"
         },
         {
@@ -16378,36 +16386,36 @@
           "name": "NVIDIA Corporation",
           "signal": "Bearish (unstacked)",
           "crossover_detail": "8W just below 13W (0.25%) \u2014 bullish cross potential; 13W just above 21W (0.88%) \u2014 bearish cross risk",
-          "note": "AI leader with mixed crossover signals - bullish 8W/13W but bearish 13W/21W risk.",
+          "note": "AI leader with potential bullish 8W/13W cross could signal early reversal in semiconductor space",
           "type": "bull"
         },
         {
-          "symbol": "AMZN",
-          "name": "Amazon.com, Inc.",
+          "symbol": "META",
+          "name": "Meta Platforms, Inc.",
           "signal": "Full Bear",
-          "crossover_detail": "13W just below 21W (0.91%) \u2014 bullish cross potential",
-          "note": "E-commerce giant showing potential 13W/21W bullish cross despite Full Bear structure.",
-          "type": "bull"
-        },
-        {
-          "symbol": "JPM",
-          "name": "JP Morgan Chase & Co.",
-          "signal": "Bearish (unstacked)",
-          "crossover_detail": "8W just below 13W (0.77%) \u2014 bullish cross potential; 13W just above 21W (0.20%) \u2014 bearish cross risk",
-          "note": "Banking bellwether with potential 8W/13W bullish cross but 13W/21W bearish risk.",
+          "crossover_detail": "8W just below 13W (0.51%) \u2014 bullish cross potential; 13W just below 21W (0.83%) \u2014 bullish cross potential",
+          "note": "Social media giant showing dual crossover potential despite Full Bear classification",
           "type": "bull"
         }
       ]
     },
     "pullback_setups": {
-      "headline": "High-Quality Bull Pullbacks to 13W Support",
+      "headline": "Quality Pullbacks in Established Uptrends",
       "items": [
+        {
+          "symbol": "WDC",
+          "name": "Western Digital Corporation",
+          "signal": "Bull Pullback \u2192 13W",
+          "price_vs_21w": 17.88,
+          "note": "Memory storage leader pulling back to 13W after strong run, Strong Buy rated",
+          "type": "bull"
+        },
         {
           "symbol": "MU",
           "name": "Micron Technology, Inc.",
           "signal": "Bull Pullback \u2192 13W",
           "price_vs_21w": 16.1,
-          "note": "Memory giant pulling back to 13W support with strong underlying trend (+16% vs 21W).",
+          "note": "Memory giant with excellent 21W cushion offering quality entry at 13W support",
           "type": "bull"
         },
         {
@@ -16415,15 +16423,7 @@
           "name": "Applied Materials, Inc.",
           "signal": "Bull Pullback \u2192 13W",
           "price_vs_21w": 11.17,
-          "note": "Semiconductor equipment leader in healthy pullback with solid 21W cushion.",
-          "type": "bull"
-        },
-        {
-          "symbol": "NEM",
-          "name": "Newmont Corporation",
-          "signal": "Bull Pullback \u2192 13W",
-          "price_vs_21w": 10.28,
-          "note": "Gold mining giant testing 13W support with strong commodity backdrop.",
+          "note": "Semiconductor equipment play with solid uptrend structure and Strong Buy rating",
           "type": "bull"
         },
         {
@@ -16431,87 +16431,88 @@
           "name": "Freeport-McMoRan, Inc.",
           "signal": "Bull Pullback \u2192 13W",
           "price_vs_21w": 9.05,
-          "note": "Copper play in constructive pullback as industrial metals theme remains intact.",
+          "note": "Copper miner benefiting from infrastructure demand, pulling back to key 13W level",
           "type": "bull"
         }
       ]
     },
     "momentum_themes": {
-      "headline": "Energy and Materials Leading Momentum",
-      "detail": "Energy minerals (100% bullish) and non-energy minerals showing exceptional strength while electronic technology faces headwinds. Distribution services and industrial services maintaining solid momentum.",
+      "headline": "Commodity and Industrial Acceleration",
+      "detail": "Energy minerals and non-energy minerals showing exceptional momentum with 100% bullish participation. Electronic technology names like GLW and VRT leading individual momentum rankings.",
       "top_names": [
         "GLW",
         "VRT",
         "FDX",
-        "AEM"
+        "AEM",
+        "MITSF"
       ]
     },
     "sector_analysis": {
-      "headline": "Sector Rotation Favoring Commodities and Energy",
+      "headline": "Commodity Strength vs Tech/Finance Weakness",
       "strongest": [
         {
           "sector": "Energy minerals",
           "net_score": 100.0,
           "bull_pct": 100.0,
-          "note": "Perfect bullish score with all energy names in uptrends."
+          "note": "Perfect bullish participation with 15.5% average gains vs 21W"
         },
         {
           "sector": "Non-energy minerals",
           "net_score": 100.0,
           "bull_pct": 100.0,
-          "note": "Mining and metals showing universal strength with solid pullback setups."
+          "note": "Mining/metals complex showing broad strength despite recent pullbacks"
         },
         {
           "sector": "Distribution services",
           "net_score": 100.0,
           "bull_pct": 100.0,
-          "note": "Trading houses and distributors benefiting from commodity flows."
+          "note": "Supply chain beneficiaries maintaining strong momentum"
         }
       ],
       "weakest": [
         {
-          "sector": "Commercial services",
-          "net_score": -100.0,
-          "bear_pct": 100.0,
-          "note": "All names in bearish structures with consulting and business services under pressure."
-        },
-        {
           "sector": "Technology services",
           "net_score": -86.4,
           "bear_pct": 90.9,
-          "note": "Software and cloud names facing severe headwinds with 91% in bearish mode."
+          "note": "Massive tech selloff with 91% of names in bearish structures"
+        },
+        {
+          "sector": "Commercial services",
+          "net_score": -100.0,
+          "bear_pct": 100.0,
+          "note": "Complete bearish breakdown in business services sector"
         },
         {
           "sector": "Finance",
           "net_score": -15.8,
           "bear_pct": 46.5,
-          "note": "Banking sector mixed but leaning bearish with 47% in bear structures."
+          "note": "Banking sector weakness with nearly half in bearish structures"
         }
       ],
-      "detail": "Clear rotation from growth/tech into commodities and energy. Finance sector struggling despite some reversal candidates emerging."
+      "detail": "Clear rotation from growth/tech into commodities and industrials. Finance sector showing stress despite recent rally attempts."
     },
     "risk_warnings": {
-      "headline": "Key Market Risks",
+      "headline": "Structural Deterioration Accelerating",
       "items": [
         {
-          "text": "SPY and QQQ both showing EMA crossover risks with potential for further breakdown",
+          "text": "SPY crossover risk with 8W/13W gap at just 0.15% threatens major index breakdown",
+          "type": "caution"
+        },
+        {
+          "text": "QQQ already in bearish structure while BTC Full Bear suggests risk-off environment deepening",
           "type": "bear"
         },
         {
-          "text": "Technology services sector in severe bear mode (91% bearish) signaling broad tech weakness",
-          "type": "caution"
+          "text": "42 Bull Breakdowns signal uptrend deterioration across broad market participation",
+          "type": "bear"
         },
         {
-          "text": "BTC in Full Bear with -20% from 21W creating crypto correlation risk",
-          "type": "caution"
-        },
-        {
-          "text": "42 bull breakdowns suggest broad uptrend deterioration accelerating",
+          "text": "Tech giants MSFT, ORCL, and AMZN in Full Bear warns of growth rotation continuation",
           "type": "bear"
         }
       ]
     },
-    "generated_at": "2026-03-07T15:47:04.529798",
+    "generated_at": "2026-03-07T22:52:47.402109",
     "model": "claude-sonnet-4-20250514"
   }
 }
