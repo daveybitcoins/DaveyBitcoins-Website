@@ -6,6 +6,127 @@
     let filterState = {}; // { tabId: { search: "", selectedTickers: [], filters: { key: value } } }
     let tabRegistry = {}; // { tabId: { data, tableId, renderRowFn } }
 
+    // === URL STATE ===
+    function syncURL() {
+        var params = new URLSearchParams();
+        // Active tab
+        var activeTab = document.querySelector(".tab.active");
+        if (activeTab && activeTab.dataset.tab !== "ai-summary") {
+            params.set("tab", activeTab.dataset.tab);
+        }
+        // Per-tab state: only persist for the active tab
+        var tabId = activeTab ? activeTab.dataset.tab : null;
+        if (tabId && filterState[tabId]) {
+            var st = filterState[tabId];
+            if (st.selectedTickers && st.selectedTickers.length > 0) {
+                params.set("tickers", st.selectedTickers.join(","));
+            }
+            if (st.search) {
+                params.set("q", st.search);
+            }
+            Object.entries(st.filters || {}).forEach(function(entry) {
+                var key = entry[0], val = entry[1];
+                if (Array.isArray(val) && val.length > 0) {
+                    params.set("f_" + key, val.join(","));
+                }
+            });
+        }
+        if (tabId && sortState[tabId]) {
+            var ss = sortState[tabId];
+            params.set("sort", ss.col);
+            params.set("asc", ss.asc ? "1" : "0");
+        }
+        var qs = params.toString();
+        var url = window.location.pathname + (qs ? "?" + qs : "");
+        history.replaceState(null, "", url);
+    }
+
+    function restoreFromURL() {
+        var params = new URLSearchParams(window.location.search);
+        // Restore active tab
+        var tab = params.get("tab");
+        if (tab) {
+            var tabBtn = document.querySelector('.tab[data-tab="' + tab + '"]');
+            if (tabBtn) {
+                document.querySelectorAll(".tab").forEach(function(b) { b.classList.remove("active"); });
+                document.querySelectorAll(".tab-content").forEach(function(s) { s.classList.remove("active"); });
+                tabBtn.classList.add("active");
+                var tabContent = document.getElementById("tab-" + tab);
+                if (tabContent) tabContent.classList.add("active");
+            }
+        }
+        var tabId = tab || "ai-summary";
+        // Restore tickers
+        var tickers = params.get("tickers");
+        if (tickers && filterState[tabId]) {
+            filterState[tabId].selectedTickers = tickers.split(",").map(function(t) { return t.trim().toUpperCase(); }).filter(Boolean);
+            renderChips(tabId);
+        }
+        // Restore search
+        var q = params.get("q");
+        if (q && filterState[tabId]) {
+            filterState[tabId].search = q;
+            var input = document.querySelector('.search-input[data-tab-id="' + tabId + '"]');
+            if (input) input.value = q;
+        }
+        // Restore multi-select filters
+        if (filterState[tabId]) {
+            params.forEach(function(val, key) {
+                if (key.startsWith("f_")) {
+                    var filterKey = key.slice(2);
+                    var values = val.split(",");
+                    filterState[tabId].filters[filterKey] = values;
+                    // Check the corresponding checkboxes
+                    document.querySelectorAll('.multi-select[data-tab-id="' + tabId + '"][data-key="' + filterKey + '"] input[type="checkbox"]').forEach(function(cb) {
+                        cb.checked = values.includes(cb.value);
+                    });
+                    // Update badge
+                    var ms = document.querySelector('.multi-select[data-tab-id="' + tabId + '"][data-key="' + filterKey + '"]');
+                    if (ms) {
+                        var badge = ms.querySelector(".multi-select-badge");
+                        if (badge) { badge.textContent = values.length; badge.style.display = ""; }
+                    }
+                }
+            });
+        }
+        // Restore sort
+        var sortCol = params.get("sort");
+        var sortAsc = params.get("asc");
+        if (sortCol && filterState[tabId]) {
+            sortState[tabId] = { col: sortCol, asc: sortAsc !== "0" };
+            // Apply sort to the data
+            if (tabRegistry[tabId]) {
+                var data = tabRegistry[tabId].data;
+                var asc = sortAsc !== "0";
+                data.sort(function(a, b) {
+                    var va = a[sortCol], vb = b[sortCol];
+                    if (typeof va === "string") {
+                        va = va.toLowerCase();
+                        vb = (vb || "").toLowerCase();
+                        return asc ? va.localeCompare(vb) : vb.localeCompare(va);
+                    }
+                    va = va ?? 0; vb = vb ?? 0;
+                    return asc ? va - vb : vb - va;
+                });
+                // Update header styles
+                var tableEl = document.getElementById(tabRegistry[tabId].tableId);
+                if (tableEl) {
+                    var ths = tableEl.querySelectorAll("thead th");
+                    ths.forEach(function(h) { h.classList.remove("sorted-asc", "sorted-desc"); });
+                    ths.forEach(function(h, i) {
+                        // Match by finding the header def — use textContent comparison as fallback
+                        if (h.textContent.trim().toLowerCase().replace(/[^a-z0-9]/g, "").includes(sortCol.replace(/[^a-z0-9]/g, ""))) {
+                            h.classList.add(asc ? "sorted-asc" : "sorted-desc");
+                        }
+                    });
+                }
+            }
+            applyFilters(tabId);
+        } else if (filterState[tabId]) {
+            applyFilters(tabId);
+        }
+    }
+
     // === INIT ===
     async function init() {
         try {
@@ -18,6 +139,7 @@
             renderAll();
             setupTabs();
             setupScrollFade();
+            restoreFromURL();
         } catch (err) {
             document.getElementById("loading").textContent =
                 "Error loading data. Run: python3 scripts/process_ema.py";
@@ -33,6 +155,7 @@
                 document.querySelectorAll(".tab-content").forEach((s) => s.classList.remove("active"));
                 btn.classList.add("active");
                 document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+                syncURL();
             });
         });
     }
@@ -264,6 +387,7 @@
                 ? filtered.length + " of " + data.length
                 : "";
         }
+        syncURL();
     }
 
     function renderChips(tabId) {
