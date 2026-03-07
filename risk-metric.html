@@ -477,6 +477,38 @@ async function main() {
   // ====== ZOOM/PAN STATE (shared between both charts) ======
   const view = { startIdx: 0, endIdx: n-1 };
 
+  // Restore view from URL params if present
+  (function restoreFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const from = params.get('from');
+    const to = params.get('to');
+    if (from) {
+      const idx = pts.findIndex(p => p.date >= from);
+      if (idx >= 0) view.startIdx = idx;
+    }
+    if (to) {
+      let idx = -1;
+      for (let i = pts.length - 1; i >= 0; i--) { if (pts[i].date <= to) { idx = i; break; } }
+      if (idx >= 0) view.endIdx = idx;
+    }
+    if (view.endIdx - view.startIdx < 60) { view.startIdx = 0; view.endIdx = n - 1; }
+  })();
+
+  function syncURL() {
+    const params = new URLSearchParams(window.location.search);
+    const s = Math.max(0, Math.floor(view.startIdx));
+    const e = Math.min(n - 1, Math.ceil(view.endIdx));
+    if (s === 0 && e === n - 1) {
+      params.delete('from'); params.delete('to');
+    } else {
+      params.set('from', pts[s].date);
+      params.set('to', pts[e].date);
+    }
+    const qs = params.toString();
+    const url = window.location.pathname + (qs ? '?' + qs : '');
+    history.replaceState(null, '', url);
+  }
+
   function getVisibleRange() {
     return { s: Math.max(0, Math.floor(view.startIdx)), e: Math.min(n-1, Math.ceil(view.endIdx)) };
   }
@@ -618,11 +650,16 @@ async function main() {
   }
 
   // ====== FORWARD RETURNS BAR CHART ======
-  let activeFwd=365;
+  let activeFwd = (function(){ var p = new URLSearchParams(window.location.search).get('fwd'); return (p === '730') ? 730 : 365; })();
   function renderReturnsChart(fwdDays) {
     const tc = themeColors();
     fwdDays=fwdDays||activeFwd;
     activeFwd=fwdDays;
+    // Sync fwd param to URL
+    var params = new URLSearchParams(window.location.search);
+    if (fwdDays === 365) params.delete('fwd'); else params.set('fwd', fwdDays);
+    var qs = params.toString();
+    history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
     const labels={365:'1-Year',730:'2-Year'};
     document.getElementById('returnsLabel').textContent='Median '+labels[fwdDays]+' Forward Return by Risk Decile';
     // Update button active states
@@ -707,6 +744,7 @@ async function main() {
   function renderAll() {
     renderPriceChart();
     renderRiskChart();
+    syncURL();
   }
 
   // ====== ZOOM / PAN CONTROLS ======
@@ -878,7 +916,7 @@ async function main() {
       bar.appendChild(b);
     });
   }
-  renderReturnsChart(365);
+  renderReturnsChart(activeFwd);
   attachZoomPan('priceCanvas', 'priceTip');
   attachZoomPan('riskCanvas', 'riskTip');
   addZoomButtons();
