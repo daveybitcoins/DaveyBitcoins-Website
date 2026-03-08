@@ -2,8 +2,8 @@ name: Update price data
 
 on:
   schedule:
-    - cron: '45 14 * * *'   # daily at 14:45 UTC (9:45 AM EST)
-    - cron: '0 22 * * *'    # daily at 22:00 UTC (5:00 PM EST)
+    - cron: '45 14 * * 1-5'   # weekdays at 14:45 UTC (9:45 AM EST)
+    - cron: '0 22 * * 1-5'    # weekdays at 22:00 UTC (5:00 PM EST)
   workflow_dispatch:         # manual trigger
 
 jobs:
