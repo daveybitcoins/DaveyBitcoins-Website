@@ -228,7 +228,7 @@ function themeColors() {
 
 // ====== LOAD DATA FROM CSV ======
 async function loadCSV() {
-  const resp = await fetch('data.csv');
+  const resp = await fetch('data.csv?v=' + Date.now());
   const text = await resp.text();
   const rows = text.trim().split('\n').slice(1); // skip header
   return rows.map(r => { const [d,p] = r.split(','); return [d, parseFloat(p)]; });
