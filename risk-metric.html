@@ -115,7 +115,12 @@
   .risk-lows-table .rl-price{font-family:'Outfit',sans-serif;font-weight:600;color:var(--text-heading)}
   .risk-lows-table .rl-risk{font-family:'Outfit',sans-serif;font-weight:600}
   .risk-lows-table .rl-return{font-family:'Outfit',sans-serif;font-weight:600}
-  @media(max-width:600px){.risk-lows-table th,.risk-lows-table td{padding:6px 8px;font-size:0.65rem}}
+  .info-btn{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);color:#818cf8;font-size:9px;font-weight:700;font-family:'Outfit',sans-serif;cursor:pointer;margin-left:6px;vertical-align:middle;transition:all 0.2s;line-height:1;position:relative}
+  .info-btn:hover{background:rgba(99,102,241,0.3);color:#a5b4fc}
+  .info-popup{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;width:280px;font-size:0.7rem;font-weight:400;color:var(--text);line-height:1.6;box-shadow:0 8px 32px rgba(0,0,0,0.4);z-index:100;pointer-events:none}
+  .info-popup::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--border)}
+  .info-btn:hover .info-popup{display:block}
+  @media(max-width:600px){.risk-lows-table th,.risk-lows-table td{padding:6px 8px;font-size:0.65rem}.info-popup{width:200px;font-size:0.6rem}}
 </style>
 </head>
 <body>
@@ -372,19 +377,19 @@ async function main() {
   // ====== HISTORICAL RISK LOWS ======
   {
     const EVENT_LABELS = {
-      "2011-11": "Post-bubble crash",
-      "2012-06": "Post-2011 bubble low",
-      "2015-01": "Post Mt. Gox bear bottom",
-      "2015-08": "Post Mt. Gox bear bottom",
-      "2018-12": "2018 bear market bottom",
-      "2019-01": "2018 bear market bottom",
-      "2019-02": "2018 bear market bottom",
-      "2020-03": "COVID-19 crash",
-      "2022-11": "FTX collapse / bear bottom",
-      "2022-12": "FTX collapse / bear bottom"
+      "2011-11": { label: "Post-bubble crash", info: "Bitcoin crashed 93% from $32 to $2 after the first major bubble. Mt. Gox hacks and regulatory uncertainty crushed early adoption momentum." },
+      "2012-06": { label: "Post-2011 bubble low", info: "Extended bear market bottom. Bitcoin traded sideways for months before the next halving cycle ignited the 2013 rally to $1,100." },
+      "2015-01": { label: "Post Mt. Gox bear bottom", info: "Mt. Gox exchange collapsed in Feb 2014, losing 850K BTC. Bitcoin fell 86% from $1,100 to $170. Confidence in crypto infrastructure shattered." },
+      "2015-08": { label: "Post Mt. Gox bear bottom", info: "Final capitulation of the 2014-15 bear market. Bitcoin consolidated before beginning the rally that would lead to the 2017 $20K peak." },
+      "2018-12": { label: "2018 bear market bottom", info: "ICO bubble burst, 85% drawdown from $20K peak. SEC crackdowns, BCH hash wars, and exhausted retail interest marked peak despair." },
+      "2019-01": { label: "2018 bear market bottom", info: "Bitcoin bottomed near $3,200 after the ICO mania unwind. Institutional infrastructure (Bakkt, Fidelity) began building during the bear market." },
+      "2019-02": { label: "2018 bear market bottom", info: "Final retest of the bear market lows before the recovery rally. Crypto winter thawed as fundamentals improved beneath the surface." },
+      "2020-03": { label: "COVID-19 crash", info: "Global pandemic liquidity crisis. Bitcoin crashed 50% in 2 days to $3,800 as all assets were sold. Fed stimulus ignited the bull run to $69K." },
+      "2022-11": { label: "FTX collapse / bear bottom", info: "FTX exchange and Alameda Research collapsed, $8B in customer funds lost. Contagion spread across crypto. Bitcoin fell to $15,500." },
+      "2022-12": { label: "FTX collapse / bear bottom", info: "Post-FTX capitulation bottom. Genesis/DCG concerns lingered but selling exhausted. Set the floor for the 2023-24 recovery and ETF approvals." }
     };
 
-    function getEventLabel(dateStr) {
+    function getEventData(dateStr) {
       const prefix = dateStr.slice(0, 7);
       if (EVENT_LABELS[prefix]) return EVENT_LABELS[prefix];
       const d = new Date(dateStr + 'T00:00:00Z');
@@ -395,7 +400,7 @@ async function main() {
         const key = check.toISOString().slice(0, 7);
         if (EVENT_LABELS[key]) return EVENT_LABELS[key];
       }
-      return '';
+      return null;
     }
 
     function findRiskLows(data) {
@@ -451,7 +456,7 @@ async function main() {
     const tbody = document.getElementById('riskLowsBody');
     lows.forEach(low => {
       const tr = document.createElement('tr');
-      const event = getEventLabel(low.date);
+      const eventData = getEventData(low.date);
       const pStr = low.price >= 1e6 ? '$' + (low.price / 1e6).toFixed(1) + 'M' :
                    low.price >= 1000 ? '$' + low.price.toLocaleString(undefined, { maximumFractionDigits: 0 }) :
                    '$' + low.price.toFixed(2);
@@ -466,7 +471,7 @@ async function main() {
         return '<td class="rl-return" style="color:' + col + '">' + (ret >= 0 ? '+' : '') + Math.round(ret) + '%</td>';
       }
       tr.innerHTML = '<td>' + low.date + '</td>' +
-        '<td class="rl-event">' + (event || '—') + '</td>' +
+        '<td class="rl-event">' + (eventData ? eventData.label + (eventData.info ? '<span class="info-btn">i<span class="info-popup">' + eventData.info + '</span></span>' : '') : '—') + '</td>' +
         '<td class="rl-price">' + pStr + '</td>' +
         '<td class="rl-risk" style="color:' + riskColor(low.riskCombo) + '">' + low.riskCombo.toFixed(3) + '</td>' +
         fwdCell(low._idx, 1) + fwdCell(low._idx, 2) + fwdCell(low._idx, 3);
