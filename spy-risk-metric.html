@@ -292,7 +292,8 @@ function vixColor(v) {
 }
 
 async function main() {
-  const [rawSPY, rawVIX] = await Promise.all([loadCSV('data_spy.csv'), loadCSV('data_vix.csv')]);
+  const bust = Date.now();
+  const [rawSPY, rawVIX] = await Promise.all([loadCSV('data_spy.csv?v='+bust), loadCSV('data_vix.csv?v='+bust)]);
 
   // Build VIX lookup map
   const vixMap = {};
