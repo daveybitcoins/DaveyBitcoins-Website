@@ -130,8 +130,11 @@
     // === INIT ===
     async function init() {
         try {
-            const resp = await fetch("data/scanner_data.json?v=" + Date.now());
-            DATA = await resp.json();
+            const [scannerResp] = await Promise.all([
+                fetch("data/scanner_data.json?v=" + Date.now()),
+                computeSpyRisk()
+            ]);
+            DATA = await scannerResp.json();
             document.getElementById("loading").style.display = "none";
             document.getElementById("data-date").textContent =
                 `Data: ${DATA.meta.date} | ${DATA.meta.total_stocks} stocks`;
@@ -269,23 +272,80 @@
         return `rgb(${c[0]},${c[1]},${c[2]})`;
     }
 
-    function renderBtcRisk(idx) {
-        if (idx.risk_combo == null) return "";
-        const r = idx.risk_combo;
+    function renderRiskBar(risk_combo, zone, zone_color, href, label, riskLabel) {
+        if (risk_combo == null) return "";
+        const r = risk_combo;
         const color = riskColor(r);
         const barGrad = "linear-gradient(90deg,#2563eb 0%,#06b6d4 15%,#10b981 30%,#84cc16 45%,#eab308 60%,#f97316 75%,#ef4444 90%,#991b1b 100%)";
         return `
             <div style="margin-top:0.5rem;padding:0.4rem 0.5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);">
                 <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;">
-                    <span style="color:var(--text-dim);">Combined Risk</span>
+                    <span style="color:var(--text-dim);">${riskLabel}</span>
                     <strong style="color:${color};font-family:'JetBrains Mono',monospace;font-size:0.85rem;">${r.toFixed(3)}</strong>
                 </div>
                 <div style="position:relative;height:6px;margin:0.3rem 0;border-radius:3px;background:${barGrad};">
                     <div style="position:absolute;top:-2px;left:${r*100}%;width:2px;height:10px;background:#fff;border-radius:1px;transform:translateX(-1px);box-shadow:0 0 3px rgba(0,0,0,0.5);"></div>
                 </div>
-                <div style="text-align:center;font-size:0.7rem;font-weight:600;color:${idx.zone_color || color};letter-spacing:0.05em;">${(idx.zone || "").toUpperCase()}</div>
-                <a href="risk-metric.html" style="display:block;text-align:center;margin-top:0.3rem;font-size:0.65rem;color:var(--accent);text-decoration:none;opacity:0.8;">View Full BTC Metrics \u2192</a>
+                <div style="text-align:center;font-size:0.7rem;font-weight:600;color:${zone_color || color};letter-spacing:0.05em;">${(zone || "").toUpperCase()}</div>
+                <a href="${href}" style="display:block;text-align:center;margin-top:0.3rem;font-size:0.65rem;color:var(--accent);text-decoration:none;opacity:0.8;">View Full ${label} Metrics \u2192</a>
             </div>`;
+    }
+
+    function renderBtcRisk(idx) {
+        return renderRiskBar(idx.risk_combo, idx.zone, idx.zone_color, "risk-metric.html", "BTC", "Combined Risk");
+    }
+
+    // SPY structural risk — computed client-side from data_spy.csv
+    let spyRiskData = null;
+
+    async function computeSpyRisk() {
+        try {
+            const resp = await fetch('data_spy.csv?v=' + Date.now());
+            const text = await resp.text();
+            const rows = text.trim().split('\n').slice(1);
+            const raw = rows.map(r => { const [d,p] = r.split(','); return [d, parseFloat(p)]; }).filter(r => !isNaN(r[1]));
+            if (raw.length < 252) return;
+
+            const GENESIS = new Date('1960-01-04T00:00:00Z').getTime();
+            const pts = raw.map(([ds, p]) => {
+                const ms = new Date(ds + 'T00:00:00Z').getTime();
+                const days = (ms - GENESIS) / 864e5;
+                return { days, logPrice: Math.log10(p), price: p };
+            }).filter(p => p.days > 0 && p.price > 0);
+
+            const n = pts.length;
+            let sx=0,sy=0,sxy=0,sxx=0;
+            pts.forEach(p => { sx+=p.days; sy+=p.logPrice; sxy+=p.days*p.logPrice; sxx+=p.days*p.days; });
+            const slope = (n*sxy - sx*sy) / (n*sxx - sx*sx);
+            const intercept = (sy - slope*sx) / n;
+
+            let minRes=Infinity, maxRes=-Infinity;
+            pts.forEach(p => {
+                p.regLogPrice = slope * p.days + intercept;
+                p.residual = p.logPrice - p.regLogPrice;
+                if (p.residual < minRes) minRes = p.residual;
+                if (p.residual > maxRes) maxRes = p.residual;
+            });
+
+            const resRange = maxRes - minRes;
+            const last = pts[pts.length - 1];
+            const risk = Math.max(0, Math.min(1, (last.residual - minRes) / resRange));
+
+            let zone, zone_color;
+            if (risk < 0.25) { zone = "Accumulate"; zone_color = "#2563eb"; }
+            else if (risk < 0.50) { zone = "Neutral"; zone_color = "#10b981"; }
+            else if (risk < 0.75) { zone = "Caution"; zone_color = "#eab308"; }
+            else { zone = "Euphoria"; zone_color = "#ef4444"; }
+
+            spyRiskData = { risk_combo: risk, zone, zone_color };
+        } catch (e) {
+            console.warn('SPY risk computation failed:', e);
+        }
+    }
+
+    function renderSpyRisk() {
+        if (!spyRiskData) return "";
+        return renderRiskBar(spyRiskData.risk_combo, spyRiskData.zone, spyRiskData.zone_color, "spy-risk-metric.html", "SPY", "Structural Risk");
     }
 
     function renderIndexCard() {
@@ -297,7 +357,7 @@
                     ${DATA.index_context.map(idx => `
                         <div class="stat-box">
                             <div class="value" style="font-size:1.2rem;">
-                                ${idx.symbol === 'BTC' ? `<a href="risk-metric.html" style="color:inherit;text-decoration:none;">${idx.symbol}</a>` : idx.symbol} ${signalBadge(idx.signal)}
+                                ${idx.symbol === 'BTC' ? `<a href="risk-metric.html" style="color:inherit;text-decoration:none;">${idx.symbol}</a>` : idx.symbol === 'SPY' ? `<a href="spy-risk-metric.html" style="color:inherit;text-decoration:none;">${idx.symbol}</a>` : idx.symbol} ${signalBadge(idx.signal)}
                             </div>
                             <div class="label">${fmtPrice(idx.price)}</div>
                             <div style="font-size:0.75rem;margin-top:0.4rem;color:var(--text-dim);font-family:'JetBrains Mono',monospace;">
@@ -314,7 +374,7 @@
                                 1M: <span class="${colorClass(idx.chg_1m)}">${fmtPct(idx.chg_1m)}</span>
                             </div>
                             ${idx.crossover_alert ? `<div class="alert-text" style="font-size:0.72rem;margin:0.4rem auto 0;padding:0.35rem 0.5rem;text-align:center;border:1px solid var(--border);border-radius:4px;background:var(--bg);">${formatAlert(idx.crossover_alert)}</div>` : ''}
-                            ${idx.symbol === 'BTC' ? renderBtcRisk(idx) : ''}
+                            ${idx.symbol === 'BTC' ? renderBtcRisk(idx) : idx.symbol === 'SPY' ? renderSpyRisk() : ''}
                         </div>
                     `).join("")}
                 </div>
