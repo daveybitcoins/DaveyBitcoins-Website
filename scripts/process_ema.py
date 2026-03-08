@@ -590,6 +590,20 @@ def build_btc_context():
     return result
 
 
+def build_vix_context():
+    """Load latest VIX data from csv/VIX_*.json if available."""
+    pattern = os.path.join(CSV_DIR, "VIX_*.json")
+    files = glob.glob(pattern)
+    if not files:
+        return None
+    latest = max(files, key=os.path.getmtime)
+    try:
+        with open(latest, "r") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, IOError):
+        return None
+
+
 def main():
     csv_path = find_latest_csv()
     data_date = extract_date_from_filename(csv_path)
@@ -611,6 +625,11 @@ def main():
     if btc_context:
         index_context.append(btc_context)
         print(f"Added BTC context: {btc_context['signal']} at ${btc_context['price']:,.0f}")
+
+    # Add VIX context
+    vix_context = build_vix_context()
+    if vix_context:
+        print(f"Added VIX context: {vix_context['level']}")
 
     # Preserve existing ai_summary if present
     existing_summary = None
@@ -638,6 +657,9 @@ def main():
         "sector_heatmap": build_sector_heatmap(stocks),
         "crossover_alerts": build_crossover_alerts(stocks),
     }
+
+    if vix_context:
+        output["vix_context"] = vix_context
 
     if existing_summary:
         output["ai_summary"] = existing_summary

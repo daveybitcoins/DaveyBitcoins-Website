@@ -5,7 +5,7 @@ on:
     - cron: '0 15 * * *'    # daily at 15:00 UTC (10:00 AM EST) — fallback
     - cron: '15 22 * * *'   # daily at 22:15 UTC (5:15 PM EST) — fallback
   workflow_run:
-    workflows: ["Update BTC price data"]
+    workflows: ["Update price data"]
     types: [completed]
   workflow_dispatch:         # manual trigger
 
@@ -30,7 +30,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install tradingview-screener anthropic
+        run: pip install tradingview-screener anthropic yfinance
 
       - name: Fetch & process EMA data
         env:

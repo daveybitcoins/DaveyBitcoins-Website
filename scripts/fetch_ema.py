@@ -13,6 +13,7 @@ Usage:
 
 import argparse
 import csv
+import json
 import os
 import subprocess
 import sys
@@ -182,6 +183,29 @@ def fetch_index_data():
     return df
 
 
+def fetch_vix_data(date_str):
+    """Fetch current VIX level from Yahoo Finance via yfinance."""
+    try:
+        import yfinance as yf
+        vix = yf.Ticker("^VIX")
+        hist = vix.history(period="5d")
+        if hist.empty:
+            print("  Warning: No VIX data returned")
+            return
+        last_close = float(hist["Close"].iloc[-1])
+        prev_close = float(hist["Close"].iloc[-2]) if len(hist) >= 2 else last_close
+        change_pct = ((last_close - prev_close) / prev_close) * 100 if prev_close else 0
+        print(f"  VIX: {last_close:.2f} ({change_pct:+.2f}%)")
+        vix_filepath = os.path.join(CSV_DIR, f"VIX_{date_str}.json")
+        os.makedirs(CSV_DIR, exist_ok=True)
+        with open(vix_filepath, "w") as f:
+            json.dump({"level": round(last_close, 2), "change": round(change_pct, 2)}, f)
+    except ImportError:
+        print("  Warning: yfinance not installed, skipping VIX fetch")
+    except Exception as e:
+        print(f"  Warning: Failed to fetch VIX: {e}")
+
+
 def run_process_ema():
     """Run process_ema.py to generate scanner_data.json."""
     script = os.path.join(SCRIPT_DIR, "process_ema.py")
@@ -240,6 +264,10 @@ def main():
         index_filename = f"Index_ETFs_{date_str}.csv"
         index_filepath = os.path.join(CSV_DIR, index_filename)
         write_csv(index_rows, index_filepath)
+
+    # Fetch VIX data
+    print("Fetching VIX data...")
+    fetch_vix_data(date_str)
 
     # Optionally run the processor
     if args.process:

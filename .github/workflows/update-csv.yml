@@ -1,4 +1,4 @@
-name: Update BTC price data
+name: Update price data
 
 on:
   schedule:
@@ -59,11 +59,75 @@ jobs:
 
           echo "Added $ADDED new entries, updated $UPDATED existing"
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install yfinance
+        run: pip install yfinance
+
+      - name: Fetch latest SPY and VIX data
+        run: |
+          python3 -c "
+          import yfinance as yf
+          import csv, os
+          from datetime import datetime
+
+          def update_csv(ticker, filename):
+              filepath = filename
+              if not os.path.exists(filepath):
+                  print(f'{filepath} not found, skipping')
+                  return
+
+              # Read existing dates
+              existing = {}
+              with open(filepath, 'r') as f:
+                  reader = csv.reader(f)
+                  header = next(reader)
+                  for row in reader:
+                      existing[row[0]] = row[1]
+
+              last_date = max(existing.keys())
+              print(f'{ticker}: last date in CSV = {last_date}')
+
+              # Fetch last 7 days
+              data = yf.download(ticker, period='7d', interval='1d', progress=False)
+              if data.empty:
+                  print(f'  No data returned for {ticker}')
+                  return
+
+              added = 0
+              updated = 0
+              for date, row in data.iterrows():
+                  ds = date.strftime('%Y-%m-%d')
+                  price = str(round(float(row['Close']), 2))
+                  if ds > last_date:
+                      existing[ds] = price
+                      added += 1
+                      print(f'  Added: {ds}, {price}')
+                  elif ds == last_date and price != existing.get(ds):
+                      existing[ds] = price
+                      updated += 1
+                      print(f'  Updated: {ds}, {existing.get(ds)} -> {price}')
+
+              # Write back sorted
+              with open(filepath, 'w', newline='') as f:
+                  f.write('date,price\n')
+                  for d in sorted(existing.keys()):
+                      f.write(f'{d},{existing[d]}\n')
+
+              print(f'  {ticker}: added {added}, updated {updated}')
+
+          update_csv('SPY', 'data_spy.csv')
+          update_csv('^VIX', 'data_vix.csv')
+          "
+
       - name: Commit and push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data.csv
+          git add data.csv data_spy.csv data_vix.csv
           git diff --cached --quiet && echo "No changes" && exit 0
-          git commit -m "Update BTC price data $(date -u +%Y-%m-%d)"
+          git commit -m "Update price data $(date -u +%Y-%m-%d)"
           git push

@@ -240,6 +240,14 @@
         DATA.index_context.forEach(idx => {
             html += ` | <strong>${idx.symbol}</strong> ${fmtPrice(idx.price)}`;
         });
+        if (DATA.vix_context) {
+            const vix = DATA.vix_context.level;
+            const vc = vix < 15 ? "var(--green)" : vix < 20 ? "var(--yellow)" : vix < 30 ? "#f97316" : "var(--red)";
+            const chg = DATA.vix_context.change;
+            const cc = chg >= 0 ? "var(--red)" : "var(--green)";
+            const cs = chg >= 0 ? "+" + chg.toFixed(1) + "%" : chg.toFixed(1) + "%";
+            html += ` | <strong style="color:${vc}">VIX</strong> <span style="color:${vc}">${vix.toFixed(1)}</span> <span style="color:${cc};font-size:0.8em">(${cs})</span>`;
+        }
         html += `</span>`;
         if (DATA.ai_summary && DATA.ai_summary.market_overview) {
             const s = DATA.ai_summary.market_overview;

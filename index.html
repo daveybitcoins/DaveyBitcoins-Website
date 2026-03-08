@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DaveyBitcoins</title>
     <meta property="og:title" content="DaveyBitcoins">
-    <meta property="og:description" content="Bitcoin Risk Metric & Weekly EMA Scanner — Always be building">
+    <meta property="og:description" content="Bitcoin & SPY Risk Metrics, Weekly EMA Scanner — Always be building">
     <meta property="og:image" content="https://daveybitcoins.com/img/brand.jpg">
     <meta property="og:url" content="https://daveybitcoins.com/">
     <meta property="og:type" content="website">
@@ -188,6 +188,7 @@
 
         .tile-ema { --tile-glow: #3fb950; --tile-shadow: rgba(63, 185, 80, 0.08); }
         .tile-btc { --tile-glow: #f97316; --tile-shadow: rgba(249, 115, 22, 0.08); }
+        .tile-spy { --tile-glow: #2563eb; --tile-shadow: rgba(37, 99, 235, 0.08); }
 
         /* Live page preview via scaled iframe */
         .tile-preview {
@@ -243,6 +244,12 @@
             background: rgba(249, 115, 22, 0.15);
             color: #f97316;
             border: 1px solid rgba(249, 115, 22, 0.25);
+        }
+
+        .tag-spy {
+            background: rgba(37, 99, 235, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(37, 99, 235, 0.25);
         }
 
         .tag-live::before {
@@ -335,6 +342,15 @@
                 </div>
                 <div class="tile-name">Bitcoin Risk Metric</div>
                 <div class="tile-desc">Power-law regression with combined structural and momentum risk. Interactive charts and forward returns by risk decile.</div>
+                <div class="tile-arrow">Explore &rarr;</div>
+            </a>
+            <a href="spy-risk-metric.html" class="tile tile-spy">
+                <div class="tile-preview"><iframe src="spy-risk-metric.html" loading="lazy" title="SPY Risk Metric Preview"></iframe></div>
+                <div class="tile-header">
+                    <span class="tile-tag tag-spy">Updated Daily</span>
+                </div>
+                <div class="tile-name">SPY Risk Metric</div>
+                <div class="tile-desc">Log-linear regression combined with inverted VIX percentile. Structural deviation plus fear gauge for S&P 500 timing.</div>
                 <div class="tile-arrow">Explore &rarr;</div>
             </a>
         </div>
