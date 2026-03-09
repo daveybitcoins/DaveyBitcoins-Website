@@ -2,8 +2,8 @@ name: Update EMA Scanner
 
 on:
   schedule:
-    - cron: '0 15 * * 1-5'    # weekdays at 15:00 UTC (10:00 AM EST) — fallback
-    - cron: '15 22 * * 1-5'   # weekdays at 22:15 UTC (5:15 PM EST) — fallback
+    - cron: '0 14 * * 1-5'    # weekdays at 14:00 UTC (10:00 AM EDT) — fallback
+    - cron: '15 21 * * 1-5'   # weekdays at 21:15 UTC (5:15 PM EDT) — fallback
   workflow_run:
     workflows: ["Update price data"]
     types: [completed]
