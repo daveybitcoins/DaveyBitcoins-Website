@@ -101,7 +101,8 @@ jobs:
               updated = 0
               for date, row in data.iterrows():
                   ds = date.strftime('%Y-%m-%d')
-                  price = str(round(float(row['Close']), 2))
+                  close_val = row['Close']
+                  price = str(round(float(close_val.iloc[0] if hasattr(close_val, 'iloc') else close_val), 2))
                   if ds > last_date:
                       existing[ds] = price
                       added += 1
