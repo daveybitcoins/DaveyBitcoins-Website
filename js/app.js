@@ -977,7 +977,7 @@
                     <strong style="color:var(--text);">Volume Guide:</strong>
                     ${volBadge("Low Vol")} <span style="color:var(--text-dim);">< 0.8x avg &mdash; orderly selling, higher quality entry</span>
                     <span style="margin:0 0.4rem;color:var(--border);">|</span>
-                    ${volBadge("Normal")} <span style="color:var(--text-dim);">0.8x&ndash;1.5x avg &mdash; neutral volume</span>
+                    ${volBadge("Normal Vol")} <span style="color:var(--text-dim);">0.8x&ndash;1.5x avg &mdash; neutral volume</span>
                     <span style="margin:0 0.4rem;color:var(--border);">|</span>
                     ${volBadge("High Vol")} <span style="color:var(--text-dim);">> 1.5x avg &mdash; potential institutional selling, use caution</span>
                 </div>

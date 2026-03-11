@@ -210,7 +210,7 @@ def build_pullbacks(stocks):
         elif rv > 1.5:
             s["vol_quality"] = "High Vol"
         else:
-            s["vol_quality"] = "Normal"
+            s["vol_quality"] = "Normal Vol"
     return sorted(filtered, key=lambda s: (signal_priority.get(s["signal"], 9), -s["price_vs_21w"]))
 
 
@@ -338,7 +338,7 @@ def build_index_context():
         elif rv > 1.5:
             vol_quality = "High Vol"
         else:
-            vol_quality = "Normal"
+            vol_quality = "Normal Vol"
 
         context.append({
             "symbol": s["symbol"],

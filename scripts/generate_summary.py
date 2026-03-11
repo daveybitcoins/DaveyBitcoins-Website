@@ -80,7 +80,7 @@ SCHEMA = {
                 "name": "Company Name",
                 "signal": "exact signal string from data",
                 "price_vs_21w": 0.0,
-                "vol_quality": "Low Vol or Normal or High Vol",
+                "vol_quality": "Low Vol or Normal Vol or High Vol",
                 "note": "1 sentence on the setup quality — mention volume context",
                 "type": "bull"
             }
@@ -120,7 +120,7 @@ def extract_prompt_data(data):
         "price_vs_21w": s["price_vs_21w"], "price_vs_13w": s["price_vs_13w"],
         "price_vs_8w": s["price_vs_8w"], "mkt_cap_b": s["mkt_cap_b"],
         "sector": s["sector"], "analyst": s.get("analyst", ""),
-        "rel_vol": s.get("rel_vol", 0), "vol_quality": s.get("vol_quality", "Normal")
+        "rel_vol": s.get("rel_vol", 0), "vol_quality": s.get("vol_quality", "Normal Vol")
     } for s in data["pullbacks"][:10]]
 
     # Top 8 momentum leaders
@@ -228,7 +228,7 @@ Rules:
 - market_overview.bias must be one of: "bullish", "bearish", "neutral", "mixed"
 - market_overview.bias_label: human-readable like "Leaning Bullish", "Cautiously Bearish", "Neutral / Mixed"
 - reversal_candidates.items: ONLY pick from the "Bear Rallies WITH Bullish Crossover Alerts" section. Each item.crossover_detail MUST be copied VERBATIM from the crossover_alert field in that data — do NOT rephrase or invent crossover text. Max 5 items. If that section is empty, pick the most notable bearish stocks with bullish crossover alerts. Each item.type = "bull". Skip preferred shares (tickers with / or .)
-- pullback_setups.items: Pick the 3-5 most interesting pullback setups (prioritize large-cap, well-known names). Each item.type = "bull". Each item.vol_quality must be copied from the data (Low Vol, Normal, or High Vol). Mention volume context in the note (e.g. "Low volume pullback suggests orderly selling" or "High volume — watch for institutional distribution"). Skip preferred shares
+- pullback_setups.items: Pick the 3-5 most interesting pullback setups (prioritize large-cap, well-known names). Each item.type = "bull". Each item.vol_quality must be copied from the data (Low Vol, Normal Vol, or High Vol). Mention volume context in the note (e.g. "Low volume pullback suggests orderly selling" or "High volume — watch for institutional distribution"). Skip preferred shares
 - momentum_themes.top_names: 3-5 tickers showing strongest momentum. Skip preferred shares
 - sector_analysis.strongest: Top 3 sectors by net_score. sector_analysis.weakest: Bottom 3 sectors
 - risk_warnings.items: 2-4 concise warnings. item.type is "caution" or "bear"
