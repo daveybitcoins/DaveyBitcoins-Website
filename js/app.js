@@ -264,7 +264,7 @@
             const spyIdx = DATA.index_context.find(i => i.symbol === "SPY");
             const dailyDollar = spyIdx ? (spyIdx.price * dailyPct / 100) : null;
             html += ` | <strong style="color:${vc}">VIX</strong> <span style="color:${vc}">${vix.toFixed(1)}</span>`;
-            html += ` <span style="color:var(--text-dim);font-size:0.85em;">(±${dailyPct.toFixed(2)}%`;
+            html += ` <span style="color:#ffffff;font-size:0.85em;">(±${dailyPct.toFixed(2)}%`;
             if (dailyDollar) html += ` / ±$${dailyDollar.toFixed(2)}`;
             html += `)</span>`;
         }
