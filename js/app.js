@@ -260,7 +260,13 @@
         if (DATA.vix_context) {
             const vix = DATA.vix_context.level;
             const vc = vix < 15 ? "var(--green)" : vix < 20 ? "var(--yellow)" : vix < 30 ? "#f97316" : "var(--red)";
+            const dailyPct = vix / Math.sqrt(252);
+            const spyIdx = DATA.index_context.find(i => i.symbol === "SPY");
+            const dailyDollar = spyIdx ? (spyIdx.price * dailyPct / 100) : null;
             html += ` | <strong style="color:${vc}">VIX</strong> <span style="color:${vc}">${vix.toFixed(1)}</span>`;
+            html += ` <span style="color:var(--text-dim);font-size:0.85em;">(±${dailyPct.toFixed(2)}%`;
+            if (dailyDollar) html += ` / ±$${dailyDollar.toFixed(2)}`;
+            html += `)</span>`;
         }
         html += `</span>`;
         if (DATA.ai_summary && DATA.ai_summary.market_overview) {
