@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QQQ Risk Metric</title>
+<meta property="og:title" content="QQQ Risk Metric — DaveyBitcoins">
+<meta property="og:description" content="Log-linear regression risk metric for QQQ (Nasdaq-100). Interactive charts, VIX zones, and forward returns by risk decile.">
+<meta property="og:url" content="https://daveybitcoins.com/qqq-risk-metric.html">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0f1e'/%3E%3Ctext x='16' y='23' font-family='serif' font-size='20' font-weight='bold' fill='%232563eb' text-anchor='middle'%3EQ%3C/text%3E%3C/svg%3E">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+  :root{
+    --bg:#101e36;--bg-card:#142642;--bg-canvas:#122240;
+    --border:#243a5c;--border-light:#1e3460;--border-accent:#2a4468;
+    --text:#c8cad0;--text-dim:#7a90b0;--text-dimmer:#5a7498;
+    --text-bright:#b8d0e8;--text-heading:#fff;
+    --accent-blue:#4af;--accent-purple:#a78bfa;
+    --header-line:linear-gradient(90deg,transparent,#3a6090,transparent);
+    --tooltip-bg:#1e3460;--footer-text:#4a6890;--meth-text:#90a8c8;
+    --rc-bg:#101e36;--rc-border:#1e3460;
+    --btn-bg:#1e3460;--btn-text:#8a9dba;--btn-border:#2a4468;--btn-hover:#2a4468;--btn-hover-text:#fff;
+  }
+  [data-theme="light"]{
+    --bg:#f5f7fa;--bg-card:#ffffff;--bg-canvas:#f0f3f6;
+    --border:#d0d7de;--border-light:#e1e6ed;--border-accent:#c0c8d4;
+    --text:#2c3e50;--text-dim:#656d76;--text-dimmer:#8892a0;
+    --text-bright:#2c3e50;--text-heading:#1a1a2e;
+    --accent-blue:#0969da;--accent-purple:#8250df;
+    --header-line:linear-gradient(90deg,transparent,#c0c8d4,transparent);
+    --tooltip-bg:#ffffff;--footer-text:#8892a0;--meth-text:#4a5568;
+    --rc-bg:#f0f3f6;--rc-border:#d0d7de;
+    --btn-bg:#e8ecf0;--btn-text:#4a5568;--btn-border:#d0d7de;--btn-hover:#d8dce0;--btn-hover-text:#1a1a2e;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;min-height:100vh;transition:background 0.3s,color 0.3s}
+  .noise-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+  [data-theme="light"] .noise-overlay{opacity:0}
+  .container{max-width:1440px;margin:0 auto;padding:36px 28px;position:relative;z-index:1}
+  header{text-align:center;margin-bottom:44px;position:relative}
+  header::after{content:'';display:block;width:120px;height:1px;background:var(--header-line);margin:20px auto 0}
+  .header-nav{position:absolute;top:0;right:0;display:flex;align-items:center;gap:12px}
+  .header-nav a{color:var(--accent-blue);text-decoration:none;font-size:0.72rem;letter-spacing:1px}
+  .header-nav a:hover{text-decoration:underline}
+  .theme-toggle{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:0.3rem 0.5rem;cursor:pointer;color:var(--text);font-size:1rem;line-height:1;transition:background 0.15s,border-color 0.15s}
+  .theme-toggle:hover{background:var(--bg-card);border-color:var(--accent-blue)}
+  h1{font-family:'Outfit',sans-serif;font-size:2.6rem;font-weight:700;letter-spacing:-2px;color:var(--text-heading);margin-bottom:6px}
+  h1 span{background:linear-gradient(135deg,#2563eb,#06b6d4,#10b981);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  [data-theme="light"] h1 span{background:linear-gradient(135deg,#0969da,#0284c7,#059669);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  [data-theme="light"] #vPrice{color:#1a1a2e}
+  .subtitle{font-size:0.72rem;color:var(--text-dim);letter-spacing:3px;text-transform:uppercase}
+  .live-dot{display:inline-block;width:6px;height:6px;background:#22c55e;border-radius:50%;margin-right:6px;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+  .dashboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:36px}
+  .card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:24px 28px;text-align:center;position:relative;overflow:hidden;transition:background 0.3s,border-color 0.3s}
+  .card::before{content:'';position:absolute;top:0;left:20%;right:20%;height:1px;background:var(--glow,var(--border))}
+  .card-label{font-size:0.58rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:2.5px;margin-bottom:10px}
+  .card-value{font-family:'Outfit',sans-serif;font-size:1.8rem;font-weight:600;color:var(--val-color,var(--text-heading))}
+  .card-sub{font-size:0.55rem;color:var(--text-dimmer);margin-top:5px}
+  .risk-bar-wrap{margin-top:14px;position:relative;height:8px;border-radius:4px;overflow:visible}
+  .risk-bar-bg{position:absolute;top:0;left:0;right:0;bottom:0;border-radius:4px;background:linear-gradient(90deg,#2563eb 0%,#06b6d4 15%,#10b981 30%,#84cc16 45%,#eab308 60%,#f97316 75%,#ef4444 90%,#991b1b 100%)}
+  .risk-bar-needle{position:absolute;top:-5px;width:3px;height:18px;background:#fff;border-radius:2px;box-shadow:0 0 10px rgba(255,255,255,0.5);transform:translateX(-50%);transition:left 0.6s cubic-bezier(0.16,1,0.3,1)}
+  [data-theme="light"] .risk-bar-needle{background:#1a1a2e;box-shadow:0 0 10px rgba(0,0,0,0.3)}
+  .zone-labels{display:flex;justify-content:space-between;margin-top:6px}
+  .zone-labels span{font-size:0.5rem;color:var(--text-dimmer)}
+  .chart-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:24px;position:relative;transition:background 0.3s,border-color 0.3s}
+  .chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:8px}
+  .chart-label{font-size:0.68rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:2.5px}
+  .chart-note{font-size:0.6rem;color:var(--text-dimmer)}
+  canvas{width:100%!important;display:block}
+  .legend-bar{display:flex;justify-content:center;margin-top:18px;max-width:480px;margin-left:auto;margin-right:auto;border-radius:6px;overflow:hidden;border:1px solid var(--border)}
+  .legend-seg{flex:1;text-align:center;padding:6px 4px;font-size:0.62rem;font-weight:600;letter-spacing:0.3px;line-height:1.3}
+  .legend-seg .seg-label{display:block;font-size:0.52rem;font-weight:400;opacity:0.7;margin-top:1px}
+  .methodology{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:28px 32px;margin-top:24px;transition:background 0.3s,border-color 0.3s}
+  .methodology h3{font-family:'Outfit',sans-serif;font-size:0.85rem;font-weight:600;color:var(--accent-purple);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px}
+  .methodology p{font-size:0.78rem;color:var(--meth-text);line-height:1.9;margin-bottom:10px}
+  .methodology code{background:var(--bg);border:1px solid var(--border-accent);padding:2px 7px;border-radius:4px;color:var(--accent-blue);font-size:0.72rem}
+  .methodology .hl{color:var(--text-bright);font-weight:500}
+  .tooltip{position:absolute;background:var(--tooltip-bg);border:1px solid var(--border-accent);border-radius:8px;padding:10px 14px;font-size:0.65rem;color:var(--text-bright);pointer-events:none;display:none;z-index:10;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.4)}
+  .tooltip .tt-date{color:var(--text-dim);margin-bottom:4px}
+  .tooltip .tt-price{color:var(--text-heading);font-weight:600;font-size:0.75rem}
+  .tooltip .tt-risk{font-weight:600}
+  .risk-table-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:36px;overflow-x:auto;transition:background 0.3s,border-color 0.3s}
+  .risk-table-wrap h4{font-family:'Outfit',sans-serif;font-size:0.65rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;text-align:center}
+  .risk-table{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;text-align:center}
+  .risk-cell{padding:12px 6px;border-radius:8px;background:var(--rc-bg);border:1px solid var(--rc-border)}
+  .risk-cell .rc-risk{font-family:'Outfit',sans-serif;font-size:1rem;font-weight:600;line-height:1.3}
+  .risk-cell .rc-price{font-size:0.72rem;color:var(--meth-text);margin-top:4px;letter-spacing:0.5px}
+  @media(max-width:900px){.risk-table{grid-template-columns:repeat(5,1fr)}}
+  @media(max-width:500px){.risk-table{grid-template-columns:repeat(5,1fr)}}
+  .zoom-btn{background:var(--btn-bg);color:var(--btn-text);border:1px solid var(--btn-border);border-radius:6px;padding:4px 14px;font:11px JetBrains Mono,monospace;cursor:pointer;transition:all 0.2s}
+  .zoom-btn:hover{background:var(--btn-hover);color:var(--btn-hover-text)}
+  .zoom-btn.active{background:var(--btn-hover);color:var(--btn-hover-text)}
+  .brush-overlay{position:absolute;top:0;bottom:0;background:rgba(88,166,255,0.15);border-left:1px solid rgba(88,166,255,0.5);border-right:1px solid rgba(88,166,255,0.5);pointer-events:none;display:none;z-index:5}
+  footer{text-align:center;margin-top:36px;padding-bottom:20px;font-size:0.58rem;color:var(--footer-text);letter-spacing:1.5px}
+  .card-price{background:linear-gradient(140deg,var(--bg-card) 0%,rgba(22,40,72,0.95) 100%)}
+  .card-price::after{content:'';position:absolute;inset:0;border-radius:14px;background:radial-gradient(ellipse at 50% 0%,rgba(37,99,235,0.07) 0%,transparent 65%);pointer-events:none}
+  [data-theme="light"] .card-price{background:linear-gradient(140deg,#fff 0%,#eef2f8 100%)}
+  [data-theme="light"] .card-price::after{background:radial-gradient(ellipse at 50% 0%,rgba(9,105,218,0.05) 0%,transparent 65%)}
+  .risk-lows-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:36px;overflow-x:auto;transition:background 0.3s,border-color 0.3s}
+  .risk-lows-wrap h4{font-family:'Outfit',sans-serif;font-size:0.65rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;text-align:center}
+  .risk-lows-table{width:100%;border-collapse:collapse}
+  .risk-lows-table th{font-size:0.55rem;color:var(--text-dimmer);text-transform:uppercase;letter-spacing:1.5px;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+  .risk-lows-table td{font-size:0.75rem;padding:10px 12px;border-bottom:1px solid var(--border-light);color:var(--text)}
+  .risk-lows-table tr:last-child td{border-bottom:none}
+  .risk-lows-table .rl-event{color:var(--text-bright);font-weight:500}
+  .risk-lows-table .rl-price{font-family:'Outfit',sans-serif;font-weight:600;color:var(--text-heading)}
+  .risk-lows-table .rl-risk{font-family:'Outfit',sans-serif;font-weight:600}
+  .risk-lows-table .rl-return{font-family:'Outfit',sans-serif;font-weight:600}
+  .info-btn{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);color:#818cf8;font-size:9px;font-weight:700;font-family:'Outfit',sans-serif;cursor:pointer;margin-left:6px;vertical-align:middle;transition:all 0.2s;line-height:1;position:relative}
+  .info-btn:hover{background:rgba(99,102,241,0.3);color:#a5b4fc}
+  .info-popup{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;width:280px;font-size:0.7rem;font-weight:400;color:var(--text);line-height:1.6;box-shadow:0 8px 32px rgba(0,0,0,0.4);z-index:100;pointer-events:none}
+  .info-popup::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--border)}
+  .info-btn:hover .info-popup{display:block}
+  @media(max-width:600px){.risk-lows-table th,.risk-lows-table td{padding:6px 8px;font-size:0.65rem}.info-popup{width:200px;font-size:0.6rem}}
+</style>
+</head>
+<body>
+<div class="noise-overlay"></div>
+<div class="container">
+  <header>
+    <div class="header-nav">
+      <a href="/" style="display:inline-flex;align-items:center;gap:5px;color:var(--accent-blue);text-decoration:none;font-size:0.72rem;letter-spacing:1px;padding:4px 10px;border:1px solid var(--border);border-radius:6px;transition:background 0.15s,border-color 0.15s;" onmouseover="this.style.background='var(--btn-hover)';this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.background='';this.style.borderColor='var(--border)'">&#8592; DaveyBitcoins</a>
+      <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark mode" aria-label="Toggle theme">
+        <span id="theme-icon">&#9789;</span>
+      </button>
+    </div>
+    <h1>&#128200; <span>QQQ Risk Metric</span></h1>
+    <div class="subtitle"><span class="live-dot"></span>Structural Risk · Log-Linear Regression</div>
+    <div id="headerDate" style="margin-top:10px;font-size:0.65rem;letter-spacing:1px;color:var(--text-dim);display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border:1px solid rgba(88,166,255,0.2);border-radius:4px;background:rgba(88,166,255,0.06);font-family:'JetBrains Mono',monospace;"></div>
+  </header>
+  <div class="dashboard">
+    <div class="card card-price" style="--glow:rgba(37,99,235,0.5)">
+      <div class="card-label">QQQ / USD</div>
+      <div class="card-value" id="vPrice" style="font-size:2.4rem;letter-spacing:-2px;font-weight:700;color:var(--text-heading)">—</div>
+    </div>
+    <div class="card" style="--glow:#f97316"><div class="card-label">Structural Risk</div><div class="card-value" id="vRisk" style="--val-color:#f97316">—</div>
+      <div class="risk-bar-wrap"><div class="risk-bar-bg"></div><div class="risk-bar-needle" id="needle"></div></div>
+      <div class="zone-labels"><span>Accumulate</span><span>Neutral</span><span>Caution</span></div></div>
+    <div class="card" style="--glow:#10b981"><div class="card-label">Fair Value</div><div class="card-value" id="vFair" style="--val-color:#10b981">—</div><div class="card-sub" id="vGrowth"></div></div>
+    <div class="card" style="--glow:#a78bfa"><div class="card-label">Deviation</div><div class="card-value" id="vDev" style="--val-color:#a78bfa">—</div></div>
+    <div class="card" style="--glow:#ef4444"><div class="card-label">VIX (Close)</div><div class="card-value" id="vVixLevel" style="--val-color:#ef4444">—</div><div class="card-sub" id="vVixImplied"></div></div>
+  </div>
+  <div class="risk-table-wrap">
+    <h4>Price at Each Risk Level</h4>
+    <div class="risk-table" id="riskTable"></div>
+  </div>
+  <div class="risk-lows-wrap">
+    <h4>Notable Historic Market Events</h4>
+    <table class="risk-lows-table" id="riskLowsTable">
+      <thead>
+        <tr><th>Date</th><th>Event</th><th>QQQ Price</th><th>Risk</th><th>VIX High</th><th>1Y Return</th><th>2Y Return</th><th>3Y Return</th></tr>
+      </thead>
+      <tbody id="riskLowsBody"></tbody>
+    </table>
+  </div>
+  <div class="chart-panel">
+    <div class="chart-header">
+      <div class="chart-label">QQQ — Price Colored by Risk (Log Scale)</div>
+      <div class="chart-note"></div>
+    </div>
+    <canvas id="priceCanvas" width="1380" height="540"></canvas>
+    <div class="tooltip" id="priceTip"><div class="tt-date"></div><div class="tt-price"></div><div>Risk: <span class="tt-risk"></span></div></div>
+    <div class="legend-bar" id="legendBar"></div>
+  </div>
+  <div class="chart-panel">
+    <div class="chart-header">
+      <div class="chart-label">Risk Oscillator (0 – 1)</div>
+      <div class="chart-note">Structural Risk (Min/Max Normalized)</div>
+    </div>
+    <canvas id="riskCanvas" width="1380" height="340"></canvas>
+    <div class="tooltip" id="riskTip"><div class="tt-date"></div><div>Risk: <span class="tt-risk"></span></div></div>
+  </div>
+  <div class="chart-panel">
+    <div class="chart-header">
+      <div class="chart-label">VIX — Fear Index</div>
+      <div class="chart-note">Chart based on VIX daily closes</div>
+    </div>
+    <canvas id="vixCanvas" width="1380" height="280"></canvas>
+    <div class="tooltip" id="vixTip"><div class="tt-date"></div><div>VIX: <span class="tt-risk"></span></div></div>
+  </div>
+  <div class="chart-panel">
+    <div class="chart-header">
+      <div class="chart-label" id="returnsLabel">Median 1-Year Forward Return by Risk Decile</div>
+      <div class="chart-note" id="returnsNote"></div>
+    </div>
+    <canvas id="returnsCanvas" width="1380" height="360"></canvas>
+    <div style="display:flex;justify-content:center;gap:8px;margin-top:12px" id="fwdButtons"></div>
+  </div>
+  <div class="methodology">
+    <h3>Methodology</h3>
+    <p><span class="hl">Log-Linear Regression:</span> <code>log₁₀(price)</code> vs <code>days since Mar 10 1999</code> (QQQ inception, tracking the Nasdaq-100). Models exponential growth. The residual measures deviation from the long-run trend.</p>
+    <p><span class="hl">Structural Risk (Min/Max):</span> Normalizes the residual against all-time extremes (0 = maximum undervaluation, 1 = maximum overvaluation). High when QQQ is far above the regression trend line.</p>
+    <p><span class="hl">VIX Chart:</span> Shown for reference as a fear/greed gauge. Not currently factored into the risk calculation.</p>
+  </div>
+  <footer>
+    Not financial advice
+  </footer>
+</div>
+<script>
+// Restore theme before render
+(function(){var t=localStorage.getItem('risk-theme');if(t)document.documentElement.setAttribute('data-theme',t);})();
+
+function themeColors() {
+  const light = document.documentElement.getAttribute('data-theme') === 'light';
+  return {
+    canvasBg: light ? '#f0f3f6' : '#122240',
+    gridLine: light ? '#e1e6ed' : '#1e3460',
+    gridLineMinor: light ? '#e8ecf0' : '#1a2c52',
+    gridZero: light ? '#b8c0cc' : '#3a5580',
+    axisText: light ? '#656d76' : '#5a7498',
+    regressionLine: light ? 'rgba(80,120,180,0.50)' : 'rgba(140,190,255,0.50)',
+    zoneLabels: light ? '#8892a0' : '#4a6890',
+    zoneA: light ? 'rgba(37,99,235,0.05)' : 'rgba(37,99,235,0.08)',
+    zoneB: light ? 'rgba(132,204,22,0.03)' : 'rgba(132,204,22,0.04)',
+    zoneC: light ? 'rgba(234,179,8,0.03)' : 'rgba(234,179,8,0.04)',
+    zoneD: light ? 'rgba(239,68,68,0.05)' : 'rgba(239,68,68,0.08)',
+    zoneDash: light ? '#c0c8d4' : '#2a4468',
+    barValueText: light ? '#1f2328' : '#fff',
+    areaGrad0: light ? 'rgba(239,68,68,0.15)' : 'rgba(239,68,68,0.20)',
+    areaGrad5: light ? 'rgba(234,179,8,0.07)' : 'rgba(234,179,8,0.10)',
+    areaGrad1: light ? 'rgba(37,99,235,0.04)' : 'rgba(37,99,235,0.06)',
+  };
+}
+
+async function loadCSV(url) {
+  const resp = await fetch(url);
+  const text = await resp.text();
+  const rows = text.trim().split('\n').slice(1);
+  return rows.map(r => { const [d,p] = r.split(','); return [d, parseFloat(p)]; }).filter(r => !isNaN(r[1]));
+}
+
+const GENESIS = new Date('1999-03-10T00:00:00Z').getTime(); // QQQ inception
+
+function buildDataset(rawQQQ, vixMap) {
+  const pts = rawQQQ.map(([ds, p]) => {
+    const ms = new Date(ds + 'T00:00:00Z').getTime();
+    const days = (ms - GENESIS) / 864e5;
+    return { date: ds, price: p, days, logPrice: Math.log10(p), vix: vixMap[ds] || null };
+  }).filter(p => p.days > 0 && p.price > 0);
+
+  const n = pts.length;
+
+  // LOG-LINEAR regression: log10(price) = slope * days + intercept
+  let sx=0,sy=0,sxy=0,sxx=0;
+  pts.forEach(p => { sx+=p.days; sy+=p.logPrice; sxy+=p.days*p.logPrice; sxx+=p.days*p.days; });
+  const slope = (n*sxy - sx*sy) / (n*sxx - sx*sx);
+  const intercept = (sy - slope*sx) / n;
+
+  let minRes=Infinity, maxRes=-Infinity;
+  pts.forEach(p => {
+    p.regLogPrice = slope * p.days + intercept;
+    p.regPrice = Math.pow(10, p.regLogPrice);
+    p.residual = p.logPrice - p.regLogPrice;
+    if (p.residual < minRes) minRes = p.residual;
+    if (p.residual > maxRes) maxRes = p.residual;
+  });
+
+  const resRange = maxRes - minRes;
+  pts.forEach(p => {
+    p.riskMM = Math.max(0, Math.min(1, (p.residual - minRes) / resRange));
+  });
+
+  // Risk = structural only (riskMM)
+  pts.forEach(p => {
+    p.riskCombo = p.riskMM;
+  });
+
+  return { pts, slope, intercept, minRes, maxRes };
+}
+
+function riskColor(r, a) {
+  a = a || 1;
+  const stops = [[0,[37,99,235]],[0.12,[6,182,212]],[0.25,[16,185,129]],[0.40,[132,204,22]],[0.55,[234,179,8]],[0.70,[249,115,22]],[0.85,[239,68,68]],[1,[153,27,27]]];
+  let lo=stops[0], hi=stops[stops.length-1];
+  for (let i=0;i<stops.length-1;i++) { if(r>=stops[i][0]&&r<=stops[i+1][0]){lo=stops[i];hi=stops[i+1];break;} }
+  const t=(r-lo[0])/(hi[0]-lo[0]||1);
+  const c=lo[1].map((v,j)=>Math.round(v+t*(hi[1][j]-v)));
+  return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')';
+}
+
+function vixColor(v) {
+  if (v < 15) return '#10b981';
+  if (v < 20) return '#eab308';
+  if (v < 30) return '#f97316';
+  return '#ef4444';
+}
+
+async function main() {
+  const bust = Date.now();
+  const [rawQQQ, rawVIX] = await Promise.all([loadCSV('data_qqq.csv?v='+bust), loadCSV('data_vix.csv?v='+bust)]);
+
+  // Build VIX lookup map
+  const vixMap = {};
+  rawVIX.forEach(([d, p]) => { vixMap[d] = p; });
+
+  const { pts, slope, intercept, minRes, maxRes } = buildDataset(rawQQQ, vixMap);
+  const n = pts.length;
+  const last = pts[n-1];
+
+  // Dashboard
+  document.getElementById('vPrice').textContent = '$' + last.price.toLocaleString(undefined,{maximumFractionDigits:2});
+  const hd = document.getElementById('headerDate');
+  hd.innerHTML = '<span style="width:6px;height:6px;background:#22c55e;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> as of ' + last.date;
+  document.getElementById('vRisk').textContent = last.riskCombo.toFixed(3);
+  document.getElementById('vRisk').style.setProperty('--val-color', riskColor(last.riskCombo));
+  document.getElementById('vFair').textContent = '$' + last.regPrice.toLocaleString(undefined,{maximumFractionDigits:2});
+  const devPct = ((last.price/last.regPrice-1)*100).toFixed(1);
+  document.getElementById('vDev').textContent = (devPct>0?'+':'') + devPct + '%';
+  document.getElementById('needle').style.left = (last.riskCombo*100)+'%';
+  // VIX card with implied daily move (Rule of 16)
+  if (last.vix != null) {
+    const vixEl = document.getElementById('vVixLevel');
+    vixEl.textContent = last.vix.toFixed(1);
+    vixEl.style.setProperty('--val-color', vixColor(last.vix));
+    const impliedPct = (last.vix / 16).toFixed(2);
+    const impliedPts = (last.price * last.vix / 16 / 100).toFixed(0);
+    const vc = vixColor(last.vix);
+    document.getElementById('vVixImplied').innerHTML = '<div style="color:var(--text-dim);font-size:0.6rem;letter-spacing:1px;margin-bottom:2px">IMPLIED MOVE</div><span style="font-family:JetBrains Mono,monospace;color:var(--text-heading);font-weight:400;font-size:0.75rem">&#177;' + impliedPct + '%</span> <span style="color:var(--text-dim);font-size:0.6rem">/</span> <span style="font-family:JetBrains Mono,monospace;color:var(--text-heading);font-weight:400;font-size:0.75rem">&#177;$' + impliedPts + '</span>';
+  }
+
+  // Risk-price table
+  {
+    const resRange = maxRes - minRes;
+    const lastReg = last.regLogPrice;
+    const tbl = document.getElementById('riskTable');
+    for(let r=0.10; r<=1.001; r+=0.10){
+      const neededRes = r * resRange + minRes;
+      const price = Math.pow(10, neededRes + lastReg);
+      const cell = document.createElement('div');
+      cell.className = 'risk-cell';
+      const pStr = price >= 1e4 ? '$'+Math.round(price).toLocaleString() : '$'+price.toFixed(2);
+      const pctMove = ((price / last.price - 1) * 100).toFixed(1);
+      const pctStr = pctMove >= 0 ? '+'+pctMove+'%' : pctMove+'%';
+      const pctColor = pctMove >= 0 ? '#10b981' : '#ef4444';
+      cell.innerHTML='<div class="rc-risk" style="color:'+riskColor(r)+'">'+r.toFixed(2)+'</div><div class="rc-price">'+pStr+'</div><div style="font-size:0.62rem;margin-top:2px;color:'+pctColor+';letter-spacing:0.3px">'+pctStr+'</div>';
+      tbl.appendChild(cell);
+    }
+  }
+
+  // Historical Market Bottoms
+  {
+    const BOTTOMS = [
+      { date: "2001-09-20", event: "9/11 Attacks (Peak Fear)", peak: true, vixHigh: 43.8, info: "Terrorist attacks on World Trade Center and Pentagon. Markets closed for 4 days. Tech-heavy Nasdaq was already reeling from the dot-com bust." },
+      { date: "2002-10-09", event: "Dot-com Bust", vixHigh: 42.6, info: "Nasdaq fell 78% from its 2000 peak. QQQ lost over 80% of its value. Enron, WorldCom scandals destroyed confidence." },
+      { date: "2008-11-20", event: "GFC (Peak Fear)", peak: true, vixHigh: 81.5, info: "Lehman Brothers collapsed, AIG bailout, credit markets froze. Banks faced insolvency. VIX hit all-time intraday high of 89.5." },
+      { date: "2009-03-09", event: "Global Financial Crisis", vixHigh: 51.3, info: "QQQ bottomed down ~54% from 2007 highs. Fed launched QE, TARP stabilized banks. Generational buying opportunity for tech." },
+      { date: "2011-08-08", event: "US Downgrade (Peak Fear)", peak: true, vixHigh: 48.0, info: "S&P downgraded US debt from AAA for the first time. European sovereign debt crisis spreading. Markets fell 17% in 3 weeks." },
+      { date: "2011-10-03", event: "European Debt Crisis", vixHigh: 45.6, info: "Greece, Portugal, Ireland bailouts. Fear of eurozone breakup. ECB's Draghi 'whatever it takes' speech eventually calmed markets." },
+      { date: "2015-08-24", event: "China Devaluation (Peak Fear)", peak: true, vixHigh: 53.3, info: "China devalued the yuan, sparking fears of global slowdown. Dow fell 1,000 points at the open. Flash crash in ETFs." },
+      { date: "2018-02-05", event: "Volmageddon (Peak Fear)", peak: true, vixHigh: 38.8, info: "XIV (inverse VIX ETN) blew up, losing 96% in a day. VIX doubled in hours. Short-volatility trade unwound violently." },
+      { date: "2018-12-24", event: "Fed Tightening Panic", vixHigh: 36.1, info: "Fed raised rates 4 times in 2018 despite slowing growth. QQQ fell ~23% in Q4. Christmas Eve marked the exact bottom." },
+      { date: "2020-03-16", event: "COVID-19 (Peak Fear)", peak: true, vixHigh: 83.6, info: "Global pandemic lockdowns. Circuit breakers triggered multiple times. VIX hit 83.6 intraday. Fed cut rates to zero." },
+      { date: "2020-03-23", event: "COVID-19 Crash", vixHigh: 76.7, info: "QQQ bottomed down ~28% from highs. Fed launched unlimited QE, Congress passed $2T stimulus. Tech led the fastest recovery in history." },
+      { date: "2022-10-12", event: "Fed Hiking Cycle", vixHigh: 34.5, info: "Fed raised rates from 0% to 5.25% in 18 months — fastest tightening in 40 years. QQQ fell ~37% as growth-to-value rotation hit tech hardest." },
+      { date: "2024-08-05", event: "Yen Carry Trade (Peak Fear)", peak: true, vixHigh: 65.7, info: "Bank of Japan rate hike triggered massive yen carry trade unwind. Global equity selloff, Nikkei fell 12% in a day." },
+      { date: "2025-04-08", event: "Tariff Fears (Peak Fear)", peak: true, vixHigh: 57.5, info: "Escalating US-China tariffs and trade war fears. Tech sector hit hard on semiconductor export restrictions and supply chain uncertainty." },
+    ];
+
+    const tbody = document.getElementById('riskLowsBody');
+    BOTTOMS.forEach(b => {
+      // Find closest date in data
+      let idx = pts.findIndex(p => p.date >= b.date);
+      if (idx < 0) idx = n - 1;
+      const low = pts[idx];
+      const tr = document.createElement('tr');
+      const pStr = '$' + low.price.toLocaleString(undefined, { maximumFractionDigits: 2 });
+      function fwdCell(fromIdx, years) {
+        var days = years * 365;
+        var fIdx = Math.min(fromIdx + days, n - 1);
+        if (fIdx - fromIdx < days * 0.75) return '<td class="rl-return" style="color:var(--text-dimmer)">—</td>';
+        var ret = ((pts[fIdx].price / pts[fromIdx].price - 1) * 100);
+        var col = ret >= 0 ? '#10b981' : '#ef4444';
+        return '<td class="rl-return" style="color:' + col + '">' + (ret >= 0 ? '+' : '') + Math.round(ret) + '%</td>';
+      }
+      const vixNum = b.vixHigh != null ? b.vixHigh : low.vix;
+      const vixVal = vixNum != null ? '<span style="color:' + vixColor(vixNum) + '">' + vixNum.toFixed(1) + '</span>' : '<span style="color:var(--text-dimmer)">N/A</span>';
+      const infoHtml = b.info ? '<span class="info-btn">i<span class="info-popup">' + b.info + '</span></span>' : '';
+      tr.innerHTML = '<td>' + low.date + '</td>' +
+        '<td class="rl-event">' + b.event + infoHtml + '</td>' +
+        '<td class="rl-price">' + pStr + '</td>' +
+        '<td class="rl-risk" style="color:' + riskColor(low.riskCombo) + '">' + low.riskCombo.toFixed(3) + '</td>' +
+        '<td>' + vixVal + '</td>' +
+        fwdCell(idx, 1) + fwdCell(idx, 2) + fwdCell(idx, 3);
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Zoom/pan state
+  const view = { startIdx: 0, endIdx: n-1 };
+  (function restoreFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const from = params.get('from'), to = params.get('to');
+    if (from) { const idx = pts.findIndex(p => p.date >= from); if (idx >= 0) view.startIdx = idx; }
+    if (to) { for (let i = pts.length - 1; i >= 0; i--) { if (pts[i].date <= to) { view.endIdx = i; break; } } }
+    if (view.endIdx - view.startIdx < 60) { view.startIdx = 0; view.endIdx = n - 1; }
+  })();
+
+  function syncURL() {
+    const params = new URLSearchParams(window.location.search);
+    const s = Math.max(0, Math.floor(view.startIdx)), e = Math.min(n - 1, Math.ceil(view.endIdx));
+    if (s === 0 && e === n - 1) { params.delete('from'); params.delete('to'); }
+    else { params.set('from', pts[s].date); params.set('to', pts[e].date); }
+    const qs = params.toString();
+    history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+  }
+
+  function getVisibleRange() { return { s: Math.max(0, Math.floor(view.startIdx)), e: Math.min(n-1, Math.ceil(view.endIdx)) }; }
+  function visibleSample() { const { s, e } = getVisibleRange(); return Math.max(1, Math.floor((e - s) / 1500)); }
+
+  // Price chart
+  function renderPriceChart() {
+    const tc = themeColors();
+    const cv=document.getElementById('priceCanvas'), ctx=cv.getContext('2d');
+    const W=cv.width, H=cv.height;
+    const P={t:24,r:60,b:48,l:80};
+    const cw=W-P.l-P.r, ch=H-P.t-P.b;
+    const { s, e } = getVisibleRange();
+    const S = visibleSample();
+    ctx.fillStyle=tc.canvasBg; ctx.fillRect(0,0,W,H);
+    const xOf=i=>P.l+((i-s)/(e-s))*cw;
+    const visPrices = pts.slice(s,e+1).map(p=>p.price);
+    const minE=Math.floor(Math.log10(Math.min(...visPrices)));
+    const maxE=Math.ceil(Math.log10(Math.max(...visPrices)));
+    const yOf=p=>{const lp=Math.log10(p);return P.t+ch-((lp-minE)/(maxE-minE))*ch;};
+    // Price grid
+    ctx.textAlign='right'; ctx.font='10px JetBrains Mono';
+    for(let e2=minE;e2<=maxE;e2++){
+      const y=yOf(Math.pow(10,e2));
+      ctx.strokeStyle=tc.gridLine;ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke();
+      if(e2<maxE){const y3=yOf(3*Math.pow(10,e2));ctx.strokeStyle=tc.gridLineMinor;ctx.beginPath();ctx.moveTo(P.l,y3);ctx.lineTo(W-P.r,y3);ctx.stroke();}
+      ctx.fillStyle=tc.axisText;
+      const val=Math.pow(10,e2);
+      ctx.fillText(val>=1000?'$'+val.toLocaleString():val>=1?'$'+val:'$'+val.toFixed(2),P.l-8,y+3);
+    }
+    // Year grid — 5-year ticks when zoomed out
+    const seenYr=new Set(); ctx.textAlign='center';
+    const span=e-s;
+    const yrInterval=span>5000?5:span>1500?2:1;
+    const showMonth=span<1500;
+    for(let i=s;i<=e;i+=S){
+      const yr=+pts[i].date.slice(0,4);
+      const mo=+pts[i].date.slice(5,7);
+      const key = showMonth ? pts[i].date.slice(0,7) : ''+yr;
+      if(!seenYr.has(key)){
+        const show=showMonth?(mo%3===1):(yr%yrInterval===0);
+        if(show){
+          seenYr.add(key);const x=xOf(i);
+          ctx.strokeStyle=tc.gridLine;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,H-P.b);ctx.stroke();
+          ctx.fillStyle=tc.axisText;ctx.font='10px JetBrains Mono';
+          ctx.fillText(showMonth?pts[i].date.slice(0,7):yr,x,H-P.b+18);
+        }
+      }
+    }
+    // Regression line
+    ctx.strokeStyle=tc.regressionLine;ctx.lineWidth=1.5;ctx.setLineDash([8,5]);
+    ctx.beginPath();
+    for(let i=s;i<=e;i+=S){const x=xOf(i),y=yOf(pts[i].regPrice);i===s?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+    ctx.stroke();ctx.setLineDash([]);
+    // Price line colored by risk
+    for(let i=s+S;i<=e;i+=S){
+      const prev=Math.max(s,i-S);
+      ctx.strokeStyle=riskColor(pts[i].riskCombo);ctx.lineWidth=2.5;
+      ctx.beginPath();ctx.moveTo(xOf(prev),yOf(pts[prev].price));ctx.lineTo(xOf(i),yOf(pts[i].price));ctx.stroke();
+    }
+  }
+
+  // Risk oscillator chart
+  function renderRiskChart() {
+    const tc = themeColors();
+    const cv=document.getElementById('riskCanvas'), ctx=cv.getContext('2d');
+    const W=cv.width, H=cv.height;
+    const P={t:16,r:76,b:48,l:80};
+    const cw=W-P.l-P.r, ch=H-P.t-P.b;
+    const { s, e } = getVisibleRange();
+    const S = visibleSample();
+    ctx.fillStyle=tc.canvasBg; ctx.fillRect(0,0,W,H);
+    const xOf=i=>P.l+((i-s)/(e-s))*cw;
+    const yOf=r=>P.t+ch*(1-r);
+    // Zone fills
+    [[0,0.20,tc.zoneA],[0.20,0.50,tc.zoneB],[0.50,0.80,tc.zoneC],[0.80,1,tc.zoneD]].forEach(([lo,hi,c])=>{
+      ctx.fillStyle=c;ctx.fillRect(P.l,yOf(hi),cw,yOf(lo)-yOf(hi));
+    });
+    [0.20,0.50,0.80].forEach(v=>{
+      ctx.strokeStyle=tc.zoneDash;ctx.lineWidth=1;ctx.setLineDash([4,4]);
+      ctx.beginPath();ctx.moveTo(P.l,yOf(v));ctx.lineTo(W-P.r,yOf(v));ctx.stroke();ctx.setLineDash([]);
+    });
+    ctx.textAlign='right';ctx.font='10px JetBrains Mono';
+    [0,0.25,0.5,0.75,1.0].forEach(v=>{
+      const y=yOf(v);ctx.strokeStyle=tc.gridLine;ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke();
+      ctx.fillStyle=tc.axisText;ctx.fillText(v.toFixed(2),P.l-8,y+3);
+    });
+    // Year grid — 5-year ticks when zoomed out
+    const seenYr=new Set();ctx.textAlign='center';
+    const span=e-s;
+    const yrInterval=span>5000?5:span>1500?2:1;
+    const showMonth=span<1500;
+    for(let i=s;i<=e;i+=S){
+      const yr=+pts[i].date.slice(0,4);const mo=+pts[i].date.slice(5,7);
+      const key=showMonth?pts[i].date.slice(0,7):''+yr;
+      if(!seenYr.has(key)){
+        const show=showMonth?(mo%3===1):(yr%yrInterval===0);
+        if(show){seenYr.add(key);ctx.strokeStyle=tc.gridLine;
+        ctx.beginPath();ctx.moveTo(xOf(i),P.t);ctx.lineTo(xOf(i),H-P.b);ctx.stroke();
+        ctx.fillStyle=tc.axisText;ctx.font='10px JetBrains Mono';ctx.fillText(showMonth?pts[i].date.slice(0,7):yr,xOf(i),H-P.b+18);}
+      }
+    }
+    // Area fill
+    ctx.beginPath();ctx.moveTo(xOf(s),yOf(0));
+    for(let i=s;i<=e;i+=S) ctx.lineTo(xOf(i),yOf(pts[i].riskCombo));
+    ctx.lineTo(xOf(e),yOf(0));ctx.closePath();
+    const grd=ctx.createLinearGradient(0,yOf(1),0,yOf(0));
+    grd.addColorStop(0,tc.areaGrad0);grd.addColorStop(0.5,tc.areaGrad5);grd.addColorStop(1,tc.areaGrad1);
+    ctx.fillStyle=grd;ctx.fill();
+    // Combined line
+    for(let i=s+S;i<=e;i+=S){
+      const prev=Math.max(s,i-S);
+      ctx.strokeStyle=riskColor(pts[i].riskCombo,0.90);ctx.lineWidth=1.8;
+      ctx.beginPath();ctx.moveTo(xOf(prev),yOf(pts[prev].riskCombo));ctx.lineTo(xOf(i),yOf(pts[i].riskCombo));ctx.stroke();
+    }
+    // Zone labels
+    ctx.fillStyle=tc.zoneLabels;ctx.font='9px JetBrains Mono';ctx.textAlign='right';
+    ctx.fillText('EUPHORIA',W-P.r-4,yOf(0.90));
+    ctx.fillText('ELEVATED',W-P.r-4,yOf(0.65));
+    ctx.fillText('NEUTRAL',W-P.r-4,yOf(0.35));
+    ctx.fillText('ACCUMULATE',W-P.r-4,yOf(0.10));
+  }
+
+  // VIX chart
+  function renderVixChart() {
+    const tc = themeColors();
+    const cv=document.getElementById('vixCanvas'), ctx=cv.getContext('2d');
+    const W=cv.width, H=cv.height;
+    const P={t:16,r:60,b:48,l:80};
+    const cw=W-P.l-P.r, ch=H-P.t-P.b;
+    let { s, e } = getVisibleRange();
+    // Skip to first date with VIX data
+    while (s < e && pts[s].vix == null) s++;
+    if (s >= e) { ctx.fillStyle=themeColors().canvasBg; ctx.fillRect(0,0,W,H); return; }
+    vixEffectiveStart = s;
+    const S = visibleSample();
+    ctx.fillStyle=tc.canvasBg; ctx.fillRect(0,0,W,H);
+    const xOf=i=>P.l+((i-s)/(e-s))*cw;
+    // Find visible VIX range
+    let maxVix = 0;
+    for (let i=s;i<=e;i++) { if (pts[i].vix != null && pts[i].vix > maxVix) maxVix = pts[i].vix; }
+    maxVix = Math.max(40, Math.ceil(maxVix / 10) * 10);
+    const yOf=v=>P.t+ch*(1-v/maxVix);
+    // VIX zone fills
+    const zones = [[0,15,'rgba(16,185,129,0.06)'],[15,20,'rgba(234,179,8,0.06)'],[20,30,'rgba(249,115,22,0.06)'],[30,maxVix,'rgba(239,68,68,0.06)']];
+    zones.forEach(([lo,hi,c])=>{
+      const y1=yOf(Math.min(hi,maxVix)),y2=yOf(lo);
+      if(y2>y1){ctx.fillStyle=c;ctx.fillRect(P.l,y1,cw,y2-y1);}
+    });
+    // Grid
+    ctx.textAlign='right';ctx.font='10px JetBrains Mono';
+    for(let v=0;v<=maxVix;v+=10){
+      const y=yOf(v);ctx.strokeStyle=tc.gridLine;ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke();
+      ctx.fillStyle=tc.axisText;ctx.fillText(v,P.l-8,y+3);
+    }
+    // Zone thresholds
+    [15,20,30].forEach(v=>{
+      if(v<=maxVix){ctx.strokeStyle=tc.zoneDash;ctx.lineWidth=1;ctx.setLineDash([4,4]);
+      ctx.beginPath();ctx.moveTo(P.l,yOf(v));ctx.lineTo(W-P.r,yOf(v));ctx.stroke();ctx.setLineDash([]);}
+    });
+    // Year grid — 5-year ticks when zoomed out
+    const seenYr=new Set();ctx.textAlign='center';
+    const vSpan=e-s;
+    const vYrInterval=vSpan>5000?5:vSpan>1500?2:1;
+    const vShowMonth=vSpan<1500;
+    for(let i=s;i<=e;i+=S){
+      const yr=+pts[i].date.slice(0,4);const mo=+pts[i].date.slice(5,7);
+      const key=vShowMonth?pts[i].date.slice(0,7):''+yr;
+      if(!seenYr.has(key)){
+        const show=vShowMonth?(mo%3===1):(yr%vYrInterval===0);
+        if(show){seenYr.add(key);ctx.strokeStyle=tc.gridLine;
+        ctx.beginPath();ctx.moveTo(xOf(i),P.t);ctx.lineTo(xOf(i),H-P.b);ctx.stroke();
+        ctx.fillStyle=tc.axisText;ctx.font='10px JetBrains Mono';ctx.fillText(vShowMonth?pts[i].date.slice(0,7):yr,xOf(i),H-P.b+18);}
+      }
+    }
+    // VIX line colored by zone
+    for(let i=s+S;i<=e;i+=S){
+      const prev=Math.max(s,i-S);
+      if(pts[i].vix==null||pts[prev].vix==null) continue;
+      ctx.strokeStyle=vixColor(pts[i].vix);ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(xOf(prev),yOf(pts[prev].vix));ctx.lineTo(xOf(i),yOf(pts[i].vix));ctx.stroke();
+    }
+    // Zone labels
+    ctx.fillStyle=tc.zoneLabels;ctx.font='9px JetBrains Mono';ctx.textAlign='right';
+    ctx.fillText('EXTREME',W-P.r-4,yOf(Math.min(maxVix-2,35)));
+    ctx.fillText('ELEVATED',W-P.r-4,yOf(25));
+    ctx.fillText('NORMAL',W-P.r-4,yOf(17.5));
+    ctx.fillText('LOW FEAR',W-P.r-4,yOf(7.5));
+  }
+
+  // Forward returns bar chart
+  const WARMUP = 500; // skip early data where VIX lookback isn't full
+  let activeFwd = (function(){ var p = new URLSearchParams(window.location.search).get('fwd'); return (p === '730') ? 730 : 365; })();
+  function renderReturnsChart(fwdDays) {
+    const tc = themeColors();
+    fwdDays=fwdDays||activeFwd; activeFwd=fwdDays;
+    var params = new URLSearchParams(window.location.search);
+    if (fwdDays === 365) params.delete('fwd'); else params.set('fwd', fwdDays);
+    var qs = params.toString();
+    history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+    const labels={365:'1-Year',730:'2-Year'};
+    document.getElementById('returnsLabel').textContent='Median '+labels[fwdDays]+' Forward Return by Risk Decile';
+    document.querySelectorAll('#fwdButtons button').forEach(b=>{
+      if(parseInt(b.dataset.fwd)===fwdDays) b.classList.add('active'); else b.classList.remove('active');
+    });
+    const cv=document.getElementById('returnsCanvas'), ctx=cv.getContext('2d');
+    const W=cv.width, H=cv.height;
+    const P={t:28,r:40,b:52,l:80};
+    const cw=W-P.l-P.r, ch=H-P.t-P.b;
+    ctx.fillStyle=tc.canvasBg; ctx.fillRect(0,0,W,H);
+    const FWD=fwdDays;
+    const buckets=[];for(let d=0;d<10;d++) buckets.push([]);
+    for(let i=WARMUP;i<n-FWD;i++){
+      const decile=Math.min(9,Math.floor(pts[i].riskCombo*10));
+      const ret=(pts[i+FWD].price/pts[i].price-1)*100;
+      buckets[decile].push(ret);
+    }
+    const medians=buckets.map(b=>{
+      if(!b.length) return 0; b.sort((a,c)=>a-c);
+      const m=Math.floor(b.length/2); return b.length%2?b[m]:(b[m-1]+b[m])/2;
+    });
+    const maxY=Math.max(...medians.map(Math.abs),50);
+    const yOf=v=>P.t+ch/2-((v/maxY)*(ch/2));
+    ctx.textAlign='right';ctx.font='10px JetBrains Mono';
+    const gridVals=[-100,-50,0,50,100,150,200,300,400,500].filter(v=>Math.abs(v)<=maxY*1.1);
+    gridVals.forEach(v=>{
+      const y=yOf(v);if(y<P.t-5||y>H-P.b+5) return;
+      ctx.strokeStyle=v===0?tc.gridZero:tc.gridLine;ctx.lineWidth=v===0?1.5:1;
+      ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke();
+      ctx.fillStyle=tc.axisText;ctx.fillText(v>0?'+'+v+'%':v+'%',P.l-8,y+3);
+    });
+    const barW=cw/10*0.7, gap=cw/10*0.15;
+    for(let d=0;d<10;d++){
+      const x=P.l+d*(cw/10)+gap;const median=medians[d];const y0=yOf(0);const y1=yOf(median);
+      const midRisk=(d+0.5)/10;ctx.fillStyle=riskColor(midRisk,0.85);
+      ctx.beginPath();const r=4;const barTop=Math.min(y0,y1);const barH=Math.abs(y1-y0);
+      ctx.moveTo(x+r,barTop);ctx.lineTo(x+barW-r,barTop);ctx.quadraticCurveTo(x+barW,barTop,x+barW,barTop+r);
+      ctx.lineTo(x+barW,barTop+barH-r);ctx.quadraticCurveTo(x+barW,barTop+barH,x+barW-r,barTop+barH);
+      ctx.lineTo(x+r,barTop+barH);ctx.quadraticCurveTo(x,barTop+barH,x,barTop+barH-r);
+      ctx.lineTo(x,barTop+r);ctx.quadraticCurveTo(x,barTop,x+r,barTop);ctx.fill();
+      ctx.fillStyle=tc.barValueText;ctx.font='bold 11px JetBrains Mono';ctx.textAlign='center';
+      const labelY=median>=0?y1-8:y1+14;
+      ctx.fillText((median>=0?'+':'')+Math.round(median)+'%',x+barW/2,labelY);
+      ctx.fillStyle=riskColor(midRisk);ctx.font='bold 11px JetBrains Mono';
+      ctx.fillText((d/10).toFixed(1)+'–'+((d+1)/10).toFixed(1),x+barW/2,H-P.b+18);
+    }
+  }
+
+  let vixEffectiveStart = 0; // track VIX chart's adjusted start index
+
+  function renderAll() { renderPriceChart(); renderRiskChart(); renderVixChart(); syncURL(); }
+
+  // Zoom/pan
+  function attachZoomPan(canvasId, tipId) {
+    const cv = document.getElementById(canvasId);
+    const W = cv.width;
+    const P = { l:80, r: canvasId === 'priceCanvas' ? 60 : canvasId === 'vixCanvas' ? 60 : 76 };
+    const cw = W - P.l - P.r;
+    let brushing = false, brushStartX = 0;
+    const panel = cv.closest('.chart-panel');
+    const overlay = document.createElement('div');
+    overlay.className = 'brush-overlay';
+    panel.appendChild(overlay);
+    function mouseIdxFromEvent(e) {
+      const rect = cv.getBoundingClientRect();const scaleX = W / rect.width;
+      const mx = (e.clientX - rect.left) * scaleX;
+      let { s, e: end } = getVisibleRange();
+      if (canvasId === 'vixCanvas') s = Math.max(s, vixEffectiveStart);
+      return Math.round(s + (mx - P.l) / cw * (end - s));
+    }
+    function canvasXToPercent(canvasX) { return Math.max(0, Math.min(100, (canvasX / W) * 100)); }
+    cv.addEventListener('wheel', e => {
+      e.preventDefault();const { s, e: end } = getVisibleRange();const range = end - s;
+      const mouseIdx = mouseIdxFromEvent(e);const mouseRatio = (mouseIdx - s) / range;
+      const zoomFactor = e.deltaY > 0 ? 1.15 : 0.87;
+      const newRange = Math.max(60, Math.min(n-1, range * zoomFactor));
+      view.startIdx = Math.max(0, mouseIdx - mouseRatio * newRange);
+      view.endIdx = Math.min(n-1, mouseIdx + (1 - mouseRatio) * newRange);
+      if (view.endIdx - view.startIdx < 60) return;
+      renderAll();
+    }, { passive: false });
+    cv.addEventListener('mousedown', e => {
+      brushing = true;const rect = cv.getBoundingClientRect();brushStartX = e.clientX - rect.left;
+      const scaleX = W / rect.width;const pct = canvasXToPercent(brushStartX * scaleX);
+      overlay.style.left = pct + '%';overlay.style.width = '0%';overlay.style.display = 'block';
+    });
+    window.addEventListener('mousemove', e => {
+      if (!brushing) return;const rect = cv.getBoundingClientRect();const scaleX = W / rect.width;
+      const currentX = e.clientX - rect.left;
+      const left = Math.max(P.l, Math.min(brushStartX * scaleX, currentX * scaleX));
+      const right = Math.min(W - P.r, Math.max(brushStartX * scaleX, currentX * scaleX));
+      overlay.style.left = canvasXToPercent(left) + '%';overlay.style.width = canvasXToPercent(right - left) + '%';
+    });
+    window.addEventListener('mouseup', e => {
+      if (!brushing) return;brushing = false;overlay.style.display = 'none';
+      const rect = cv.getBoundingClientRect();const scaleX = W / rect.width;
+      const currentX = e.clientX - rect.left;
+      const left = Math.max(P.l, Math.min(brushStartX * scaleX, currentX * scaleX));
+      const right = Math.min(W - P.r, Math.max(brushStartX * scaleX, currentX * scaleX));
+      if (right - left < 20) return;
+      const { s, e: end } = getVisibleRange();const range = end - s;
+      const newS = s + ((left - P.l) / cw) * range;const newE = s + ((right - P.l) / cw) * range;
+      if (newE - newS < 60) return;
+      view.startIdx = Math.max(0, newS);view.endIdx = Math.min(n-1, newE);renderAll();
+    });
+    cv.style.cursor = 'crosshair';
+    // Tooltip
+    const tip = document.getElementById(tipId);
+    cv.addEventListener('mousemove', e => {
+      if (brushing) { tip.style.display='none'; return; }
+      const idx = mouseIdxFromEvent(e);
+      if (idx < 0 || idx >= n) { tip.style.display='none'; return; }
+      const p = pts[idx];
+      tip.querySelector('.tt-date').textContent = p.date;
+      if (tip.querySelector('.tt-price')) tip.querySelector('.tt-price').textContent = '$' + p.price.toLocaleString(undefined,{maximumFractionDigits:2});
+      const riskEl = tip.querySelector('.tt-risk');
+      if (tipId === 'riskTip') riskEl.textContent = 'C:'+p.riskCombo.toFixed(3)+' S:'+p.riskMM.toFixed(3)+' V:'+(p.riskVIX!=null?p.riskVIX.toFixed(3):'—');
+      else if (tipId === 'vixTip') riskEl.textContent = (p.vix != null ? p.vix.toFixed(2) : '—');
+      else riskEl.textContent = p.riskCombo.toFixed(3);
+      riskEl.style.color = tipId === 'vixTip' ? (p.vix != null ? vixColor(p.vix) : '') : riskColor(p.riskCombo);
+      tip.style.display = 'block';
+      const rect = cv.getBoundingClientRect();
+      const tipX = e.clientX - rect.left + 16;const tipY = e.clientY - rect.top - 10;
+      tip.style.left = (tipX + tip.offsetWidth > rect.width ? tipX - tip.offsetWidth - 32 : tipX) + 'px';
+      tip.style.top = Math.max(0, tipY) + 'px';
+    });
+    cv.addEventListener('mouseleave', () => tip.style.display='none');
+  }
+
+  function addZoomButtons() {
+    const bar = document.createElement('div');
+    bar.style.cssText = 'display:flex;justify-content:center;gap:8px;margin:12px 0 4px;flex-wrap:wrap;';
+    [['1Y',365],['2Y',730],['5Y',1825],['10Y',3650],['All',n],['Reset',-1]].forEach(([label,days])=>{
+      const b = document.createElement('button');b.textContent=label;b.className='zoom-btn';
+      b.addEventListener('click',()=>{
+        if(days===-1||days>=n){view.startIdx=0;view.endIdx=n-1;}
+        else{view.startIdx=Math.max(0,n-1-days);view.endIdx=n-1;}
+        renderAll();
+      });
+      bar.appendChild(b);
+    });
+    document.getElementById('legendBar').parentNode.insertBefore(bar, document.getElementById('legendBar').nextSibling);
+  }
+
+  // Init
+  renderAll();
+  {
+    const bar=document.getElementById('fwdButtons');
+    [[365,'1Y'],[730,'2Y']].forEach(([days,label])=>{
+      const b=document.createElement('button');b.textContent=label;b.dataset.fwd=days;b.className='zoom-btn';
+      b.addEventListener('click',()=>renderReturnsChart(days));bar.appendChild(b);
+    });
+  }
+  renderReturnsChart(activeFwd);
+  attachZoomPan('priceCanvas', 'priceTip');
+  attachZoomPan('riskCanvas', 'riskTip');
+  attachZoomPan('vixCanvas', 'vixTip');
+  addZoomButtons();
+
+  // Legend bar
+  (function(){
+    const el=document.getElementById('legendBar');
+    [{name:'Accumulate',range:'0.00–0.25',risk:0.12},{name:'Neutral',range:'0.25–0.50',risk:0.37},{name:'Caution',range:'0.50–0.75',risk:0.62},{name:'Euphoria',range:'0.75–1.00',risk:0.88}].forEach(s=>{
+      const d=document.createElement('div');d.className='legend-seg';
+      d.style.background=riskColor(s.risk,0.2);d.style.color=riskColor(s.risk);
+      d.innerHTML=s.name+'<span class="seg-label">'+s.range+'</span>';el.appendChild(d);
+    });
+  })();
+
+  // Theme toggle
+  (function(){
+    const btn=document.getElementById('theme-toggle'),icon=document.getElementById('theme-icon');
+    function updateIcon(){icon.textContent=document.documentElement.getAttribute('data-theme')==='light'?'\u2600':'\u263D';}
+    updateIcon();
+    btn.addEventListener('click',function(){
+      const next=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';
+      document.documentElement.setAttribute('data-theme',next);localStorage.setItem('risk-theme',next);
+      updateIcon();renderAll();renderReturnsChart();
+    });
+  })();
+}
+
+main();
+</script>
+</body>
+</html>

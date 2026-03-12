@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""One-time seed script to download historical SPY and VIX data from Yahoo Finance."""
+"""One-time seed script to download historical SPY, QQQ, and VIX data from Yahoo Finance."""
 
 import os
 import sys
@@ -35,5 +35,6 @@ def download_and_save(ticker, filename):
 
 if __name__ == "__main__":
     download_and_save("SPY", "data_spy.csv")
+    download_and_save("QQQ", "data_qqq.csv")
     download_and_save("^VIX", "data_vix.csv")
     print("Done!")
