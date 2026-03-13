@@ -117,6 +117,27 @@
   .info-popup::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--border)}
   .info-btn:hover .info-popup{display:block}
   @media(max-width:600px){.risk-lows-table th,.risk-lows-table td{padding:6px 8px;font-size:0.65rem}.info-popup{width:200px;font-size:0.6rem}}
+
+  /* DCA Simulator */
+  .dca-toggle-hdr{cursor:pointer;user-select:none}
+  .dca-toggle-hdr .chart-label{transition:color 0.15s}
+  .dca-toggle-hdr:hover .chart-label{color:var(--accent-blue)}
+  #dcaConfig{padding:16px 0}
+  .dca-row{display:flex;gap:16px;margin-bottom:12px;flex-wrap:wrap;align-items:flex-end}
+  .dca-row label{display:flex;flex-direction:column;gap:4px;font-size:0.58rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px}
+  .dca-row input,.dca-row select{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text-heading);font:12px 'JetBrains Mono',monospace;min-width:120px}
+  .dca-row input:focus,.dca-row select:focus{border-color:var(--accent-blue);outline:none}
+  .dca-toggle-group{display:flex;gap:0}
+  .dca-toggle-group .zoom-btn{border-radius:0;margin:0}
+  .dca-toggle-group .zoom-btn:first-child{border-radius:6px 0 0 6px}
+  .dca-toggle-group .zoom-btn:last-child{border-radius:0 6px 6px 0}
+  #dcaRunBtn{margin-top:8px;padding:8px 24px;background:rgba(37,99,235,0.2);border-color:rgba(37,99,235,0.4);color:var(--accent-blue);font-weight:600;letter-spacing:0.5px}
+  #dcaRunBtn:hover{background:rgba(37,99,235,0.35)}
+  .dca-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:18px 0}
+  .dca-stats .card{padding:18px 20px}
+  #dcaTradesWrap{max-height:400px;overflow-y:auto;scrollbar-width:thin;margin-top:8px}
+  #dcaTradesWrap table td,#dcaTradesWrap table th{font-size:0.68rem;padding:6px 10px}
+  .dca-note{font-size:0.6rem;color:var(--text-dimmer);text-align:center;margin-top:6px}
 </style>
 </head>
 <body>
@@ -190,6 +211,72 @@
     </div>
     <canvas id="returnsCanvas" width="1380" height="360"></canvas>
     <div style="display:flex;justify-content:center;gap:8px;margin-top:12px" id="fwdButtons"></div>
+  </div>
+  <div class="chart-panel" id="dcaSection">
+    <div class="chart-header dca-toggle-hdr" id="dcaToggleHeader">
+      <div class="chart-label">&#9654; DCA Simulator</div>
+      <div class="chart-note">Risk-Based Dollar Cost Averaging Backtest</div>
+    </div>
+    <div id="dcaBody" style="display:none">
+      <div id="dcaConfig">
+        <div class="dca-row">
+          <label>USD Amount "x"<input type="number" id="dcaAmount" value="1000" min="1" step="100"></label>
+          <label>Repeat Purchase
+            <select id="dcaFrequency"><option value="monthly" selected>Monthly</option><option value="weekly">Weekly</option></select>
+          </label>
+          <label>Day of Month<input type="number" id="dcaDayOfMonth" value="1" min="1" max="28"></label>
+        </div>
+        <div class="dca-row">
+          <label>Start Date<input type="date" id="dcaStart"></label>
+          <label>End Date<input type="date" id="dcaEnd"></label>
+        </div>
+        <div class="dca-row">
+          <label>Accumulate up to Risk<select id="dcaRiskThreshold"></select></label>
+          <label>Buying Strategy
+            <div class="dca-toggle-group" id="dcaStrategyToggle">
+              <button class="zoom-btn active" data-val="linear">Linear</button>
+              <button class="zoom-btn" data-val="exponential">Exponential</button>
+            </div>
+          </label>
+          <label>Scale
+            <div class="dca-toggle-group" id="dcaScaleToggle">
+              <button class="zoom-btn active" data-val="lin">Lin</button>
+              <button class="zoom-btn" data-val="log">Log</button>
+            </div>
+          </label>
+        </div>
+        <div class="dca-row"><div class="dca-note">Linear: x, 2x, 3x, 4x &nbsp;·&nbsp; Exponential: x, 2x, 4x, 8x &nbsp;—&nbsp; lower risk = higher multiplier</div></div>
+        <button class="zoom-btn" id="dcaRunBtn">Run Simulation</button>
+      </div>
+      <div class="dca-stats" id="dcaStats" style="display:none"></div>
+      <div id="dcaChartsWrap" style="display:none">
+        <div style="margin-top:18px">
+          <div class="chart-header">
+            <div class="chart-label">Simulated Portfolio Value Over Time</div>
+            <div class="chart-note" id="dcaBuyNote"></div>
+          </div>
+          <canvas id="dcaPortfolioCanvas" width="1380" height="420"></canvas>
+          <div class="tooltip" id="dcaPortfolioTip"><div class="tt-date"></div><div class="tt-price"></div><div class="tt-risk"></div></div>
+        </div>
+        <div style="margin-top:18px">
+          <div class="chart-header">
+            <div class="chart-label">Simulated Strategy Over Time</div>
+            <div class="chart-note">Buy zones shaded by multiplier intensity</div>
+          </div>
+          <canvas id="dcaStrategyCanvas" width="1380" height="300"></canvas>
+          <div class="tooltip" id="dcaStrategyTip"><div class="tt-date"></div><div class="tt-risk"></div></div>
+        </div>
+        <div style="margin-top:18px;cursor:pointer" id="dcaTradesToggle">
+          <span class="chart-label">&#9654; Simulated Trade History</span>
+        </div>
+        <div id="dcaTradesWrap" style="display:none">
+          <table class="risk-lows-table">
+            <thead><tr><th>#</th><th>Date</th><th>Price</th><th>Risk</th><th>Mult</th><th>USD Spent</th><th>Shares</th><th>Cum. Shares</th><th>Portfolio</th></tr></thead>
+            <tbody id="dcaTradesBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="methodology">
     <h3>Methodology</h3>
@@ -769,6 +856,484 @@ async function main() {
   attachZoomPan('vixCanvas', 'vixTip');
   addZoomButtons();
 
+  // ====== DCA SIMULATOR ======
+  (function(){
+    const ASSET = 'QQQ';
+    let dcaResults = null;
+    let dcaStrategy = 'linear';
+    let dcaScale = 'lin';
+
+    document.getElementById('dcaToggleHeader').addEventListener('click', function(){
+      const body = document.getElementById('dcaBody');
+      const arrow = this.querySelector('.chart-label');
+      if (body.style.display === 'none') {
+        body.style.display = 'block';
+        arrow.innerHTML = '&#9660; DCA Simulator';
+      } else {
+        body.style.display = 'none';
+        arrow.innerHTML = '&#9654; DCA Simulator';
+      }
+    });
+
+    document.getElementById('dcaTradesToggle').addEventListener('click', function(){
+      const w = document.getElementById('dcaTradesWrap');
+      const arrow = this.querySelector('.chart-label');
+      if (w.style.display === 'none') {
+        w.style.display = 'block';
+        arrow.innerHTML = '&#9660; Simulated Trade History';
+      } else {
+        w.style.display = 'none';
+        arrow.innerHTML = '&#9654; Simulated Trade History';
+      }
+    });
+
+    const threshSel = document.getElementById('dcaRiskThreshold');
+    for (let i = 1; i <= 10; i++) {
+      const lo = ((i-1)/10).toFixed(1), hi = (i/10).toFixed(1);
+      const opt = document.createElement('option');
+      opt.value = (i/10).toString();
+      opt.textContent = lo + ' – ' + hi;
+      if (i === 5) opt.selected = true;
+      threshSel.appendChild(opt);
+    }
+    const alwaysOpt = document.createElement('option');
+    alwaysOpt.value = '1.01'; alwaysOpt.textContent = 'Always Buy';
+    threshSel.appendChild(alwaysOpt);
+
+    const defaultAgo = new Date();
+    defaultAgo.setFullYear(defaultAgo.getFullYear() - 10);
+    const defaultStr = defaultAgo.toISOString().slice(0,10);
+    document.getElementById('dcaStart').value = pts[0].date > defaultStr ? pts[0].date : defaultStr;
+    document.getElementById('dcaEnd').value = last.date;
+
+    function wireToggle(groupId, cb) {
+      const btns = document.querySelectorAll('#'+groupId+' .zoom-btn');
+      btns.forEach(function(b) {
+        b.addEventListener('click', function(){
+          btns.forEach(function(x){ x.classList.remove('active'); });
+          b.classList.add('active');
+          cb(b.dataset.val);
+        });
+      });
+    }
+    wireToggle('dcaStrategyToggle', function(v){ dcaStrategy = v; });
+    wireToggle('dcaScaleToggle', function(v){
+      dcaScale = v;
+      if (dcaResults) renderDCAPortfolioChart(dcaResults);
+    });
+
+    document.getElementById('dcaRunBtn').addEventListener('click', function(){
+      dcaResults = runDCASimulation();
+      if (!dcaResults) return;
+      document.getElementById('dcaStats').style.display = '';
+      document.getElementById('dcaChartsWrap').style.display = '';
+      renderDCAStats(dcaResults);
+      renderDCAPortfolioChart(dcaResults);
+      renderDCAStrategyChart(dcaResults);
+      renderDCATradesTable(dcaResults);
+    });
+
+    function runDCASimulation() {
+      const amount = parseFloat(document.getElementById('dcaAmount').value) || 1000;
+      const freq = document.getElementById('dcaFrequency').value;
+      const dayOfMonth = parseInt(document.getElementById('dcaDayOfMonth').value) || 1;
+      const startDate = document.getElementById('dcaStart').value;
+      const endDate = document.getElementById('dcaEnd').value;
+      const threshold = parseFloat(document.getElementById('dcaRiskThreshold').value);
+
+      const simPts = [];
+      for (var i = 0; i < n; i++) {
+        if (pts[i].date >= startDate && pts[i].date <= endDate) simPts.push(pts[i]);
+      }
+      if (simPts.length < 2) return null;
+
+      var buyIndices = [];
+      if (freq === 'monthly') {
+        var seenMonth = {};
+        for (var j = 0; j < simPts.length; j++) {
+          var ym = simPts[j].date.slice(0,7);
+          var day = +simPts[j].date.slice(8,10);
+          if (!seenMonth[ym] && day >= dayOfMonth) {
+            seenMonth[ym] = true;
+            buyIndices.push(j);
+          }
+        }
+      } else {
+        var lastBuyMs = 0;
+        for (var j = 0; j < simPts.length; j++) {
+          var ms = new Date(simPts[j].date + 'T00:00:00Z').getTime();
+          if (ms - lastBuyMs >= 6.5 * 864e5) {
+            buyIndices.push(j);
+            lastBuyMs = ms;
+          }
+        }
+      }
+
+      var bandSize = threshold / 4;
+      function getMultiplier(risk) {
+        if (risk >= threshold) return 0;
+        if (threshold <= 0) return 0;
+        var band = Math.min(3, Math.floor(risk / bandSize));
+        if (dcaStrategy === 'linear') return [4,3,2,1][band];
+        return [8,4,2,1][band];
+      }
+
+      var trades = [];
+      var totalShares = 0, totalInvested = 0;
+      for (var k = 0; k < buyIndices.length; k++) {
+        var p = simPts[buyIndices[k]];
+        var mult = getMultiplier(p.riskCombo);
+        if (mult === 0) continue;
+        var usd = amount * mult;
+        var shares = usd / p.price;
+        totalShares += shares;
+        totalInvested += usd;
+        trades.push({
+          num: trades.length + 1,
+          date: p.date, price: p.price, risk: p.riskCombo,
+          mult: mult, usd: usd, shares: shares,
+          cumShares: totalShares,
+          portfolioValue: totalShares * p.price
+        });
+      }
+
+      if (trades.length === 0) {
+        document.getElementById('dcaStats').style.display = '';
+        document.getElementById('dcaStats').innerHTML = '<div class="card"><div class="card-label" style="color:#f97316">No Trades Executed</div><div class="card-sub">Risk never dropped below the threshold in this period. Try a higher risk threshold or wider date range.</div></div>';
+        document.getElementById('dcaChartsWrap').style.display = 'none';
+        return null;
+      }
+
+      var lumpSumShares = totalInvested / simPts[0].price;
+      var timeline = [];
+      var cumShares = 0, cumInvested = 0, tradeIdx = 0;
+      for (var j = 0; j < simPts.length; j++) {
+        while (tradeIdx < trades.length && trades[tradeIdx].date <= simPts[j].date) {
+          cumShares = trades[tradeIdx].cumShares;
+          cumInvested += trades[tradeIdx].usd;
+          tradeIdx++;
+        }
+        timeline.push({
+          date: simPts[j].date,
+          price: simPts[j].price,
+          risk: simPts[j].riskCombo,
+          portfolioValue: cumShares * simPts[j].price,
+          investedAmount: cumInvested,
+          lumpSumValue: lumpSumShares * simPts[j].price,
+          isBuy: trades.some(function(t){ return t.date === simPts[j].date; })
+        });
+      }
+
+      var lastTl = timeline[timeline.length - 1];
+      return {
+        trades: trades, timeline: timeline,
+        totalInvested: totalInvested, totalShares: totalShares,
+        avgPrice: totalInvested / totalShares,
+        lastPrice: lastTl.price,
+        portfolioValue: lastTl.portfolioValue,
+        lumpSumValue: lastTl.lumpSumValue,
+        buyCount: trades.length, totalPeriods: buyIndices.length
+      };
+    }
+
+    function renderDCAStats(r) {
+      var gain = r.portfolioValue - r.totalInvested;
+      var gainPct = (gain / r.totalInvested * 100).toFixed(1);
+      var gainColor = gain >= 0 ? '#10b981' : '#ef4444';
+      var lumpGain = r.lumpSumValue - r.totalInvested;
+      var lumpPct = (lumpGain / r.totalInvested * 100).toFixed(1);
+      var lumpColor = lumpGain >= 0 ? '#10b981' : '#ef4444';
+
+      document.getElementById('dcaStats').innerHTML =
+        '<div class="card" style="--glow:#f97316"><div class="card-label">Total Invested</div>' +
+        '<div class="card-value" style="font-size:1.5rem;--val-color:#f97316">$' + r.totalInvested.toLocaleString(undefined,{maximumFractionDigits:0}) + '</div>' +
+        '<div class="card-sub">Buying ' + r.buyCount + ' of ' + r.totalPeriods + ' periods</div></div>' +
+        '<div class="card" style="--glow:#a78bfa"><div class="card-label">Accumulated ' + ASSET + '</div>' +
+        '<div class="card-value" style="font-size:1.5rem;--val-color:#a78bfa">' + r.totalShares.toFixed(2) + ' <span style="font-size:0.7rem;color:var(--text-dim)">' + ASSET + '</span></div>' +
+        '<div class="card-sub">Avg: $' + r.avgPrice.toLocaleString(undefined,{maximumFractionDigits:2}) + ' · Last: $' + r.lastPrice.toLocaleString(undefined,{maximumFractionDigits:2}) + '</div></div>' +
+        '<div class="card" style="--glow:' + gainColor + '"><div class="card-label">Current Portfolio Value</div>' +
+        '<div class="card-value" style="font-size:1.5rem;--val-color:' + gainColor + '">$' + r.portfolioValue.toLocaleString(undefined,{maximumFractionDigits:0}) + '</div>' +
+        '<div class="card-sub" style="color:' + gainColor + '">' + (gain>=0?'+':'') + '$' + Math.abs(gain).toLocaleString(undefined,{maximumFractionDigits:0}) + ' (' + (gain>=0?'+':'') + gainPct + '%)</div></div>' +
+        '<div class="card" style="--glow:' + lumpColor + '"><div class="card-label">vs Lump Sum</div>' +
+        '<div class="card-value" style="font-size:1.5rem;--val-color:' + lumpColor + '">$' + r.lumpSumValue.toLocaleString(undefined,{maximumFractionDigits:0}) + '</div>' +
+        '<div class="card-sub" style="color:' + lumpColor + '">' + (lumpGain>=0?'+':'') + '$' + Math.abs(lumpGain).toLocaleString(undefined,{maximumFractionDigits:0}) + ' (' + (lumpGain>=0?'+':'') + lumpPct + '%)</div></div>';
+
+      document.getElementById('dcaBuyNote').textContent = 'Buying ' + r.buyCount + ' of ' + r.totalPeriods + ' periods · $' + r.totalInvested.toLocaleString(undefined,{maximumFractionDigits:0}) + ' invested';
+    }
+
+    function renderDCAPortfolioChart(r) {
+      var tc = themeColors();
+      var cv = document.getElementById('dcaPortfolioCanvas'), ctx = cv.getContext('2d');
+      var W = cv.width, H = cv.height;
+      var P = {t:28, r:70, b:48, l:80};
+      var cw = W-P.l-P.r, ch = H-P.t-P.b;
+      var tl = r.timeline;
+      var tn = tl.length;
+      var S = Math.max(1, Math.floor(tn / 1500));
+
+      ctx.fillStyle = tc.canvasBg; ctx.fillRect(0,0,W,H);
+
+      var xOf = function(i){ return P.l + (i/(tn-1)) * cw; };
+
+      var allVals = [];
+      for (var i=0; i<tn; i+=S) {
+        allVals.push(tl[i].portfolioValue, tl[i].investedAmount, tl[i].lumpSumValue);
+      }
+      var maxV = Math.max.apply(null, allVals.filter(function(v){return v>0;}));
+      var minV = Math.min.apply(null, allVals.filter(function(v){return v>0;}));
+      if (maxV <= 0) maxV = 1;
+      if (minV <= 0) minV = 1;
+
+      var yOf;
+      if (dcaScale === 'log') {
+        var logMin = Math.floor(Math.log10(minV));
+        var logMax = Math.ceil(Math.log10(maxV));
+        if (logMin === logMax) logMax = logMin + 1;
+        yOf = function(v){ if(v<=0) v=1; var lv=Math.log10(v); return P.t + ch - ((lv-logMin)/(logMax-logMin))*ch; };
+        ctx.textAlign='right'; ctx.font='10px JetBrains Mono';
+        for (var e=logMin; e<=logMax; e++) {
+          var y=yOf(Math.pow(10,e));
+          ctx.strokeStyle=tc.gridLine;ctx.lineWidth=1;
+          ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke();
+          ctx.fillStyle=tc.axisText;
+          ctx.fillText('$'+Math.pow(10,e).toLocaleString(),P.l-8,y+3);
+        }
+      } else {
+        var niceMax = maxV * 1.1;
+        yOf = function(v){ return P.t + ch - (v/niceMax)*ch; };
+        var step = Math.pow(10, Math.floor(Math.log10(niceMax))) / 2;
+        if (niceMax / step > 10) step *= 2;
+        ctx.textAlign='right'; ctx.font='10px JetBrains Mono';
+        for (var g=0; g<=niceMax; g+=step) {
+          var y=yOf(g);
+          ctx.strokeStyle = g===0 ? tc.gridZero : tc.gridLine;
+          ctx.lineWidth=1;
+          ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke();
+          ctx.fillStyle=tc.axisText;
+          ctx.fillText('$'+Math.round(g).toLocaleString(),P.l-8,y+3);
+        }
+      }
+
+      var seenYr = {};
+      ctx.textAlign='center';
+      for (var i=0; i<tn; i+=S) {
+        var yr = tl[i].date.slice(0,4);
+        if (!seenYr[yr]) {
+          seenYr[yr] = true;
+          var x = xOf(i);
+          ctx.strokeStyle=tc.gridLine;ctx.lineWidth=1;
+          ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,H-P.b);ctx.stroke();
+          ctx.fillStyle=tc.axisText;ctx.font='10px JetBrains Mono';
+          ctx.fillText(yr,x,H-P.b+18);
+        }
+      }
+
+      ctx.strokeStyle='rgba(167,139,250,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+      ctx.beginPath();
+      for (var i=0; i<tn; i+=S) {
+        var x=xOf(i), y=yOf(tl[i].lumpSumValue);
+        i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+      }
+      ctx.stroke(); ctx.setLineDash([]);
+
+      ctx.strokeStyle='rgba(150,160,180,0.6)';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+      ctx.beginPath();
+      for (var i=0; i<tn; i+=S) {
+        var x=xOf(i), y=yOf(tl[i].investedAmount);
+        i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+      }
+      ctx.stroke(); ctx.setLineDash([]);
+
+      var light = document.documentElement.getAttribute('data-theme') === 'light';
+      ctx.strokeStyle= light ? 'rgba(37,99,235,0.9)' : 'rgba(255,255,255,0.9)';
+      ctx.lineWidth=2.5;
+      ctx.beginPath();
+      for (var i=0; i<tn; i+=S) {
+        var x=xOf(i), y=yOf(tl[i].portfolioValue);
+        i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+
+      for (var i=0; i<tn; i++) {
+        if (tl[i].isBuy) {
+          var x=xOf(i), y=yOf(tl[i].portfolioValue);
+          ctx.fillStyle=riskColor(tl[i].risk);
+          ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();
+        }
+      }
+
+      var lx = P.l + 12, ly = P.t + 16;
+      ctx.font='10px JetBrains Mono';
+      [[light?'rgba(37,99,235,0.9)':'rgba(255,255,255,0.9)', ASSET + ' Portfolio', false],
+       ['rgba(150,160,180,0.6)', 'Invested', true],
+       ['rgba(167,139,250,0.5)', 'Lump Sum', true]].forEach(function(item, idx){
+        var cy = ly + idx * 16;
+        ctx.strokeStyle=item[0];ctx.lineWidth=2;
+        if(item[2]) ctx.setLineDash([4,4]); else ctx.setLineDash([]);
+        ctx.beginPath();ctx.moveTo(lx,cy);ctx.lineTo(lx+24,cy);ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle=tc.axisText;ctx.textAlign='left';
+        ctx.fillText(item[1],lx+30,cy+3);
+      });
+
+      attachDCATooltip(cv, 'dcaPortfolioTip', tl, function(p, tip){
+        tip.querySelector('.tt-date').textContent = p.date;
+        tip.querySelector('.tt-price').textContent = 'Portfolio: $' + p.portfolioValue.toLocaleString(undefined,{maximumFractionDigits:0}) + ' · Invested: $' + p.investedAmount.toLocaleString(undefined,{maximumFractionDigits:0});
+        var g = p.portfolioValue - p.investedAmount;
+        var gp = p.investedAmount > 0 ? (g/p.investedAmount*100).toFixed(1) : '0.0';
+        tip.querySelector('.tt-risk').textContent = (g>=0?'+':'') + '$' + Math.abs(g).toLocaleString(undefined,{maximumFractionDigits:0}) + ' (' + (g>=0?'+':'') + gp + '%)';
+        tip.querySelector('.tt-risk').style.color = g >= 0 ? '#10b981' : '#ef4444';
+      });
+    }
+
+    function renderDCAStrategyChart(r) {
+      var tc = themeColors();
+      var cv = document.getElementById('dcaStrategyCanvas'), ctx = cv.getContext('2d');
+      var W = cv.width, H = cv.height;
+      var P = {t:16, r:70, b:48, l:80};
+      var cw = W-P.l-P.r, ch = H-P.t-P.b;
+      var tl = r.timeline;
+      var tn = tl.length;
+      var S = Math.max(1, Math.floor(tn / 1500));
+      var threshold = parseFloat(document.getElementById('dcaRiskThreshold').value);
+      if (threshold > 1) threshold = 1;
+
+      ctx.fillStyle = tc.canvasBg; ctx.fillRect(0,0,W,H);
+
+      var xOf = function(i){ return P.l + (i/(tn-1)) * cw; };
+      var yOf = function(rr){ return P.t + ch * (1 - rr); };
+
+      [[0,0.20,tc.zoneA],[0.20,0.50,tc.zoneB],[0.50,0.80,tc.zoneC],[0.80,1,tc.zoneD]].forEach(function(z){
+        ctx.fillStyle=z[2];ctx.fillRect(P.l,yOf(z[1]),cw,yOf(z[0])-yOf(z[1]));
+      });
+
+      var bandSize = threshold / 4;
+      for (var b = 0; b < 4; b++) {
+        var bLo = b * bandSize, bHi = (b+1) * bandSize;
+        var intensity = dcaStrategy === 'linear' ? [0.25, 0.20, 0.15, 0.10][b] : [0.30, 0.22, 0.15, 0.08][b];
+        ctx.fillStyle = 'rgba(16,185,129,' + intensity + ')';
+        ctx.fillRect(P.l, yOf(bHi), cw, yOf(bLo) - yOf(bHi));
+      }
+
+      ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'left';
+      for (var b = 0; b < 4; b++) {
+        var bMid = (b + 0.5) * bandSize;
+        var mult = dcaStrategy === 'linear' ? [4,3,2,1][b] : [8,4,2,1][b];
+        var label = 'Buy $' + (parseFloat(document.getElementById('dcaAmount').value) * mult).toLocaleString() + ' (' + mult + 'x)';
+        ctx.fillStyle = 'rgba(16,185,129,0.7)';
+        ctx.fillText(label, P.l + cw/2 - 40, yOf(bMid) + 3);
+      }
+
+      ctx.strokeStyle='rgba(16,185,129,0.8)';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+      ctx.beginPath();ctx.moveTo(P.l,yOf(threshold));ctx.lineTo(W-P.r,yOf(threshold));ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.textAlign='right';ctx.font='10px JetBrains Mono';
+      [0,0.25,0.5,0.75,1.0].forEach(function(v){
+        var y=yOf(v);
+        ctx.strokeStyle=tc.gridLine;ctx.lineWidth=1;
+        ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke();
+        ctx.fillStyle=tc.axisText;ctx.fillText(v.toFixed(2),P.l-8,y+3);
+      });
+
+      var seenYr = {};
+      ctx.textAlign='center';
+      for (var i=0; i<tn; i+=S) {
+        var yr = tl[i].date.slice(0,4);
+        if (!seenYr[yr]) {
+          seenYr[yr] = true;
+          var x = xOf(i);
+          ctx.strokeStyle=tc.gridLine;ctx.lineWidth=1;
+          ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,H-P.b);ctx.stroke();
+          ctx.fillStyle=tc.axisText;ctx.font='10px JetBrains Mono';
+          ctx.fillText(yr,x,H-P.b+18);
+        }
+      }
+
+      ctx.beginPath();ctx.moveTo(xOf(0),yOf(0));
+      for (var i=0; i<tn; i+=S) ctx.lineTo(xOf(i),yOf(tl[i].risk));
+      ctx.lineTo(xOf(tn-1),yOf(0));ctx.closePath();
+      var grd=ctx.createLinearGradient(0,yOf(1),0,yOf(0));
+      grd.addColorStop(0,tc.areaGrad0);grd.addColorStop(0.5,tc.areaGrad5);grd.addColorStop(1,tc.areaGrad1);
+      ctx.fillStyle=grd;ctx.fill();
+
+      for (var i=S; i<tn; i+=S) {
+        var prev = Math.max(0,i-S);
+        ctx.strokeStyle=riskColor(tl[i].risk,0.90);ctx.lineWidth=1.8;
+        ctx.beginPath();ctx.moveTo(xOf(prev),yOf(tl[prev].risk));ctx.lineTo(xOf(i),yOf(tl[i].risk));ctx.stroke();
+      }
+
+      for (var i=0; i<tn; i++) {
+        if (tl[i].isBuy) {
+          var x = xOf(i);
+          ctx.strokeStyle='rgba(16,185,129,0.4)';ctx.lineWidth=1;
+          ctx.beginPath();ctx.moveTo(x,yOf(tl[i].risk));ctx.lineTo(x,yOf(0));ctx.stroke();
+          ctx.fillStyle='#10b981';
+          ctx.beginPath();ctx.arc(x,yOf(tl[i].risk),3,0,Math.PI*2);ctx.fill();
+        }
+      }
+
+      ctx.fillStyle=tc.zoneLabels;ctx.font='9px JetBrains Mono';ctx.textAlign='right';
+      ctx.fillText('EUPHORIA',W-P.r-4,yOf(0.90));
+      ctx.fillText('ELEVATED',W-P.r-4,yOf(0.65));
+      ctx.fillText('NEUTRAL',W-P.r-4,yOf(0.35));
+      ctx.fillText('ACCUMULATE',W-P.r-4,yOf(0.10));
+
+      attachDCATooltip(cv, 'dcaStrategyTip', tl, function(p, tip){
+        tip.querySelector('.tt-date').textContent = p.date;
+        tip.querySelector('.tt-risk').textContent = 'Risk: ' + p.risk.toFixed(3) + (p.isBuy ? ' · BUY' : '');
+        tip.querySelector('.tt-risk').style.color = riskColor(p.risk);
+      });
+    }
+
+    function attachDCATooltip(cv, tipId, tl, fillFn) {
+      var tip = document.getElementById(tipId);
+      var W = cv.width;
+      var P_l = 80, P_r = 70;
+      var cw = W - P_l - P_r;
+      cv.addEventListener('mousemove', function(e){
+        var rect = cv.getBoundingClientRect();
+        var scaleX = W / rect.width;
+        var mx = (e.clientX - rect.left) * scaleX;
+        var idx = Math.round((mx - P_l) / cw * (tl.length - 1));
+        if (idx < 0 || idx >= tl.length) { tip.style.display='none'; return; }
+        fillFn(tl[idx], tip);
+        tip.style.display = 'block';
+        var tipX = e.clientX - rect.left + 16;
+        var tipY = e.clientY - rect.top - 40;
+        tip.style.left = (tipX + tip.offsetWidth > rect.width ? tipX - tip.offsetWidth - 32 : tipX) + 'px';
+        tip.style.top = tipY + 'px';
+      });
+      cv.addEventListener('mouseleave', function(){ tip.style.display='none'; });
+    }
+
+    function renderDCATradesTable(r) {
+      var tbody = document.getElementById('dcaTradesBody');
+      tbody.innerHTML = '';
+      r.trades.forEach(function(t) {
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td>' + t.num + '</td>' +
+          '<td>' + t.date + '</td>' +
+          '<td class="rl-price">$' + t.price.toLocaleString(undefined,{maximumFractionDigits:2}) + '</td>' +
+          '<td class="rl-risk" style="color:' + riskColor(t.risk) + '">' + t.risk.toFixed(3) + '</td>' +
+          '<td style="color:#10b981;font-weight:600">' + t.mult + 'x</td>' +
+          '<td>$' + t.usd.toLocaleString(undefined,{maximumFractionDigits:0}) + '</td>' +
+          '<td>' + t.shares.toFixed(4) + '</td>' +
+          '<td>' + t.cumShares.toFixed(2) + '</td>' +
+          '<td class="rl-price">$' + t.portfolioValue.toLocaleString(undefined,{maximumFractionDigits:0}) + '</td>';
+        tbody.appendChild(tr);
+      });
+    }
+
+    window._dcaRerender = function() {
+      if (dcaResults) {
+        renderDCAPortfolioChart(dcaResults);
+        renderDCAStrategyChart(dcaResults);
+      }
+    };
+  })();
+
   // Legend bar
   (function(){
     const el=document.getElementById('legendBar');
@@ -787,7 +1352,7 @@ async function main() {
     btn.addEventListener('click',function(){
       const next=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';
       document.documentElement.setAttribute('data-theme',next);localStorage.setItem('risk-theme',next);
-      updateIcon();renderAll();renderReturnsChart();
+      updateIcon();renderAll();renderReturnsChart();if(window._dcaRerender)window._dcaRerender();
     });
   })();
 }
