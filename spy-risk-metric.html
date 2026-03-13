@@ -155,7 +155,7 @@
     <div class="card card-price" style="--glow:rgba(37,99,235,0.5)">
       <div class="card-label">SPY / USD</div>
       <div class="card-value" id="vPrice" style="font-size:2.4rem;letter-spacing:-2px;font-weight:700;color:var(--text-heading)">—</div>
-      <div style="margin-top:6px;font-size:0.62rem;font-family:'JetBrains Mono',monospace;color:#eab308;letter-spacing:1px">2026 Fwd P/E: 20.9×</div>
+      <div id="vFwdPE" style="margin-top:6px;font-size:0.62rem;font-family:'JetBrains Mono',monospace;color:#eab308;letter-spacing:1px"></div>
     </div>
     <div class="card" style="--glow:#f97316"><div class="card-label">Structural Risk</div><div class="card-value" id="vRisk" style="--val-color:#f97316">—</div>
       <div class="risk-bar-wrap"><div class="risk-bar-bg"></div><div class="risk-bar-needle" id="needle"></div></div>
@@ -390,6 +390,11 @@ async function main() {
 
   // Dashboard
   document.getElementById('vPrice').textContent = '$' + last.price.toLocaleString(undefined,{maximumFractionDigits:2});
+  // Dynamic 2026 Forward P/E — consensus EPS ~$310 for SPX; SPY ≈ SPX/10
+  var fwdEPS2026 = 310;
+  var spxEstimate = last.price * 10;
+  var fwdPE = (spxEstimate / fwdEPS2026).toFixed(1);
+  document.getElementById('vFwdPE').textContent = '2026 Fwd P/E: ' + fwdPE + '×';
   const hd = document.getElementById('headerDate');
   hd.innerHTML = '<span style="width:6px;height:6px;background:#22c55e;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> as of ' + last.date;
   document.getElementById('vRisk').textContent = last.riskCombo.toFixed(3);
