@@ -124,11 +124,66 @@ jobs:
           update_csv('^VIX', 'data_vix.csv')
           "
 
+      - name: Fetch live SPY/QQQ quotes from Finnhub
+        env:
+          FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
+        run: |
+          python3 -c "
+          import urllib.request, json, csv, os
+          from datetime import datetime, timezone
+
+          key = os.environ.get('FINNHUB_KEY', '')
+          if not key:
+              print('No FINNHUB_KEY secret set, skipping live quotes')
+              exit(0)
+
+          def update_with_finnhub(symbol, filename):
+              if not os.path.exists(filename):
+                  print(f'{filename} not found, skipping')
+                  return
+              url = f'https://finnhub.io/api/v1/quote?symbol={symbol}&token={key}'
+              try:
+                  resp = urllib.request.urlopen(url)
+                  data = json.loads(resp.read())
+              except Exception as e:
+                  print(f'  Finnhub API error for {symbol}: {e}')
+                  return
+              if not data.get('c') or data['c'] == 0:
+                  print(f'  No valid quote for {symbol}')
+                  return
+              price = str(round(data['c'], 2))
+              ts = data.get('t', 0)
+              dt = datetime.fromtimestamp(ts, tz=timezone.utc)
+              date_str = dt.strftime('%Y-%m-%d')
+
+              existing = {}
+              with open(filename, 'r') as f:
+                  reader = csv.reader(f)
+                  header = next(reader)
+                  for row in reader:
+                      existing[row[0]] = row[1]
+
+              last_date = max(existing.keys())
+              if date_str >= last_date:
+                  old = existing.get(date_str, 'N/A')
+                  existing[date_str] = price
+                  with open(filename, 'w', newline='') as f:
+                      f.write('date,price\n')
+                      for d in sorted(existing.keys()):
+                          f.write(f'{d},{existing[d]}\n')
+                  print(f'  {symbol}: Finnhub quote {price} for {date_str} (was {old})')
+              else:
+                  print(f'  {symbol}: Finnhub date {date_str} older than CSV {last_date}, skipping')
+
+          update_with_finnhub('SPY', 'data_spy.csv')
+          update_with_finnhub('QQQ', 'data_qqq.csv')
+          "
+
       - name: Commit and push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data.csv data_spy.csv data_vix.csv
+          git add data.csv data_spy.csv data_qqq.csv data_vix.csv
           git diff --cached --quiet && echo "No changes" && exit 0
           git commit -m "Update price data $(date -u +%Y-%m-%d)"
           git push

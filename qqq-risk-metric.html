@@ -375,36 +375,10 @@ function vixColor(v) {
   return '#ef4444';
 }
 
-// ====== FETCH LIVE PRICE ======
-const FINNHUB_KEY = 'd6qnv3pr01qgdhqbmnegd6qnv3pr01qgdhqbmnf0';
-async function fetchLivePrice(rawData) {
-  try {
-    const resp = await fetch('https://finnhub.io/api/v1/quote?symbol=QQQ&token=' + FINNHUB_KEY);
-    if (!resp.ok) throw new Error('API ' + resp.status);
-    const data = await resp.json();
-    if (!data.c || data.c === 0) return false;
-    const price = data.c;
-    const dt = new Date(data.t * 1000);
-    const dateStr = dt.toISOString().slice(0,10);
-    const lastDate = rawData[rawData.length-1][0];
-    if (dateStr === lastDate) {
-      rawData[rawData.length-1][1] = price;
-    } else if (dateStr > lastDate) {
-      rawData.push([dateStr, price]);
-    }
-    return true;
-  } catch(e) {
-    return false;
-  }
-}
-
 // ====== MAIN ======
 async function main() {
   const bust = Date.now();
   const [rawQQQ, rawVIX] = await Promise.all([loadCSV('data_qqq.csv?v='+bust), loadCSV('data_vix.csv?v='+bust)]);
-
-  // Fetch live price
-  const live = await fetchLivePrice(rawQQQ);
 
   // Build VIX lookup map
   const vixMap = {};
@@ -417,7 +391,7 @@ async function main() {
   // Dashboard
   document.getElementById('vPrice').textContent = '$' + last.price.toLocaleString(undefined,{maximumFractionDigits:2});
   const hd = document.getElementById('headerDate');
-  hd.innerHTML = '<span style="width:6px;height:6px;background:#22c55e;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> as of ' + last.date + (live ? ' · live' : '');
+  hd.innerHTML = '<span style="width:6px;height:6px;background:#22c55e;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> as of ' + last.date;
   document.getElementById('vRisk').textContent = last.riskCombo.toFixed(3);
   document.getElementById('vRisk').style.setProperty('--val-color', riskColor(last.riskCombo));
   document.getElementById('vFair').textContent = '$' + last.regPrice.toLocaleString(undefined,{maximumFractionDigits:2});
