@@ -186,7 +186,7 @@
     <h4>Forward P/E Price Projections</h4>
     <div class="pe-proj-sub">
       S&P 500 EPS growth:
-      <input type="number" id="epsGrowthInput" value="11" min="0" max="30" step="0.5" style="width:60px;text-align:center;padding:4px 6px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-weight:600;margin:0 4px">%
+      <input type="number" id="epsGrowthInput" value="8" min="0" max="30" step="0.5" style="width:60px;text-align:center;padding:4px 6px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-weight:600;margin:0 4px">%
       Y-o-Y · SPY ≈ SPX ÷ 10
     </div>
     <table class="pe-proj-table" id="peProjTable">
@@ -503,7 +503,7 @@ async function main() {
   }
 
   // Initial render + listen for changes
-  buildPEProjectionTable(11);
+  buildPEProjectionTable(8);
   document.getElementById('epsGrowthInput').addEventListener('input', function() {
     const val = parseFloat(this.value);
     if (!isNaN(val) && val >= 0 && val <= 30) buildPEProjectionTable(val);
