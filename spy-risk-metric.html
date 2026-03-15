@@ -118,6 +118,20 @@
   .info-btn:hover .info-popup{display:block}
   @media(max-width:600px){.risk-lows-table th,.risk-lows-table td{padding:6px 8px;font-size:0.65rem}.info-popup{width:200px;font-size:0.6rem}}
 
+  /* PE Projection Table */
+  .pe-proj-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:36px;overflow-x:auto;transition:background 0.3s,border-color 0.3s}
+  .pe-proj-wrap h4{font-family:'Outfit',sans-serif;font-size:0.65rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;text-align:center}
+  .pe-proj-sub{font-size:0.58rem;color:var(--text-dimmer);text-align:center;margin-bottom:14px;letter-spacing:0.5px}
+  .pe-proj-table{width:100%;border-collapse:collapse}
+  .pe-proj-table th{font-size:0.55rem;color:var(--text-dimmer);text-transform:uppercase;letter-spacing:1.5px;padding:8px 12px;text-align:center;border-bottom:1px solid var(--border)}
+  .pe-proj-table th:first-child{text-align:left}
+  .pe-proj-table td{font-size:0.75rem;padding:10px 12px;border-bottom:1px solid var(--border-light);color:var(--text);text-align:center;font-family:'JetBrains Mono',monospace}
+  .pe-proj-table td:first-child{text-align:left;font-weight:600;color:var(--text-heading)}
+  .pe-proj-table tr:last-child td{border-bottom:none}
+  .pe-proj-table .pe-highlight{background:rgba(74,170,255,0.08);font-weight:600;color:var(--text-heading)}
+  .pe-proj-table .pe-eps{font-size:0.6rem;color:var(--text-dim);font-weight:400}
+  @media(max-width:600px){.pe-proj-table th,.pe-proj-table td{padding:6px 6px;font-size:0.62rem}}
+
   /* DCA Simulator */
   #dcaConfig{padding:16px 0}
   .dca-row{display:flex;gap:16px;margin-bottom:12px;flex-wrap:wrap;align-items:flex-end}
@@ -167,6 +181,14 @@
   <div class="risk-table-wrap">
     <h4>Price at Each Risk Level</h4>
     <div class="risk-table" id="riskTable"></div>
+  </div>
+  <div class="pe-proj-wrap">
+    <h4>Forward P/E Price Projections</h4>
+    <div class="pe-proj-sub">S&P 500 EPS growing at 11% Y-o-Y · SPY ≈ SPX ÷ 10</div>
+    <table class="pe-proj-table" id="peProjTable">
+      <thead id="peProjHead"></thead>
+      <tbody id="peProjBody"></tbody>
+    </table>
   </div>
   <div class="risk-lows-wrap">
     <h4>Notable Historic Market Events</h4>
@@ -433,6 +455,47 @@ async function main() {
       cell.innerHTML='<div class="rc-risk" style="color:'+riskColor(r)+'">'+r.toFixed(2)+'</div><div class="rc-price">'+pStr+'</div><div style="font-size:0.62rem;margin-top:2px;color:'+pctColor+';letter-spacing:0.3px">'+pctStr+'</div><div style="font-size:0.58rem;margin-top:3px;color:#eab308;letter-spacing:0.5px">P/E '+cellPE+'×</div>';
       tbl.appendChild(cell);
     }
+  }
+
+  // Forward P/E Price Projection Table
+  {
+    const epsGrowth = 0.11; // 11% Y-o-Y consensus
+    const baseEPS = fwdEPS2026; // SPX EPS = 310
+    const currentYear = 2026;
+    const years = [2027, 2028, 2029, 2030, 2031];
+    const peMultiples = [15, 16, 17, 18, 19, 20, 21, 22];
+
+    // Project EPS for each year
+    const epsMap = {};
+    epsMap[currentYear] = baseEPS;
+    years.forEach(y => { epsMap[y] = baseEPS * Math.pow(1 + epsGrowth, y - currentYear); });
+
+    // Build header: Year | PE multiples
+    const thead = document.getElementById('peProjHead');
+    let hRow = '<tr><th>Year</th>';
+    peMultiples.forEach(pe => { hRow += '<th>' + pe + '×</th>'; });
+    hRow += '</tr>';
+    thead.innerHTML = hRow;
+
+    // Build body rows
+    const tbody = document.getElementById('peProjBody');
+    const allYears = [currentYear, ...years];
+    // Determine current PE to find nearest column for highlighting
+    const currentPE = Math.round(spxEstimate / baseEPS);
+
+    allYears.forEach(y => {
+      const eps = epsMap[y];
+      let row = '<tr><td>' + y + ' <span class="pe-eps">EPS $' + eps.toFixed(0) + '</span></td>';
+      peMultiples.forEach(pe => {
+        const spxPrice = eps * pe;
+        const spyPrice = spxPrice / 10;
+        const isHighlight = (pe === currentPE);
+        const cls = isHighlight ? ' class="pe-highlight"' : '';
+        row += '<td' + cls + '>$' + Math.round(spyPrice).toLocaleString() + '</td>';
+      });
+      row += '</tr>';
+      tbody.innerHTML += row;
+    });
   }
 
   // Historical Market Bottoms
