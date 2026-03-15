@@ -193,7 +193,7 @@
       <thead id="peProjHead"></thead>
       <tbody id="peProjBody"></tbody>
     </table>
-    <div style="text-align:center;font-size:0.65rem;color:var(--meth-text);margin-top:8px;letter-spacing:0.3px">Base EPS: $310 (2026 consensus) · Last updated: Mar 2025 · Next recommended update: May 2026</div>
+    <div style="text-align:center;font-size:0.65rem;color:var(--meth-text);margin-top:8px;letter-spacing:0.3px">Base EPS: $275 (2025 actual) · Growth applied from 2025 forward · Last updated: Mar 2025 · Next recommended update: May 2026</div>
   </div>
   <div class="risk-lows-wrap">
     <h4>Notable Historic Market Events</h4>
@@ -466,15 +466,14 @@ async function main() {
   // Forward P/E Price Projection Table (interactive)
   function buildPEProjectionTable(growthPct) {
     const epsGrowth = growthPct / 100;
-    const baseEPS = fwdEPS2026; // SPX EPS = 310
-    const currentYear = 2026;
-    const years = [2027, 2028, 2029, 2030, 2031];
+    const baseEPS2025 = 275; // 2025 actual SPX EPS base
+    const baseYear = 2025;
+    const years = [2026, 2027, 2028, 2029, 2030, 2031];
     const peMultiples = [15, 16, 17, 18, 19, 20, 21, 22];
 
-    // Project EPS for each year
+    // Project EPS for each year using growth from 2025 base
     const epsMap = {};
-    epsMap[currentYear] = baseEPS;
-    years.forEach(y => { epsMap[y] = baseEPS * Math.pow(1 + epsGrowth, y - currentYear); });
+    years.forEach(y => { epsMap[y] = baseEPS2025 * Math.pow(1 + epsGrowth, y - baseYear); });
 
     // Build header
     const thead = document.getElementById('peProjHead');
@@ -486,8 +485,8 @@ async function main() {
     // Build body rows
     const tbody = document.getElementById('peProjBody');
     tbody.innerHTML = '';
-    const allYears = [currentYear, ...years];
-    const currentPE = Math.round(spxEstimate / baseEPS);
+    const allYears = years;
+    const currentPE = Math.round(spxEstimate / epsMap[2026]);
 
     allYears.forEach(y => {
       const eps = epsMap[y];
