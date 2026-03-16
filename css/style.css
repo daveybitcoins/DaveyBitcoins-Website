@@ -172,6 +172,9 @@ header {
     padding: 0 1rem;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .tab {
