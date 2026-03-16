@@ -507,8 +507,8 @@ table {
 
 thead {
     position: sticky;
-    top: 0;
-    z-index: 1;
+    top: 42px; /* offset below sticky tab-bar */
+    z-index: 10;
 }
 
 th {
