@@ -35,9 +35,10 @@ jobs:
         run: |
           python scripts/fetch_ema.py --process
           # Only generate AI summary on the evening run (after 20:00 UTC / 4 PM EDT)
+          # or on manual workflow_dispatch triggers
           HOUR=$(date -u +%H)
-          if [ "$HOUR" -ge 20 ]; then
-            echo "Evening run — generating AI summary"
+          if [ "$HOUR" -ge 20 ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Generating AI summary"
             python scripts/generate_summary.py --force
           else
             echo "Morning run — skipping AI summary to save costs"
