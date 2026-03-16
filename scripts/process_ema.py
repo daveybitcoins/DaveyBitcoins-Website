@@ -122,8 +122,17 @@ def parse_csv(filepath):
                 # Forward P/E: price / (4 * next quarter EPS forecast)
                 pe_ttm_raw = row.get("PE Ratio TTM", "").strip()
                 eps_fwd_raw = row.get("EPS Forecast Next Qtr", "").strip()
-                pe_ttm = round(float(pe_ttm_raw), 1) if pe_ttm_raw else None
-                eps_fwd = float(eps_fwd_raw) if eps_fwd_raw else None
+                try:
+                    pe_val = float(pe_ttm_raw) if pe_ttm_raw else None
+                    pe_ttm = round(pe_val, 1) if pe_val is not None and pe_val == pe_val else None  # NaN check
+                except (ValueError, TypeError):
+                    pe_ttm = None
+                try:
+                    eps_fwd = float(eps_fwd_raw) if eps_fwd_raw else None
+                    if eps_fwd is not None and eps_fwd != eps_fwd:  # NaN check
+                        eps_fwd = None
+                except (ValueError, TypeError):
+                    eps_fwd = None
                 fwd_pe = round(price / (4 * eps_fwd), 1) if eps_fwd and eps_fwd > 0 else None
 
                 signal = classify_signal(price, ema8, ema13, ema21)
@@ -651,8 +660,10 @@ def main():
         # Exclude 5-letter tickers ending in F (foreign OTC like MURGF)
         if len(ticker) == 5 and ticker.endswith("F"):
             return False
-        # Exclude 5-letter tickers ending in Y (ADRs like TCEHY)
-        # Keep these actually - ADRs like TCEHY are legitimate large-cap stocks
+        # Exclude preferred shares without "/" (e.g., WFCNP, JPMPR, BRKPR)
+        # These are typically 4-6 letter tickers ending in P/PR/NP
+        if re.match(r'^[A-Z]{2,4}(PR|NP|P)$', ticker) and len(ticker) >= 4:
+            return False
         return True
 
     before = len(all_stocks)
