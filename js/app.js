@@ -591,6 +591,69 @@
         applyFilters(tabId);
     }
 
+    function renderChips(tabId) {
+        const container = document.getElementById("chips-" + tabId);
+        if (!container) return;
+        const tickers = filterState[tabId].selectedTickers || [];
+        container.innerHTML = tickers.map(t =>
+            '<span class="ticker-chip">' + t + '<button type="button" class="chip-remove" data-ticker="' + t + '">&times;</button></span>'
+        ).join("");
+        container.querySelectorAll(".chip-remove").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const ticker = btn.dataset.ticker;
+                filterState[tabId].selectedTickers = filterState[tabId].selectedTickers.filter(t => t !== ticker);
+                renderChips(tabId);
+                applyFilters(tabId);
+            });
+        });
+    }
+
+    function showDropdown(tabId, query) {
+        const dropdown = document.getElementById("dropdown-" + tabId);
+        if (!dropdown || !tabRegistry[tabId]) return;
+        const data = tabRegistry[tabId].data;
+        const selected = filterState[tabId].selectedTickers || [];
+        const q = query.toLowerCase();
+
+        if (!q) { dropdown.innerHTML = ""; dropdown.style.display = "none"; return; }
+
+        const matches = data.filter(d =>
+            (d.symbol && d.symbol.toLowerCase().includes(q)) ||
+            (d.name && d.name.toLowerCase().includes(q))
+        ).filter(d => !selected.includes(d.symbol))
+         .slice(0, 8);
+
+        if (matches.length === 0) { dropdown.innerHTML = ""; dropdown.style.display = "none"; return; }
+
+        dropdown.innerHTML = matches.map(d =>
+            '<div class="ticker-option" data-symbol="' + d.symbol + '"><strong>' + d.symbol + '</strong> <span>' + d.name + '</span></div>'
+        ).join("");
+        dropdown.style.display = "block";
+
+        dropdown.querySelectorAll(".ticker-option").forEach(opt => {
+            opt.addEventListener("mousedown", (e) => {
+                e.preventDefault();
+                addTicker(tabId, opt.dataset.symbol);
+            });
+        });
+    }
+
+    function addTicker(tabId, symbol) {
+        const state = filterState[tabId];
+        if (!state.selectedTickers) state.selectedTickers = [];
+        const upper = symbol.toUpperCase();
+        if (state.selectedTickers.includes(upper)) return;
+        state.selectedTickers.push(upper);
+        state.search = "";
+        const input = document.querySelector('.search-input[data-tab-id="' + tabId + '"]');
+        if (input) input.value = "";
+        const dropdown = document.getElementById("dropdown-" + tabId);
+        if (dropdown) { dropdown.innerHTML = ""; dropdown.style.display = "none"; }
+        renderChips(tabId);
+        applyFilters(tabId);
+    }
+
     function setupToolbar(tabId) {
         const searchInput = document.querySelector('.search-input[data-tab-id="' + tabId + '"]');
         if (searchInput) {
@@ -944,6 +1007,8 @@
             { label: "1W Chg%", key: "chg_1w" },
             { label: "Rel Vol", key: "rel_vol" },
             { label: "Rating", key: "analyst" },
+            { label: "Fwd P/E", key: "fwd_pe", defaultAsc: true },
+            { label: "TTM P/E", key: "pe_ttm", defaultAsc: true },
         ];
 
         const renderRow = (s) => `
@@ -967,6 +1032,8 @@
                 ${pctCell(s.chg_1w)}
                 <td class="num">${fmt(s.rel_vol)}</td>
                 <td>${s.analyst}</td>
+                <td class="num">${s.fwd_pe != null ? s.fwd_pe.toFixed(1) + '×' : '—'}</td>
+                <td class="num">${s.pe_ttm != null ? s.pe_ttm.toFixed(1) + '×' : '—'}</td>
             </tr>`;
 
         el.innerHTML = `
@@ -1008,6 +1075,7 @@
             { label: "vs 21W%", key: "price_vs_21w" },
             { label: "Mkt Cap", key: "mkt_cap_b", defaultAsc: false },
             { label: "1W Chg%", key: "chg_1w" },
+            { label: "Fwd P/E", key: "fwd_pe", defaultAsc: true },
         ];
 
         const renderRow = (s) => `
@@ -1026,6 +1094,7 @@
                 ${pctCell(s.price_vs_21w)}
                 <td class="num">${fmtCap(s.mkt_cap_b)}</td>
                 ${pctCell(s.chg_1w)}
+                <td class="num">${s.fwd_pe != null ? s.fwd_pe.toFixed(1) + '×' : '—'}</td>
             </tr>`;
 
         el.innerHTML = `
@@ -1076,6 +1145,7 @@
             { label: "13v21%", key: "ema13_vs_21", defaultAsc: false },
             { label: "Spread Score", key: "spread_score", defaultAsc: false },
             { label: "1W Chg%", key: "chg_1w" },
+            { label: "Fwd P/E", key: "fwd_pe", defaultAsc: true },
         ];
 
         const renderRow = (s) => `
@@ -1092,6 +1162,7 @@
                 ${pctCell(s.ema13_vs_21)}
                 <td class="num pos">${fmt(s.spread_score)}</td>
                 ${pctCell(s.chg_1w)}
+                <td class="num">${s.fwd_pe != null ? s.fwd_pe.toFixed(1) + '×' : '—'}</td>
             </tr>`;
 
         el.innerHTML = `
@@ -1133,6 +1204,7 @@
             { label: "vs 21W%", key: "price_vs_21w" },
             { label: "Mkt Cap", key: "mkt_cap_b", defaultAsc: false },
             { label: "1W Chg%", key: "chg_1w" },
+            { label: "Fwd P/E", key: "fwd_pe", defaultAsc: true },
         ];
 
         const renderRow = (s) => `
@@ -1148,6 +1220,7 @@
                 ${pctCell(s.price_vs_21w)}
                 <td class="num">${fmtCap(s.mkt_cap_b)}</td>
                 ${pctCell(s.chg_1w)}
+                <td class="num">${s.fwd_pe != null ? s.fwd_pe.toFixed(1) + '×' : '—'}</td>
             </tr>`;
 
         el.innerHTML = `

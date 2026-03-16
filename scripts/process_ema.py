@@ -119,6 +119,13 @@ def parse_csv(filepath):
                 chg_1m = float(row.get("Performance % 1 month", 0) or 0)
                 rel_vol = float(row.get("Relative Volume 1 day", 0) or 0)
 
+                # Forward P/E: price / (4 * next quarter EPS forecast)
+                pe_ttm_raw = row.get("PE Ratio TTM", "").strip()
+                eps_fwd_raw = row.get("EPS Forecast Next Qtr", "").strip()
+                pe_ttm = round(float(pe_ttm_raw), 1) if pe_ttm_raw else None
+                eps_fwd = float(eps_fwd_raw) if eps_fwd_raw else None
+                fwd_pe = round(price / (4 * eps_fwd), 1) if eps_fwd and eps_fwd > 0 else None
+
                 signal = classify_signal(price, ema8, ema13, ema21)
 
                 price_vs_8w = round(pct_diff(price, ema8), 2)
@@ -149,6 +156,8 @@ def parse_csv(filepath):
                     "ema8_vs_13": ema8_vs_13,
                     "ema13_vs_21": ema13_vs_21,
                     "spread_score": spread_score,
+                    "pe_ttm": pe_ttm,
+                    "fwd_pe": fwd_pe,
                 })
             except (ValueError, KeyError):
                 continue
