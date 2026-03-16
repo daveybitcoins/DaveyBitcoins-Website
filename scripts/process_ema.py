@@ -647,7 +647,7 @@ def main():
         return True
 
     before = len(all_stocks)
-    all_stocks = [s for s in all_stocks if is_common_stock(s["ticker"])]
+    all_stocks = [s for s in all_stocks if is_common_stock(s["symbol"])]
     filtered_out = before - len(all_stocks)
     if filtered_out:
         print(f"Removed {filtered_out} preferred shares / foreign OTC tickers")
