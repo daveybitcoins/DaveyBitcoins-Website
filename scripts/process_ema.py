@@ -632,6 +632,26 @@ def main():
     all_stocks = parse_csv(csv_path)
     print(f"Parsed {len(all_stocks)} stocks from CSV")
 
+    # Filter out preferred shares, depositary receipts, and foreign OTC tickers
+    # Examples: BAC/PK, MS/PE, WFC/PD, T/PA, BRK.B is OK (class shares), MURGF (foreign OTC)
+    import re
+    def is_common_stock(ticker):
+        # Exclude tickers with "/" (preferred shares like BAC/PK, MS/PE)
+        if "/" in ticker:
+            return False
+        # Exclude 5-letter tickers ending in F (foreign OTC like MURGF)
+        if len(ticker) == 5 and ticker.endswith("F"):
+            return False
+        # Exclude 5-letter tickers ending in Y (ADRs like TCEHY)
+        # Keep these actually - ADRs like TCEHY are legitimate large-cap stocks
+        return True
+
+    before = len(all_stocks)
+    all_stocks = [s for s in all_stocks if is_common_stock(s["ticker"])]
+    filtered_out = before - len(all_stocks)
+    if filtered_out:
+        print(f"Removed {filtered_out} preferred shares / foreign OTC tickers")
+
     # Filter to top N by market cap
     all_stocks.sort(key=lambda s: s["mkt_cap_b"], reverse=True)
     stocks = all_stocks[:TOP_N]
