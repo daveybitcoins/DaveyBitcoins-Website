@@ -267,6 +267,7 @@ main {
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 
+
 /* === CARDS === */
 .card {
     background: var(--bg-card);
@@ -561,11 +562,7 @@ table {
     white-space: nowrap;
 }
 
-thead {
-    position: sticky;
-    top: var(--sticky-top-h, 130px);
-    z-index: 50;
-}
+thead {}
 
 th {
     background: var(--th-bg);

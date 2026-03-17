@@ -1398,13 +1398,5 @@
 
     // === START ===
     setupTheme();
-    document.addEventListener("DOMContentLoaded", function() {
-        init();
-        // Set thead sticky offset to match sticky-top height
-        var stickyTop = document.getElementById("sticky-top");
-        if (stickyTop) {
-            var h = stickyTop.offsetHeight;
-            document.documentElement.style.setProperty("--sticky-top-h", h + "px");
-        }
-    });
+    document.addEventListener("DOMContentLoaded", init);
 })();
