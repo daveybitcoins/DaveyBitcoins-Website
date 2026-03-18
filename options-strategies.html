@@ -405,8 +405,11 @@ function setStatus(msg, type) {
   statusEl.className = 'status-msg' + (type ? ' ' + type : '');
 }
 
+// Use Worker in production, local proxy in dev
+const API_BASE = location.hostname === 'localhost' ? '' : 'https://daveybitcoins-api.dave-erazo78.workers.dev';
+
 async function fetchOptions(symbol, date) {
-  let url = `/api/options/${encodeURIComponent(symbol)}`;
+  let url = `${API_BASE}/api/options/${encodeURIComponent(symbol)}`;
   if (date) url += `?date=${date}`;
   const resp = await fetch(url);
   if (!resp.ok) throw new Error(`Failed to fetch options for ${symbol}`);
