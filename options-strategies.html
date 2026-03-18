@@ -168,7 +168,7 @@
       </button>
     </div>
     <h1>📈 <span>Options Strategies</span></h1>
-    <div class="subtitle">Bullish Playbook · ZEBRA / Bull Call / PMCC / Debit Spread</div>
+    <div class="subtitle">Bullish Playbook · Long Call / ZEBRA / Bull Call / PMCC / Debit Spread</div>
   </header>
 
   <!-- Ticker Search -->
@@ -185,14 +185,48 @@
 
   <!-- Tab Bar -->
   <nav class="tab-bar">
-    <button class="tab active" data-tab="zebra">ZEBRA</button>
+    <button class="tab active" data-tab="long-call">Long Call</button>
+    <button class="tab" data-tab="zebra">ZEBRA</button>
     <button class="tab" data-tab="bull-call">Bull Call Spread</button>
     <button class="tab" data-tab="pmcc">PMCC</button>
     <button class="tab" data-tab="debit-spread">Call Debit Spread</button>
   </nav>
 
+  <!-- TAB 0: LONG CALL -->
+  <section class="tab-content active" id="tab-long-call">
+    <div class="strategy-overview">
+      <div class="overview-header">
+        <h2>Long Call</h2>
+        <span class="badge badge-bull">BULLISH</span>
+        <span class="badge badge-defined">DEFINED RISK</span>
+      </div>
+      <div class="overview-subtitle">Straight Call Purchase</div>
+      <p class="overview-desc">The simplest bullish options play — buy a call option and profit when the stock moves up. Your max loss is the premium paid, with unlimited upside potential. No spreads, no hedges, just directional conviction.</p>
+      <div class="when-to-use">
+        <strong>When to use:</strong> High conviction bullish. You expect a significant move higher within your timeframe. Best when IV is low (cheap premiums) and you have a clear catalyst — earnings, breakout, sector rotation.
+      </div>
+    </div>
+    <div class="legs-table-wrap"><h4>Trade Legs</h4>
+      <table class="legs-table"><thead><tr><th>Action</th><th>Qty</th><th>Type</th><th>Strike</th><th>Exp</th><th class="mono">Delta</th><th class="mono">Bid</th><th class="mono">Ask</th><th class="mono">Mid</th></tr></thead>
+      <tbody id="legs-long-call"><tr><td colspan="9" style="text-align:center;color:var(--text-dimmer);padding:20px">Enter a ticker above to load options data</td></tr></tbody></table>
+    </div>
+    <div class="dashboard" id="cards-long-call"></div>
+    <div class="methodology" id="notes-long-call"><h3>Payoff Notes</h3><ul><li>Enter a ticker to see strategy-specific payoff analysis.</li></ul></div>
+    <div class="chart-panel"><div class="chart-header"><div class="chart-label">Payoff at Expiration</div><div class="chart-note">P/L vs Underlying Price</div></div><canvas id="payoff-long-call" height="300"></canvas></div>
+    <div class="methodology">
+      <h3>Long Call Recipe</h3>
+      <ul>
+        <li><span class="hl">Strike selection:</span> ATM (<code>50Δ</code>) for balanced risk/reward. Slightly ITM (<code>55–65Δ</code>) for higher probability. OTM (<code>30–40Δ</code>) for leverage on big moves.</li>
+        <li><span class="hl">Expiration:</span> Give yourself time — <code>45–60+ DTE</code>. Theta accelerates in the final 30 days, so don't cut it close.</li>
+        <li><span class="hl">IV matters:</span> Buy when IV rank is low (<code>&lt;30%</code>). High IV = expensive premium = harder to profit.</li>
+        <li><span class="hl">Exit plan:</span> Take profits at <code>50–100%</code> gain on the option. Cut losses at <code>50%</code> of premium paid. Don't hold to expiration.</li>
+        <li><span class="hl">Position sizing:</span> Risk no more than <code>2–5%</code> of portfolio on a single long call. The entire premium is at risk.</li>
+      </ul>
+    </div>
+  </section>
+
   <!-- TAB 1: ZEBRA -->
-  <section class="tab-content active" id="tab-zebra">
+  <section class="tab-content" id="tab-zebra">
     <div class="strategy-overview">
       <div class="overview-header">
         <h2>ZEBRA</h2>
@@ -534,6 +568,46 @@ function buildAllStrategies(chain, expTs) {
   const calls = chain.calls;
   const price = currentData.price;
   const expLabel = formatExp(expTs);
+
+  // ── LONG CALL: Buy 1 @ ~0.50Δ (ATM) ──
+  const lcCall = findCallNearDelta(calls, 0.50);
+  if (lcCall) {
+    const premium = lcCall._mid * 100;
+    const breakEven = lcCall.strike + lcCall._mid;
+    const dte = Math.round((expTs * 1000 - Date.now()) / 86400000);
+    const pctMove = ((breakEven - price) / price * 100).toFixed(1);
+    const intrinsic = Math.max(price - lcCall.strike, 0) * 100;
+    const extrinsic = premium - intrinsic;
+    const iv = ((lcCall.impliedVolatility || 0.3) * 100).toFixed(0);
+    // Leverage: 100 shares controlled / capital spent vs buying shares
+    const leverage = (price * 100 / premium).toFixed(1);
+    updateTab('long-call', {
+      legs: [
+        { action:'Buy', qty:1, type:'Call', strike:lcCall.strike, exp:expLabel, delta:lcCall._delta, bid:lcCall.bid, ask:lcCall.ask, mid:lcCall._mid },
+      ],
+      cards: [
+        { label:'Premium / Max Loss', value:fmtInt$(premium), sub:`${fmt$(lcCall._mid)} × 100`, valColor:'#ef4444', glow:'rgba(239,68,68,0.5)' },
+        { label:'Break-Even', value:fmt$(breakEven), sub:`${pctMove > 0 ? '+' : ''}${pctMove}% move needed`, valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
+        { label:'Delta', value:'+' + lcCall._delta.toFixed(2), sub:`≈ ${(lcCall._delta*100).toFixed(0)} shares exposure` },
+        { label:'IV', value:iv + '%', sub:'Implied volatility' },
+        { label:'Intrinsic / Extrinsic', value:fmtInt$(intrinsic) + ' / ' + fmtInt$(extrinsic), sub:intrinsic > 0 ? 'ITM — has intrinsic value' : 'ATM/OTM — all extrinsic' },
+        { label:'Leverage', value:leverage + 'x', sub:`vs buying 100 shares (${fmtInt$(price*100)})`, valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
+      ],
+      notes: [
+        `<span class="hl">Max loss = ${fmtInt$(premium)}</span> (premium paid). This is the most you can lose — no margin calls, no surprises.`,
+        `<span class="hl">Break-even at ${fmt$(breakEven)}</span> — stock needs to be ${pctMove}% above current price at expiration to profit.`,
+        `<span class="hl">Unlimited upside</span> — every $1 above break-even = $100 profit per contract.`,
+        `<span class="hl">Time decay warning:</span> You lose ~${fmt$(extrinsic/dte)} per day in theta (accelerates near expiration).`,
+        `<span class="hl">${leverage}x leverage</span> — controls 100 shares (${fmtInt$(price*100)} of stock) for just ${fmtInt$(premium)}.`,
+      ],
+      payoff: {
+        legs: [
+          { type:'call', strike:lcCall.strike, qty:1, premium:lcCall._mid },
+        ],
+        config: { minPrice: price*0.8, maxPrice: price*1.3, breakEven, maxLoss: premium }
+      }
+    });
+  }
 
   // ── ZEBRA: Buy 2 @ ~0.72Δ, Sell 1 @ ~0.50Δ ──
   const zebraLong = findCallNearDelta(calls, 0.72);
