@@ -131,6 +131,20 @@
   .strike-btn.otm{border-left:2px solid rgba(239,68,68,0.4)}
   .strike-btn.atm{border-left:2px solid rgba(68,170,255,0.6)}
 
+  /* Leg strike selectors for multi-leg strategies */
+  .leg-selectors{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:18px 24px;margin-bottom:28px;display:none;transition:background 0.3s,border-color 0.3s}
+  .leg-selectors.visible{display:block}
+  .leg-selectors h4{font-family:'Outfit',sans-serif;font-size:0.65rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:14px;text-align:center}
+  .leg-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+  .leg-row:last-child{margin-bottom:0}
+  .leg-label{font-family:'Outfit',sans-serif;font-size:0.7rem;font-weight:600;color:var(--text);min-width:100px}
+  .leg-label .leg-action{font-size:0.55rem;text-transform:uppercase;letter-spacing:1px;padding:2px 6px;border-radius:3px;margin-right:6px}
+  .leg-label .buy{background:rgba(34,197,94,0.15);color:#22c55e}
+  .leg-label .sell{background:rgba(239,68,68,0.15);color:#ef4444}
+  .leg-select{background:var(--bg-surface,rgba(68,170,255,0.04));border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text);cursor:pointer;min-width:200px}
+  .leg-select:focus{outline:none;border-color:var(--accent-blue);box-shadow:0 0 0 2px rgba(68,170,255,0.2)}
+  .leg-select option{background:var(--bg-card);color:var(--text)}
+
   /* Legs table */
   .legs-table-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:28px;overflow-x:auto;transition:background 0.3s,border-color 0.3s}
   .legs-table-wrap h4{font-family:'Outfit',sans-serif;font-size:0.65rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;text-align:center}
@@ -264,6 +278,11 @@
         <strong>When to use:</strong> Strong bullish conviction. You want stock-like upside without full capital outlay. Max loss is capped at the net debit — no margin risk, no assignment headaches.
       </div>
     </div>
+    <div class="leg-selectors" id="leg-sel-zebra">
+      <h4>Customize Strikes</h4>
+      <div class="leg-row"><span class="leg-label"><span class="leg-action buy">Buy 2</span>Long Calls</span><select class="leg-select" id="sel-zebra-long"></select></div>
+      <div class="leg-row"><span class="leg-label"><span class="leg-action sell">Sell 1</span>Short Call</span><select class="leg-select" id="sel-zebra-short"></select></div>
+    </div>
     <div class="legs-table-wrap"><h4>Trade Legs</h4>
       <table class="legs-table"><thead><tr><th>Action</th><th>Qty</th><th>Type</th><th>Strike</th><th>Exp</th><th class="mono">Delta</th><th class="mono">Bid</th><th class="mono">Ask</th><th class="mono">Mid</th></tr></thead>
       <tbody id="legs-zebra"><tr><td colspan="9" style="text-align:center;color:var(--text-dimmer);padding:20px">Enter a ticker above to load options data</td></tr></tbody></table>
@@ -296,6 +315,11 @@
       <div class="when-to-use">
         <strong>When to use:</strong> Moderately bullish. You have a price target in mind and want to reduce cost basis vs. buying a naked call. Great when IV is elevated — selling the upper strike offsets inflated premium.
       </div>
+    </div>
+    <div class="leg-selectors" id="leg-sel-bull-call">
+      <h4>Customize Strikes</h4>
+      <div class="leg-row"><span class="leg-label"><span class="leg-action buy">Buy 1</span>Long Call</span><select class="leg-select" id="sel-bull-call-long"></select></div>
+      <div class="leg-row"><span class="leg-label"><span class="leg-action sell">Sell 1</span>Short Call</span><select class="leg-select" id="sel-bull-call-short"></select></div>
     </div>
     <div class="legs-table-wrap"><h4>Trade Legs</h4>
       <table class="legs-table"><thead><tr><th>Action</th><th>Qty</th><th>Type</th><th>Strike</th><th>Exp</th><th class="mono">Delta</th><th class="mono">Bid</th><th class="mono">Ask</th><th class="mono">Mid</th></tr></thead>
@@ -331,6 +355,11 @@
         <strong>When to use:</strong> Long-term bullish on the stock but want to generate income while you wait. Capital efficient — deploy $3–5K instead of $15–20K+ for 100 shares. Repeat the short call sales monthly.
       </div>
     </div>
+    <div class="leg-selectors" id="leg-sel-pmcc">
+      <h4>Customize Strikes</h4>
+      <div class="leg-row"><span class="leg-label"><span class="leg-action buy">Buy 1</span>LEAPS Call</span><select class="leg-select" id="sel-pmcc-long"></select></div>
+      <div class="leg-row"><span class="leg-label"><span class="leg-action sell">Sell 1</span>Short Call</span><select class="leg-select" id="sel-pmcc-short"></select></div>
+    </div>
     <div class="legs-table-wrap"><h4>Trade Legs</h4>
       <table class="legs-table"><thead><tr><th>Action</th><th>Qty</th><th>Type</th><th>Strike</th><th>Exp</th><th class="mono">Delta</th><th class="mono">Bid</th><th class="mono">Ask</th><th class="mono">Mid</th></tr></thead>
       <tbody id="legs-pmcc"><tr><td colspan="9" style="text-align:center;color:var(--text-dimmer);padding:20px">Enter a ticker above to load options data</td></tr></tbody></table>
@@ -363,6 +392,11 @@
       <div class="when-to-use">
         <strong>When to use:</strong> Moderately bullish with a specific price target. You don't need a huge move — just a nudge above break-even. Works well when you want high probability of a smaller, defined win.
       </div>
+    </div>
+    <div class="leg-selectors" id="leg-sel-debit-spread">
+      <h4>Customize Strikes</h4>
+      <div class="leg-row"><span class="leg-label"><span class="leg-action buy">Buy 1</span>Long Call</span><select class="leg-select" id="sel-debit-spread-long"></select></div>
+      <div class="leg-row"><span class="leg-label"><span class="leg-action sell">Sell 1</span>Short Call</span><select class="leg-select" id="sel-debit-spread-short"></select></div>
     </div>
     <div class="legs-table-wrap"><h4>Trade Legs</h4>
       <table class="legs-table"><thead><tr><th>Action</th><th>Qty</th><th>Type</th><th>Strike</th><th>Exp</th><th class="mono">Delta</th><th class="mono">Bid</th><th class="mono">Ask</th><th class="mono">Mid</th></tr></thead>
@@ -694,7 +728,211 @@ function selectLongCallStrike(strike) {
   drawAllPayoffs();
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   Generic Leg Dropdown Engine
+   ══════════════════════════════════════════════════════════════════ */
+let savedChain = null;
+let savedExpTs = 0;
+
+// Populate a <select> with calls filtered by delta range
+function populateStrikeSelect(selectId, calls, deltaMin, deltaMax, defaultDelta, price) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  const filtered = calls.filter(c => c._mid > 0 && c._delta >= deltaMin && c._delta <= deltaMax);
+  sel.innerHTML = '';
+  const best = findCallNearDelta(filtered, defaultDelta);
+  filtered.sort((a, b) => a.strike - b.strike);
+  filtered.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.strike;
+    const moneyness = c.strike < price ? 'ITM' : c.strike > price ? 'OTM' : 'ATM';
+    opt.textContent = `$${c.strike}  (${c._delta.toFixed(2)}Δ · ${moneyness} · mid ${fmt$(c._mid)})`;
+    if (best && c.strike === best.strike) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+function getCallByStrike(calls, strike) {
+  return calls.find(c => c.strike === parseFloat(strike));
+}
+
+// ── Individual strategy rebuilders ──
+function rebuildZebra() {
+  if (!savedChain) return;
+  const calls = savedChain.calls;
+  const price = currentData.price;
+  const expLabel = formatExp(savedExpTs);
+  const longC = getCallByStrike(calls, document.getElementById('sel-zebra-long').value);
+  const shortC = getCallByStrike(calls, document.getElementById('sel-zebra-short').value);
+  if (!longC || !shortC) return;
+  const grossDebit = longC._mid * 2 * 100;
+  const credit = shortC._mid * 100;
+  const netDebit = grossDebit - credit;
+  const netDelta = longC._delta * 2 - shortC._delta;
+  const breakEven = longC.strike + netDebit / 100;
+  updateTab('zebra', {
+    legs: [
+      { action:'Buy', qty:2, type:'Call', strike:longC.strike, exp:expLabel, delta:longC._delta, bid:longC.bid, ask:longC.ask, mid:longC._mid },
+      { action:'Sell', qty:1, type:'Call', strike:shortC.strike, exp:expLabel, delta:shortC._delta, bid:shortC.bid, ask:shortC.ask, mid:shortC._mid },
+    ],
+    cards: [
+      { label:'Gross Debit', value:fmtInt$(grossDebit), sub:`2 × ${fmt$(longC._mid)} × 100` },
+      { label:'Credit Received', value:fmtInt$(credit), sub:`1 × ${fmt$(shortC._mid)} × 100`, valColor:'#22c55e' },
+      { label:'Net Debit / Max Loss', value:fmtInt$(netDebit), sub:`vs ~${fmtInt$(price*100)} for 100 shares`, valColor:'#ef4444', glow:'rgba(239,68,68,0.5)' },
+      { label:'Net Delta', value:'+' + netDelta.toFixed(2), sub:'≈ 100 shares exposure', valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
+      { label:'Break-Even', value:fmt$(breakEven), sub:'Long strike + net debit/share', valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
+    ],
+    notes: [
+      `<span class="hl">Break-even ≈ ${fmt$(breakEven)}</span> — ${breakEven < price * 1.02 ? 'near current price, minimal theta drag' : 'above current price, needs move to profit'}.`,
+      `<span class="hl">Above $${shortC.strike}</span> the position acts like long 100 shares with effective cost basis ≈ ${fmt$(longC.strike + netDebit/100)}.`,
+      `<span class="hl">Downside risk capped</span> at ${fmtInt$(netDebit)} net debit vs. ~${fmtInt$(price*100)} to buy 100 shares outright.`,
+      `<span class="hl">No upside cap</span> — unlike vertical spreads, profits are unlimited above break-even.`,
+    ],
+    payoff: {
+      legs: [
+        { type:'call', strike:longC.strike, qty:2, premium:longC._mid, iv:longC.impliedVolatility||0.3, T:longC._T },
+        { type:'call', strike:shortC.strike, qty:-1, premium:shortC._mid, iv:shortC.impliedVolatility||0.3, T:shortC._T },
+      ],
+      config: { minPrice: price*0.7, maxPrice: price*1.3, breakEven, maxLoss: netDebit }
+    }
+  });
+  drawAllPayoffs();
+}
+
+function rebuildBullCall() {
+  if (!savedChain) return;
+  const calls = savedChain.calls;
+  const price = currentData.price;
+  const expLabel = formatExp(savedExpTs);
+  const longC = getCallByStrike(calls, document.getElementById('sel-bull-call-long').value);
+  const shortC = getCallByStrike(calls, document.getElementById('sel-bull-call-short').value);
+  if (!longC || !shortC) return;
+  const netDebit = (longC._mid - shortC._mid) * 100;
+  const spreadWidth = (shortC.strike - longC.strike) * 100;
+  const maxProfit = spreadWidth - netDebit;
+  const breakEven = longC.strike + netDebit / 100;
+  const netDelta = longC._delta - shortC._delta;
+  const rr = maxProfit > 0 ? (netDebit / maxProfit).toFixed(1) + ':1' : '--';
+  updateTab('bull-call', {
+    legs: [
+      { action:'Buy', qty:1, type:'Call', strike:longC.strike, exp:expLabel, delta:longC._delta, bid:longC.bid, ask:longC.ask, mid:longC._mid },
+      { action:'Sell', qty:1, type:'Call', strike:shortC.strike, exp:expLabel, delta:shortC._delta, bid:shortC.bid, ask:shortC.ask, mid:shortC._mid },
+    ],
+    cards: [
+      { label:'Net Debit / Max Loss', value:fmtInt$(netDebit), sub:'Premium paid', valColor:'#ef4444', glow:'rgba(239,68,68,0.5)' },
+      { label:'Max Profit', value:fmtInt$(maxProfit), sub:'Spread width – net debit', valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
+      { label:'Break-Even', value:fmt$(breakEven), sub:'Long strike + net debit', valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
+      { label:'Net Delta', value:'+' + netDelta.toFixed(2), sub:'Long Δ – short Δ' },
+      { label:'Risk / Reward', value:rr, sub:'Max loss : max profit' },
+    ],
+    notes: [
+      `<span class="hl">Max profit ${fmtInt$(maxProfit)}</span> achieved when stock closes at or above $${shortC.strike} at expiration.`,
+      `<span class="hl">Max loss ${fmtInt$(netDebit)}</span> = net debit paid, if stock closes below $${longC.strike}.`,
+      `<span class="hl">Break-even ${fmt$(breakEven)}</span> = long strike + net debit per share.`,
+      `<span class="hl">Time decay:</span> Works against you (net long premium). Best entered 30–45 DTE.`,
+    ],
+    payoff: {
+      legs: [
+        { type:'call', strike:longC.strike, qty:1, premium:longC._mid, iv:longC.impliedVolatility||0.3, T:longC._T },
+        { type:'call', strike:shortC.strike, qty:-1, premium:shortC._mid, iv:shortC.impliedVolatility||0.3, T:shortC._T },
+      ],
+      config: { minPrice: price*0.85, maxPrice: price*1.2, breakEven, maxLoss: netDebit, maxProfit }
+    }
+  });
+  drawAllPayoffs();
+}
+
+function rebuildPmcc() {
+  if (!savedChain) return;
+  const calls = savedChain.calls;
+  const price = currentData.price;
+  const expLabel = formatExp(savedExpTs);
+  const longC = getCallByStrike(calls, document.getElementById('sel-pmcc-long').value);
+  const shortC = getCallByStrike(calls, document.getElementById('sel-pmcc-short').value);
+  if (!longC || !shortC) return;
+  const leapsCost = longC._mid * 100;
+  const credit = shortC._mid * 100;
+  const netDebit = leapsCost - credit;
+  const maxProfit = (shortC.strike - longC.strike) * 100 - netDebit;
+  const breakEven = longC.strike + netDebit / 100;
+  const netDelta = longC._delta - shortC._delta;
+  const dte = Math.round((savedExpTs * 1000 - Date.now()) / 86400000);
+  updateTab('pmcc', {
+    legs: [
+      { action:'Buy', qty:1, type:'LEAPS Call', strike:longC.strike, exp:expLabel, delta:longC._delta, bid:longC.bid, ask:longC.ask, mid:longC._mid },
+      { action:'Sell', qty:1, type:'Call', strike:shortC.strike, exp:expLabel, delta:shortC._delta, bid:shortC.bid, ask:shortC.ask, mid:shortC._mid },
+    ],
+    cards: [
+      { label:'LEAPS Cost', value:fmtInt$(leapsCost), sub:`Deep ITM, ${(longC._delta*100).toFixed(0)}Δ` },
+      { label:'Premium Collected', value:fmtInt$(credit), sub:'Short call credit', valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
+      { label:'Net Debit / Max Loss', value:fmtInt$(netDebit), sub:'LEAPS cost – credits', valColor:'#ef4444', glow:'rgba(239,68,68,0.5)' },
+      { label:'Net Delta', value:'+' + netDelta.toFixed(2), sub:'Long Δ – short Δ' },
+      { label:'Break-Even', value:fmt$(breakEven), sub:'LEAPS strike + net debit', valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
+      { label:'DTE', value:dte + 'd', sub:'Days to expiration' },
+    ],
+    notes: [
+      `<span class="hl">Max profit ${fmtInt$(maxProfit)}</span> = short strike – LEAPS strike – net debit.`,
+      `<span class="hl">Max loss ≈ ${fmtInt$(netDebit)}</span> net debit on the LEAPS (minus short call credits over time).`,
+      `<span class="hl">Rolling the short call:</span> After expiration, sell a new 30–45 DTE OTM call — this is the income engine.`,
+      `<span class="hl">Risk if called away:</span> Roll the short call up/out or close both legs for a profit.`,
+    ],
+    payoff: {
+      legs: [
+        { type:'call', strike:longC.strike, qty:1, premium:longC._mid, iv:longC.impliedVolatility||0.3, T:longC._T },
+        { type:'call', strike:shortC.strike, qty:-1, premium:shortC._mid, iv:shortC.impliedVolatility||0.3, T:shortC._T },
+      ],
+      config: { minPrice: price*0.75, maxPrice: price*1.25, breakEven, maxLoss: netDebit, maxProfit }
+    }
+  });
+  drawAllPayoffs();
+}
+
+function rebuildDebitSpread() {
+  if (!savedChain) return;
+  const calls = savedChain.calls;
+  const price = currentData.price;
+  const expLabel = formatExp(savedExpTs);
+  const longC = getCallByStrike(calls, document.getElementById('sel-debit-spread-long').value);
+  const shortC = getCallByStrike(calls, document.getElementById('sel-debit-spread-short').value);
+  if (!longC || !shortC) return;
+  const netDebit = (longC._mid - shortC._mid) * 100;
+  const spreadWidth = (shortC.strike - longC.strike) * 100;
+  const maxProfit = spreadWidth - netDebit;
+  const breakEven = longC.strike + netDebit / 100;
+  const netDelta = longC._delta - shortC._delta;
+  const rr = maxProfit > 0 ? (netDebit / maxProfit).toFixed(1) + ':1' : '--';
+  updateTab('debit-spread', {
+    legs: [
+      { action:'Buy', qty:1, type:'Call', strike:longC.strike, exp:expLabel, delta:longC._delta, bid:longC.bid, ask:longC.ask, mid:longC._mid },
+      { action:'Sell', qty:1, type:'Call', strike:shortC.strike, exp:expLabel, delta:shortC._delta, bid:shortC.bid, ask:shortC.ask, mid:shortC._mid },
+    ],
+    cards: [
+      { label:'Net Debit / Max Loss', value:fmtInt$(netDebit), sub:'Premium paid', valColor:'#ef4444', glow:'rgba(239,68,68,0.5)' },
+      { label:'Max Profit', value:fmtInt$(maxProfit), sub:'Spread width – debit', valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
+      { label:'Break-Even', value:fmt$(breakEven), sub:'Long strike + net debit', valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
+      { label:'Net Delta', value:'+' + netDelta.toFixed(2), sub:'Long Δ – short Δ' },
+      { label:'Risk / Reward', value:rr, sub:'Max loss : max profit' },
+    ],
+    notes: [
+      `<span class="hl">Max profit ${fmtInt$(maxProfit)}</span> = spread width – net debit. Stock at or above $${shortC.strike} at expiration.`,
+      `<span class="hl">Max loss ${fmtInt$(netDebit)}</span> = net debit, if below $${longC.strike}.`,
+      `<span class="hl">Higher probability</span> than a bull call spread — ITM long leg starts with intrinsic value.`,
+      `<span class="hl">Trade-off:</span> Higher debit upfront, but closer to profitable from the start.`,
+    ],
+    payoff: {
+      legs: [
+        { type:'call', strike:longC.strike, qty:1, premium:longC._mid, iv:longC.impliedVolatility||0.3, T:longC._T },
+        { type:'call', strike:shortC.strike, qty:-1, premium:shortC._mid, iv:shortC.impliedVolatility||0.3, T:shortC._T },
+      ],
+      config: { minPrice: price*0.85, maxPrice: price*1.2, breakEven, maxLoss: netDebit, maxProfit }
+    }
+  });
+  drawAllPayoffs();
+}
+
 function buildAllStrategies(chain, expTs) {
+  savedChain = chain;
+  savedExpTs = expTs;
   const calls = chain.calls;
   const price = currentData.price;
   const expLabel = formatExp(expTs);
@@ -705,158 +943,29 @@ function buildAllStrategies(chain, expTs) {
   const atmCall = findCallNearDelta(calls, 0.50);
   if (atmCall) selectLongCallStrike(atmCall.strike);
 
-  // ── ZEBRA: Buy 2 @ ~0.72Δ, Sell 1 @ ~0.50Δ ──
-  const zebraLong = findCallNearDelta(calls, 0.72);
-  const zebraShort = findCallNearDelta(calls, 0.50, zebraLong?.strike);
-  if (zebraLong && zebraShort) {
-    const grossDebit = zebraLong._mid * 2 * 100;
-    const credit = zebraShort._mid * 100;
-    const netDebit = grossDebit - credit;
-    const netDelta = zebraLong._delta * 2 - zebraShort._delta;
-    const breakEven = zebraLong.strike + netDebit / 100;
-    updateTab('zebra', {
-      legs: [
-        { action:'Buy', qty:2, type:'Call', strike:zebraLong.strike, exp:expLabel, delta:zebraLong._delta, bid:zebraLong.bid, ask:zebraLong.ask, mid:zebraLong._mid },
-        { action:'Sell', qty:1, type:'Call', strike:zebraShort.strike, exp:expLabel, delta:zebraShort._delta, bid:zebraShort.bid, ask:zebraShort.ask, mid:zebraShort._mid },
-      ],
-      cards: [
-        { label:'Gross Debit', value:fmtInt$(grossDebit), sub:`2 × ${fmt$(zebraLong._mid)} × 100` },
-        { label:'Credit Received', value:fmtInt$(credit), sub:`1 × ${fmt$(zebraShort._mid)} × 100`, valColor:'#22c55e' },
-        { label:'Net Debit / Max Loss', value:fmtInt$(netDebit), sub:`vs ~${fmtInt$(price*100)} for 100 shares`, valColor:'#ef4444', glow:'rgba(239,68,68,0.5)' },
-        { label:'Net Delta', value:'+' + netDelta.toFixed(2), sub:'≈ 100 shares exposure', valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
-        { label:'Break-Even', value:fmt$(breakEven), sub:'Long strike + net debit/share', valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
-      ],
-      notes: [
-        `<span class="hl">Break-even ≈ ${fmt$(breakEven)}</span> — ${breakEven < price * 1.02 ? 'near current price, minimal theta drag' : 'above current price, needs move to profit'}.`,
-        `<span class="hl">Above $${zebraShort.strike}</span> the position acts like long 100 shares with effective cost basis ≈ ${fmt$(zebraLong.strike + netDebit/100)}.`,
-        `<span class="hl">Downside risk capped</span> at ${fmtInt$(netDebit)} net debit vs. ~${fmtInt$(price*100)} to buy 100 shares outright.`,
-        `<span class="hl">No upside cap</span> — unlike vertical spreads, profits are unlimited above break-even.`,
-      ],
-      payoff: {
-        legs: [
-          { type:'call', strike:zebraLong.strike, qty:2, premium:zebraLong._mid, iv:zebraLong.impliedVolatility||0.3, T:zebraLong._T },
-          { type:'call', strike:zebraShort.strike, qty:-1, premium:zebraShort._mid, iv:zebraShort.impliedVolatility||0.3, T:zebraShort._T },
-        ],
-        config: { minPrice: price*0.7, maxPrice: price*1.3, breakEven, maxLoss: netDebit }
-      }
-    });
-  }
+  // ── ZEBRA: Populate dropdowns, default to ~0.72Δ long / ~0.50Δ short ──
+  populateStrikeSelect('sel-zebra-long', calls, 0.55, 0.90, 0.72, price);
+  populateStrikeSelect('sel-zebra-short', calls, 0.35, 0.65, 0.50, price);
+  document.getElementById('leg-sel-zebra').classList.add('visible');
+  rebuildZebra();
 
-  // ── BULL CALL SPREAD: Buy 1 @ ~0.55Δ, Sell 1 @ ~0.30Δ ──
-  const bcsLong = findCallNearDelta(calls, 0.55);
-  const bcsShort = findCallNearDelta(calls, 0.30, bcsLong?.strike);
-  if (bcsLong && bcsShort) {
-    const netDebit = (bcsLong._mid - bcsShort._mid) * 100;
-    const spreadWidth = (bcsShort.strike - bcsLong.strike) * 100;
-    const maxProfit = spreadWidth - netDebit;
-    const breakEven = bcsLong.strike + netDebit / 100;
-    const netDelta = bcsLong._delta - bcsShort._delta;
-    const rr = maxProfit > 0 ? (netDebit / maxProfit).toFixed(1) + ':1' : '--';
-    updateTab('bull-call', {
-      legs: [
-        { action:'Buy', qty:1, type:'Call', strike:bcsLong.strike, exp:expLabel, delta:bcsLong._delta, bid:bcsLong.bid, ask:bcsLong.ask, mid:bcsLong._mid },
-        { action:'Sell', qty:1, type:'Call', strike:bcsShort.strike, exp:expLabel, delta:bcsShort._delta, bid:bcsShort.bid, ask:bcsShort.ask, mid:bcsShort._mid },
-      ],
-      cards: [
-        { label:'Net Debit / Max Loss', value:fmtInt$(netDebit), sub:'Premium paid', valColor:'#ef4444', glow:'rgba(239,68,68,0.5)' },
-        { label:'Max Profit', value:fmtInt$(maxProfit), sub:'Spread width – net debit', valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
-        { label:'Break-Even', value:fmt$(breakEven), sub:'Long strike + net debit', valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
-        { label:'Net Delta', value:'+' + netDelta.toFixed(2), sub:'Long Δ – short Δ' },
-        { label:'Risk / Reward', value:rr, sub:'Max loss : max profit' },
-      ],
-      notes: [
-        `<span class="hl">Max profit ${fmtInt$(maxProfit)}</span> achieved when stock closes at or above $${bcsShort.strike} at expiration.`,
-        `<span class="hl">Max loss ${fmtInt$(netDebit)}</span> = net debit paid, if stock closes below $${bcsLong.strike}.`,
-        `<span class="hl">Break-even ${fmt$(breakEven)}</span> = long strike + net debit per share.`,
-        `<span class="hl">Time decay:</span> Works against you (net long premium). Best entered 30–45 DTE.`,
-      ],
-      payoff: {
-        legs: [
-          { type:'call', strike:bcsLong.strike, qty:1, premium:bcsLong._mid, iv:bcsLong.impliedVolatility||0.3, T:bcsLong._T },
-          { type:'call', strike:bcsShort.strike, qty:-1, premium:bcsShort._mid, iv:bcsShort.impliedVolatility||0.3, T:bcsShort._T },
-        ],
-        config: { minPrice: price*0.85, maxPrice: price*1.2, breakEven, maxLoss: netDebit, maxProfit }
-      }
-    });
-  }
+  // ── BULL CALL SPREAD: ~0.55Δ long / ~0.30Δ short ──
+  populateStrikeSelect('sel-bull-call-long', calls, 0.35, 0.75, 0.55, price);
+  populateStrikeSelect('sel-bull-call-short', calls, 0.15, 0.50, 0.30, price);
+  document.getElementById('leg-sel-bull-call').classList.add('visible');
+  rebuildBullCall();
 
-  // ── PMCC: Buy 1 LEAPS @ ~0.75Δ, Sell 1 @ ~0.30Δ ──
-  const pmccLong = findCallNearDelta(calls, 0.75);
-  const pmccShort = findCallNearDelta(calls, 0.30, pmccLong?.strike);
-  if (pmccLong && pmccShort) {
-    const leapsCost = pmccLong._mid * 100;
-    const credit = pmccShort._mid * 100;
-    const netDebit = leapsCost - credit;
-    const maxProfit = (pmccShort.strike - pmccLong.strike) * 100 - netDebit;
-    const breakEven = pmccLong.strike + netDebit / 100;
-    const netDelta = pmccLong._delta - pmccShort._delta;
-    const dte = Math.round((expTs * 1000 - Date.now()) / 86400000);
-    updateTab('pmcc', {
-      legs: [
-        { action:'Buy', qty:1, type:'LEAPS Call', strike:pmccLong.strike, exp:expLabel, delta:pmccLong._delta, bid:pmccLong.bid, ask:pmccLong.ask, mid:pmccLong._mid },
-        { action:'Sell', qty:1, type:'Call', strike:pmccShort.strike, exp:expLabel, delta:pmccShort._delta, bid:pmccShort.bid, ask:pmccShort.ask, mid:pmccShort._mid },
-      ],
-      cards: [
-        { label:'LEAPS Cost', value:fmtInt$(leapsCost), sub:`Deep ITM, ${(pmccLong._delta*100).toFixed(0)}Δ` },
-        { label:'Premium Collected', value:fmtInt$(credit), sub:'Short call credit', valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
-        { label:'Net Debit / Max Loss', value:fmtInt$(netDebit), sub:'LEAPS cost – credits', valColor:'#ef4444', glow:'rgba(239,68,68,0.5)' },
-        { label:'Net Delta', value:'+' + netDelta.toFixed(2), sub:'Long Δ – short Δ' },
-        { label:'Break-Even', value:fmt$(breakEven), sub:'LEAPS strike + net debit', valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
-        { label:'DTE', value:dte + 'd', sub:'Days to expiration' },
-      ],
-      notes: [
-        `<span class="hl">Max profit ${fmtInt$(maxProfit)}</span> = short strike – LEAPS strike – net debit.`,
-        `<span class="hl">Max loss ≈ ${fmtInt$(netDebit)}</span> net debit on the LEAPS (minus short call credits over time).`,
-        `<span class="hl">Rolling the short call:</span> After expiration, sell a new 30–45 DTE OTM call — this is the income engine.`,
-        `<span class="hl">Risk if called away:</span> Roll the short call up/out or close both legs for a profit.`,
-      ],
-      payoff: {
-        legs: [
-          { type:'call', strike:pmccLong.strike, qty:1, premium:pmccLong._mid, iv:pmccLong.impliedVolatility||0.3, T:pmccLong._T },
-          { type:'call', strike:pmccShort.strike, qty:-1, premium:pmccShort._mid, iv:pmccShort.impliedVolatility||0.3, T:pmccShort._T },
-        ],
-        config: { minPrice: price*0.75, maxPrice: price*1.25, breakEven, maxLoss: netDebit, maxProfit }
-      }
-    });
-  }
+  // ── PMCC: ~0.75Δ LEAPS / ~0.30Δ short ──
+  populateStrikeSelect('sel-pmcc-long', calls, 0.60, 0.95, 0.75, price);
+  populateStrikeSelect('sel-pmcc-short', calls, 0.15, 0.50, 0.30, price);
+  document.getElementById('leg-sel-pmcc').classList.add('visible');
+  rebuildPmcc();
 
-  // ── CALL DEBIT SPREAD: Buy 1 @ ~0.65Δ, Sell 1 @ ~0.40Δ ──
-  const cdsLong = findCallNearDelta(calls, 0.65);
-  const cdsShort = findCallNearDelta(calls, 0.40, cdsLong?.strike);
-  if (cdsLong && cdsShort) {
-    const netDebit = (cdsLong._mid - cdsShort._mid) * 100;
-    const spreadWidth = (cdsShort.strike - cdsLong.strike) * 100;
-    const maxProfit = spreadWidth - netDebit;
-    const breakEven = cdsLong.strike + netDebit / 100;
-    const netDelta = cdsLong._delta - cdsShort._delta;
-    const rr = maxProfit > 0 ? (netDebit / maxProfit).toFixed(1) + ':1' : '--';
-    updateTab('debit-spread', {
-      legs: [
-        { action:'Buy', qty:1, type:'Call', strike:cdsLong.strike, exp:expLabel, delta:cdsLong._delta, bid:cdsLong.bid, ask:cdsLong.ask, mid:cdsLong._mid },
-        { action:'Sell', qty:1, type:'Call', strike:cdsShort.strike, exp:expLabel, delta:cdsShort._delta, bid:cdsShort.bid, ask:cdsShort.ask, mid:cdsShort._mid },
-      ],
-      cards: [
-        { label:'Net Debit / Max Loss', value:fmtInt$(netDebit), sub:'Premium paid', valColor:'#ef4444', glow:'rgba(239,68,68,0.5)' },
-        { label:'Max Profit', value:fmtInt$(maxProfit), sub:'Spread width – debit', valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
-        { label:'Break-Even', value:fmt$(breakEven), sub:'Long strike + net debit', valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
-        { label:'Net Delta', value:'+' + netDelta.toFixed(2), sub:'Long Δ – short Δ' },
-        { label:'Risk / Reward', value:rr, sub:'Max loss : max profit' },
-      ],
-      notes: [
-        `<span class="hl">Max profit ${fmtInt$(maxProfit)}</span> = spread width – net debit. Stock at or above $${cdsShort.strike} at expiration.`,
-        `<span class="hl">Max loss ${fmtInt$(netDebit)}</span> = net debit, if below $${cdsLong.strike}.`,
-        `<span class="hl">Higher probability</span> than a bull call spread — ITM long leg starts with intrinsic value.`,
-        `<span class="hl">Trade-off:</span> Higher debit upfront, but closer to profitable from the start.`,
-      ],
-      payoff: {
-        legs: [
-          { type:'call', strike:cdsLong.strike, qty:1, premium:cdsLong._mid, iv:cdsLong.impliedVolatility||0.3, T:cdsLong._T },
-          { type:'call', strike:cdsShort.strike, qty:-1, premium:cdsShort._mid, iv:cdsShort.impliedVolatility||0.3, T:cdsShort._T },
-        ],
-        config: { minPrice: price*0.85, maxPrice: price*1.2, breakEven, maxLoss: netDebit, maxProfit }
-      }
-    });
-  }
+  // ── CALL DEBIT SPREAD: ~0.65Δ long / ~0.40Δ short ──
+  populateStrikeSelect('sel-debit-spread-long', calls, 0.45, 0.85, 0.65, price);
+  populateStrikeSelect('sel-debit-spread-short', calls, 0.20, 0.60, 0.40, price);
+  document.getElementById('leg-sel-debit-spread').classList.add('visible');
+  rebuildDebitSpread();
 
   drawAllPayoffs();
 }
@@ -1106,6 +1215,16 @@ tickerIn.addEventListener('keydown', (e) => {
 });
 
 expSelect.addEventListener('change', loadExpiration);
+
+// ── Leg selector change handlers ──
+document.getElementById('sel-zebra-long').addEventListener('change', rebuildZebra);
+document.getElementById('sel-zebra-short').addEventListener('change', rebuildZebra);
+document.getElementById('sel-bull-call-long').addEventListener('change', rebuildBullCall);
+document.getElementById('sel-bull-call-short').addEventListener('change', rebuildBullCall);
+document.getElementById('sel-pmcc-long').addEventListener('change', rebuildPmcc);
+document.getElementById('sel-pmcc-short').addEventListener('change', rebuildPmcc);
+document.getElementById('sel-debit-spread-long').addEventListener('change', rebuildDebitSpread);
+document.getElementById('sel-debit-spread-short').addEventListener('change', rebuildDebitSpread);
 </script>
 </body>
 </html>
