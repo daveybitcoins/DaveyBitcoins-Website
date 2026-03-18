@@ -204,6 +204,7 @@
         .tile-btc { --tile-glow: #f97316; --tile-shadow: rgba(249, 115, 22, 0.08); }
         .tile-spy { --tile-glow: #2563eb; --tile-shadow: rgba(37, 99, 235, 0.08); }
         .tile-qqq { --tile-glow: #a855f7; --tile-shadow: rgba(168, 85, 247, 0.08); }
+        .tile-options { --tile-glow: #10b981; --tile-shadow: rgba(16, 185, 129, 0.08); }
 
         /* Live page preview via scaled iframe */
         .tile-preview {
@@ -271,6 +272,12 @@
             background: rgba(168, 85, 247, 0.15);
             color: #a855f7;
             border: 1px solid rgba(168, 85, 247, 0.25);
+        }
+
+        .tag-options {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.25);
         }
 
         .tag-live::before {
@@ -374,6 +381,15 @@
                 </div>
                 <div class="tile-name">QQQ Risk Metric</div>
                 <div class="tile-desc">Log-linear regression with structural risk scoring for the Nasdaq-100. Interactive charts and forward returns by risk decile.</div>
+                <div class="tile-arrow">Explore &rarr;</div>
+            </a>
+            <a href="options-strategies.html" class="tile tile-options">
+                <div class="tile-preview"><iframe src="options-strategies.html" loading="lazy" title="Options Strategies Preview"></iframe></div>
+                <div class="tile-header">
+                    <span class="tile-tag tag-options">Strategies</span>
+                </div>
+                <div class="tile-name">Options Strategies</div>
+                <div class="tile-desc">Bullish options playbook: ZEBRA, Bull Call Spread, PMCC, and Call Debit Spreads. Trade templates with interactive payoff diagrams.</div>
                 <div class="tile-arrow">Explore &rarr;</div>
             </a>
             <a href="risk-metric.html" class="tile tile-btc">
