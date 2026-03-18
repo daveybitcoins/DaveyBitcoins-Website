@@ -1217,9 +1217,9 @@ function buildAllStrategies(chain, expTs) {
 const strategyPayoffs = {}; // { tabId: { legs, config } }
 
 function updateTab(tabId, data) {
-  // Legs table
+  // Legs table (optional — Wheel tab has no legs table)
   const tbody = document.getElementById('legs-' + tabId);
-  tbody.innerHTML = data.legs.map(l => {
+  if (tbody) tbody.innerHTML = data.legs.map(l => {
     const cls = l.action === 'Buy' ? 'buy-row' : 'sell-row';
     return `<tr class="${cls}">
       <td>${l.action}</td><td class="mono">${l.qty}</td><td>${l.type}</td>
