@@ -117,6 +117,7 @@ def parse_csv(filepath):
                 chg_1d = float(row.get("Price Change % 1 day", 0) or 0)
                 chg_1w = float(row.get("Change from Open % 1 week", 0) or 0)
                 chg_1m = float(row.get("Performance % 1 month", 0) or 0)
+                chg_ytd = float(row.get("Performance % YTD", 0) or 0)
                 rel_vol = float(row.get("Relative Volume 1 day", 0) or 0)
 
                 # Forward P/E: price / (4 * next quarter EPS forecast)
@@ -157,6 +158,7 @@ def parse_csv(filepath):
                     "chg_1d": round(chg_1d, 2),
                     "chg_1w": round(chg_1w, 2),
                     "chg_1m": round(chg_1m, 2),
+                    "chg_ytd": round(chg_ytd, 2),
                     "rel_vol": round(rel_vol, 2),
                     "signal": signal,
                     "price_vs_8w": price_vs_8w,
@@ -240,6 +242,31 @@ def build_momentum_leaders(stocks):
 def build_bear_list(stocks):
     full_bear = [s for s in stocks if s["signal"] == "Full Bear"]
     return sorted(full_bear, key=lambda s: s["price_vs_8w"])
+
+
+def build_outperformers(stocks, index_context):
+    """Find stocks outperforming SPY on both 1W and YTD basis."""
+    spy = next((s for s in index_context if s["symbol"] == "SPY"), None)
+    if not spy:
+        return []
+
+    spy_1w = spy.get("chg_1w", 0)
+    spy_ytd = spy.get("chg_ytd", 0)
+
+    outperformers = []
+    for s in stocks:
+        alpha_1w = round(s["chg_1w"] - spy_1w, 2)
+        alpha_ytd = round(s.get("chg_ytd", 0) - spy_ytd, 2)
+        if alpha_1w > 0 and alpha_ytd > 0:
+            outperformers.append({
+                **s,
+                "spy_1w": spy_1w,
+                "spy_ytd": spy_ytd,
+                "alpha_1w": alpha_1w,
+                "alpha_ytd": alpha_ytd,
+            })
+
+    return sorted(outperformers, key=lambda s: s["alpha_ytd"], reverse=True)
 
 
 def build_sector_heatmap(stocks):
@@ -375,6 +402,7 @@ def build_index_context():
             "chg_1d": s["chg_1d"],
             "chg_1w": s["chg_1w"],
             "chg_1m": s["chg_1m"],
+            "chg_ytd": s.get("chg_ytd", 0),
             "rel_vol": s.get("rel_vol", 0),
             "vol_quality": vol_quality,
             "crossover_alert": "; ".join(alert_parts) if alert_parts else None,
@@ -714,6 +742,7 @@ def main():
         "pullbacks": build_pullbacks(stocks),
         "momentum_leaders": build_momentum_leaders(stocks),
         "bear_list": build_bear_list(stocks),
+        "outperformers": build_outperformers(stocks, index_context),
         "sector_heatmap": build_sector_heatmap(stocks),
         "crossover_alerts": build_crossover_alerts(stocks),
     }
@@ -734,6 +763,7 @@ def main():
     print(f"  Pullbacks: {len(output['pullbacks'])} setups")
     print(f"  Momentum Leaders: {len(output['momentum_leaders'])} stocks")
     print(f"  Bear List: {len(output['bear_list'])} stocks")
+    print(f"  Outperformers: {len(output['outperformers'])} stocks beating SPY")
     print(f"  Sector Heatmap: {len(output['sector_heatmap'])} sectors")
     print(f"  Crossover Alerts: {len(output['crossover_alerts'])} alerts")
 

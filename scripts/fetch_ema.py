@@ -46,6 +46,7 @@ API_FIELDS = [
     "EMA21|1W",             # Exponential Moving Average (21) 1 week
     "change_from_open|1W",  # Change from Open % 1 week
     "Perf.1M",              # Performance % 1 month
+    "Perf.YTD",             # Performance % Year-to-Date
     "price_earnings_ttm",   # Trailing P/E ratio
     "earnings_per_share_forecast_next_fq",  # Next quarter EPS forecast
 ]
@@ -67,6 +68,7 @@ CSV_COLUMNS = [
     "Exponential Moving Average (21) 1 week",
     "Change from Open % 1 week",
     "Performance % 1 month",
+    "Performance % YTD",
     "PE Ratio TTM",
     "EPS Forecast Next Qtr",
 ]
@@ -148,6 +150,7 @@ def build_csv_rows(df):
             "Exponential Moving Average (21) 1 week": ema21,
             "Change from Open % 1 week": row.get("change_from_open|1W", 0) or 0,
             "Performance % 1 month": row.get("Perf.1M", 0) or 0,
+            "Performance % YTD": row.get("Perf.YTD", 0) or 0,
             "PE Ratio TTM": row.get("price_earnings_ttm", "") or "",
             "EPS Forecast Next Qtr": row.get("earnings_per_share_forecast_next_fq", "") or "",
         }

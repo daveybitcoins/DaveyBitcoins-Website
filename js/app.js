@@ -174,6 +174,7 @@
         renderPullbacks();
         renderMomentum();
         renderBears();
+        renderOutperformers();
         renderSectors();
         renderCrossovers();
     }
@@ -1239,6 +1240,83 @@
         registerTab("bears", data, "bears-table", renderRow);
         makeSortable(document.getElementById("bears-table"), data, "bears", renderRow, headers);
         setupToolbar("bears");
+    }
+
+    // === OUTPERFORMERS ===
+    function renderOutperformers() {
+        const el = document.getElementById("tab-outperformers");
+        const data = DATA.outperformers || [];
+
+        if (!data.length) {
+            el.innerHTML = `<div class="card"><h2>Outperformers</h2><p>No outperformer data available. Ensure the data pipeline includes YTD performance.</p></div>`;
+            return;
+        }
+
+        const spy1w = data[0].spy_1w;
+        const spyYtd = data[0].spy_ytd;
+
+        const headers = [
+            { label: "#", key: "_index" },
+            { label: "Symbol", key: "symbol" },
+            { label: "Name", key: "name" },
+            { label: "Sector", key: "sector", filter: true },
+            { label: "Price", key: "price" },
+            { label: "Signal", key: "signal", filter: true },
+            { label: "1W Chg%", key: "chg_1w" },
+            { label: "SPY 1W%", key: "spy_1w" },
+            { label: "1W Alpha", key: "alpha_1w" },
+            { label: "YTD Chg%", key: "chg_ytd" },
+            { label: "SPY YTD%", key: "spy_ytd" },
+            { label: "YTD Alpha", key: "alpha_ytd" },
+        ];
+
+        const renderRow = (s, i) => `
+            <tr>
+                <td class="num">${(i != null ? i : data.indexOf(s)) + 1}</td>
+                <td><strong>${s.symbol}</strong></td>
+                <td class="name-cell" title="${s.name}">${s.name}</td>
+                <td>${s.sector}</td>
+                <td class="num">${fmtPrice(s.price)}</td>
+                <td>${signalBadge(s.signal)}</td>
+                ${pctCell(s.chg_1w)}
+                <td class="num" style="color:var(--text-dim)">${fmt(spy1w)}%</td>
+                <td class="num" style="color:var(--green);font-weight:600">+${fmt(s.alpha_1w)}%</td>
+                ${pctCell(s.chg_ytd)}
+                <td class="num" style="color:var(--text-dim)">${fmt(spyYtd)}%</td>
+                <td class="num" style="color:var(--green);font-weight:600">+${fmt(s.alpha_ytd)}%</td>
+            </tr>`;
+
+        // Summary stats
+        const avgAlpha1w = data.reduce((a, s) => a + s.alpha_1w, 0) / data.length;
+        const avgAlphaYtd = data.reduce((a, s) => a + s.alpha_ytd, 0) / data.length;
+        const topYtd = data.slice(0, 5).map(s => s.symbol).join(", ");
+
+        el.innerHTML = `
+            <div class="card">
+                <h2>Outperformers: Beating SPY on 1W & YTD</h2>
+                <p>Stocks outperforming SPY on both weekly and year-to-date basis. Alpha = stock return minus SPY return.</p>
+                <div class="stat-row" style="margin-top:12px">
+                    <div class="stat-box"><div class="stat-val">${data.length}</div><div class="stat-label">Stocks</div></div>
+                    <div class="stat-box"><div class="stat-val" style="color:var(--green)">+${avgAlpha1w.toFixed(2)}%</div><div class="stat-label">Avg 1W Alpha</div></div>
+                    <div class="stat-box"><div class="stat-val" style="color:var(--green)">+${avgAlphaYtd.toFixed(2)}%</div><div class="stat-label">Avg YTD Alpha</div></div>
+                </div>
+                <div style="margin-top:8px;font-size:0.75rem;color:var(--text-dim)">Top YTD: <strong>${topYtd}</strong> &middot; SPY 1W: ${fmt(spy1w)}% &middot; SPY YTD: ${fmt(spyYtd)}%</div>
+            </div>
+            <div class="card">
+                <h3>${data.length} Outperformers</h3>
+                ${buildToolbar("outperformers", data, headers)}
+                <div class="table-wrap">
+                    <table id="outperformers-table">
+                        <thead><tr>${headers.map((h) => `<th>${h.label}</th>`).join("")}</tr></thead>
+                        <tbody>${data.map(renderRow).join("")}</tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+
+        registerTab("outperformers", data, "outperformers-table", renderRow);
+        makeSortable(document.getElementById("outperformers-table"), data, "outperformers", renderRow, headers);
+        setupToolbar("outperformers");
     }
 
     // === SECTOR HEATMAP ===
