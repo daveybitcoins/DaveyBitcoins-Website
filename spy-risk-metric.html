@@ -135,7 +135,8 @@
   .pe-proj-table td{font-size:0.75rem;padding:10px 12px;border-bottom:1px solid var(--border-light);color:var(--text);text-align:center;font-family:'JetBrains Mono',monospace}
   .pe-proj-table td:first-child{text-align:left;font-weight:600;color:var(--text-heading)}
   .pe-proj-table tr:last-child td{border-bottom:none}
-  .pe-proj-table .pe-highlight{background:rgba(74,170,255,0.08);font-weight:600;color:var(--text-heading)}
+  .pe-proj-table .pe-highlight{background:rgba(74,170,255,0.13);font-weight:600;color:#4aabff;border-left:2px solid rgba(74,170,255,0.4);border-right:2px solid rgba(74,170,255,0.4)}
+  .pe-proj-table thead .pe-highlight{background:rgba(74,170,255,0.18);color:#4aabff;border-bottom:2px solid #4aabff}
   .pe-proj-table .pe-eps{font-size:0.6rem;color:var(--text-dim);font-weight:400}
   @media(max-width:600px){.pe-proj-table th,.pe-proj-table td{padding:6px 6px;font-size:0.62rem}}
 
@@ -514,10 +515,11 @@ async function main() {
     const epsMap = {};
     years.forEach(y => { epsMap[y] = baseEPS2025 * Math.pow(1 + epsGrowth, y - baseYear); });
 
-    // Build header
+    // Build header (highlight the column matching current rounded P/E)
     const thead = document.getElementById('peProjHead');
+    const currentPE = Math.round(spxEstimate / epsMap[2026]);
     let hRow = '<tr><th>Year</th>';
-    peMultiples.forEach(pe => { hRow += '<th>' + pe + '×</th>'; });
+    peMultiples.forEach(pe => { hRow += '<th' + (pe === currentPE ? ' class="pe-highlight"' : '') + '>' + pe + '×</th>'; });
     hRow += '</tr>';
     thead.innerHTML = hRow;
 
@@ -525,7 +527,6 @@ async function main() {
     const tbody = document.getElementById('peProjBody');
     tbody.innerHTML = '';
     const allYears = years;
-    const currentPE = Math.round(spxEstimate / epsMap[2026]);
 
     allYears.forEach(y => {
       const eps = epsMap[y];
