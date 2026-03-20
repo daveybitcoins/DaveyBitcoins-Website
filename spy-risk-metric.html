@@ -517,7 +517,7 @@ async function main() {
 
     // Build header (highlight the column matching current rounded P/E)
     const thead = document.getElementById('peProjHead');
-    const currentPE = Math.round(spxEstimate / epsMap[2026]);
+    const currentPE = Math.round(spxEstimate / fwdEPS2026);
     let hRow = '<tr><th>Year</th>';
     peMultiples.forEach(pe => { hRow += '<th' + (pe === currentPE ? ' class="pe-highlight"' : '') + '>' + pe + '×</th>'; });
     hRow += '</tr>';
