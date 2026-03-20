@@ -1264,10 +1264,10 @@
             { label: "Signal", key: "signal", filter: true },
             { label: "1W Chg%", key: "chg_1w" },
             { label: "SPY 1W%", key: "spy_1w" },
-            { label: "1W Alpha", key: "alpha_1w" },
+            { label: "1W Rel to SPY", key: "alpha_1w" },
             { label: "YTD Chg%", key: "chg_ytd" },
             { label: "SPY YTD%", key: "spy_ytd" },
-            { label: "YTD Alpha", key: "alpha_ytd" },
+            { label: "YTD Rel to SPY", key: "alpha_ytd" },
         ];
 
         const renderRow = (s, i) => `
@@ -1279,10 +1279,10 @@
                 <td class="num">${fmtPrice(s.price)}</td>
                 <td>${signalBadge(s.signal)}</td>
                 ${pctCell(s.chg_1w)}
-                <td class="num" style="color:var(--text-dim)">${fmt(spy1w)}%</td>
+                <td class="num" style="color:#fff;font-weight:600">${fmt(spy1w)}%</td>
                 <td class="num" style="color:var(--green);font-weight:600">+${fmt(s.alpha_1w)}%</td>
                 ${pctCell(s.chg_ytd)}
-                <td class="num" style="color:var(--text-dim)">${fmt(spyYtd)}%</td>
+                <td class="num" style="color:#fff;font-weight:600">${fmt(spyYtd)}%</td>
                 <td class="num" style="color:var(--green);font-weight:600">+${fmt(s.alpha_ytd)}%</td>
             </tr>`;
 
