@@ -531,6 +531,8 @@ main {
 /* === TABLES === */
 .table-wrap {
     overflow-x: auto;
+    overflow-y: auto;
+    max-height: 75vh;
     -webkit-overflow-scrolling: touch;
     border-radius: 6px;
     border: 1px solid var(--border);
@@ -562,7 +564,11 @@ table {
     white-space: nowrap;
 }
 
-thead {}
+thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
 
 th {
     background: var(--th-bg);
