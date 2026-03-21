@@ -1067,7 +1067,7 @@
             if (fr && fr.length > 0) {
                 const frRows = fr.map(ind => {
                     const dirColor = ind.direction === "oversold" ? "var(--green)" : "var(--red)";
-                    const dirLabel = ind.direction === "oversold" ? "Oversold" : "Overbought";
+                    const dirLabel = ind.zone || (ind.direction === "oversold" ? "Oversold" : "Overbought");
                     const actionWord = ind.direction === "oversold" ? "higher" : "lower";
                     return ind.horizons.map((h, i) => {
                         const chgColor = h.avg_change > 0 ? "var(--green)" : "var(--red)";

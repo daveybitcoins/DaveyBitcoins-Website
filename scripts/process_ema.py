@@ -417,7 +417,9 @@ def _compute_breadth_stats(history, current):
         composite_zone = "Extreme Overbought"
 
     # Forward-return analysis: what historically happens after readings this low/high
-    forward_analysis = _compute_forward_returns(history, current, fields)
+    # Pass the computed indicator zones so forward returns uses the same classification
+    indicator_zones = {ind["field"]: ind["zone"] for ind in indicators}
+    forward_analysis = _compute_forward_returns(history, current, fields, indicator_zones)
 
     return {
         "indicators": indicators,
@@ -428,12 +430,12 @@ def _compute_breadth_stats(history, current):
     }
 
 
-def _compute_forward_returns(history, current, fields):
+def _compute_forward_returns(history, current, fields, indicator_zones):
     """Compute what historically happens N days after breadth hits current levels.
 
-    For each indicator, find all historical instances where the reading was at or
-    below the current level (if oversold) or at/above (if overbought), then measure
-    the breadth reading 5/10/20/60 days later.
+    Uses the same zone classification from the stats table (percentile-based)
+    to determine direction. Only shows forward returns for indicators that are
+    actually in an oversold or overbought zone — skips Neutral indicators.
     """
     labels = {
         "above_5d": "% > 5D MA",
@@ -445,20 +447,25 @@ def _compute_forward_returns(history, current, fields):
     results = []
 
     for field in fields:
+        zone = indicator_zones.get(field, "Neutral")
+
+        # Determine direction from the zone classification (same as stats table)
+        if zone in ("Extreme Oversold", "Oversold"):
+            is_low = True
+            direction = "oversold"
+        elif zone in ("Extreme Overbought", "Overbought"):
+            is_low = False
+            direction = "overbought"
+        else:
+            # Neutral — skip this indicator, no signal
+            continue
+
         # Build ordered list of (index, value) for valid data points
         valid = [(i, h[field]) for i, h in enumerate(history) if h.get(field, 0) > 0]
         if len(valid) < 100:
             continue
 
         cur = current[field]
-        all_vals = sorted([v for _, v in valid])
-        n = len(all_vals)
-        median = all_vals[n // 2]
-
-        # Determine if current reading is below or above median
-        is_low = cur <= median
-
-        # Find threshold: use current value as the threshold
         threshold = cur
 
         # Collect forward observations
@@ -472,48 +479,40 @@ def _compute_forward_returns(history, current, fields):
                     if target_idx < len(history) and target_idx in valid_indices:
                         future_val = history[target_idx][field]
                         if future_val > 0:
-                            forward[h].append({
-                                "start": val,
-                                "end": future_val,
-                                "change": future_val - val,
-                            })
+                            forward[h].append(future_val - val)
             elif not is_low and val >= threshold:
                 for h in horizons:
                     target_idx = idx + h
                     if target_idx < len(history) and target_idx in valid_indices:
                         future_val = history[target_idx][field]
                         if future_val > 0:
-                            forward[h].append({
-                                "start": val,
-                                "end": future_val,
-                                "change": future_val - val,
-                            })
+                            forward[h].append(future_val - val)
 
         # Summarize
         horizon_stats = []
         for h in horizons:
-            obs = forward[h]
-            if not obs:
+            changes = forward[h]
+            if not changes:
                 continue
-            changes = [o["change"] for o in obs]
             if is_low:
-                pct_higher = round(sum(1 for c in changes if c > 0) / len(changes) * 100, 0)
+                pct_revert = round(sum(1 for c in changes if c > 0) / len(changes) * 100, 0)
             else:
-                pct_higher = round(sum(1 for c in changes if c < 0) / len(changes) * 100, 0)
+                pct_revert = round(sum(1 for c in changes if c < 0) / len(changes) * 100, 0)
 
             horizon_stats.append({
                 "days": h,
-                "occurrences": len(obs),
+                "occurrences": len(changes),
                 "avg_change": round(sum(changes) / len(changes), 1),
                 "median_change": round(sorted(changes)[len(changes) // 2], 1),
-                "pct_revert": pct_higher,  # % that moved back toward median
+                "pct_revert": pct_revert,
             })
 
         results.append({
             "field": field,
             "label": labels[field],
             "current": cur,
-            "direction": "oversold" if is_low else "overbought",
+            "direction": direction,
+            "zone": zone,
             "threshold": round(threshold, 1),
             "horizons": horizon_stats,
         })
