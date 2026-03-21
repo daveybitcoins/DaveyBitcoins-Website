@@ -57,5 +57,5 @@ jobs:
           git add -f csv/ data/scanner_data.json ema-scanner.html
           git diff --cached --quiet && echo "No changes" && exit 0
           git commit -m "Update EMA scanner data $(date -u +'%Y-%m-%d %H:%M')"
-          git pull --rebase
+          git pull --rebase --autostash
           git push
