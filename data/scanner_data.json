@@ -2,7 +2,7 @@
   "meta": {
     "date": "2026-03-21",
     "total_stocks": 300,
-    "generated_at": "2026-03-21T04:13:21.445353",
+    "generated_at": "2026-03-21T00:32:17.542457",
     "index_etfs": [
       "SPY",
       "QQQ",
@@ -75,7 +75,7 @@
       "risk_combo": 0.208,
       "risk_mm": 0.349,
       "risk_zs": 0.124,
-      "fair_value": 129687.77,
+      "fair_value": 129683.31,
       "dev_pct": -45.6,
       "zone": "Accumulate",
       "zone_color": "#2563eb"
@@ -24822,7 +24822,8 @@
           "p10": 20.4,
           "p20": 32.1,
           "p80": 74.8,
-          "p90": 82.2
+          "p90": 82.2,
+          "data_points": 2317
         },
         {
           "field": "above_20d",
@@ -24837,7 +24838,8 @@
           "p10": 20.4,
           "p20": 34.3,
           "p80": 76.6,
-          "p90": 82.8
+          "p90": 82.8,
+          "data_points": 4859
         },
         {
           "field": "above_50d",
@@ -24852,7 +24854,8 @@
           "p10": 25.1,
           "p20": 38.4,
           "p80": 76.2,
-          "p90": 82.2
+          "p90": 82.2,
+          "data_points": 4859
         },
         {
           "field": "above_200d",
@@ -24867,12 +24870,163 @@
           "p10": 29.9,
           "p20": 44.3,
           "p80": 79.3,
-          "p90": 86.9
+          "p90": 86.9,
+          "data_points": 4859
         }
       ],
       "composite_score": 14.8,
       "composite_zone": "Oversold",
-      "history_days": 4859
+      "history_days": 4859,
+      "forward_returns": [
+        {
+          "field": "above_5d",
+          "label": "% > 5D MA",
+          "current": 17.3,
+          "direction": "oversold",
+          "threshold": 17.3,
+          "horizons": [
+            {
+              "days": 5,
+              "occurrences": 185,
+              "avg_change": 47.0,
+              "median_change": 54.5,
+              "pct_revert": 93.0
+            },
+            {
+              "days": 10,
+              "occurrences": 183,
+              "avg_change": 44.1,
+              "median_change": 48.1,
+              "pct_revert": 93.0
+            },
+            {
+              "days": 20,
+              "occurrences": 184,
+              "avg_change": 47.0,
+              "median_change": 53.2,
+              "pct_revert": 95.0
+            },
+            {
+              "days": 60,
+              "occurrences": 183,
+              "avg_change": 46.2,
+              "median_change": 49.6,
+              "pct_revert": 98.0
+            }
+          ]
+        },
+        {
+          "field": "above_20d",
+          "label": "% > 20D MA",
+          "current": 17.3,
+          "direction": "oversold",
+          "threshold": 17.3,
+          "horizons": [
+            {
+              "days": 5,
+              "occurrences": 400,
+              "avg_change": 19.5,
+              "median_change": 14.6,
+              "pct_revert": 80.0
+            },
+            {
+              "days": 10,
+              "occurrences": 400,
+              "avg_change": 35.7,
+              "median_change": 34.5,
+              "pct_revert": 90.0
+            },
+            {
+              "days": 20,
+              "occurrences": 400,
+              "avg_change": 51.4,
+              "median_change": 57.9,
+              "pct_revert": 95.0
+            },
+            {
+              "days": 60,
+              "occurrences": 400,
+              "avg_change": 46.3,
+              "median_change": 46.8,
+              "pct_revert": 97.0
+            }
+          ]
+        },
+        {
+          "field": "above_50d",
+          "label": "% > 50D MA",
+          "current": 27.0,
+          "direction": "oversold",
+          "threshold": 27.0,
+          "horizons": [
+            {
+              "days": 5,
+              "occurrences": 551,
+              "avg_change": 7.6,
+              "median_change": 5.7,
+              "pct_revert": 69.0
+            },
+            {
+              "days": 10,
+              "occurrences": 551,
+              "avg_change": 15.1,
+              "median_change": 13.7,
+              "pct_revert": 79.0
+            },
+            {
+              "days": 20,
+              "occurrences": 551,
+              "avg_change": 29.6,
+              "median_change": 29.0,
+              "pct_revert": 89.0
+            },
+            {
+              "days": 60,
+              "occurrences": 551,
+              "avg_change": 42.1,
+              "median_change": 46.0,
+              "pct_revert": 91.0
+            }
+          ]
+        },
+        {
+          "field": "above_200d",
+          "label": "% > 200D MA",
+          "current": 53.9,
+          "direction": "oversold",
+          "threshold": 53.9,
+          "horizons": [
+            {
+              "days": 5,
+              "occurrences": 1528,
+              "avg_change": 1.3,
+              "median_change": 1.6,
+              "pct_revert": 60.0
+            },
+            {
+              "days": 10,
+              "occurrences": 1523,
+              "avg_change": 2.3,
+              "median_change": 2.8,
+              "pct_revert": 63.0
+            },
+            {
+              "days": 20,
+              "occurrences": 1523,
+              "avg_change": 4.3,
+              "median_change": 4.8,
+              "pct_revert": 63.0
+            },
+            {
+              "days": 60,
+              "occurrences": 1523,
+              "avg_change": 11.4,
+              "median_change": 12.9,
+              "pct_revert": 70.0
+            }
+          ]
+        }
+      ]
     }
   },
   "vix_context": {

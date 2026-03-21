@@ -394,6 +394,7 @@ def _compute_breadth_stats(history, current):
             "p20": round(p20, 1),
             "p80": round(p80, 1),
             "p90": round(p90, 1),
+            "data_points": n,
         })
 
     # Composite breadth score: average of percentile ranks (0-100)
@@ -415,12 +416,109 @@ def _compute_breadth_stats(history, current):
     else:
         composite_zone = "Extreme Overbought"
 
+    # Forward-return analysis: what historically happens after readings this low/high
+    forward_analysis = _compute_forward_returns(history, current, fields)
+
     return {
         "indicators": indicators,
         "composite_score": composite,
         "composite_zone": composite_zone,
         "history_days": len(history),
+        "forward_returns": forward_analysis,
     }
+
+
+def _compute_forward_returns(history, current, fields):
+    """Compute what historically happens N days after breadth hits current levels.
+
+    For each indicator, find all historical instances where the reading was at or
+    below the current level (if oversold) or at/above (if overbought), then measure
+    the breadth reading 5/10/20/60 days later.
+    """
+    labels = {
+        "above_5d": "% > 5D MA",
+        "above_20d": "% > 20D MA",
+        "above_50d": "% > 50D MA",
+        "above_200d": "% > 200D MA",
+    }
+    horizons = [5, 10, 20, 60]
+    results = []
+
+    for field in fields:
+        # Build ordered list of (index, value) for valid data points
+        valid = [(i, h[field]) for i, h in enumerate(history) if h.get(field, 0) > 0]
+        if len(valid) < 100:
+            continue
+
+        cur = current[field]
+        all_vals = sorted([v for _, v in valid])
+        n = len(all_vals)
+        median = all_vals[n // 2]
+
+        # Determine if current reading is below or above median
+        is_low = cur <= median
+
+        # Find threshold: use current value as the threshold
+        threshold = cur
+
+        # Collect forward observations
+        forward = {h: [] for h in horizons}
+        valid_indices = {idx for idx, _ in valid}
+
+        for idx, val in valid:
+            if is_low and val <= threshold:
+                for h in horizons:
+                    target_idx = idx + h
+                    if target_idx < len(history) and target_idx in valid_indices:
+                        future_val = history[target_idx][field]
+                        if future_val > 0:
+                            forward[h].append({
+                                "start": val,
+                                "end": future_val,
+                                "change": future_val - val,
+                            })
+            elif not is_low and val >= threshold:
+                for h in horizons:
+                    target_idx = idx + h
+                    if target_idx < len(history) and target_idx in valid_indices:
+                        future_val = history[target_idx][field]
+                        if future_val > 0:
+                            forward[h].append({
+                                "start": val,
+                                "end": future_val,
+                                "change": future_val - val,
+                            })
+
+        # Summarize
+        horizon_stats = []
+        for h in horizons:
+            obs = forward[h]
+            if not obs:
+                continue
+            changes = [o["change"] for o in obs]
+            if is_low:
+                pct_higher = round(sum(1 for c in changes if c > 0) / len(changes) * 100, 0)
+            else:
+                pct_higher = round(sum(1 for c in changes if c < 0) / len(changes) * 100, 0)
+
+            horizon_stats.append({
+                "days": h,
+                "occurrences": len(obs),
+                "avg_change": round(sum(changes) / len(changes), 1),
+                "median_change": round(sorted(changes)[len(changes) // 2], 1),
+                "pct_revert": pct_higher,  # % that moved back toward median
+            })
+
+        results.append({
+            "field": field,
+            "label": labels[field],
+            "current": cur,
+            "direction": "oversold" if is_low else "overbought",
+            "threshold": round(threshold, 1),
+            "horizons": horizon_stats,
+        })
+
+    return results
 
 
 def _append_breadth_history(data_date, current):

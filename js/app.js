@@ -1061,6 +1061,47 @@
                     <td class="num" style="color:var(--text-dim)">${ind.hist_min.toFixed(0)}%&ndash;${ind.hist_max.toFixed(0)}%</td>
                 </tr>`).join("");
 
+            // Forward-return analysis
+            let forwardHtml = "";
+            const fr = stats.forward_returns;
+            if (fr && fr.length > 0) {
+                const frRows = fr.map(ind => {
+                    const dirColor = ind.direction === "oversold" ? "var(--green)" : "var(--red)";
+                    const dirLabel = ind.direction === "oversold" ? "Oversold" : "Overbought";
+                    const actionWord = ind.direction === "oversold" ? "higher" : "lower";
+                    return ind.horizons.map((h, i) => {
+                        const chgColor = h.avg_change > 0 ? "var(--green)" : "var(--red)";
+                        const pctColor = h.pct_revert >= 80 ? "var(--green)" : h.pct_revert >= 60 ? "var(--yellow)" : "var(--text-dim)";
+                        return `<tr>
+                            ${i === 0 ? `<td rowspan="${ind.horizons.length}" style="vertical-align:middle;border-right:1px solid var(--border)"><strong>${ind.label}</strong><br><span style="font-size:0.7rem;color:${dirColor}">${ind.current.toFixed(1)}% (${dirLabel})</span></td>` : ""}
+                            <td class="num">+${h.days}d</td>
+                            <td class="num" style="color:${chgColor};font-weight:700">${h.avg_change > 0 ? "+" : ""}${h.avg_change.toFixed(1)}pp</td>
+                            <td class="num" style="color:${chgColor}">${h.median_change > 0 ? "+" : ""}${h.median_change.toFixed(1)}pp</td>
+                            <td class="num" style="color:${pctColor};font-weight:700">${h.pct_revert.toFixed(0)}%</td>
+                            <td class="num" style="color:var(--text-dim)">${h.occurrences}</td>
+                        </tr>`;
+                    }).join("");
+                }).join("");
+
+                forwardHtml = `
+                    <h3 style="margin-top:20px;margin-bottom:4px">Historical Forward Returns</h3>
+                    <p style="color:var(--text-dim);font-size:0.78rem;margin-bottom:10px">When breadth reached current levels or lower, what happened next? Based on all historical instances.</p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr>
+                                <th>Indicator</th>
+                                <th>Horizon</th>
+                                <th>Avg Change</th>
+                                <th>Median Change</th>
+                                <th>% Higher</th>
+                                <th>Observations</th>
+                            </tr></thead>
+                            <tbody>${frRows}</tbody>
+                        </table>
+                    </div>
+                `;
+            }
+
             statsHtml = `
                 <div style="margin-top:16px">
                     <div class="stats-row">
@@ -1095,6 +1136,7 @@
                         <tbody>${statsRows}</tbody>
                     </table>
                 </div>
+                ${forwardHtml}
             `;
         }
 
