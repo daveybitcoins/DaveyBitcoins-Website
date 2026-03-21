@@ -78,15 +78,25 @@ def parse_tradingview_csv(filepath):
         for row in reader:
             try:
                 raw_date = row[date_col].strip()
-                # Handle various date formats
-                for fmt in ["%Y-%m-%dT%H:%M:%S", "%Y-%m-%d", "%m/%d/%Y", "%d/%m/%Y"]:
-                    try:
-                        dt = datetime.strptime(raw_date[:19], fmt)
-                        break
-                    except ValueError:
+
+                # Try Unix timestamp first (TradingView exports seconds)
+                try:
+                    ts = float(raw_date)
+                    if ts > 1e9:  # looks like a Unix timestamp
+                        dt = datetime.utcfromtimestamp(ts)
+                    else:
+                        raise ValueError
+                except ValueError:
+                    # Try string date formats
+                    dt = None
+                    for fmt in ["%Y-%m-%dT%H:%M:%S", "%Y-%m-%d", "%m/%d/%Y", "%d/%m/%Y"]:
+                        try:
+                            dt = datetime.strptime(raw_date[:19], fmt)
+                            break
+                        except ValueError:
+                            continue
+                    if dt is None:
                         continue
-                else:
-                    continue
 
                 date_str = dt.strftime("%Y-%m-%d")
                 close_val = float(row[close_col])

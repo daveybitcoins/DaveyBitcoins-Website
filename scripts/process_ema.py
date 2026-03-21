@@ -334,7 +334,7 @@ def build_breadth_context(stocks, data_date):
     _append_breadth_history(data_date, current)
 
     # Load recent history for charting
-    history = _load_breadth_history(90)
+    history = _load_breadth_history()
 
     return {
         **current,
@@ -377,7 +377,7 @@ def _append_breadth_history(data_date, current):
         writer.writerows(rows)
 
 
-def _load_breadth_history(days=90):
+def _load_breadth_history(days=None):
     """Load last N days of breadth history for charting."""
     if not os.path.exists(BREADTH_HISTORY):
         return []
@@ -394,7 +394,7 @@ def _load_breadth_history(days=90):
                 "above_200d": float(row["above_200d"]),
             })
 
-    return rows[-days:]
+    return rows[-days:] if days else rows
 
 
 def build_sector_heatmap(stocks):

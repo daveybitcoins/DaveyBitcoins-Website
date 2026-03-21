@@ -252,6 +252,19 @@ header {
     border-bottom-color: var(--blue);
 }
 
+.breadth-range {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 4px 12px;
+    font-size: 0.72rem;
+    font-family: 'JetBrains Mono', monospace;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.breadth-range:hover { color: var(--text); border-color: var(--blue); }
+.breadth-range.active { color: var(--text); background: var(--blue); border-color: var(--blue); }
+
 /* === MAIN === */
 main {
     margin: 0 auto;

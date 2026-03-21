@@ -173,6 +173,7 @@
     function renderAll() {
         renderSummary();
         renderDashboard();
+        setupBreadthRangeButtons();
         requestAnimationFrame(drawBreadthChart);
         renderScanner();
         renderPullbacks();
@@ -1027,7 +1028,13 @@
 
         const history = bc.history || [];
         const chartHtml = history.length > 1
-            ? `<canvas id="breadth-chart" width="800" height="280" style="width:100%;height:280px;margin-top:12px"></canvas>`
+            ? `<div style="display:flex;gap:6px;margin-top:12px;margin-bottom:8px">
+                    <button class="breadth-range active" data-days="90">90D</button>
+                    <button class="breadth-range" data-days="365">1Y</button>
+                    <button class="breadth-range" data-days="1825">5Y</button>
+                    <button class="breadth-range" data-days="0">All</button>
+               </div>
+               <canvas id="breadth-chart" width="800" height="300" style="width:100%;height:300px"></canvas>`
             : `<p style="color:var(--text-dim);font-size:0.8rem;margin-top:12px">Historical chart will appear after multiple data runs.</p>`;
 
         // Sector breadth mini-table
@@ -1067,6 +1074,19 @@
         `;
     }
 
+    let breadthChartDays = 90;
+
+    function setupBreadthRangeButtons() {
+        document.querySelectorAll(".breadth-range").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".breadth-range").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                breadthChartDays = parseInt(btn.dataset.days) || 0;
+                drawBreadthChart();
+            });
+        });
+    }
+
     function drawBreadthChart() {
         const bc = DATA.breadth_context;
         if (!bc || !bc.history || bc.history.length < 2) return;
@@ -1087,7 +1107,8 @@
         const chartW = W - pad.left - pad.right;
         const chartH = H - pad.top - pad.bottom;
 
-        const history = bc.history;
+        const fullHistory = bc.history;
+        const history = breadthChartDays > 0 ? fullHistory.slice(-breadthChartDays) : fullHistory;
         const n = history.length;
 
         // Background
