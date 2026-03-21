@@ -47,6 +47,10 @@ API_FIELDS = [
     "change_from_open|1W",  # Change from Open % 1 week
     "Perf.1M",              # Performance % 1 month
     "Perf.YTD",             # Performance % Year-to-Date
+    "SMA5",                 # Simple Moving Average (5 days)
+    "SMA20",                # Simple Moving Average (20 days)
+    "SMA50",                # Simple Moving Average (50 days)
+    "SMA200",               # Simple Moving Average (200 days)
     "price_earnings_ttm",   # Trailing P/E ratio
     "earnings_per_share_forecast_next_fq",  # Next quarter EPS forecast
 ]
@@ -69,6 +73,10 @@ CSV_COLUMNS = [
     "Change from Open % 1 week",
     "Performance % 1 month",
     "Performance % YTD",
+    "SMA 5",
+    "SMA 20",
+    "SMA 50",
+    "SMA 200",
     "PE Ratio TTM",
     "EPS Forecast Next Qtr",
 ]
@@ -151,6 +159,10 @@ def build_csv_rows(df):
             "Change from Open % 1 week": row.get("change_from_open|1W", 0) or 0,
             "Performance % 1 month": row.get("Perf.1M", 0) or 0,
             "Performance % YTD": row.get("Perf.YTD", 0) or 0,
+            "SMA 5": row.get("SMA5", "") or "",
+            "SMA 20": row.get("SMA20", "") or "",
+            "SMA 50": row.get("SMA50", "") or "",
+            "SMA 200": row.get("SMA200", "") or "",
             "PE Ratio TTM": row.get("price_earnings_ttm", "") or "",
             "EPS Forecast Next Qtr": row.get("earnings_per_share_forecast_next_fq", "") or "",
         }

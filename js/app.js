@@ -164,6 +164,7 @@
                 window.scrollTo({ top: 0, behavior: "instant" });
                 syncURL();
                 requestAnimationFrame(sizeTableWraps);
+                if (btn.dataset.tab === "dashboard") requestAnimationFrame(drawBreadthChart);
             });
         });
     }
@@ -172,6 +173,7 @@
     function renderAll() {
         renderSummary();
         renderDashboard();
+        requestAnimationFrame(drawBreadthChart);
         renderScanner();
         renderPullbacks();
         renderMomentum();
@@ -951,6 +953,8 @@
                 </div>
             </div>
 
+            ${renderBreadthCard()}
+
             <div class="card">
                 <h2>Strategy Notes</h2>
                 <div class="notes-grid">
@@ -985,6 +989,208 @@
                 </div>
             </div>
         `;
+    }
+
+    // === MARKET BREADTH ===
+    function renderBreadthCard() {
+        const bc = DATA.breadth_context;
+        if (!bc) return "";
+
+        const indicators = [
+            { key: "above_5d", label: "Above 5D MA", shortLabel: "5D" },
+            { key: "above_20d", label: "Above 20D MA", shortLabel: "20D" },
+            { key: "above_50d", label: "Above 50D MA", shortLabel: "50D" },
+            { key: "above_200d", label: "Above 200D MA", shortLabel: "200D" },
+        ];
+
+        function breadthColor(val) {
+            if (val >= 70) return "var(--green)";
+            if (val >= 30) return "var(--yellow)";
+            return "var(--red)";
+        }
+
+        function breadthZone(val) {
+            if (val >= 70) return "Strong";
+            if (val >= 50) return "Healthy";
+            if (val >= 30) return "Mixed";
+            return "Weak";
+        }
+
+        const statBoxes = indicators.map(ind => {
+            const val = bc[ind.key];
+            return `<div class="stat-box">
+                <div class="value" style="color:${breadthColor(val)}">${val.toFixed(1)}%</div>
+                <div class="label">${ind.label}</div>
+                <div style="font-size:0.7rem;color:${breadthColor(val)};margin-top:2px">${breadthZone(val)}</div>
+            </div>`;
+        }).join("");
+
+        const history = bc.history || [];
+        const chartHtml = history.length > 1
+            ? `<canvas id="breadth-chart" width="800" height="280" style="width:100%;height:280px;margin-top:12px"></canvas>`
+            : `<p style="color:var(--text-dim);font-size:0.8rem;margin-top:12px">Historical chart will appear after multiple data runs.</p>`;
+
+        // Sector breadth mini-table
+        const sectorRows = (bc.by_sector || []).map(s => `
+            <tr>
+                <td>${s.sector}</td>
+                <td class="num">${s.count}</td>
+                <td class="num" style="color:${breadthColor(s.above_5d)}">${s.above_5d.toFixed(0)}%</td>
+                <td class="num" style="color:${breadthColor(s.above_20d)}">${s.above_20d.toFixed(0)}%</td>
+                <td class="num" style="color:${breadthColor(s.above_50d)}">${s.above_50d.toFixed(0)}%</td>
+                <td class="num" style="color:${breadthColor(s.above_200d)}">${s.above_200d.toFixed(0)}%</td>
+            </tr>`).join("");
+
+        return `
+            <div class="card">
+                <h2>Market Breadth — % Above Moving Averages</h2>
+                <p style="color:var(--text-dim);font-size:0.8rem">Computed from top ${bc.total_stocks} stocks by market cap. Equivalent to S5FD / S5TW / S5FI / S5TH.</p>
+                <div class="stats-row">${statBoxes}</div>
+                ${chartHtml}
+            </div>
+            <div class="card">
+                <h3>Breadth by Sector</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr>
+                            <th>Sector</th>
+                            <th>Stocks</th>
+                            <th>&gt; 5D</th>
+                            <th>&gt; 20D</th>
+                            <th>&gt; 50D</th>
+                            <th>&gt; 200D</th>
+                        </tr></thead>
+                        <tbody>${sectorRows}</tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    }
+
+    function drawBreadthChart() {
+        const bc = DATA.breadth_context;
+        if (!bc || !bc.history || bc.history.length < 2) return;
+
+        const canvas = document.getElementById("breadth-chart");
+        if (!canvas) return;
+
+        const ctx = canvas.getContext("2d");
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+
+        const W = rect.width;
+        const H = rect.height;
+        const pad = { top: 20, right: 20, bottom: 40, left: 45 };
+        const chartW = W - pad.left - pad.right;
+        const chartH = H - pad.top - pad.bottom;
+
+        const history = bc.history;
+        const n = history.length;
+
+        // Background
+        const isDark = !document.documentElement.getAttribute("data-theme") ||
+                       document.documentElement.getAttribute("data-theme") === "dark";
+        ctx.fillStyle = isDark ? "#0d1526" : "#f8f9fb";
+        ctx.fillRect(0, 0, W, H);
+
+        // Grid lines and zone shading
+        const gridColor = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
+        const textColor = isDark ? "#8a8e96" : "#6b7280";
+
+        // Zone backgrounds
+        ctx.globalAlpha = 0.08;
+        // Green zone > 70%
+        ctx.fillStyle = "#22c55e";
+        const y70 = pad.top + chartH * (1 - 70 / 100);
+        ctx.fillRect(pad.left, pad.top, chartW, y70 - pad.top);
+        // Red zone < 30%
+        ctx.fillStyle = "#ef4444";
+        const y30 = pad.top + chartH * (1 - 30 / 100);
+        ctx.fillRect(pad.left, y30, chartW, pad.top + chartH - y30);
+        ctx.globalAlpha = 1;
+
+        // Grid lines at 0, 10, 20, ..., 100
+        ctx.strokeStyle = gridColor;
+        ctx.lineWidth = 0.5;
+        ctx.font = "11px 'JetBrains Mono', monospace";
+        ctx.fillStyle = textColor;
+        ctx.textAlign = "right";
+        for (let pct = 0; pct <= 100; pct += 10) {
+            const y = pad.top + chartH * (1 - pct / 100);
+            ctx.beginPath();
+            ctx.moveTo(pad.left, y);
+            ctx.lineTo(pad.left + chartW, y);
+            ctx.stroke();
+            if (pct % 20 === 0) {
+                ctx.fillText(pct + "%", pad.left - 6, y + 4);
+            }
+        }
+
+        // Threshold lines at 30% and 70%
+        ctx.strokeStyle = isDark ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.2)";
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        [30, 70].forEach(pct => {
+            const y = pad.top + chartH * (1 - pct / 100);
+            ctx.beginPath();
+            ctx.moveTo(pad.left, y);
+            ctx.lineTo(pad.left + chartW, y);
+            ctx.stroke();
+        });
+        ctx.setLineDash([]);
+
+        // X-axis labels (show ~6 dates)
+        ctx.fillStyle = textColor;
+        ctx.textAlign = "center";
+        const step = Math.max(1, Math.floor(n / 6));
+        for (let i = 0; i < n; i += step) {
+            const x = pad.left + (i / (n - 1)) * chartW;
+            const label = history[i].date.slice(5); // MM-DD
+            ctx.fillText(label, x, H - pad.bottom + 18);
+        }
+
+        // Draw lines
+        const series = [
+            { key: "above_5d", color: "#8b5cf6", label: "5D" },
+            { key: "above_20d", color: "#3b82f6", label: "20D" },
+            { key: "above_50d", color: "#f97316", label: "50D" },
+            { key: "above_200d", color: "#22c55e", label: "200D" },
+        ];
+
+        series.forEach(s => {
+            ctx.strokeStyle = s.color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            history.forEach((h, i) => {
+                const x = pad.left + (i / (n - 1)) * chartW;
+                const y = pad.top + chartH * (1 - h[s.key] / 100);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+
+            // Current value dot
+            const lastH = history[n - 1];
+            const lx = pad.left + chartW;
+            const ly = pad.top + chartH * (1 - lastH[s.key] / 100);
+            ctx.fillStyle = s.color;
+            ctx.beginPath();
+            ctx.arc(lx, ly, 4, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        // Legend
+        ctx.font = "11px 'JetBrains Mono', monospace";
+        let legendX = pad.left + 8;
+        series.forEach(s => {
+            ctx.fillStyle = s.color;
+            ctx.fillRect(legendX, pad.top + 4, 14, 3);
+            ctx.fillText(s.label, legendX + 18, pad.top + 10);
+            legendX += 55;
+        });
     }
 
     // === FULL SCANNER ===
@@ -1266,10 +1472,10 @@
             { label: "Signal", key: "signal", filter: true },
             { label: "1W Chg%", key: "chg_1w" },
             { label: "SPY 1W%", key: "spy_1w" },
-            { label: "1W Alpha", key: "alpha_1w" },
+            { label: "1W Rel to SPY", key: "alpha_1w" },
             { label: "YTD Chg%", key: "chg_ytd" },
             { label: "SPY YTD%", key: "spy_ytd" },
-            { label: "YTD Alpha", key: "alpha_ytd" },
+            { label: "YTD Rel to SPY", key: "alpha_ytd" },
         ];
 
         const renderRow = (s, i) => `
@@ -1281,10 +1487,10 @@
                 <td class="num">${fmtPrice(s.price)}</td>
                 <td>${signalBadge(s.signal)}</td>
                 ${pctCell(s.chg_1w)}
-                <td class="num" style="color:#fff;font-weight:600">${fmt(spy1w)}%</td>
+                <td class="num" style="color:var(--text);font-weight:700">${fmt(spy1w)}%</td>
                 <td class="num" style="color:var(--green);font-weight:600">+${fmt(s.alpha_1w)}%</td>
                 ${pctCell(s.chg_ytd)}
-                <td class="num" style="color:#fff;font-weight:600">${fmt(spyYtd)}%</td>
+                <td class="num" style="color:var(--text);font-weight:700">${fmt(spyYtd)}%</td>
                 <td class="num" style="color:var(--green);font-weight:600">+${fmt(s.alpha_ytd)}%</td>
             </tr>`;
 
@@ -1299,8 +1505,8 @@
                 <p>Stocks outperforming SPY on both weekly and year-to-date basis. Alpha = stock return minus SPY return.</p>
                 <div class="stat-row" style="margin-top:12px">
                     <div class="stat-box"><div class="stat-val">${data.length}</div><div class="stat-label">Stocks</div></div>
-                    <div class="stat-box"><div class="stat-val" style="color:var(--green)">+${avgAlpha1w.toFixed(2)}%</div><div class="stat-label">Avg 1W Alpha</div></div>
-                    <div class="stat-box"><div class="stat-val" style="color:var(--green)">+${avgAlphaYtd.toFixed(2)}%</div><div class="stat-label">Avg YTD Alpha</div></div>
+                    <div class="stat-box"><div class="stat-val" style="color:var(--green)">+${avgAlpha1w.toFixed(2)}%</div><div class="stat-label">Avg 1W Rel to SPY</div></div>
+                    <div class="stat-box"><div class="stat-val" style="color:var(--green)">+${avgAlphaYtd.toFixed(2)}%</div><div class="stat-label">Avg YTD Rel to SPY</div></div>
                 </div>
                 <div style="margin-top:8px;font-size:0.75rem;color:var(--text-dim)">Top YTD: <strong>${topYtd}</strong> &middot; SPY 1W: ${fmt(spy1w)}% &middot; SPY YTD: ${fmt(spyYtd)}%</div>
             </div>

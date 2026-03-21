@@ -120,6 +120,18 @@ def parse_csv(filepath):
                 chg_ytd = float(row.get("Performance % YTD", 0) or 0)
                 rel_vol = float(row.get("Relative Volume 1 day", 0) or 0)
 
+                # Daily SMAs for breadth calculation
+                def _safe_float(val):
+                    try:
+                        v = float(val) if val else None
+                        return v if v is not None and v == v else None
+                    except (ValueError, TypeError):
+                        return None
+                sma5 = _safe_float(row.get("SMA 5", "").strip() if row.get("SMA 5") else "")
+                sma20 = _safe_float(row.get("SMA 20", "").strip() if row.get("SMA 20") else "")
+                sma50 = _safe_float(row.get("SMA 50", "").strip() if row.get("SMA 50") else "")
+                sma200 = _safe_float(row.get("SMA 200", "").strip() if row.get("SMA 200") else "")
+
                 # Forward P/E: price / (4 * next quarter EPS forecast)
                 pe_ttm_raw = row.get("PE Ratio TTM", "").strip()
                 eps_fwd_raw = row.get("EPS Forecast Next Qtr", "").strip()
@@ -169,6 +181,10 @@ def parse_csv(filepath):
                     "spread_score": spread_score,
                     "pe_ttm": pe_ttm,
                     "fwd_pe": fwd_pe,
+                    "sma5": sma5,
+                    "sma20": sma20,
+                    "sma50": sma50,
+                    "sma200": sma200,
                 })
             except (ValueError, KeyError):
                 continue
@@ -267,6 +283,118 @@ def build_outperformers(stocks, index_context):
             })
 
     return sorted(outperformers, key=lambda s: s["alpha_ytd"], reverse=True)
+
+
+BREADTH_HISTORY = os.path.join(PROJECT_DIR, "data", "breadth_history.csv")
+
+
+def build_breadth_context(stocks, data_date):
+    """Calculate market breadth: % of stocks above each daily SMA."""
+    sma_fields = [
+        ("above_5d", "sma5"),
+        ("above_20d", "sma20"),
+        ("above_50d", "sma50"),
+        ("above_200d", "sma200"),
+    ]
+
+    totals = {key: {"above": 0, "valid": 0} for key, _ in sma_fields}
+    sector_breadth = defaultdict(lambda: {key: {"above": 0, "valid": 0} for key, _ in sma_fields})
+
+    for s in stocks:
+        for key, field in sma_fields:
+            sma_val = s.get(field)
+            if sma_val is not None:
+                totals[key]["valid"] += 1
+                if s["price"] > sma_val:
+                    totals[key]["above"] += 1
+                # Sector breakdown
+                if s["sector"]:
+                    sector_breadth[s["sector"]][key]["valid"] += 1
+                    if s["price"] > sma_val:
+                        sector_breadth[s["sector"]][key]["above"] += 1
+
+    # Current readings
+    current = {}
+    for key, _ in sma_fields:
+        t = totals[key]
+        current[key] = round(t["above"] / t["valid"] * 100, 1) if t["valid"] > 0 else 0
+
+    # Sector breakdown (% above 50D for each sector)
+    by_sector = []
+    for sector, data in sector_breadth.items():
+        sector_data = {"sector": sector}
+        for key, _ in sma_fields:
+            d = data[key]
+            sector_data[key] = round(d["above"] / d["valid"] * 100, 1) if d["valid"] > 0 else 0
+        sector_data["count"] = sum(1 for s in stocks if s["sector"] == sector)
+        by_sector.append(sector_data)
+    by_sector.sort(key=lambda x: x["above_50d"], reverse=True)
+
+    # Append to history CSV (dedup on date)
+    _append_breadth_history(data_date, current)
+
+    # Load recent history for charting
+    history = _load_breadth_history(90)
+
+    return {
+        **current,
+        "total_stocks": len(stocks),
+        "by_sector": by_sector,
+        "history": history,
+    }
+
+
+def _append_breadth_history(data_date, current):
+    """Append today's breadth reading to history CSV, deduplicating on date."""
+    fieldnames = ["date", "above_5d", "above_20d", "above_50d", "above_200d"]
+    rows = []
+
+    # Read existing
+    if os.path.exists(BREADTH_HISTORY):
+        with open(BREADTH_HISTORY, "r") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                if row["date"] != data_date:
+                    rows.append(row)
+
+    # Add today
+    rows.append({
+        "date": data_date,
+        "above_5d": current["above_5d"],
+        "above_20d": current["above_20d"],
+        "above_50d": current["above_50d"],
+        "above_200d": current["above_200d"],
+    })
+
+    # Sort by date
+    rows.sort(key=lambda r: r["date"])
+
+    # Write back
+    os.makedirs(os.path.dirname(BREADTH_HISTORY), exist_ok=True)
+    with open(BREADTH_HISTORY, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def _load_breadth_history(days=90):
+    """Load last N days of breadth history for charting."""
+    if not os.path.exists(BREADTH_HISTORY):
+        return []
+
+    rows = []
+    with open(BREADTH_HISTORY, "r") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            rows.append({
+                "date": row["date"],
+                "above_5d": float(row["above_5d"]),
+                "above_20d": float(row["above_20d"]),
+                "above_50d": float(row["above_50d"]),
+                "above_200d": float(row["above_200d"]),
+            })
+
+    return rows[-days:]
 
 
 def build_sector_heatmap(stocks):
@@ -745,6 +873,7 @@ def main():
         "outperformers": build_outperformers(stocks, index_context),
         "sector_heatmap": build_sector_heatmap(stocks),
         "crossover_alerts": build_crossover_alerts(stocks),
+        "breadth_context": build_breadth_context(stocks, data_date),
     }
 
     if vix_context:
@@ -766,6 +895,8 @@ def main():
     print(f"  Outperformers: {len(output['outperformers'])} stocks beating SPY")
     print(f"  Sector Heatmap: {len(output['sector_heatmap'])} sectors")
     print(f"  Crossover Alerts: {len(output['crossover_alerts'])} alerts")
+    bc = output["breadth_context"]
+    print(f"  Breadth: 5D={bc['above_5d']}% | 20D={bc['above_20d']}% | 50D={bc['above_50d']}% | 200D={bc['above_200d']}%")
 
 
 if __name__ == "__main__":
