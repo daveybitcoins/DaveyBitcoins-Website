@@ -1098,39 +1098,12 @@
             `;
         }
 
-        // Sector breadth mini-table
-        const sectorRows = (bc.by_sector || []).map(s => `
-            <tr>
-                <td>${s.sector}</td>
-                <td class="num">${s.count}</td>
-                <td class="num" style="color:${breadthColor(s.above_5d)}">${s.above_5d.toFixed(0)}%</td>
-                <td class="num" style="color:${breadthColor(s.above_20d)}">${s.above_20d.toFixed(0)}%</td>
-                <td class="num" style="color:${breadthColor(s.above_50d)}">${s.above_50d.toFixed(0)}%</td>
-                <td class="num" style="color:${breadthColor(s.above_200d)}">${s.above_200d.toFixed(0)}%</td>
-            </tr>`).join("");
-
         return `
             <div class="card">
                 <h2>Market Breadth — % Above Moving Averages</h2>
                 <p style="color:var(--text-dim);font-size:0.8rem">Computed from top ${bc.total_stocks} stocks by market cap. Equivalent to S5FD / S5TW / S5FI / S5TH.</p>
                 <div class="stats-row">${statBoxes}</div>
                 ${statsHtml}
-            </div>
-            <div class="card">
-                <h3>Breadth by Sector</h3>
-                <div class="table-wrap">
-                    <table>
-                        <thead><tr>
-                            <th>Sector</th>
-                            <th>Stocks</th>
-                            <th>&gt; 5D</th>
-                            <th>&gt; 20D</th>
-                            <th>&gt; 50D</th>
-                            <th>&gt; 200D</th>
-                        </tr></thead>
-                        <tbody>${sectorRows}</tbody>
-                    </table>
-                </div>
             </div>
         `;
     }

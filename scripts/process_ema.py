@@ -298,7 +298,6 @@ def build_breadth_context(stocks, data_date):
     ]
 
     totals = {key: {"above": 0, "valid": 0} for key, _ in sma_fields}
-    sector_breadth = defaultdict(lambda: {key: {"above": 0, "valid": 0} for key, _ in sma_fields})
 
     for s in stocks:
         for key, field in sma_fields:
@@ -307,11 +306,6 @@ def build_breadth_context(stocks, data_date):
                 totals[key]["valid"] += 1
                 if s["price"] > sma_val:
                     totals[key]["above"] += 1
-                # Sector breakdown
-                if s["sector"]:
-                    sector_breadth[s["sector"]][key]["valid"] += 1
-                    if s["price"] > sma_val:
-                        sector_breadth[s["sector"]][key]["above"] += 1
 
     # Current readings
     current = {}
@@ -319,30 +313,16 @@ def build_breadth_context(stocks, data_date):
         t = totals[key]
         current[key] = round(t["above"] / t["valid"] * 100, 1) if t["valid"] > 0 else 0
 
-    # Sector breakdown (% above 50D for each sector)
-    by_sector = []
-    for sector, data in sector_breadth.items():
-        sector_data = {"sector": sector}
-        for key, _ in sma_fields:
-            d = data[key]
-            sector_data[key] = round(d["above"] / d["valid"] * 100, 1) if d["valid"] > 0 else 0
-        sector_data["count"] = sum(1 for s in stocks if s["sector"] == sector)
-        by_sector.append(sector_data)
-    by_sector.sort(key=lambda x: x["above_50d"], reverse=True)
-
     # Append to history CSV (dedup on date)
     _append_breadth_history(data_date, current)
 
-    # Load recent history for charting
+    # Load history and compute historical stats
     history = _load_breadth_history()
-
-    # Compute historical stats from breadth history
     stats = _compute_breadth_stats(history, current)
 
     return {
         **current,
         "total_stocks": len(stocks),
-        "by_sector": by_sector,
         "stats": stats,
     }
 
