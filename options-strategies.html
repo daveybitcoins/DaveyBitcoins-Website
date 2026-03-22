@@ -115,6 +115,7 @@
   .date-slider-wrap label{font-size:0.6rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;white-space:nowrap;font-family:'Outfit',sans-serif;font-weight:600}
   .date-slider-wrap input[type="range"]{flex:1;accent-color:var(--accent-blue);cursor:pointer}
   .date-slider-wrap .slider-value{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text-heading);min-width:110px;text-align:right}
+  .date-slider-wrap .slider-pnl{font-family:'JetBrains Mono',monospace;font-size:0.72rem;font-weight:700;min-width:70px;text-align:right}
 
   /* Strike selector */
   .strike-selector{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:28px;display:none;transition:background 0.3s,border-color 0.3s}
@@ -254,7 +255,7 @@
     <div class="dashboard" id="cards-long-call"></div>
     <div class="methodology" id="notes-long-call"><h3>Payoff Notes</h3><ul><li>Enter a ticker to see strategy-specific payoff analysis.</li></ul></div>
     <div class="chart-panel"><div class="chart-header"><div class="chart-label">Payoff Diagram</div><div class="chart-note">P/L vs Underlying Price</div></div><canvas id="payoff-long-call" height="300"></canvas></div>
-    <div class="date-slider-wrap" id="slider-wrap-long-call" style="display:none"><label>Analyze Date</label><input type="range" id="slider-long-call" min="0" max="100" value="100"><span class="slider-value" id="slider-val-long-call">At Expiration</span></div>
+    <div class="date-slider-wrap" id="slider-wrap-long-call" style="display:none"><label>Analyze Date</label><input type="range" id="slider-long-call" min="0" max="100" value="100"><span class="slider-value" id="slider-val-long-call">At Expiration</span><span class="slider-pnl"></span></div>
     <div class="methodology">
       <h3>Long Call Recipe</h3>
       <ul>
@@ -292,7 +293,7 @@
     <div class="dashboard" id="cards-zebra"></div>
     <div class="methodology" id="notes-zebra"><h3>Payoff Notes</h3><ul><li>Enter a ticker to see strategy-specific payoff analysis.</li></ul></div>
     <div class="chart-panel"><div class="chart-header"><div class="chart-label">Payoff Diagram</div><div class="chart-note">P/L vs Underlying Price</div></div><canvas id="payoff-zebra" height="300"></canvas></div>
-    <div class="date-slider-wrap" id="slider-wrap-zebra" style="display:none"><label>Analyze Date</label><input type="range" id="slider-zebra" min="0" max="100" value="100"><span class="slider-value" id="slider-val-zebra">At Expiration</span></div>
+    <div class="date-slider-wrap" id="slider-wrap-zebra" style="display:none"><label>Analyze Date</label><input type="range" id="slider-zebra" min="0" max="100" value="100"><span class="slider-value" id="slider-val-zebra">At Expiration</span><span class="slider-pnl"></span></div>
     <div class="methodology">
       <h3>ZEBRA Recipe</h3>
       <ul>
@@ -330,7 +331,7 @@
     <div class="dashboard" id="cards-bull-call"></div>
     <div class="methodology" id="notes-bull-call"><h3>Payoff Notes</h3><ul><li>Enter a ticker to see strategy-specific payoff analysis.</li></ul></div>
     <div class="chart-panel"><div class="chart-header"><div class="chart-label">Payoff Diagram</div><div class="chart-note">P/L vs Underlying Price</div></div><canvas id="payoff-bull-call" height="300"></canvas></div>
-    <div class="date-slider-wrap" id="slider-wrap-bull-call" style="display:none"><label>Analyze Date</label><input type="range" id="slider-bull-call" min="0" max="100" value="100"><span class="slider-value" id="slider-val-bull-call">At Expiration</span></div>
+    <div class="date-slider-wrap" id="slider-wrap-bull-call" style="display:none"><label>Analyze Date</label><input type="range" id="slider-bull-call" min="0" max="100" value="100"><span class="slider-value" id="slider-val-bull-call">At Expiration</span><span class="slider-pnl"></span></div>
     <div class="methodology">
       <h3>Bull Call Spread Recipe</h3>
       <ul>
@@ -369,7 +370,7 @@
     <div class="dashboard" id="cards-pmcc"></div>
     <div class="methodology" id="notes-pmcc"><h3>Payoff Notes</h3><ul><li>Enter a ticker to see strategy-specific payoff analysis.</li></ul></div>
     <div class="chart-panel"><div class="chart-header"><div class="chart-label">Payoff Diagram</div><div class="chart-note">P/L vs Underlying Price</div></div><canvas id="payoff-pmcc" height="300"></canvas></div>
-    <div class="date-slider-wrap" id="slider-wrap-pmcc" style="display:none"><label>Analyze Date</label><input type="range" id="slider-pmcc" min="0" max="100" value="100"><span class="slider-value" id="slider-val-pmcc">At Expiration</span></div>
+    <div class="date-slider-wrap" id="slider-wrap-pmcc" style="display:none"><label>Analyze Date</label><input type="range" id="slider-pmcc" min="0" max="100" value="100"><span class="slider-value" id="slider-val-pmcc">At Expiration</span><span class="slider-pnl"></span></div>
     <div class="methodology">
       <h3>PMCC Recipe</h3>
       <ul>
@@ -407,7 +408,7 @@
     <div class="dashboard" id="cards-debit-spread"></div>
     <div class="methodology" id="notes-debit-spread"><h3>Payoff Notes</h3><ul><li>Enter a ticker to see strategy-specific payoff analysis.</li></ul></div>
     <div class="chart-panel"><div class="chart-header"><div class="chart-label">Payoff Diagram</div><div class="chart-note">P/L vs Underlying Price</div></div><canvas id="payoff-debit-spread" height="300"></canvas></div>
-    <div class="date-slider-wrap" id="slider-wrap-debit-spread" style="display:none"><label>Analyze Date</label><input type="range" id="slider-debit-spread" min="0" max="100" value="100"><span class="slider-value" id="slider-val-debit-spread">At Expiration</span></div>
+    <div class="date-slider-wrap" id="slider-wrap-debit-spread" style="display:none"><label>Analyze Date</label><input type="range" id="slider-debit-spread" min="0" max="100" value="100"><span class="slider-value" id="slider-val-debit-spread">At Expiration</span><span class="slider-pnl"></span></div>
     <div class="methodology">
       <h3>Call Debit Spread Recipe</h3>
       <ul>
@@ -445,7 +446,7 @@
     <div class="dashboard" id="cards-cash-put"></div>
     <div class="methodology" id="notes-cash-put"><h3>Payoff Notes</h3><ul><li>Enter a ticker to see strategy-specific payoff analysis.</li></ul></div>
     <div class="chart-panel"><div class="chart-header"><div class="chart-label">Payoff Diagram</div><div class="chart-note">P/L vs Underlying Price</div></div><canvas id="payoff-cash-put" height="300"></canvas></div>
-    <div class="date-slider-wrap" id="slider-wrap-cash-put" style="display:none"><label>Analyze Date</label><input type="range" id="slider-cash-put" min="0" max="100" value="100"><span class="slider-value" id="slider-val-cash-put">At Expiration</span></div>
+    <div class="date-slider-wrap" id="slider-wrap-cash-put" style="display:none"><label>Analyze Date</label><input type="range" id="slider-cash-put" min="0" max="100" value="100"><span class="slider-value" id="slider-val-cash-put">At Expiration</span><span class="slider-pnl"></span></div>
     <div class="methodology">
       <h3>Cash-Secured Put Recipe</h3>
       <ul>
@@ -482,7 +483,7 @@
     <div class="dashboard" id="cards-wheel"></div>
     <div class="methodology" id="notes-wheel"><h3>Wheel Breakdown</h3><ul><li>Enter a ticker to see the full wheel analysis.</li></ul></div>
     <div class="chart-panel"><div class="chart-header"><div class="chart-label">Wheel Income Projection</div><div class="chart-note">Estimated annual income from repeating the wheel</div></div><canvas id="payoff-wheel" height="300"></canvas></div>
-    <div class="date-slider-wrap" id="slider-wrap-wheel" style="display:none"><label>Analyze Date</label><input type="range" id="slider-wheel" min="0" max="100" value="100"><span class="slider-value" id="slider-val-wheel">At Expiration</span></div>
+    <div class="date-slider-wrap" id="slider-wrap-wheel" style="display:none"><label>Analyze Date</label><input type="range" id="slider-wheel" min="0" max="100" value="100"><span class="slider-value" id="slider-val-wheel">At Expiration</span><span class="slider-pnl"></span></div>
     <div class="methodology">
       <h3>The Wheel Recipe</h3>
       <ul>
@@ -1419,14 +1420,33 @@ function drawAllPayoffs() {
 }
 
 // Wire up all date sliders
+function calcPnlAtPrice(legs, spotPrice, timeFraction) {
+  let pnl = 0, totalCost = 0;
+  for (const leg of legs) {
+    totalCost += Math.abs(leg.qty) * leg.premium * 100;
+    if (timeFraction >= 1) {
+      const intrinsic = leg.type === 'call'
+        ? Math.max(0, spotPrice - leg.strike)
+        : Math.max(0, leg.strike - spotPrice);
+      pnl += leg.qty * (intrinsic - leg.premium) * 100;
+    } else if (leg.iv && leg.T) {
+      const remainT = leg.T * (1 - timeFraction);
+      const theoPrice = bsCallPrice(spotPrice, leg.strike, remainT, leg.iv, 0.05);
+      pnl += leg.qty * (theoPrice - leg.premium) * 100;
+    }
+  }
+  return { pnl, totalCost };
+}
+
 ['long-call','zebra','bull-call','pmcc','debit-spread','cash-put','wheel'].forEach(tabId => {
   const slider = document.getElementById('slider-' + tabId);
   const label  = document.getElementById('slider-val-' + tabId);
+  const pnlSpan = slider?.parentElement.querySelector('.slider-pnl');
   if (!slider || !label) return;
   slider.addEventListener('input', () => {
     const frac = parseInt(slider.value) / 100;
     const data = strategyPayoffs[tabId];
-    if (!data || !data.legs[0]?.T) { label.textContent = 'At Expiration'; return; }
+    if (!data || !data.legs[0]?.T) { label.textContent = 'At Expiration'; if (pnlSpan) pnlSpan.textContent = ''; return; }
     if (frac >= 1) {
       label.textContent = 'At Expiration';
     } else {
@@ -1434,6 +1454,18 @@ function drawAllPayoffs() {
       const daysOut = Math.round(totalDays * frac);
       const targetDate = new Date(Date.now() + daysOut * 86400000);
       label.textContent = targetDate.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'2-digit' }) + ` (${daysOut}d)`;
+    }
+    // Show P/L % at current price
+    if (pnlSpan && currentData?.price) {
+      const { pnl, totalCost } = calcPnlAtPrice(data.legs, currentData.price, frac);
+      if (totalCost > 0) {
+        const pct = (pnl / totalCost * 100).toFixed(1);
+        const sign = pnl >= 0 ? '+' : '';
+        pnlSpan.textContent = sign + pct + '%';
+        pnlSpan.style.color = pnl >= 0 ? '#22c55e' : '#ef4444';
+      } else {
+        pnlSpan.textContent = '';
+      }
     }
     drawPayoff('payoff-' + tabId, data.legs, data.config, frac);
   });
