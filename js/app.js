@@ -1043,11 +1043,13 @@
                 return "No extreme signal";
             }
 
-            const compositeColor = stats.composite_score <= 20 ? "var(--green)"
-                : stats.composite_score <= 40 ? "#22c55e"
-                : stats.composite_score >= 90 ? "var(--red)"
-                : stats.composite_score >= 80 ? "#f97316"
-                : "var(--yellow)";
+            const compositeColor = stats.composite_score <= 10 ? "var(--green)"
+                : stats.composite_score <= 20 ? "#22c55e"
+                : stats.composite_score <= 40 ? "var(--yellow)"
+                : stats.composite_score <= 60 ? "var(--text-dim)"
+                : stats.composite_score <= 80 ? "var(--yellow)"
+                : stats.composite_score <= 90 ? "#f97316"
+                : "var(--red)";
 
             const statsRows = stats.indicators.map(ind => `
                 <tr>
@@ -1113,9 +1115,13 @@
                         <div class="stat-box" style="flex:3;text-align:left;padding:0.8rem 1rem">
                             <div style="font-size:0.78rem;color:var(--text-dim)">
                                 Average percentile rank across all 4 breadth indicators.<br>
-                                <strong style="color:var(--green)">0&ndash;20</strong> = Oversold (rebound likely) &middot;
-                                <strong style="color:var(--yellow)">20&ndash;80</strong> = Neutral &middot;
-                                <strong style="color:var(--red)">80&ndash;100</strong> = Overbought (pullback risk)<br>
+                                <strong style="color:var(--green)">0&ndash;10</strong> = Extreme Oversold &middot;
+                                <strong style="color:#22c55e">10&ndash;20</strong> = Oversold &middot;
+                                <strong style="color:var(--yellow)">20&ndash;40</strong> = Weak &middot;
+                                <strong style="color:var(--text-dim)">40&ndash;60</strong> = Neutral &middot;
+                                <strong style="color:var(--yellow)">60&ndash;80</strong> = Healthy &middot;
+                                <strong style="color:#f97316">80&ndash;90</strong> = Overbought &middot;
+                                <strong style="color:var(--red)">90&ndash;100</strong> = Extreme Overbought<br>
                                 Based on ${stats.history_days.toLocaleString()} days of history.
                             </div>
                         </div>
