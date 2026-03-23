@@ -1113,17 +1113,15 @@
                             <div style="font-size:0.72rem;color:${compositeColor};margin-top:2px;font-weight:600">${stats.composite_zone}</div>
                         </div>
                         <div class="stat-box" style="flex:3;text-align:left;padding:0.8rem 1rem">
-                            <div style="font-size:0.78rem;color:var(--text-dim)">
-                                Average percentile rank across all 4 breadth indicators.<br>
-                                <strong style="color:var(--green)">0&ndash;10</strong> = Extreme Oversold &middot;
-                                <strong style="color:#22c55e">10&ndash;20</strong> = Oversold &middot;
-                                <strong style="color:var(--yellow)">20&ndash;40</strong> = Weak &middot;
-                                <strong style="color:var(--text-dim)">40&ndash;60</strong> = Neutral &middot;
-                                <strong style="color:var(--yellow)">60&ndash;80</strong> = Healthy &middot;
-                                <strong style="color:#f97316">80&ndash;90</strong> = Overbought &middot;
-                                <strong style="color:var(--red)">90&ndash;100</strong> = Extreme Overbought<br>
-                                Based on ${stats.history_days.toLocaleString()} days of history.
-                            </div>
+                            <ul style="font-size:0.75rem;color:var(--text-dim);margin:0;padding:0 0 0 1rem;list-style:none;line-height:1.6">
+                                <li><strong style="color:var(--green)">0&ndash;10</strong> Extreme Oversold</li>
+                                <li><strong style="color:#22c55e">10&ndash;20</strong> Oversold</li>
+                                <li><strong style="color:var(--yellow)">20&ndash;40</strong> Weak</li>
+                                <li><strong style="color:var(--text-dim)">40&ndash;60</strong> Neutral</li>
+                                <li><strong style="color:var(--yellow)">60&ndash;80</strong> Healthy</li>
+                                <li><strong style="color:#f97316">80&ndash;90</strong> Overbought</li>
+                                <li><strong style="color:var(--red)">90&ndash;100</strong> Extreme Overbought</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
