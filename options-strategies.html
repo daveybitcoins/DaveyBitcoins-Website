@@ -1357,8 +1357,8 @@ function buildAllStrategies(chain, expTs) {
 
   // ── PUT RATIO SPREAD: Buy 1 ~-0.55Δ put / Sell 2 ~-0.35Δ puts ──
   if (chain.puts?.length) {
-    populatePutSelect('sel-put-ratio-long', chain.puts, -0.80, -0.35, -0.55, price);
-    populatePutSelect('sel-put-ratio-short', chain.puts, -0.55, -0.10, -0.35, price);
+    populatePutSelect('sel-put-ratio-long', chain.puts, -0.95, -0.05, -0.55, price);
+    populatePutSelect('sel-put-ratio-short', chain.puts, -0.95, -0.05, -0.35, price);
     document.getElementById('leg-sel-put-ratio').classList.add('visible');
     rebuildPutRatio();
   }
