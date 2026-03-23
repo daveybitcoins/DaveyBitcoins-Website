@@ -206,7 +206,7 @@
       </button>
     </div>
     <h1>📈 <span>Options Strategies</span></h1>
-    <div class="subtitle">Long Call / ZEBRA / Reverse ZEBRA / Bull Call / Bear Put / PMCC / Debit Spread / Cash-Secured Put / Wheel</div>
+    <div class="subtitle">Long Call / ZEBRA / Put Ratio Spread / Bull Call / Bear Put / PMCC / Debit Spread / Cash-Secured Put / Wheel</div>
   </header>
 
   <!-- Ticker Search -->
@@ -225,7 +225,7 @@
   <nav class="tab-bar">
     <button class="tab active" data-tab="long-call">Long Call</button>
     <button class="tab" data-tab="zebra">ZEBRA</button>
-    <button class="tab" data-tab="reverse-zebra">Reverse ZEBRA</button>
+    <button class="tab" data-tab="put-ratio">Put Ratio Spread</button>
     <button class="tab" data-tab="bull-call">Bull Call Spread</button>
     <button class="tab" data-tab="bear-put">Bear Put Spread</button>
     <button class="tab" data-tab="pmcc">PMCC</button>
@@ -309,39 +309,41 @@
     </div>
   </section>
 
-  <!-- TAB: REVERSE ZEBRA -->
-  <section class="tab-content" id="tab-reverse-zebra">
+  <!-- TAB: PUT RATIO SPREAD -->
+  <section class="tab-content" id="tab-put-ratio">
     <div class="strategy-overview">
       <div class="overview-header">
-        <h2>Reverse ZEBRA</h2>
+        <h2>Put Ratio Spread</h2>
         <span class="badge badge-bear">BEARISH</span>
+        <span class="badge" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)">UNDEFINED RISK</span>
       </div>
-      <div class="overview-subtitle">Zero Extrinsic Back Ratio Spread (Puts)</div>
-      <p class="overview-desc">Synthetic short stock using options. Buy 2 deep ITM puts and sell 1 ATM put. Net delta ≈ −1.00 replicates short selling with defined upside risk and no downside cap. No margin requirement or borrow fees.</p>
+      <div class="overview-subtitle">1×2 Put Spread — Buy 1 ITM Put, Sell 2 OTM Puts</div>
+      <p class="overview-desc">Buy 1 higher-strike put and sell 2 lower-strike puts. Often entered for a small debit or even a credit. Max profit at the short strike at expiration. Profits from a moderate decline — but has naked downside risk if the stock crashes hard below the lower break-even.</p>
       <div class="when-to-use">
-        <strong>When to use:</strong> Strong bearish conviction. You want short-stock-like downside exposure without the unlimited risk or margin of a true short sale. Max loss is capped at the net debit paid.
+        <strong>When to use:</strong> You expect a moderate pullback to a specific level (the short strike). Works well when IV is elevated — selling 2 puts collects fat premium. Be aware of the naked leg: unlimited risk below the lower break-even.
       </div>
     </div>
-    <div class="leg-selectors" id="leg-sel-reverse-zebra">
+    <div class="leg-selectors" id="leg-sel-put-ratio">
       <h4>Customize Strikes</h4>
-      <div class="leg-row"><span class="leg-label"><span class="leg-action buy">Buy 2</span>Long Puts</span><select class="leg-select" id="sel-reverse-zebra-long"></select></div>
-      <div class="leg-row"><span class="leg-label"><span class="leg-action sell">Sell 1</span>Short Put</span><select class="leg-select" id="sel-reverse-zebra-short"></select></div>
+      <div class="leg-row"><span class="leg-label"><span class="leg-action buy">Buy 1</span>Long Put (higher strike)</span><select class="leg-select" id="sel-put-ratio-long"></select></div>
+      <div class="leg-row"><span class="leg-label"><span class="leg-action sell">Sell 2</span>Short Puts (lower strike)</span><select class="leg-select" id="sel-put-ratio-short"></select></div>
     </div>
     <div class="legs-table-wrap"><h4>Trade Legs</h4>
       <table class="legs-table"><thead><tr><th>Action</th><th>Qty</th><th>Type</th><th>Strike</th><th>Exp</th><th class="mono">Delta</th><th class="mono">Bid</th><th class="mono">Ask</th><th class="mono">Mid</th></tr></thead>
-      <tbody id="legs-reverse-zebra"><tr><td colspan="9" style="text-align:center;color:var(--text-dimmer);padding:20px">Enter a ticker above to load options data</td></tr></tbody></table>
+      <tbody id="legs-put-ratio"><tr><td colspan="9" style="text-align:center;color:var(--text-dimmer);padding:20px">Enter a ticker above to load options data</td></tr></tbody></table>
     </div>
-    <div class="dashboard" id="cards-reverse-zebra"></div>
-    <div class="methodology" id="notes-reverse-zebra"><h3>Payoff Notes</h3><ul><li>Enter a ticker to see strategy-specific payoff analysis.</li></ul></div>
-    <div class="chart-panel"><div class="chart-header"><div class="chart-label">Payoff Diagram</div><div class="chart-note">P/L vs Underlying Price</div></div><canvas id="payoff-reverse-zebra" height="300"></canvas></div>
-    <div class="date-slider-wrap" id="slider-wrap-reverse-zebra" style="display:none"><label>Analyze Date</label><input type="range" id="slider-reverse-zebra" min="0" max="100" value="100"><span class="slider-value" id="slider-val-reverse-zebra">At Expiration</span><span class="slider-pnl"></span></div>
+    <div class="dashboard" id="cards-put-ratio"></div>
+    <div class="methodology" id="notes-put-ratio"><h3>Payoff Notes</h3><ul><li>Enter a ticker to see strategy-specific payoff analysis.</li></ul></div>
+    <div class="chart-panel"><div class="chart-header"><div class="chart-label">Payoff Diagram</div><div class="chart-note">P/L vs Underlying Price</div></div><canvas id="payoff-put-ratio" height="300"></canvas></div>
+    <div class="date-slider-wrap" id="slider-wrap-put-ratio" style="display:none"><label>Analyze Date</label><input type="range" id="slider-put-ratio" min="0" max="100" value="100"><span class="slider-value" id="slider-val-put-ratio">At Expiration</span><span class="slider-pnl"></span></div>
     <div class="methodology">
-      <h3>Reverse ZEBRA Recipe</h3>
+      <h3>Put Ratio Spread Recipe</h3>
       <ul>
-        <li><span class="hl">Long puts:</span> Pick strikes at <code>-0.70 to -0.75 delta</code> — deep ITM to minimize extrinsic value.</li>
-        <li><span class="hl">Short put:</span> ATM or near-ATM at <code>~-0.50 delta</code> — this funds most of the extrinsic from the longs.</li>
-        <li><span class="hl">Target net delta:</span> <code>2 × (-0.72) – 1 × (-0.50) ≈ −1.00</code> (synthetic short 100 shares).</li>
-        <li><span class="hl">Ideal conditions:</span> Low IV environment, strong bearish conviction, underlying below major resistance levels.</li>
+        <li><span class="hl">Long put:</span> Slightly ITM at <code>-0.55 to -0.65 delta</code> — gives you the bearish hedge.</li>
+        <li><span class="hl">Short puts:</span> OTM/ATM at <code>-0.30 to -0.45 delta</code> — this is your target price. Selling 2× collects more premium than the long costs.</li>
+        <li><span class="hl">Net credit vs debit:</span> If entered for a credit, you can't lose if the stock stays above the long strike. If a debit, max loss above the long strike is the debit paid.</li>
+        <li><span class="hl">Max profit:</span> At the short strike at expiration = spread width × 100 ± net credit/debit.</li>
+        <li><span class="hl">Danger zone:</span> Below the lower break-even, you're effectively naked short 1 put. Have a stop-loss plan or be willing to own shares.</li>
       </ul>
     </div>
   </section>
@@ -970,43 +972,54 @@ function rebuildZebra() {
   drawAllPayoffs();
 }
 
-function rebuildReverseZebra() {
+function rebuildPutRatio() {
   if (!savedChain || !savedChain.puts) return;
   const puts = savedChain.puts;
   const price = currentData.price;
   const expLabel = formatExp(savedExpTs);
-  const longP = getPutByStrike(puts, document.getElementById('sel-reverse-zebra-long').value);
-  const shortP = getPutByStrike(puts, document.getElementById('sel-reverse-zebra-short').value);
+  const longP = getPutByStrike(puts, document.getElementById('sel-put-ratio-long').value);
+  const shortP = getPutByStrike(puts, document.getElementById('sel-put-ratio-short').value);
   if (!longP || !shortP) return;
-  const grossDebit = longP._mid * 2 * 100;
-  const credit = shortP._mid * 100;
-  const netDebit = grossDebit - credit;
-  const netDelta = longP._delta * 2 - shortP._delta; // e.g. 2×(-0.72) - (-0.50) = -0.94
-  const breakEven = longP.strike - netDebit / 100;
-  updateTab('reverse-zebra', {
+  const longCost = longP._mid * 100;
+  const shortCredit = shortP._mid * 2 * 100;
+  const netCreditDebit = shortCredit - longCost; // positive = credit, negative = debit
+  const isCredit = netCreditDebit >= 0;
+  const spreadWidth = (longP.strike - shortP.strike) * 100;
+  const maxProfit = spreadWidth + netCreditDebit; // at short strike
+  const netDelta = longP._delta - shortP._delta * 2;
+  // Upper break-even: long strike (if credit) or long strike - net debit per share (if debit)
+  const upperBE = isCredit ? longP.strike : longP.strike - Math.abs(netCreditDebit) / 100;
+  // Lower break-even: short strike - max profit / 100
+  const lowerBE = shortP.strike - maxProfit / 100;
+  updateTab('put-ratio', {
     legs: [
-      { action:'Buy', qty:2, type:'Put', strike:longP.strike, exp:expLabel, delta:longP._delta, bid:longP.bid, ask:longP.ask, mid:longP._mid },
-      { action:'Sell', qty:1, type:'Put', strike:shortP.strike, exp:expLabel, delta:shortP._delta, bid:shortP.bid, ask:shortP.ask, mid:shortP._mid },
+      { action:'Buy', qty:1, type:'Put', strike:longP.strike, exp:expLabel, delta:longP._delta, bid:longP.bid, ask:longP.ask, mid:longP._mid },
+      { action:'Sell', qty:2, type:'Put', strike:shortP.strike, exp:expLabel, delta:shortP._delta, bid:shortP.bid, ask:shortP.ask, mid:shortP._mid },
     ],
     cards: [
-      { label:'Gross Debit', value:fmtInt$(grossDebit), sub:`2 × ${fmt$(longP._mid)} × 100` },
-      { label:'Credit Received', value:fmtInt$(credit), sub:`1 × ${fmt$(shortP._mid)} × 100`, valColor:'#22c55e' },
-      { label:'Net Debit / Max Loss', value:fmtInt$(netDebit), sub:`vs unlimited risk on a short sale`, valColor:'#ef4444', glow:'rgba(239,68,68,0.5)' },
-      { label:'Net Delta', value:netDelta.toFixed(2), sub:'≈ short 100 shares exposure', valColor:'#ef4444', glow:'rgba(239,68,68,0.5)' },
-      { label:'Break-Even', value:fmt$(breakEven), sub:'Long strike – net debit/share', valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
+      { label:'Long Put Cost', value:fmtInt$(longCost), sub:`1 × ${fmt$(longP._mid)} × 100` },
+      { label:'Short Put Credit', value:fmtInt$(shortCredit), sub:`2 × ${fmt$(shortP._mid)} × 100`, valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
+      { label: isCredit ? 'Net Credit' : 'Net Debit', value: fmtInt$(Math.abs(netCreditDebit)), sub: isCredit ? 'Received upfront' : 'Paid upfront', valColor: isCredit ? '#22c55e' : '#ef4444', glow: isCredit ? 'rgba(34,197,94,0.5)' : 'rgba(239,68,68,0.5)' },
+      { label:'Max Profit', value:fmtInt$(maxProfit), sub:`At $${shortP.strike} at expiration`, valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
+      { label:'Upper Break-Even', value:fmt$(upperBE), sub: isCredit ? 'No loss above long strike' : 'Long strike – net debit', valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
+      { label:'Lower Break-Even', value:fmt$(lowerBE), sub:'⚠️ Naked risk below this', valColor:'#f59e0b', glow:'rgba(245,158,11,0.5)' },
+      { label:'Net Delta', value:netDelta.toFixed(2), sub:'Long Δ – 2 × short Δ' },
     ],
     notes: [
-      `<span class="hl">Break-even ≈ ${fmt$(breakEven)}</span> — ${breakEven > price * 0.98 ? 'near current price, minimal theta drag' : 'below current price, needs drop to profit'}.`,
-      `<span class="hl">Below $${shortP.strike}</span> the position acts like short 100 shares with effective entry ≈ ${fmt$(longP.strike - netDebit/100)}.`,
-      `<span class="hl">Upside risk capped</span> at ${fmtInt$(netDebit)} net debit vs. unlimited risk on a true short sale.`,
-      `<span class="hl">No downside cap</span> — unlike vertical spreads, profits grow as the stock falls toward zero.`,
+      `<span class="hl">Max profit ${fmtInt$(maxProfit)}</span> at $${shortP.strike} at expiration — the sweet spot.`,
+      isCredit
+        ? `<span class="hl">Net credit ${fmtInt$(netCreditDebit)}</span> — no loss if stock stays above $${longP.strike}. Free trade to the upside.`
+        : `<span class="hl">Net debit ${fmtInt$(Math.abs(netCreditDebit))}</span> — max loss above $${longP.strike} is the debit paid.`,
+      `<span class="hl">Upper break-even ${fmt$(upperBE)}</span> — profitable between ${fmt$(upperBE)} and ${fmt$(lowerBE)}.`,
+      `<span class="hl">⚠️ Lower break-even ${fmt$(lowerBE)}</span> — below this you're naked short 1 put. Losses accelerate. Have an exit plan.`,
+      `<span class="hl">Max loss:</span> Theoretically unlimited (stock to $0). The naked put kicks in below ${fmt$(lowerBE)}.`,
     ],
     payoff: {
       legs: [
-        { type:'put', strike:longP.strike, qty:2, premium:longP._mid, iv:longP.impliedVolatility||0.3, T:longP._T },
-        { type:'put', strike:shortP.strike, qty:-1, premium:shortP._mid, iv:shortP.impliedVolatility||0.3, T:shortP._T },
+        { type:'put', strike:longP.strike, qty:1, premium:longP._mid, iv:longP.impliedVolatility||0.3, T:longP._T },
+        { type:'put', strike:shortP.strike, qty:-2, premium:shortP._mid, iv:shortP.impliedVolatility||0.3, T:shortP._T },
       ],
-      config: { minPrice: price*0.7, maxPrice: price*1.3, breakEven, maxLoss: netDebit }
+      config: { minPrice: price*0.65, maxPrice: price*1.15, breakEven: upperBE, maxLoss: shortP.strike * 100, maxProfit }
     }
   });
   drawAllPayoffs();
@@ -1342,12 +1355,12 @@ function buildAllStrategies(chain, expTs) {
   document.getElementById('leg-sel-zebra').classList.add('visible');
   rebuildZebra();
 
-  // ── REVERSE ZEBRA: ~-0.72Δ long puts / ~-0.50Δ short put ──
+  // ── PUT RATIO SPREAD: Buy 1 ~-0.55Δ put / Sell 2 ~-0.35Δ puts ──
   if (chain.puts?.length) {
-    populatePutSelect('sel-reverse-zebra-long', chain.puts, -0.95, -0.50, -0.72, price);
-    populatePutSelect('sel-reverse-zebra-short', chain.puts, -0.65, -0.15, -0.50, price);
-    document.getElementById('leg-sel-reverse-zebra').classList.add('visible');
-    rebuildReverseZebra();
+    populatePutSelect('sel-put-ratio-long', chain.puts, -0.80, -0.35, -0.55, price);
+    populatePutSelect('sel-put-ratio-short', chain.puts, -0.55, -0.10, -0.35, price);
+    document.getElementById('leg-sel-put-ratio').classList.add('visible');
+    rebuildPutRatio();
   }
 
   // ── BULL CALL SPREAD: ~0.55Δ long / ~0.30Δ short ──
@@ -1595,7 +1608,7 @@ function drawAllPayoffs() {
 }
 
 // Crosshair interaction on payoff canvases
-['long-call','zebra','reverse-zebra','bull-call','bear-put','pmcc','debit-spread','cash-put','wheel'].forEach(tabId => {
+['long-call','zebra','put-ratio','bull-call','bear-put','pmcc','debit-spread','cash-put','wheel'].forEach(tabId => {
   const canvas = document.getElementById('payoff-' + tabId);
   if (!canvas) return;
   // Overlay canvas for crosshair (avoids full redraw)
@@ -1700,7 +1713,7 @@ function calcPnlAtPrice(legs, spotPrice, timeFraction) {
   return { pnl, totalCost };
 }
 
-['long-call','zebra','reverse-zebra','bull-call','bear-put','pmcc','debit-spread','cash-put','wheel'].forEach(tabId => {
+['long-call','zebra','put-ratio','bull-call','bear-put','pmcc','debit-spread','cash-put','wheel'].forEach(tabId => {
   const slider = document.getElementById('slider-' + tabId);
   const label  = document.getElementById('slider-val-' + tabId);
   const pnlSpan = slider?.parentElement.querySelector('.slider-pnl');
@@ -1754,8 +1767,8 @@ expSelect.addEventListener('change', loadExpiration);
 // ── Leg selector change handlers ──
 document.getElementById('sel-zebra-long').addEventListener('change', rebuildZebra);
 document.getElementById('sel-zebra-short').addEventListener('change', rebuildZebra);
-document.getElementById('sel-reverse-zebra-long').addEventListener('change', rebuildReverseZebra);
-document.getElementById('sel-reverse-zebra-short').addEventListener('change', rebuildReverseZebra);
+document.getElementById('sel-put-ratio-long').addEventListener('change', rebuildPutRatio);
+document.getElementById('sel-put-ratio-short').addEventListener('change', rebuildPutRatio);
 document.getElementById('sel-bull-call-long').addEventListener('change', rebuildBullCall);
 document.getElementById('sel-bull-call-short').addEventListener('change', rebuildBullCall);
 document.getElementById('sel-pmcc-long').addEventListener('change', rebuildPmcc);
