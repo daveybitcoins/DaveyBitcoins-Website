@@ -11,7 +11,7 @@
         var params = new URLSearchParams();
         // Active tab
         var activeTab = document.querySelector(".tab.active");
-        if (activeTab && activeTab.dataset.tab !== "ai-summary") {
+        if (activeTab && activeTab.dataset.tab !== "dashboard") {
             params.set("tab", activeTab.dataset.tab);
         }
         // Per-tab state: only persist for the active tab
@@ -55,7 +55,7 @@
                 if (tabContent) tabContent.classList.add("active");
             }
         }
-        var tabId = tab || "ai-summary";
+        var tabId = tab || "dashboard";
         // Restore tickers
         var tickers = params.get("tickers");
         if (tickers && filterState[tabId]) {
@@ -170,7 +170,6 @@
 
     // === RENDER ALL ===
     function renderAll() {
-        renderSummary();
         renderDashboard();
         renderScanner();
         renderPullbacks();
@@ -795,23 +794,22 @@
     }
 
     // === AI SUMMARY ===
-    function renderSummary() {
-        const el = document.getElementById("tab-ai-summary");
+    // === DASHBOARD (merged with AI Summary) ===
+    function renderDashboard() {
+        const el = document.getElementById("tab-dashboard");
+        const d = DATA.dashboard;
         const s = DATA.ai_summary;
 
-        if (!s) {
-            el.innerHTML = `
-                <div class="card">
-                    <h2>AI Market Summary</h2>
-                    <p>AI summary not available for this data set.
-                       It will be generated automatically on the next data pull.</p>
-                </div>`;
-            return;
-        }
+        const bullCount = d.signals
+            .filter((s) => ["Full Bull", "Bullish (unstacked)", "Bull Pullback \u2192 13W", "Bull Pullback \u2192 21W"].includes(s.signal))
+            .reduce((sum, s) => sum + s.count, 0);
+        const bearCount = d.signals
+            .filter((s) => ["Full Bear", "Bearish (unstacked)", "Bear Rally \u2192 13W", "Bear Rally above 13W"].includes(s.signal))
+            .reduce((sum, s) => sum + s.count, 0);
 
-        el.innerHTML = `
-            ${renderIndexCard()}
-
+        let aiHtml = "";
+        if (s && s.market_overview) {
+            aiHtml = `
             <div class="card">
                 <h2>${s.market_overview.headline}</h2>
                 <p>${s.market_overview.detail}</p>
@@ -865,36 +863,6 @@
             </div>` : ''}
 
             <div class="card">
-                <h2>${s.momentum_themes.headline}</h2>
-                <p>${s.momentum_themes.detail}</p>
-                <p><strong>Top names:</strong> ${s.momentum_themes.top_names
-                    .map(t => '<strong>' + t + '</strong>').join(", ")}</p>
-            </div>
-
-            <div class="card">
-                <h2>${s.sector_analysis.headline}</h2>
-                <div class="notes-grid">
-                    ${(s.sector_analysis.strongest || []).map(sec => `
-                        <div class="note-item bull">
-                            <strong>${sec.sector}</strong>
-                            Net: <span class="pos">${sec.net_score > 0 ? '+' : ''}${sec.net_score}</span>
-                            | Bull: ${sec.bull_pct}%<br>
-                            ${sec.note}
-                        </div>
-                    `).join("")}
-                    ${(s.sector_analysis.weakest || []).map(sec => `
-                        <div class="note-item bear">
-                            <strong>${sec.sector}</strong>
-                            Net: <span class="neg">${sec.net_score > 0 ? '+' : ''}${sec.net_score}</span>
-                            | Bear: ${sec.bear_pct}%<br>
-                            ${sec.note}
-                        </div>
-                    `).join("")}
-                </div>
-                ${s.sector_analysis.detail ? '<p>' + s.sector_analysis.detail + '</p>' : ''}
-            </div>
-
-            <div class="card">
                 <h2>${s.risk_warnings.headline}</h2>
                 <div class="notes-grid">
                     ${s.risk_warnings.items.map(item => `
@@ -903,23 +871,12 @@
                         </div>
                     `).join("")}
                 </div>
-            </div>
-        `;
-    }
-
-    // === DASHBOARD ===
-    function renderDashboard() {
-        const el = document.getElementById("tab-dashboard");
-        const d = DATA.dashboard;
-
-        const bullCount = d.signals
-            .filter((s) => ["Full Bull", "Bullish (unstacked)", "Bull Pullback \u2192 13W", "Bull Pullback \u2192 21W"].includes(s.signal))
-            .reduce((sum, s) => sum + s.count, 0);
-        const bearCount = d.signals
-            .filter((s) => ["Full Bear", "Bearish (unstacked)", "Bear Rally \u2192 13W", "Bear Rally above 13W"].includes(s.signal))
-            .reduce((sum, s) => sum + s.count, 0);
+            </div>`;
+        }
 
         el.innerHTML = `
+            ${renderIndexCard()}
+
             <div class="stats-row">
                 <div class="stat-box">
                     <div class="value">${d.total}</div>
@@ -939,65 +896,9 @@
                 </div>
             </div>
 
-            <div class="card">
-                <h2>Signal Distribution</h2>
-                <div class="table-wrap">
-                    <table>
-                        <thead><tr>
-                            <th>Signal</th>
-                            <th>Count</th>
-                            <th>% of Total</th>
-                            <th>Avg Price vs 21W EMA</th>
-                        </tr></thead>
-                        <tbody>
-                            ${d.signals.map((s) => `
-                                <tr>
-                                    <td>${signalBadge(s.signal)}</td>
-                                    <td class="num">${s.count}</td>
-                                    <td class="num">${(s.pct * 100).toFixed(1)}%</td>
-                                    ${pctCell(s.avg_vs_21w)}
-                                </tr>
-                            `).join("")}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            ${aiHtml}
 
             ${renderBreadthCard()}
-
-            <div class="card">
-                <h2>Strategy Notes</h2>
-                <div class="notes-grid">
-                    <div class="note-item bull">
-                        <strong>Full Bull (Price > 8W > 13W > 21W)</strong>
-                        Strongest uptrend. Trend-following entries on pullbacks to 8W EMA.
-                    </div>
-                    <div class="note-item bull">
-                        <strong>Bull Pullback &rarr; 13W</strong>
-                        Price pulled back to 13W EMA support. Potential swing entry if 13W holds.
-                    </div>
-                    <div class="note-item bull">
-                        <strong>Bull Pullback &rarr; 21W</strong>
-                        Deeper pullback to 21W EMA. High-risk/reward entry, watch for bounce.
-                    </div>
-                    <div class="note-item caution">
-                        <strong>Bull Breakdown</strong>
-                        EMAs still bullish but price broke below 21W. Caution, trend may be reversing.
-                    </div>
-                    <div class="note-item bear">
-                        <strong>Full Bear (Price < 8W < 13W < 21W)</strong>
-                        Strongest downtrend. Avoid longs, consider puts on rallies to EMA resistance.
-                    </div>
-                    <div class="note-item bear">
-                        <strong>Bear Rally &rarr; 13W</strong>
-                        Price rallied up to 13W resistance in downtrend. Potential short entry.
-                    </div>
-                    <div class="note-item alert">
-                        <strong>Crossover Alerts</strong>
-                        EMAs within 1% of crossing signal potential trend changes in 1-3 weeks.
-                    </div>
-                </div>
-            </div>
         `;
     }
 
