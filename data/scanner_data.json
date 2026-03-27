@@ -30463,178 +30463,192 @@
   "ai_summary": {
     "market_overview": {
       "bias": "bearish",
-      "bias_label": "Cautiously Bearish",
-      "headline": "Market structure deteriorating with both SPY and QQQ showing bearish EMA stacks, while 37% of stocks are in full bear mode.",
-      "detail": "Only 26% of stocks remain in full bull structures vs 37% in full bear, with both major indices below their weekly EMAs and showing crossover stress signals. BTC's full bear structure confirms risk-off sentiment.",
+      "bias_label": "Defensive Market",
+      "headline": "Broad bear market dominates with 37% of stocks in Full Bear and major indices below key EMAs.",
+      "detail": "Only 28% of stocks remain in Full Bull while 47% are in bearish structures. SPY unstacked below all EMAs, QQQ in Full Bear, and BTC deeply oversold at -47% from fair value.",
       "index_signals": {
         "SPY": "Bearish (unstacked)",
-        "QQQ": "Bearish (unstacked)",
+        "QQQ": "Full Bear",
         "BTC": "Full Bear"
       }
     },
     "reversal_candidates": {
-      "headline": "Bear Rally Reversal Setups (Bullish Crossover Alerts)",
+      "headline": "Bear Rally Reversal Setups",
       "items": [
         {
-          "symbol": "NVDA",
-          "name": "NVIDIA Corporation",
-          "signal": "Bearish (unstacked)",
-          "crossover_detail": "8W just below 13W (0.82%) \u2014 bullish cross potential; 13W just above 21W (0.15%) \u2014 bearish cross risk",
-          "note": "Mega-cap AI leader showing early reversal signals with 8W EMA approaching bullish cross above 13W.",
+          "symbol": "NFLX",
+          "name": "Netflix, Inc.",
+          "signal": "Bear Rally above 13W",
+          "crossover_detail": "8W just below 13W (0.64%) \u2014 bullish cross potential",
+          "note": "Streaming giant showing relative strength above 13W with potential 8W/13W bullish cross imminent.",
           "type": "bull"
         },
         {
           "symbol": "AAPL",
           "name": "Apple Inc.",
           "signal": "Bearish (unstacked)",
-          "crossover_detail": "8W just below 13W (0.80%) \u2014 bullish cross potential; 13W just above 21W (0.16%) \u2014 bearish cross risk",
-          "note": "World's largest stock showing potential bottom formation with EMAs compressing for bullish cross.",
+          "crossover_detail": "8W just below 13W (0.76%) \u2014 bullish cross potential; 13W just above 21W (0.19%) \u2014 bearish cross risk",
+          "note": "Mega-cap showing early reversal signals with dual crossover potential despite bearish structure.",
           "type": "bull"
         },
         {
-          "symbol": "TSLA",
-          "name": "Tesla, Inc.",
+          "symbol": "GOOGL",
+          "name": "Alphabet Inc.",
+          "signal": "Bearish (unstacked)",
+          "crossover_detail": "8W just below 13W (0.53%) \u2014 bullish cross potential",
+          "note": "Tech giant near potential 8W/13W bullish cross after deep selloff from AI uncertainty.",
+          "type": "bull"
+        },
+        {
+          "symbol": "ABBV",
+          "name": "AbbVie Inc.",
           "signal": "Full Bear",
-          "crossover_detail": "13W just below 21W (0.71%) \u2014 bullish cross potential",
-          "note": "EV giant showing 13W/21W compression after -6.8% decline from 21W EMA, potential reversal brewing.",
-          "type": "bull"
-        },
-        {
-          "symbol": "NFLX",
-          "name": "Netflix, Inc.",
-          "signal": "Bear Rally above 13W",
-          "crossover_detail": "8W just below 13W (0.64%) \u2014 bullish cross potential",
-          "note": "Streaming leader rallying above 13W EMA with 8W approaching bullish cross, early reversal signal.",
+          "crossover_detail": "8W just below 13W (0.84%) \u2014 bullish cross potential; 13W just below 21W (0.01%) \u2014 bullish cross potential",
+          "note": "Pharma leader with dual crossover setup indicating potential trend reversal from oversold levels.",
           "type": "bull"
         },
         {
           "symbol": "JPM",
           "name": "JP Morgan Chase & Co.",
           "signal": "Full Bear",
-          "crossover_detail": "13W just below 21W (0.65%) \u2014 bullish cross potential",
-          "note": "Banking giant showing 13W/21W compression, potential financial sector leadership if crossed.",
+          "crossover_detail": "13W just below 21W (0.61%) \u2014 bullish cross potential",
+          "note": "Banking giant showing 13W/21W crossover potential as financial sector seeks bottom.",
           "type": "bull"
         }
       ]
     },
     "pullback_setups": {
-      "headline": "Quality Pullback Entries in Uptrends",
+      "headline": "Quality Pullback Entries",
       "items": [
         {
-          "symbol": "JNJ",
-          "name": "Johnson & Johnson",
+          "symbol": "STX",
+          "name": "Seagate Technology Holdings PLC",
           "signal": "Bull Pullback \u2192 13W",
-          "price_vs_21w": 6.09,
+          "price_vs_21w": 11.38,
           "vol_quality": "Normal Vol",
-          "note": "Healthcare stalwart pulling back to 13W on normal volume, suggesting orderly profit-taking in 6% uptrend.",
+          "note": "Storage leader pulling back to 13W support with normal volume suggesting healthy consolidation.",
+          "type": "bull"
+        },
+        {
+          "symbol": "AMAT",
+          "name": "Applied Materials, Inc.",
+          "signal": "Bull Pullback \u2192 13W",
+          "price_vs_21w": 10.85,
+          "vol_quality": "Normal Vol",
+          "note": "Semiconductor equipment giant testing 13W with contained selling volume \u2014 quality entry setup.",
           "type": "bull"
         },
         {
           "symbol": "LMT",
           "name": "Lockheed Martin Corporation",
           "signal": "Bull Pullback \u2192 13W",
-          "price_vs_21w": 6.03,
+          "price_vs_21w": 7.75,
           "vol_quality": "Low Vol",
-          "note": "Defense contractor's low volume pullback signals institutional holding pattern, quality entry near 13W support.",
+          "note": "Defense contractor showing low volume pullback to 13W \u2014 orderly selling suggests institutional support.",
           "type": "bull"
         },
         {
-          "symbol": "MRK",
-          "name": "Merck & Company, Inc.",
+          "symbol": "FDX",
+          "name": "FedEx Corporation",
           "signal": "Bull Pullback \u2192 13W",
-          "price_vs_21w": 5.99,
-          "vol_quality": "Normal Vol",
-          "note": "Big pharma showing textbook pullback structure with 6% cushion above 21W, normal volume confirms lack of selling pressure.",
+          "price_vs_21w": 7.73,
+          "vol_quality": "Low Vol",
+          "note": "Logistics leader with low volume decline indicates controlled profit-taking rather than distribution.",
           "type": "bull"
         },
         {
-          "symbol": "INTC",
-          "name": "Intel Corporation",
+          "symbol": "WMT",
+          "name": "Walmart Inc.",
           "signal": "Bull Pullback \u2192 13W",
-          "price_vs_21w": 5.17,
-          "vol_quality": "Normal Vol",
-          "note": "Chip giant testing 13W support after 5% rally from 21W, normal volume suggests healthy consolidation.",
+          "price_vs_21w": 3.39,
+          "vol_quality": "Low Vol",
+          "note": "Retail giant's low volume pullback suggests institutional holding pattern \u2014 defensive quality play.",
           "type": "bull"
         }
       ]
     },
     "momentum_themes": {
-      "headline": "Electronic Technology Leading Momentum Surge",
-      "detail": "Electronic technology dominates momentum with memory/storage plays leading (SNDK +49%, WDC +29%). Optical networking and semiconductor equipment also accelerating hard.",
+      "headline": "Storage & Networking Leading Momentum",
+      "detail": "Semiconductor storage and networking equipment driving strongest momentum with SNDK up 31% vs 21W and LITE soaring 45%. Electronic technology concentration suggests AI infrastructure demand remains robust despite broader tech weakness.",
       "top_names": [
         "SNDK",
         "LITE",
         "CIEN",
         "WDC",
-        "MU"
+        "TER"
       ]
     },
     "sector_analysis": {
-      "headline": "Energy Minerals Dominate While Financials Collapse",
+      "headline": "Energy Dominance vs Tech Collapse",
       "strongest": [
         {
           "sector": "Energy minerals",
           "net_score": 100.0,
           "bull_pct": 100.0,
-          "note": "Perfect bullish sweep with all 15 energy stocks in full bull mode, averaging +18% above 21W EMAs."
+          "note": "Perfect bullish sweep with 15/15 stocks in Full Bull \u2014 commodity supercycle intact."
+        },
+        {
+          "sector": "Communications",
+          "net_score": 100.0,
+          "bull_pct": 100.0,
+          "note": "Small but perfectly bullish sector showing defensive telecom strength."
         },
         {
           "sector": "Industrial services",
-          "net_score": 64.8,
-          "bull_pct": 82.4,
-          "note": "Strong infrastructure/services theme with 82% bullish participation and solid momentum."
-        },
-        {
-          "sector": "Producer manufacturing",
-          "net_score": 50.0,
-          "bull_pct": 66.7,
-          "note": "Manufacturing showing resilience with two-thirds maintaining bullish structure despite broader weakness."
+          "net_score": 61.1,
+          "bull_pct": 77.8,
+          "note": "Infrastructure and industrial demand keeping sector resilient with 78% bullish."
         }
       ],
       "weakest": [
         {
-          "sector": "Commercial services",
-          "net_score": -100.0,
-          "bear_pct": 100.0,
-          "note": "Complete sector breakdown with all 5 stocks in bearish structure, averaging -7.4% below 21W EMAs."
-        },
-        {
           "sector": "Technology services",
-          "net_score": -64.8,
-          "bear_pct": 82.4,
-          "note": "Tech services carnage continues with 82% in bearish mode, mega-caps leading the decline."
+          "net_score": -81.8,
+          "bear_pct": 90.9,
+          "note": "Massive tech rout with 91% of stocks in bearish structures \u2014 AI bubble deflating."
         },
         {
           "sector": "Finance",
-          "net_score": -63.0,
-          "bear_pct": 81.5,
-          "note": "Financial sector collapse with 81% bearish, banks and insurers hit hardest in the selloff."
+          "net_score": -61.8,
+          "bear_pct": 80.0,
+          "note": "Banking sector crushed with 80% bearish amid rate cut expectations and credit concerns."
+        },
+        {
+          "sector": "Health services",
+          "net_score": -75.0,
+          "bear_pct": 75.0,
+          "note": "Healthcare services under pressure from regulatory and reimbursement headwinds."
         }
       ],
-      "detail": "Clear rotation from growth/tech into energy and industrial plays. Financials getting crushed suggests rate concerns, while energy's perfect score reflects commodity strength."
+      "detail": "Clear rotation from growth/tech into defensive value and commodities. Energy minerals showing perfect bullish structure while technology services face historic weakness with 91% bearish readings."
     },
     "risk_warnings": {
-      "headline": "Key Risk Factors",
+      "headline": "Major Risk Alerts",
       "items": [
         {
-          "text": "Both SPY and QQQ below all EMAs with crossover stress signals \u2014 broad market structure deteriorating rapidly",
+          "text": "47% of stocks in bearish structures with major indices below all EMAs \u2014 broad downtrend intact",
           "type": "bear"
         },
         {
-          "text": "37% of stocks in full bear mode vs only 26% full bull \u2014 worst breadth reading suggests more downside ahead",
+          "text": "Technology services sector at 91% bearish \u2014 deepest sectoral weakness in dataset",
           "type": "bear"
         },
         {
-          "text": "High volume pullbacks in LHX (1.64x avg) signal potential institutional distribution \u2014 avoid high-vol setups",
+          "text": "Bitcoin at -47% from fair value signals crypto correlation risk for tech names",
           "type": "caution"
         },
         {
-          "text": "BTC's full bear structure (-45% from fair value) confirms risk-off environment \u2014 crypto correlation risk elevated",
+          "text": "Only 25 Bull Breakdowns suggest more uptrend failures likely as market structure deteriorates",
           "type": "caution"
         }
       ]
     },
-    "generated_at": "2026-03-23T21:02:01.737756",
+    "news_drivers": {
+      "headline": "What Moved Markets",
+      "summary": "News data unavailable.",
+      "items": []
+    },
+    "generated_at": "2026-03-27T01:19:31.524648",
     "model": "claude-sonnet-4-20250514"
   }
 }
