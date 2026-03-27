@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Options Strategies — DaveyBitcoins</title>
 <meta property="og:title" content="Options Strategies — DaveyBitcoins">
-<meta property="og:description" content="Options strategy analyzer: Long Call, ZEBRA, Bull Call Spread, Bear Put Spread, PMCC, Call Debit Spread, Cash-Secured Put, and The Wheel with interactive payoff diagrams.">
+<meta property="og:description" content="Options strategy analyzer: Long Call, ZEBRA, Bull Call Spread, Bear Put Spread, PMCC, Call Debit Spread, Cash-Secured Put, Covered Call, and The Wheel with interactive payoff diagrams.">
 <meta property="og:url" content="https://daveybitcoins.com/options-strategies.html">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -232,6 +232,7 @@
     <button class="tab" data-tab="pmcc">PMCC</button>
     <button class="tab" data-tab="debit-spread">Call Debit Spread</button>
     <button class="tab" data-tab="cash-put">Cash-Secured Put</button>
+    <button class="tab" data-tab="covered-call">Covered Call</button>
     <button class="tab" data-tab="wheel">The Wheel</button>
   </nav>
 
@@ -544,7 +545,47 @@
     </div>
   </section>
 
-  <!-- TAB 6: THE WHEEL -->
+  <!-- TAB 6: COVERED CALL -->
+  <section class="tab-content" id="tab-covered-call">
+    <div class="strategy-overview">
+      <div class="overview-header">
+        <h2>Covered Call</h2>
+        <span class="badge badge-bull">BULLISH</span>
+        <span class="badge badge-income">INCOME</span>
+        <span class="badge badge-defined">DEFINED RISK</span>
+      </div>
+      <div class="overview-subtitle">Own 100 Shares + Sell OTM Call</div>
+      <p class="overview-desc">You own 100 shares of the stock and sell an OTM call against them. You collect premium upfront, which lowers your cost basis. If the stock stays below your call strike, you keep the premium and your shares. If it rallies above, your shares get called away at the strike — you keep the premium plus the capital gain.</p>
+      <div class="when-to-use">
+        <strong>When to use:</strong> You already own shares and are neutral to mildly bullish. You're willing to cap your upside in exchange for income. Works best when IV is elevated and you have a target price where you'd be happy to sell. Great for generating consistent income on a long stock position.
+      </div>
+    </div>
+    <div class="leg-selectors" id="leg-sel-covered-call">
+      <h4>Select Call Strike</h4>
+      <div class="leg-row"><span class="leg-label"><span class="leg-action sell">Sell 1</span>Call</span><select class="leg-select" id="sel-covered-call-strike"></select></div>
+    </div>
+    <div class="legs-table-wrap"><h4>Trade Legs</h4>
+      <table class="legs-table"><thead><tr><th>Action</th><th>Qty</th><th>Type</th><th>Strike</th><th>Exp</th><th class="mono">Delta</th><th class="mono">Bid</th><th class="mono">Ask</th><th class="mono">Mid</th></tr></thead>
+      <tbody id="legs-covered-call"><tr><td colspan="9" style="text-align:center;color:var(--text-dimmer);padding:20px">Enter a ticker above to load options data</td></tr></tbody></table>
+    </div>
+    <div class="dashboard" id="cards-covered-call"></div>
+    <div class="methodology" id="notes-covered-call"><h3>Payoff Notes</h3><ul><li>Enter a ticker to see strategy-specific payoff analysis.</li></ul></div>
+    <div class="chart-panel"><div class="chart-header"><div class="chart-label">Payoff Diagram</div><div class="chart-note">P/L vs Underlying Price</div></div><canvas id="payoff-covered-call" height="300"></canvas></div>
+    <div class="date-slider-wrap" id="slider-wrap-covered-call" style="display:none"><label>Analyze Date</label><input type="range" id="slider-covered-call" min="0" max="100" value="100"><span class="slider-value" id="slider-val-covered-call">At Expiration</span><span class="slider-pnl"></span></div>
+    <div class="methodology">
+      <h3>Covered Call Recipe</h3>
+      <ul>
+        <li><span class="hl">Strike selection:</span> OTM at <code>0.25 to 0.35 delta</code> — gives you room for the stock to appreciate while collecting decent premium.</li>
+        <li><span class="hl">Expiration:</span> <code>30–45 DTE</code> sweet spot — theta decay accelerates, maximizing income per day.</li>
+        <li><span class="hl">Requirement:</span> You must own (or buy) <code>100 shares</code> of the underlying stock.</li>
+        <li><span class="hl">IV matters:</span> Sell when IV is high (<code>&gt;30%</code>). Elevated IV = fatter premiums = better income on your shares.</li>
+        <li><span class="hl">Exit plan:</span> Buy back at <code>50% profit</code> to free up the position for a new call. Don't get greedy for the last 50%.</li>
+        <li><span class="hl">If called away:</span> Shares sold at strike + you keep the premium. Effective sell price = strike + premium collected. Restart by buying shares or selling a cash-secured put.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- TAB 7: THE WHEEL -->
   <section class="tab-content" id="tab-wheel">
     <div class="strategy-overview">
       <div class="overview-header">
@@ -1274,6 +1315,56 @@ function rebuildCashPut() {
   drawAllPayoffs();
 }
 
+function rebuildCoveredCall() {
+  if (!savedChain || !savedChain.calls) return;
+  const calls = savedChain.calls;
+  const price = currentData.price;
+  const expLabel = formatExp(savedExpTs);
+  const c = getCallByStrike(calls, document.getElementById('sel-covered-call-strike').value);
+  if (!c) return;
+  const premium = c._mid * 100;
+  const stockCost = price * 100;
+  const breakEven = price - c._mid;
+  const maxProfit = (c.strike - price + c._mid) * 100;
+  const maxLoss = breakEven * 100; // stock goes to 0
+  const dte = Math.max(Math.round((savedExpTs * 1000 - Date.now()) / 86400000), 1);
+  const iv = ((c.impliedVolatility || 0.3) * 100).toFixed(0);
+  const returnOnStock = (premium / stockCost * 100).toFixed(1);
+  const annualized = (premium / stockCost * 365 / dte * 100).toFixed(0);
+  const upside = ((c.strike - price) / price * 100).toFixed(1);
+  const calledAwayReturn = (maxProfit / stockCost * 100).toFixed(1);
+  updateTab('covered-call', {
+    legs: [
+      { action:'Own', qty:100, type:'Shares', strike:price, exp:'—', delta:'1.00', bid:'—', ask:'—', mid:fmt$(price) },
+      { action:'Sell', qty:1, type:'Call', strike:c.strike, exp:expLabel, delta:c._delta, bid:c.bid, ask:c.ask, mid:c._mid },
+    ],
+    cards: [
+      { label:'Premium Collected', value:fmtInt$(premium), sub:`${fmt$(c._mid)} × 100`, valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
+      { label:'Break-Even', value:fmt$(breakEven), sub:`${((price - breakEven)/price*100).toFixed(1)}% cushion`, valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
+      { label:'Max Profit If Called', value:fmtInt$(maxProfit), sub:`${calledAwayReturn}% return · stock at $${c.strike}+`, valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
+      { label:'Return on Stock', value:returnOnStock + '%', sub:`${annualized}% annualized (${dte}d)`, valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
+      { label:'Upside to Strike', value:upside + '%', sub:`Stock → $${c.strike}`, valColor:'#f59e0b', glow:'rgba(245,158,11,0.5)' },
+      { label:'IV', value:iv + '%', sub:'Implied volatility' },
+      { label:'Delta', value:c._delta.toFixed(2), sub:`${Math.abs(c._delta * 100).toFixed(0)}% prob of being called` },
+    ],
+    notes: [
+      `<span class="hl">Max profit = ${fmtInt$(maxProfit)}</span> — if stock is at or above $${c.strike} at expiration. You keep premium + capital gain up to the strike.`,
+      `<span class="hl">Break-even = ${fmt$(breakEven)}</span> — stock can drop ${((price - breakEven)/price*100).toFixed(1)}% before you start losing money (vs holding shares naked).`,
+      `<span class="hl">Premium income: ${returnOnStock}%</span> in ${dte} days (${annualized}% annualized). That's income on shares you already own.`,
+      `<span class="hl">If called away:</span> Shares sold at $${c.strike} + ${fmtInt$(premium)} premium = ${fmtInt$(maxProfit)} total profit (${calledAwayReturn}% return).`,
+      `<span class="hl">Trade-off:</span> Your upside is capped at $${c.strike}. If the stock rockets past that, you miss the gains above the strike.`,
+    ],
+    payoff: {
+      legs: [
+        { type:'stock', strike:price, qty:1, premium:0 },
+        { type:'call', strike:c.strike, qty:-1, premium:c._mid, iv:c.impliedVolatility||0.3, T:c._T },
+      ],
+      config: { minPrice: price*0.7, maxPrice: price*1.3, breakEven, maxLoss: breakEven * 100, maxProfit }
+    }
+  });
+  drawAllPayoffs();
+}
+
 function rebuildWheel() {
   if (!savedChain || !savedChain.puts) return;
   const puts = savedChain.puts;
@@ -1397,6 +1488,11 @@ function buildAllStrategies(chain, expTs) {
     rebuildCashPut();
   }
 
+  // ── COVERED CALL: Sell 1 call @ ~0.30Δ ──
+  populateStrikeSelect('sel-covered-call-strike', calls, 0.15, 0.50, 0.30, price);
+  document.getElementById('leg-sel-covered-call').classList.add('visible');
+  rebuildCoveredCall();
+
   // ── WHEEL: Put @ ~-0.30Δ + Call @ ~0.30Δ ──
   if (chain.puts?.length) {
     populatePutSelect('sel-wheel-put', chain.puts, -0.50, -0.10, -0.30, price);
@@ -1471,6 +1567,12 @@ function drawPayoff(canvasId, legs, config, timeFraction) {
   for (let p = config.minPrice; p <= config.maxPrice; p += step) {
     let expPnl = 0, theoPnl = 0;
     for (const leg of legs) {
+      if (leg.type === 'stock') {
+        const stockPnl = leg.qty * (p - leg.strike) * 100;
+        expPnl += stockPnl;
+        if (showTheo) theoPnl += stockPnl;
+        continue;
+      }
       const intrinsic = leg.type === 'call'
         ? Math.max(0, p - leg.strike)
         : Math.max(0, leg.strike - p);
@@ -1609,7 +1711,7 @@ function drawAllPayoffs() {
 }
 
 // Crosshair interaction on payoff canvases
-['long-call','zebra','put-ratio','bull-call','bear-put','pmcc','debit-spread','cash-put','wheel'].forEach(tabId => {
+['long-call','zebra','put-ratio','bull-call','bear-put','pmcc','debit-spread','cash-put','covered-call','wheel'].forEach(tabId => {
   const canvas = document.getElementById('payoff-' + tabId);
   if (!canvas) return;
   // Overlay canvas for crosshair (avoids full redraw)
@@ -1699,6 +1801,10 @@ function drawAllPayoffs() {
 function calcPnlAtPrice(legs, spotPrice, timeFraction) {
   let pnl = 0, totalCost = 0;
   for (const leg of legs) {
+    if (leg.type === 'stock') {
+      pnl += leg.qty * (spotPrice - leg.strike) * 100;
+      continue;
+    }
     totalCost += Math.abs(leg.qty) * leg.premium * 100;
     if (timeFraction >= 1) {
       const intrinsic = leg.type === 'call'
@@ -1714,7 +1820,7 @@ function calcPnlAtPrice(legs, spotPrice, timeFraction) {
   return { pnl, totalCost };
 }
 
-['long-call','zebra','put-ratio','bull-call','bear-put','pmcc','debit-spread','cash-put','wheel'].forEach(tabId => {
+['long-call','zebra','put-ratio','bull-call','bear-put','pmcc','debit-spread','cash-put','covered-call','wheel'].forEach(tabId => {
   const slider = document.getElementById('slider-' + tabId);
   const label  = document.getElementById('slider-val-' + tabId);
   const pnlSpan = slider?.parentElement.querySelector('.slider-pnl');
@@ -1779,6 +1885,7 @@ document.getElementById('sel-debit-spread-short').addEventListener('change', reb
 document.getElementById('sel-bear-put-long').addEventListener('change', rebuildBearPut);
 document.getElementById('sel-bear-put-short').addEventListener('change', rebuildBearPut);
 document.getElementById('sel-cash-put-strike').addEventListener('change', rebuildCashPut);
+document.getElementById('sel-covered-call-strike').addEventListener('change', rebuildCoveredCall);
 document.getElementById('sel-wheel-put').addEventListener('change', rebuildWheel);
 document.getElementById('sel-wheel-call').addEventListener('change', rebuildWheel);
 </script>
