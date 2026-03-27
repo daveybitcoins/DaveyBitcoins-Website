@@ -272,6 +272,44 @@ def build_bear_list(stocks):
     return sorted(full_bear, key=lambda s: s["price_vs_8w"])
 
 
+def build_best_opportunities(stocks):
+    """
+    Find stocks with attractive PEG ratios that represent opportunistic buys.
+    Criteria: PEG 0-2.0, Fwd PE < 30, Market cap > $50B, analyst Buy or Strong Buy.
+    Adds buy zone levels based on SMA support.
+    """
+    buy_ratings = {"Buy", "Strong buy"}
+    candidates = []
+    for s in stocks:
+        peg = s.get("peg")
+        fwd_pe = s.get("fwd_pe")
+        mkt_cap = s.get("mkt_cap_b", 0)
+        analyst = s.get("analyst", "")
+
+        if not (peg and 0 < peg < 2.0 and fwd_pe and fwd_pe < 30 and mkt_cap >= 50 and analyst in buy_ratings):
+            continue
+
+        # Calculate distance from key SMAs for buy zone context
+        price = s["price"]
+        sma50 = s.get("sma50")
+        sma200 = s.get("sma200")
+        pct_from_50 = round(((price - sma50) / sma50) * 100, 1) if sma50 else None
+        pct_from_200 = round(((price - sma200) / sma200) * 100, 1) if sma200 else None
+
+        # Implied growth rate from PEG: growth = fwd_pe / peg
+        implied_growth = round(fwd_pe / peg, 1) if peg > 0 else None
+
+        candidates.append({
+            **s,
+            "pct_from_50": pct_from_50,
+            "pct_from_200": pct_from_200,
+            "implied_growth": implied_growth,
+        })
+
+    # Sort by PEG (cheapest growth-adjusted first)
+    return sorted(candidates, key=lambda s: s["peg"])
+
+
 def build_outperformers(stocks, index_context):
     """Find stocks outperforming SPY on both 1W and YTD basis."""
     spy = next((s for s in index_context if s["symbol"] == "SPY"), None)
@@ -1058,6 +1096,7 @@ def main():
         "pullbacks": build_pullbacks(stocks),
         "momentum_leaders": build_momentum_leaders(stocks),
         "bear_list": build_bear_list(stocks),
+        "best_opportunities": build_best_opportunities(stocks),
         "outperformers": build_outperformers(stocks, index_context),
         "sector_heatmap": build_sector_heatmap(stocks),
         "crossover_alerts": build_crossover_alerts(stocks),
@@ -1080,6 +1119,7 @@ def main():
     print(f"  Pullbacks: {len(output['pullbacks'])} setups")
     print(f"  Momentum Leaders: {len(output['momentum_leaders'])} stocks")
     print(f"  Bear List: {len(output['bear_list'])} stocks")
+    print(f"  Best Opportunities: {len(output['best_opportunities'])} stocks")
     print(f"  Outperformers: {len(output['outperformers'])} stocks beating SPY")
     print(f"  Sector Heatmap: {len(output['sector_heatmap'])} sectors")
     print(f"  Crossover Alerts: {len(output['crossover_alerts'])} alerts")

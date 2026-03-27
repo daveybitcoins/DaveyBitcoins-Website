@@ -176,6 +176,7 @@
         renderPullbacks();
         renderMomentum();
         renderBears();
+        renderOpportunities();
         renderOutperformers();
         renderSectors();
         renderCrossovers();
@@ -1429,6 +1430,68 @@
         registerTab("bears", data, "bears-table", renderRow);
         makeSortable(document.getElementById("bears-table"), data, "bears", renderRow, headers);
         setupToolbar("bears");
+    }
+
+    // === BEST OPPORTUNITIES ===
+    function renderOpportunities() {
+        const el = document.getElementById("tab-opportunities");
+        const data = DATA.best_opportunities || [];
+
+        const headers = [
+            { label: "Symbol", key: "symbol" },
+            { label: "Name", key: "name" },
+            { label: "Sector", key: "sector", filter: true },
+            { label: "Price", key: "price" },
+            { label: "Mkt Cap", key: "mkt_cap_b", defaultAsc: false },
+            { label: "Fwd P/E", key: "fwd_pe", defaultAsc: true },
+            { label: "PEG", key: "peg", defaultAsc: true },
+            { label: "Impl. Growth", key: "implied_growth", defaultAsc: false },
+            { label: "Signal", key: "signal", filter: true },
+            { label: "Analyst", key: "analyst", filter: true },
+            { label: "vs 50D%", key: "pct_from_50" },
+            { label: "vs 200D%", key: "pct_from_200" },
+            { label: "YTD%", key: "chg_ytd" },
+            { label: "1M Chg%", key: "chg_1m" },
+        ];
+
+        const renderRow = (s) => `
+            <tr>
+                <td><strong>${s.symbol}</strong></td>
+                <td class="name-cell" title="${s.name}">${s.name}</td>
+                <td>${s.sector}</td>
+                <td class="num">${fmtPrice(s.price)}</td>
+                <td class="num">${fmtCap(s.mkt_cap_b)}</td>
+                <td class="num">${s.fwd_pe != null ? s.fwd_pe.toFixed(1) + '×' : '—'}</td>
+                <td class="num">${s.peg != null ? s.peg.toFixed(2) + '×' : '—'}</td>
+                <td class="num">${s.implied_growth != null ? (s.implied_growth > 100 ? '>100%' : s.implied_growth.toFixed(0) + '%') : '—'}</td>
+                <td>${signalBadge(s.signal)}</td>
+                <td>${s.analyst}</td>
+                ${pctCell(s.pct_from_50)}
+                ${pctCell(s.pct_from_200)}
+                ${pctCell(s.chg_ytd)}
+                ${pctCell(s.chg_1m)}
+            </tr>`;
+
+        el.innerHTML = `
+            <div class="card">
+                <h2>Best Opportunities: Growth at a Reasonable Price</h2>
+                <p>Filtered for: PEG &lt; 2.0, Fwd P/E &lt; 30, Market cap &ge; $50B, Analyst Buy or Strong Buy. Sorted by PEG ratio (cheapest growth-adjusted valuation first). Implied Growth = Fwd P/E &divide; PEG.</p>
+            </div>
+            <div class="card">
+                <h3>${data.length} Stocks</h3>
+                ${buildToolbar("opportunities", data, headers)}
+                <div class="table-wrap">
+                    <table id="opportunities-table">
+                        <thead><tr>${headers.map((h) => `<th>${h.label}</th>`).join("")}</tr></thead>
+                        <tbody>${data.map(renderRow).join("")}</tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+
+        registerTab("opportunities", data, "opportunities-table", renderRow);
+        makeSortable(document.getElementById("opportunities-table"), data, "opportunities", renderRow, headers);
+        setupToolbar("opportunities");
     }
 
     // === OUTPERFORMERS ===
