@@ -767,6 +767,10 @@ def build_index_context():
 
 GENESIS_MS = datetime(2009, 1, 3).timestamp() * 1000  # BTC genesis date
 RISK_WINDOW = 1460  # 4-year rolling window (days)
+ENV_UPPER_A = 4.6
+ENV_UPPER_B = -1.10
+ENV_LOWER = -0.45
+ENV_MIN_MAX = 0.05
 
 
 def _norm_cdf(z):
@@ -811,22 +815,14 @@ def _calc_btc_risk(daily):
     slope = (n * sxy - sx * sy) / (n * sxx - sx * sx)
     intercept = (sy - slope * sx) / n
 
-    # Calculate residuals and find extremes
-    min_res = float("inf")
-    max_res = float("-inf")
+    # Calculate residuals and structural risk (decaying envelope)
     for p in pts:
         p["reg_log_price"] = slope * p["log_days"] + intercept
         p["reg_price"] = 10 ** p["reg_log_price"]
         p["residual"] = p["log_price"] - p["reg_log_price"]
-        if p["residual"] < min_res:
-            min_res = p["residual"]
-        if p["residual"] > max_res:
-            max_res = p["residual"]
-
-    # Structural risk (min-max normalization)
-    res_range = max_res - min_res
-    for p in pts:
-        p["risk_mm"] = max(0, min(1, (p["residual"] - min_res) / res_range))
+        env_max = max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * p["log_days"])
+        env_range = env_max - ENV_LOWER
+        p["risk_mm"] = max(0, min(1, (p["residual"] - ENV_LOWER) / env_range))
 
     # Momentum risk (rolling z-score → Gaussian CDF)
     residuals = [p["residual"] for p in pts]

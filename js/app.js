@@ -132,6 +132,7 @@
         try {
             const [scannerResp] = await Promise.all([
                 fetch("data/scanner_data.json?v=" + Date.now()),
+                computeBtcRisk(),
                 computeSpyRisk(),
                 computeQqqRisk()
             ]);
@@ -314,7 +315,96 @@
     }
 
     function renderBtcRisk(idx) {
-        return renderRiskBar(idx.risk_combo, idx.zone, idx.zone_color, "risk-metric.html", "BTC", "Combined Risk");
+        const src = btcRiskData || idx;
+        return renderRiskBar(src.risk_combo, src.zone, src.zone_color, "risk-metric.html", "BTC", "Combined Risk");
+    }
+
+    // BTC combined risk — computed client-side from data.csv + live CoinGecko price
+    let btcRiskData = null;
+
+    function normCdf(z) {
+        const t = 1.0 / (1.0 + 0.2316419 * Math.abs(z));
+        const d = 0.3989422804 * Math.exp(-z * z / 2);
+        const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.8212560 + t * 1.330274))));
+        return z > 0 ? 1 - p : p;
+    }
+
+    async function computeBtcRisk() {
+        try {
+            const BTC_GENESIS = new Date('2009-01-03T00:00:00Z').getTime();
+            const WINDOW = 1460;
+            const ENV_UPPER_A = 4.6, ENV_UPPER_B = -1.10, ENV_LOWER = -0.45, ENV_MIN_MAX = 0.05;
+
+            // Load historical CSV
+            const resp = await fetch('data.csv?v=' + Date.now());
+            const text = await resp.text();
+            const rows = text.trim().split('\n').slice(1);
+            const raw = rows.map(r => { const [d, p] = r.split(','); return [d, parseFloat(p)]; }).filter(r => !isNaN(r[1]));
+
+            // Fetch live price from CoinGecko
+            try {
+                const liveResp = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_last_updated_at=true');
+                if (liveResp.ok) {
+                    const data = await liveResp.json();
+                    const price = data.bitcoin.usd;
+                    const dt = new Date(data.bitcoin.last_updated_at * 1000);
+                    const dateStr = dt.toISOString().slice(0, 10);
+                    const lastDate = raw[raw.length - 1][0];
+                    if (dateStr === lastDate) { raw[raw.length - 1][1] = price; }
+                    else if (dateStr > lastDate) { raw.push([dateStr, price]); }
+                }
+            } catch (e) { /* use CSV data as-is */ }
+
+            // Build dataset — matches risk-metric.html buildDataset() exactly
+            const pts = raw.map(([ds, p]) => {
+                const ms = new Date(ds + 'T00:00:00Z').getTime();
+                const days = (ms - BTC_GENESIS) / 864e5;
+                return { days, logDays: Math.log10(days), logPrice: Math.log10(p), price: p };
+            }).filter(p => p.days > 0 && p.price > 0);
+
+            const n = pts.length;
+            if (n < WINDOW) return;
+
+            let sx = 0, sy = 0, sxy = 0, sxx = 0;
+            pts.forEach(p => { sx += p.logDays; sy += p.logPrice; sxy += p.logDays * p.logPrice; sxx += p.logDays * p.logDays; });
+            const slope = (n * sxy - sx * sy) / (n * sxx - sx * sx);
+            const intercept = (sy - slope * sx) / n;
+
+            pts.forEach(p => {
+                p.regLogPrice = slope * p.logDays + intercept;
+                p.residual = p.logPrice - p.regLogPrice;
+                const envMax = Math.max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * p.logDays);
+                const envRange = envMax - ENV_LOWER;
+                p.riskMM = Math.max(0, Math.min(1, (p.residual - ENV_LOWER) / envRange));
+            });
+
+            const residuals = pts.map(p => p.residual);
+            let rSum = 0, rSumSq = 0;
+            for (let i = 0; i < n; i++) {
+                rSum += residuals[i]; rSumSq += residuals[i] * residuals[i];
+                if (i >= WINDOW) { rSum -= residuals[i - WINDOW]; rSumSq -= residuals[i - WINDOW] * residuals[i - WINDOW]; }
+                const cnt = Math.min(i + 1, WINDOW);
+                const mean = rSum / cnt;
+                const vari = Math.max(0.0001, rSumSq / cnt - mean * mean);
+                const std = Math.sqrt(vari);
+                const z = (residuals[i] - mean) / std;
+                pts[i].riskZS = normCdf(z);
+            }
+
+            pts.forEach(p => { p.riskCombo = Math.sqrt(p.riskMM * p.riskZS); });
+
+            const last = pts[n - 1];
+            const risk = last.riskCombo;
+            let zone, zone_color;
+            if (risk < 0.25) { zone = "Accumulate"; zone_color = "#2563eb"; }
+            else if (risk < 0.50) { zone = "Neutral"; zone_color = "#10b981"; }
+            else if (risk < 0.75) { zone = "Caution"; zone_color = "#eab308"; }
+            else { zone = "Euphoria"; zone_color = "#ef4444"; }
+
+            btcRiskData = { risk_combo: risk, zone, zone_color };
+        } catch (e) {
+            console.warn('BTC risk computation failed:', e);
+        }
     }
 
     // SPY structural risk — computed client-side from data_spy.csv
