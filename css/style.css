@@ -131,16 +131,30 @@ main, footer { position: relative; z-index: 2; }
 }
 
 header {
-    background: rgba(20, 38, 66, 0.7);
+    background: rgba(20, 38, 66, 0.65);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     padding: 1.5rem 2rem 1rem;
+    position: relative;
+}
+
+header::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(88, 166, 255, 0.4), transparent);
+    margin-top: 0.75rem;
 }
 
 [data-theme="light"] header {
     background: rgba(255, 255, 255, 0.8);
     border-bottom-color: var(--border);
+}
+
+[data-theme="light"] header::after {
+    background: linear-gradient(90deg, transparent, rgba(9, 105, 218, 0.3), transparent);
 }
 
 .header-top {
@@ -150,8 +164,20 @@ header {
 }
 
 .header-content h1 {
-    font-size: 1.5rem;
-    font-weight: 600;
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #fff 0%, #58a6ff 50%, #3fb950 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+[data-theme="light"] .header-content h1 {
+    background: linear-gradient(135deg, #1f2328 0%, #0969da 50%, #1a7f37 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 /* === BACK LINK === */
@@ -161,41 +187,61 @@ header {
     gap: 4px;
     color: var(--blue);
     text-decoration: none;
-    font-size: 0.8rem;
+    font-size: 0.72rem;
     font-weight: 500;
+    letter-spacing: 1px;
     white-space: nowrap;
-    padding: 0.35rem 0.7rem;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    transition: background 0.15s, border-color 0.15s;
+    padding: 0.35rem 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    background: rgba(20, 38, 66, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
 }
 
 .back-link:hover {
-    background: var(--bg-hover);
+    background: rgba(88, 166, 255, 0.1);
     border-color: var(--blue);
+    transform: translateY(-1px);
+}
+
+[data-theme="light"] .back-link {
+    background: rgba(255, 255, 255, 0.5);
+    border-color: var(--border);
 }
 
 /* === THEME TOGGLE === */
 .theme-toggle {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
+    background: rgba(20, 38, 66, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
     padding: 0.4rem 0.6rem;
     cursor: pointer;
     color: var(--text);
     font-size: 1.2rem;
     line-height: 1;
-    transition: background 0.15s, border-color 0.15s;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
 }
 
 .theme-toggle:hover {
-    background: var(--bg-hover);
+    background: rgba(88, 166, 255, 0.1);
     border-color: var(--blue);
+    transform: translateY(-1px);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: rgba(255, 255, 255, 0.5);
+    border-color: var(--border);
 }
 
 .subtitle {
     color: var(--text-dim);
-    font-size: 0.9rem;
+    font-size: 0.72rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
 }
 
 .data-date {
@@ -252,18 +298,29 @@ header {
     border: none;
     color: var(--text-dim);
     padding: 0.75rem 1rem;
-    font-size: 0.85rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
     cursor: pointer;
     white-space: nowrap;
     border-bottom: 2px solid transparent;
-    transition: color 0.15s, border-color 0.15s;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
 }
 
-.tab:hover { color: var(--text); }
+.tab:hover {
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.03);
+}
 
 .tab.active {
-    color: var(--text);
+    color: #fff;
     border-bottom-color: var(--blue);
+    background: rgba(88, 166, 255, 0.06);
+}
+
+[data-theme="light"] .tab.active {
+    color: var(--text);
+    background: rgba(9, 105, 218, 0.06);
 }
 
 
