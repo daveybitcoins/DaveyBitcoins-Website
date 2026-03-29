@@ -298,7 +298,7 @@
         if (risk_combo == null) return "";
         const r = risk_combo;
         const color = riskColor(r);
-        const barGrad = "linear-gradient(90deg,#2563eb 0%,#06b6d4 15%,#10b981 30%,#84cc16 45%,#eab308 60%,#d4a373 75%,#ef4444 90%,#991b1b 100%)";
+        const barGrad = "linear-gradient(90deg,#2563eb 0%,#06b6d4 15%,#10b981 30%,#84cc16 45%,#eab308 60%,#f07f2e 75%,#ef4444 90%,#991b1b 100%)";
         return `
             <div class="risk-bar-wrap" style="margin-top:0.5rem;padding:0.4rem 0.5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);">
                 <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;">
@@ -1031,9 +1031,9 @@
         if (stats) {
             function zoneColor(zone) {
                 if (zone.includes("Extreme Oversold")) return "var(--green)";
-                if (zone.includes("Oversold")) return "#7bc8a4";
+                if (zone.includes("Oversold")) return "#38c775";
                 if (zone.includes("Extreme Overbought")) return "var(--red)";
-                if (zone.includes("Overbought")) return "#d4a373";
+                if (zone.includes("Overbought")) return "#f07f2e";
                 return "var(--text-dim)";
             }
 
@@ -1046,11 +1046,11 @@
             }
 
             const compositeColor = stats.composite_score <= 10 ? "var(--green)"
-                : stats.composite_score <= 20 ? "#7bc8a4"
+                : stats.composite_score <= 20 ? "#38c775"
                 : stats.composite_score <= 40 ? "var(--yellow)"
                 : stats.composite_score <= 60 ? "var(--text-dim)"
                 : stats.composite_score <= 80 ? "var(--yellow)"
-                : stats.composite_score <= 90 ? "#d4a373"
+                : stats.composite_score <= 90 ? "#f07f2e"
                 : "var(--red)";
 
             const statsRows = stats.indicators.map(ind => `
@@ -1117,11 +1117,11 @@
                         <div class="stat-box" style="flex:3;text-align:left;padding:0.8rem 1rem">
                             <ul style="font-size:0.75rem;color:var(--text-dim);margin:0;padding:0 0 0 1rem;list-style:none;line-height:1.6">
                                 <li><strong style="color:var(--green)">0&ndash;10</strong> Extreme Oversold</li>
-                                <li><strong style="color:#7bc8a4">10&ndash;20</strong> Oversold</li>
+                                <li><strong style="color:#38c775">10&ndash;20</strong> Oversold</li>
                                 <li><strong style="color:var(--yellow)">20&ndash;40</strong> Weak</li>
                                 <li><strong style="color:var(--text-dim)">40&ndash;60</strong> Neutral</li>
                                 <li><strong style="color:var(--yellow)">60&ndash;80</strong> Healthy</li>
-                                <li><strong style="color:#d4a373">80&ndash;90</strong> Overbought</li>
+                                <li><strong style="color:#f07f2e">80&ndash;90</strong> Overbought</li>
                                 <li><strong style="color:var(--red)">90&ndash;100</strong> Extreme Overbought</li>
                             </ul>
                         </div>

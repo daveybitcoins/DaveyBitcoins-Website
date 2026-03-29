@@ -9,13 +9,13 @@ html { overflow-x: clip; }
     --border: #243a5c;
     --text: #c8cad0;
     --text-dim: #7a90b0;
-    --green: #7bc8a4;
-    --green-dim: #4a9e78;
-    --red: #c9847f;
-    --red-dim: #b06a65;
-    --yellow: #c9b06a;
-    --blue: #8ab8d9;
-    --purple: #b49bd8;
+    --green: #4dc465;
+    --green-dim: #2d8c48;
+    --red: #de5f58;
+    --red-dim: #c34843;
+    --yellow: #d09f34;
+    --blue: #64abf6;
+    --purple: #aa8ff2;
     --th-bg: #142642;
     --th-text: #c8cad0;
     --signal-bull-pb-bg: #0f2a1a;
@@ -23,11 +23,11 @@ html { overflow-x: clip; }
     --signal-breakdown-bg: #2a1f0f;
     --signal-breakdown-border: #6d4e00;
     --signal-unstacked-bull-bg: #0f2a1a;
-    --signal-unstacked-bull-text: #9dd4b0;
+    --signal-unstacked-bull-text: #86e294;
     --signal-unstacked-bull-border: #1a3a2a;
     --signal-bear-rally-bg: #2a0f0f;
     --signal-unstacked-bear-bg: #2a0f0f;
-    --signal-unstacked-bear-text: #d4a0a0;
+    --signal-unstacked-bear-text: #f07f8a;
     --signal-unstacked-bear-border: #3a1a1a;
 }
 
@@ -167,7 +167,7 @@ header::after {
     font-size: 1.8rem;
     font-weight: 700;
     letter-spacing: -1px;
-    background: linear-gradient(135deg, #e0e6ed 0%, #8ab8d9 50%, #7bc8a4 100%);
+    background: linear-gradient(135deg, #f8f9fb 0%, #64abf6 50%, #38c775 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -309,63 +309,63 @@ header::after {
 .pill-spy {
     background: rgba(34, 197, 94, 0.1);
     border-color: rgba(34, 197, 94, 0.25);
-    color: #7bc8a4;
+    color: #38c775;
 }
 
 .pill-qqq {
     background: rgba(168, 85, 247, 0.1);
     border-color: rgba(168, 85, 247, 0.25);
-    color: #b49bd8;
+    color: #ac6af1;
 }
 
 .pill-btc {
     background: rgba(249, 115, 22, 0.1);
     border-color: rgba(249, 115, 22, 0.25);
-    color: #d4a373;
+    color: #f07f2e;
 }
 
 .pill-vix-low {
     background: rgba(34, 197, 94, 0.1);
     border-color: rgba(34, 197, 94, 0.25);
-    color: #7bc8a4;
+    color: #38c775;
 }
 
 .pill-vix-mid {
     background: rgba(210, 153, 34, 0.1);
     border-color: rgba(210, 153, 34, 0.25);
-    color: #c9b06a;
+    color: #d09f34;
 }
 
 .pill-vix-high {
     background: rgba(249, 115, 22, 0.1);
     border-color: rgba(249, 115, 22, 0.25);
-    color: #d4a373;
+    color: #f07f2e;
 }
 
 .pill-vix-extreme {
     background: rgba(229, 83, 75, 0.12);
     border-color: rgba(229, 83, 75, 0.3);
-    color: #c9847f;
+    color: #de5f58;
 }
 
 .pill-bull {
     background: rgba(63, 185, 80, 0.12);
     border-color: rgba(63, 185, 80, 0.3);
-    color: #7bc8a4;
+    color: #38c775;
     margin-left: auto;
 }
 
 .pill-bear {
     background: rgba(229, 83, 75, 0.12);
     border-color: rgba(229, 83, 75, 0.3);
-    color: #c9847f;
+    color: #de5f58;
     margin-left: auto;
 }
 
 .pill-neutral {
     background: rgba(210, 153, 34, 0.1);
     border-color: rgba(210, 153, 34, 0.25);
-    color: #c9b06a;
+    color: #d09f34;
     margin-left: auto;
 }
 
