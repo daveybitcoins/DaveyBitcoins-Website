@@ -212,7 +212,7 @@
       <thead id="peProjHead"></thead>
       <tbody id="peProjBody"></tbody>
     </table>
-    <div style="text-align:center;font-size:0.65rem;color:var(--meth-text);margin-top:8px;letter-spacing:0.3px">Base EPS: $275 (2025 actual) · Current EPS Estimate 2026: $310 · Growth applied from 2025 forward · Last updated: Mar 2025 · Next recommended update: May 2026</div>
+    <div style="text-align:center;font-size:0.65rem;color:var(--meth-text);margin-top:8px;letter-spacing:0.3px">Base EPS: $271 (2025 actual) · Current EPS Estimate 2026: $320 · Growth applied from 2025 forward · Last updated: Mar 2026 · Next recommended update: Jul 2026</div>
   </div>
   <div class="risk-lows-wrap">
     <h4>Notable Historic Market Events</h4>
@@ -468,9 +468,9 @@ async function main() {
 
   // Dashboard
   document.getElementById('vPrice').textContent = '$' + last.price.toLocaleString(undefined,{maximumFractionDigits:2});
-  // Dynamic 2026 Forward P/E — consensus EPS ~$310 for SPX; SPY ≈ SPX/10
-  // Last updated: March 2025 | Next Recommended Update: May 2026 (after Q1 earnings)
-  var fwdEPS2026 = 310;
+  // Dynamic 2026 Forward P/E — consensus EPS ~$320 for SPX; SPY ≈ SPX/10
+  // Last updated: March 2026 (FactSet Earnings Insight 3/27/26) | Next Recommended Update: Jul 2026 (after Q1 earnings)
+  var fwdEPS2026 = 320;
   var spxEstimate = last.price * 10;
   var fwdPE = (spxEstimate / fwdEPS2026).toFixed(1);
   document.getElementById('vFwdPE').textContent = '2026 Fwd P/E: ' + fwdPE + '×';
@@ -516,7 +516,7 @@ async function main() {
   // Forward P/E Price Projection Table (interactive)
   function buildPEProjectionTable(growthPct) {
     const epsGrowth = growthPct / 100;
-    const baseEPS2025 = 275; // 2025 actual SPX EPS base
+    const baseEPS2025 = 271; // 2025 actual SPX EPS (FactSet CY2025: $271.23)
     const baseYear = 2025;
     const years = [2026, 2027, 2028, 2029, 2030, 2031];
     const peMultiples = [15, 16, 17, 18, 19, 20, 21, 22];
