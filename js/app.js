@@ -262,7 +262,7 @@
         let html = el.innerHTML;
         DATA.index_context.forEach(idx => {
             const cls = idx.symbol === "BTC" ? "pill-btc" : idx.symbol === "SPY" ? "pill-spy" : "pill-qqq";
-            html += `<span class="pill ${cls}"><strong>${idx.symbol}</strong> ${fmtPrice(idx.price)} <span class="${colorClass(idx.chg_1d)}">${fmtPct(idx.chg_1d)}</span></span>`;
+            html += `<span class="pill ${cls}"><strong>${idx.symbol}</strong> ${fmtPrice(idx.price)}</span>`;
         });
         if (DATA.vix_context) {
             const vix = DATA.vix_context.level;
