@@ -1079,7 +1079,7 @@ async function main() {
     const tc = themeColors();
     const cv = document.getElementById('midtermCanvas'), ctx = cv.getContext('2d');
     const W = cv.width, H = cv.height;
-    const P = { t: 24, r: 60, b: 56, l: 80 };
+    const P = { t: 24, r: 90, b: 56, l: 80 };
     const cw = W - P.l - P.r, ch = H - P.t - P.b;
 
     ctx.fillStyle = tc.canvasBg; ctx.fillRect(0, 0, W, H);
@@ -1131,6 +1131,24 @@ async function main() {
       ctx.fillStyle = tc.axisText; ctx.font = '10px JetBrains Mono';
       ctx.fillText(monthNames[i], x, H - P.b + 18);
     });
+
+    // Right Y-axis: 2026 BTC price
+    const jan1Price2026 = yearData[2026].length ? yearData[2026][0].price / yearData[2026][0].roi : null;
+    if (jan1Price2026) {
+      ctx.textAlign = 'left'; ctx.font = '10px JetBrains Mono';
+      for (let r = minROI; r <= maxROI + 0.001; r += 0.1) {
+        const y = yOf(r);
+        const price = jan1Price2026 * r;
+        ctx.fillStyle = tc.axisText;
+        ctx.fillText('$' + Math.round(price).toLocaleString(), W - P.r + 10, y + 3);
+      }
+      ctx.save();
+      ctx.translate(W - 8, P.t + ch / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillStyle = tc.axisText; ctx.font = '11px JetBrains Mono'; ctx.textAlign = 'center';
+      ctx.fillText('BTC Price', 0, 0);
+      ctx.restore();
+    }
 
     // ---- Shaded band: min to max across midterm years ----
     if (bandData.length > 1) {
@@ -1210,7 +1228,7 @@ async function main() {
       const rect = cv.getBoundingClientRect();
       const scaleX = cv.width / rect.width;
       const mx = (e.clientX - rect.left) * scaleX;
-      const Pad = { t: 24, r: 60, b: 56, l: 80 };
+      const Pad = { t: 24, r: 90, b: 56, l: 80 };
       const chartW = cv.width - Pad.l - Pad.r;
 
       if (mx < Pad.l || mx > cv.width - Pad.r) { tip.style.display = 'none'; return; }
@@ -1238,7 +1256,7 @@ async function main() {
         lines += '<div style="color:#64748b;font-size:0.55rem">Range: ' + closestBand.min.toFixed(3) + ' – ' + closestBand.max.toFixed(3) + '</div>';
       }
       if (closest2026 && Math.abs(closest2026.day - hovDay) <= 3) {
-        lines += '<div style="color:#f87171">2026: ' + closest2026.roi.toFixed(3) + 'x</div>';
+        lines += '<div style="color:#f87171">2026: ' + closest2026.roi.toFixed(3) + 'x ($' + Math.round(closest2026.price).toLocaleString() + ')</div>';
       }
       tip.innerHTML = lines;
       tip.style.display = 'block';
