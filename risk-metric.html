@@ -1118,21 +1118,19 @@ async function main() {
     ctx.fillText('ROI', 0, 0);
     ctx.restore();
 
-    // Vertical grid lines (days of year)
+    // Vertical grid lines (dates)
     ctx.textAlign = 'center';
-    const dayTicks = [0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320, 340, 360];
-    dayTicks.forEach(d => {
+    const monthStarts = [0,31,59,90,120,151,181,212,243,273,304,334];
+    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    monthStarts.forEach((d, i) => {
       if (d > maxDay) return;
       const x = xOf(d);
       ctx.strokeStyle = tc.gridLine; ctx.lineWidth = 0.5; ctx.setLineDash([4,4]);
       ctx.beginPath(); ctx.moveTo(x, P.t); ctx.lineTo(x, H - P.b); ctx.stroke();
       ctx.setLineDash([]);
       ctx.fillStyle = tc.axisText; ctx.font = '10px JetBrains Mono';
-      ctx.fillText(d, x, H - P.b + 18);
+      ctx.fillText(monthNames[i], x, H - P.b + 18);
     });
-    // X-axis label
-    ctx.fillStyle = tc.axisText; ctx.font = '11px JetBrains Mono'; ctx.textAlign = 'center';
-    ctx.fillText('Days Of The Year', P.l + cw / 2, H - 6);
 
     // ---- Shaded band: min to max across midterm years ----
     if (bandData.length > 1) {
@@ -1232,7 +1230,9 @@ async function main() {
       const data2026 = yearData[2026];
       const closest2026 = data2026.length ? data2026.reduce((best, p) => Math.abs(p.day - hovDay) < Math.abs(best.day - hovDay) ? p : best, data2026[0]) : null;
 
-      let lines = '<div class="tt-date">Day ' + hovDay + '</div>';
+      const hovDate = new Date(Date.UTC(2026, 0, 1 + hovDay));
+      const hovLabel = hovDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+      let lines = '<div class="tt-date">' + hovLabel + '</div>';
       if (closestBand && Math.abs(closestBand.day - hovDay) <= 3) {
         lines += '<div style="color:#94a3b8">Avg: ' + closestBand.avg.toFixed(3) + 'x</div>';
         lines += '<div style="color:#64748b;font-size:0.55rem">Range: ' + closestBand.min.toFixed(3) + ' – ' + closestBand.max.toFixed(3) + '</div>';
