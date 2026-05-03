@@ -2,7 +2,7 @@
   "meta": {
     "date": "2026-05-03",
     "total_stocks": 300,
-    "generated_at": "2026-05-03T13:46:00.968460",
+    "generated_at": "2026-05-03T21:01:04.582471",
     "index_etfs": [
       "SPY",
       "QQQ",
@@ -57,26 +57,26 @@
     {
       "symbol": "BTC",
       "name": "Bitcoin",
-      "price": 78590.68,
-      "ema8": 74326.68,
-      "ema13": 75147.38,
-      "ema21": 78647.31,
+      "price": 78886.33,
+      "ema8": 74392.38,
+      "ema13": 75189.62,
+      "ema21": 78674.19,
       "signal": "Bear Rally above 13W",
-      "price_vs_8w": 5.74,
-      "price_vs_13w": 4.58,
-      "price_vs_21w": -0.07,
-      "ema8_vs_13": -1.09,
-      "ema13_vs_21": -4.45,
-      "spread_score": -5.54,
-      "chg_1d": 0.54,
-      "chg_1w": 1.25,
-      "chg_1m": 17.49,
+      "price_vs_8w": 6.04,
+      "price_vs_13w": 4.92,
+      "price_vs_21w": 0.27,
+      "ema8_vs_13": -1.06,
+      "ema13_vs_21": -4.43,
+      "spread_score": -5.49,
+      "chg_1d": 0.91,
+      "chg_1w": 1.63,
+      "chg_1m": 17.93,
       "crossover_alert": null,
-      "risk_combo": 0.22,
-      "risk_mm": 0.253,
-      "risk_zs": 0.191,
-      "fair_value": 133506.48,
-      "dev_pct": -41.1,
+      "risk_combo": 0.222,
+      "risk_mm": 0.255,
+      "risk_zs": 0.194,
+      "fair_value": 133506.7,
+      "dev_pct": -40.9,
       "zone": "Accumulate",
       "zone_color": "#2563eb"
     }
@@ -3760,8 +3760,8 @@
       "ema13_vs_21": 2.08,
       "spread_score": 3.75,
       "pe_ttm": 33.7,
-      "fwd_pe": 28.5,
-      "peg": 3.05,
+      "fwd_pe": 28.4,
+      "peg": 3.04,
       "sma5": 506.96199999999953,
       "sma20": 501.9839999999999,
       "sma50": 497.0392000000005,
@@ -5568,8 +5568,8 @@
       "ema13_vs_21": -0.03,
       "spread_score": -0.83,
       "pe_ttm": 21.7,
-      "fwd_pe": 22.3,
-      "peg": 2.15,
+      "fwd_pe": 22.2,
+      "peg": 2.14,
       "sma5": 331.01599999999996,
       "sma20": 334.2510000000001,
       "sma50": 345.5332000000001,
@@ -7725,8 +7725,8 @@
       "ema13_vs_21": -1.08,
       "spread_score": -1.37,
       "pe_ttm": 22.1,
-      "fwd_pe": 21.1,
-      "peg": 2.89,
+      "fwd_pe": 21.2,
+      "peg": 2.91,
       "sma5": 647.9469999999997,
       "sma20": 647.0572500000006,
       "sma50": 630.3145000000001,
@@ -13122,8 +13122,8 @@
       "ema13_vs_21": 2.08,
       "spread_score": 3.75,
       "pe_ttm": 33.7,
-      "fwd_pe": 28.5,
-      "peg": 3.05,
+      "fwd_pe": 28.4,
+      "peg": 3.04,
       "sma5": 506.96199999999953,
       "sma20": 501.9839999999999,
       "sma50": 497.0392000000005,
@@ -15821,8 +15821,8 @@
       "ema13_vs_21": -1.08,
       "spread_score": -1.37,
       "pe_ttm": 22.1,
-      "fwd_pe": 21.1,
-      "peg": 2.89,
+      "fwd_pe": 21.2,
+      "peg": 2.91,
       "sma5": 647.9469999999997,
       "sma20": 647.0572500000006,
       "sma50": 630.3145000000001,
@@ -23598,8 +23598,8 @@
       "ema13_vs_21": -0.03,
       "spread_score": -0.83,
       "pe_ttm": 21.7,
-      "fwd_pe": 22.3,
-      "peg": 2.15,
+      "fwd_pe": 22.2,
+      "peg": 2.14,
       "sma5": 331.01599999999996,
       "sma20": 334.2510000000001,
       "sma50": 345.5332000000001,
@@ -24894,8 +24894,8 @@
       "ema13_vs_21": -1.08,
       "spread_score": -1.37,
       "pe_ttm": 22.1,
-      "fwd_pe": 21.1,
-      "peg": 2.89,
+      "fwd_pe": 21.2,
+      "peg": 2.91,
       "sma5": 647.9469999999997,
       "sma20": 647.0572500000006,
       "sma50": 630.3145000000001,
@@ -27865,10 +27865,10 @@
   },
   "ai_summary": {
     "market_overview": {
-      "bias": "bullish",
-      "bias_label": "Bullish with Minor Caution",
-      "headline": "Market maintains strong bullish structure with 51% of stocks in Full Bull mode despite SPY EMA compression warning of potential pullback risk.",
-      "detail": "SPY and QQQ both show Full Bull signals but SPY's tight EMA spreads (0.85% and 0.80%) signal bearish cross risk. BTC remains in Bear Rally mode, creating some divergence in the risk-on landscape.",
+      "bias": "mixed",
+      "bias_label": "Mixed Risk-On",
+      "headline": "Broad market shows solid bullish momentum despite geopolitical headwinds and select tech weakness.",
+      "detail": "SPY and QQQ both holding Full Bull structure with 48% of stocks bullish vs 20% bearish. However, SPY showing narrow EMA spreads warning of potential reversal risk.",
       "index_signals": {
         "SPY": "Full Bull",
         "QQQ": "Full Bull",
@@ -27876,46 +27876,46 @@
       }
     },
     "reversal_candidates": {
-      "headline": "Bear Rally Reversals \u2014 Crossover Alert Stocks",
+      "headline": "Bear Rally Breakout Candidates",
       "items": [
         {
           "symbol": "PANW",
           "name": "Palo Alto Networks, Inc.",
           "signal": "Bear Rally above 13W",
-          "crossover_detail": "8W just below 13W (0.09%) \u2014 bullish cross potential",
-          "note": "Cybersecurity leader showing strong momentum with EMAs about to stack bullish.",
-          "type": "bull"
-        },
-        {
-          "symbol": "V",
-          "name": "Visa Inc.",
-          "signal": "Bear Rally above 13W",
-          "crossover_detail": "8W just below 13W (0.51%) \u2014 bullish cross potential",
-          "note": "Payment processor showing resilience with potential EMA bullish cross setup.",
-          "type": "bull"
-        },
-        {
-          "symbol": "BLK",
-          "name": "BlackRock, Inc.",
-          "signal": "Bear Rally above 13W",
-          "crossover_detail": "8W just below 13W (0.24%) \u2014 bullish cross potential; 13W just below 21W (0.96%) \u2014 bullish cross potential",
-          "note": "Asset manager with dual crossover potential signaling potential trend reversal.",
+          "crossover_detail": "8W just below 13W (0.00%) \u2014 bullish cross potential",
+          "note": "Cybersecurity leader perfectly positioned at 8W/13W convergence with strong momentum above both averages.",
           "type": "bull"
         },
         {
           "symbol": "CRWD",
           "name": "CrowdStrike Holdings, Inc.",
           "signal": "Bear Rally above 13W",
-          "crossover_detail": "8W just below 13W (0.35%) \u2014 bullish cross potential",
-          "note": "Cybersecurity momentum play with EMA structure improving rapidly.",
+          "crossover_detail": "8W just below 13W (0.16%) \u2014 bullish cross potential",
+          "note": "Another cyber name showing identical setup with 7% gains above both 8W and 13W EMAs.",
+          "type": "bull"
+        },
+        {
+          "symbol": "V",
+          "name": "Visa Inc.",
+          "signal": "Bear Rally above 13W",
+          "crossover_detail": "8W just below 13W (0.55%) \u2014 bullish cross potential",
+          "note": "Payment giant showing 4.5% strength above 8W with imminent bullish EMA cross potential.",
+          "type": "bull"
+        },
+        {
+          "symbol": "BLK",
+          "name": "BlackRock, Inc.",
+          "signal": "Bear Rally above 13W",
+          "crossover_detail": "8W just below 13W (0.27%) \u2014 bullish cross potential; 13W just below 21W (0.98%) \u2014 bullish cross potential",
+          "note": "Asset manager showing double bullish cross setup with both 8W/13W and 13W/21W convergence.",
           "type": "bull"
         },
         {
           "symbol": "META",
           "name": "Meta Platforms, Inc.",
           "signal": "Full Bear",
-          "crossover_detail": "8W just below 13W (0.25%) \u2014 bullish cross potential",
-          "note": "Social media giant showing signs of bottoming with tight EMA compression.",
+          "crossover_detail": "8W just below 13W (0.29%) \u2014 bullish cross potential",
+          "note": "Mega-cap tech showing early reversal signs despite Full Bear structure with tight EMA convergence.",
           "type": "bull"
         }
       ]
@@ -27924,141 +27924,138 @@
       "headline": "Quality Pullback Entries",
       "items": [
         {
-          "symbol": "YUM",
-          "name": "Yum! Brands, Inc.",
+          "symbol": "HWM",
+          "name": "Howmet Aerospace Inc.",
           "signal": "Bull Pullback \u2192 13W",
-          "price_vs_21w": 1.36,
+          "price_vs_21w": 3.72,
           "vol_quality": "Normal Vol",
-          "note": "Consumer staple showing shallow pullback on normal volume \u2014 orderly selling pattern.",
+          "note": "Aerospace leader pulling back to 13W support on normal volume, suggesting orderly selling in strong uptrend.",
           "type": "bull"
         },
         {
-          "symbol": "WBD",
-          "name": "Warner Bros. Discovery, Inc. - Series A",
-          "signal": "Bull Pullback \u2192 21W",
-          "price_vs_21w": 2.3,
+          "symbol": "DE",
+          "name": "Deere & Company",
+          "signal": "Bull Pullback \u2192 13W",
+          "price_vs_21w": 3.52,
+          "vol_quality": "Normal Vol",
+          "note": "Industrial giant testing 13W with low relative volume indicating institutional accumulation opportunity.",
+          "type": "bull"
+        },
+        {
+          "symbol": "CB",
+          "name": "Chubb Limited",
+          "signal": "Bull Pullback \u2192 13W",
+          "price_vs_21w": 2.36,
           "vol_quality": "Low Vol",
-          "note": "Media stock pullback on low volume suggests lack of selling pressure.",
+          "note": "Insurance leader showing textbook low-volume pullback to 13W support, highest quality entry setup.",
           "type": "bull"
         },
         {
-          "symbol": "JNJ",
-          "name": "Johnson & Johnson",
+          "symbol": "BMY",
+          "name": "Bristol-Myers Squibb Company",
           "signal": "Bull Pullback \u2192 21W",
-          "price_vs_21w": 1.37,
-          "vol_quality": "Normal Vol",
-          "note": "Healthcare defensive showing normal volume pullback \u2014 quality institutional holding pattern.",
-          "type": "bull"
-        },
-        {
-          "symbol": "TJX",
-          "name": "TJX Companies, Inc. (The)",
-          "signal": "Bull Pullback \u2192 21W",
-          "price_vs_21w": 0.97,
-          "vol_quality": "Normal Vol",
-          "note": "Off-price retailer pulling back on normal volume \u2014 healthy consolidation near 21W EMA.",
+          "price_vs_21w": 2.11,
+          "vol_quality": "High Vol",
+          "note": "Pharma pullback to 21W on elevated volume warns of potential institutional distribution \u2014 use caution.",
           "type": "bull"
         }
       ]
     },
     "momentum_themes": {
-      "headline": "Semiconductor & Hardware Revival",
-      "detail": "Chip stocks dominating momentum with INTC (+75% vs 21W), WDC (+54%), and STX (+59%) leading the charge. Storage and networking hardware showing exceptional acceleration after prolonged bear markets.",
+      "headline": "Tech Hardware Revival Leading",
+      "detail": "Electronic technology names dominating momentum leaderboard with storage/semiconductor plays showing massive acceleration. INTC up 83% vs 21W leading broader chip recovery.",
       "top_names": [
         "SNDK",
+        "INTC",
         "LITE",
         "CIEN",
-        "INTC",
-        "WDC"
+        "BE"
       ]
     },
     "sector_analysis": {
-      "headline": "Energy Dominance, Tech Services Collapse",
+      "headline": "Energy Minerals Leading, Health Tech Lagging",
       "strongest": [
         {
           "sector": "Energy minerals",
           "net_score": 100.0,
           "bull_pct": 100.0,
-          "note": "Perfect bullish score driven by Iran war tensions and oil supply disruption."
+          "note": "Perfect bullish score with all 14 energy stocks in Full Bull structure."
         },
         {
           "sector": "Industrial services",
-          "net_score": 85.8,
-          "bull_pct": 92.9,
-          "note": "Infrastructure and services benefiting from geopolitical tensions."
+          "net_score": 87.6,
+          "bull_pct": 93.8,
+          "note": "Broad-based strength across industrial service providers benefiting from infrastructure spending."
         },
         {
-          "sector": "Electronic technology",
-          "net_score": 33.4,
-          "bull_pct": 66.7,
-          "note": "Mixed but improving as semiconductor cycle turns positive."
+          "sector": "Producer manufacturing",
+          "net_score": 66.7,
+          "bull_pct": 77.8,
+          "note": "Manufacturing renaissance continuing with 14 of 18 names showing bullish structure."
         }
       ],
       "weakest": [
         {
-          "sector": "Technology services",
-          "net_score": -75.0,
-          "bear_pct": 87.5,
-          "note": "Software sector under severe pressure with most names in bearish structures."
-        },
-        {
           "sector": "Health technology",
-          "net_score": -33.3,
-          "bear_pct": 60.0,
-          "note": "Healthcare tech struggling with regulatory and valuation pressures."
+          "net_score": -57.1,
+          "bear_pct": 71.4,
+          "note": "Biotech/pharma sector showing widespread weakness with 15 of 21 names bearish."
         },
         {
-          "sector": "Consumer services",
-          "net_score": -33.4,
-          "bear_pct": 66.7,
-          "note": "Discretionary spending pressure weighing on consumer-facing businesses."
+          "sector": "Commercial services",
+          "net_score": -100.0,
+          "bear_pct": 100.0,
+          "note": "All commercial service names showing bearish structure in sector rotation away from services."
+        },
+        {
+          "sector": "Technology services",
+          "net_score": -25.0,
+          "bear_pct": 62.5,
+          "note": "Software sector under pressure despite individual standouts like PANW and CRWD showing reversal potential."
         }
       ],
-      "detail": "Clear rotation from high-multiple tech/healthcare into cyclical energy and industrials as geopolitical tensions drive commodity-focused sectors higher."
+      "detail": "Clear rotation from growth/tech services into cyclical value with energy, industrials, and materials leading while healthcare and software lag significantly."
     },
     "risk_warnings": {
-      "headline": "Risk Factors",
+      "headline": "Key Risk Factors",
       "items": [
         {
-          "text": "SPY EMA compression with 8W only 0.85% above 13W signals potential bearish cross risk",
+          "text": "SPY showing narrow EMA spreads (1.69 spread score) warning of potential trend reversal despite Full Bull signal",
           "type": "caution"
         },
         {
-          "text": "Technology services sector showing 87.5% bearish participation - avoid laggards",
+          "text": "BTC stuck in Bear Rally structure while SPY/QQQ bullish creates divergence risk for risk assets",
+          "type": "caution"
+        },
+        {
+          "text": "High-volume pullbacks in BMY and similar names suggest institutional distribution \u2014 avoid high-vol weakness",
+          "type": "caution"
+        },
+        {
+          "text": "20% of market still in Full Bear with deepest bears like BSX down -25% from 21W highs showing sector stress",
           "type": "bear"
-        },
-        {
-          "text": "BTC divergence from equity markets may signal risk-off rotation ahead",
-          "type": "caution"
-        },
-        {
-          "text": "High volume pullbacks in TER (1.87x avg) suggest institutional distribution pressure",
-          "type": "caution"
         }
       ]
     },
     "news_drivers": {
       "headline": "What Moved Markets",
-      "summary": "Iran war escalation continues driving energy sector outperformance while creating broader market volatility. Oil hit four-year highs before retreating on conflict concerns. Blue Owl surged on 10x SpaceX investment gains, while Cardinal Health got hammered on mixed results.",
+      "summary": "U.S.-Iran geopolitical tensions dominated headlines but failed to derail risk assets, with markets focusing on big tech earnings strength. Healthcare cost pressures and energy infrastructure disruptions provided sector-specific headwinds and tailwinds respectively.",
       "items": [
         {
-          "text": "Iran war tensions pushing oil to four-year highs, benefiting energy minerals sector"
+          "text": "Iran-U.S. tensions and Strait of Hormuz concerns boosted energy sector leadership while weighing on broader sentiment"
         },
         {
-          "text": "Blue Owl private credit surge on SpaceX 10x return disclosure"
+          "text": "Big tech earnings vindicated AI spending thesis, supporting electronic technology momentum despite software sector weakness"
         },
         {
-          "text": "Cardinal Health plummeted on disappointing quarterly results"
+          "text": "Healthcare cost surge narrative pressured biotech/pharma names, contributing to sector's -57% net bearish score"
         },
         {
-          "text": "Clean energy transition accelerating due to Iran conflict supply disruptions"
-        },
-        {
-          "text": "US naval blockade squeezing Iran oil exports, supporting crude prices"
+          "text": "UAE air traffic normalization signals easing Middle East disruption fears for transportation sector"
         }
       ]
     },
-    "generated_at": "2026-04-30T21:02:02.821068",
+    "generated_at": "2026-05-03T21:01:43.073102",
     "model": "claude-sonnet-4-20250514"
   }
 }
