@@ -244,8 +244,15 @@
 
         var existing = holdings.findIndex(function (h) { return h.ticker === ticker; });
         if (existing >= 0) {
-            holdings[existing].shares = shares;
-            if (cost != null) holdings[existing].costBasis = cost;
+            var old = holdings[existing];
+            var oldTotal = old.shares * (old.costBasis || 0);
+            var newTotal = shares * (cost || 0);
+            old.shares += shares;
+            if (old.costBasis && cost) {
+                old.costBasis = Math.round(((oldTotal + newTotal) / old.shares) * 100) / 100;
+            } else if (cost) {
+                old.costBasis = cost;
+            }
         } else {
             holdings.push({ ticker: ticker, shares: shares, costBasis: cost });
         }
