@@ -26,7 +26,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install tradingview-screener yfinance
+        run: pip install 'tradingview-screener==3.1.0' yfinance
 
       - name: Fetch dividend data
         run: python scripts/fetch_dividends.py
