@@ -409,19 +409,50 @@
 
             // Project from last_payments if available
             if (div.last_payments && div.last_payments.length > 0) {
-                var lastPayment = div.last_payments[div.last_payments.length - 1];
-                var lastDate = new Date(lastPayment.ex_date + "T00:00:00");
-                var gapDays;
-                if (freq === "monthly") gapDays = 30;
-                else if (freq === "quarterly") gapDays = 91;
-                else if (freq === "semi-annual") gapDays = 182;
-                else gapDays = 365;
+                var payments = div.last_payments;
 
+                // Add known payments that fall in the calendar year
+                payments.forEach(function (p) {
+                    var d = new Date(p.ex_date + "T00:00:00");
+                    if (d.getFullYear() === year) {
+                        addEvent(p.ex_date, h.ticker, h.shares * p.amount, "ex");
+                    }
+                });
+
+                // Compute average day-of-month from history for projections
+                var daySum = 0;
+                payments.forEach(function (p) {
+                    daySum += new Date(p.ex_date + "T00:00:00").getDate();
+                });
+                var avgDay = Math.round(daySum / payments.length);
+
+                var monthsPerPayment;
+                if (freq === "monthly") monthsPerPayment = 1;
+                else if (freq === "quarterly") monthsPerPayment = 3;
+                else if (freq === "semi-annual") monthsPerPayment = 6;
+                else monthsPerPayment = 12;
+
+                // Find the last known payment month
+                var lastP = payments[payments.length - 1];
+                var lastPDate = new Date(lastP.ex_date + "T00:00:00");
+                var lastPMonth = lastPDate.getFullYear() * 12 + lastPDate.getMonth();
+
+                // Known payment dates (to avoid duplicates)
+                var knownDates = {};
+                payments.forEach(function (p) { knownDates[p.ex_date] = true; });
+
+                // Project forward from last payment
                 for (var p = 1; p <= 12; p++) {
-                    var projected = new Date(lastDate.getTime() + p * gapDays * 86400000);
-                    var projStr = projected.toISOString().slice(0, 10);
-                    if (projStr === div.ex_dividend_date) continue;
-                    addEvent(projStr, h.ticker, income, "ex");
+                    var projMonth = lastPMonth + p * monthsPerPayment;
+                    var projYear = Math.floor(projMonth / 12);
+                    var projM = projMonth % 12;
+                    var daysInMonth = new Date(projYear, projM + 1, 0).getDate();
+                    var day = Math.min(avgDay, daysInMonth);
+                    var projDate = new Date(projYear, projM, day);
+                    var projStr = projDate.toISOString().slice(0, 10);
+                    if (!knownDates[projStr] && projDate.getFullYear() === year) {
+                        addEvent(projStr, h.ticker, income, "est");
+                    }
                 }
             } else {
                 // No payment history — project estimated dates from start of year

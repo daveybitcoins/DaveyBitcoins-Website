@@ -19693,7 +19693,24 @@
       "payout_ratio": null,
       "frequency": "monthly",
       "ex_dividend_date": null,
-      "last_payments": []
+      "last_payments": [
+        {
+          "ex_date": "2026-02-04",
+          "amount": 1.6
+        },
+        {
+          "ex_date": "2026-03-04",
+          "amount": 1.3562
+        },
+        {
+          "ex_date": "2026-04-08",
+          "amount": 1.3475
+        },
+        {
+          "ex_date": "2026-05-06",
+          "amount": 1.5682
+        }
+      ]
     },
     "QQQY": {
       "name": "Defiance Nasdaq 100 Weekly Distribution ETF",
@@ -20859,7 +20876,12 @@
       "payout_ratio": null,
       "frequency": "monthly",
       "ex_dividend_date": null,
-      "last_payments": []
+      "last_payments": [
+        {
+          "ex_date": "2026-05-01",
+          "amount": 0.66676
+        }
+      ]
     },
     "XV": {
       "name": "Simplify Target 15 Distribution ETF",
@@ -21376,7 +21398,12 @@
       "payout_ratio": null,
       "frequency": "monthly",
       "ex_dividend_date": null,
-      "last_payments": []
+      "last_payments": [
+        {
+          "ex_date": "2026-05-01",
+          "amount": 0.5545
+        }
+      ]
     },
     "JFR": {
       "name": "Nuveen Floating Rate Income Fund",
@@ -22465,7 +22492,32 @@
       "payout_ratio": null,
       "frequency": "monthly",
       "ex_dividend_date": null,
-      "last_payments": []
+      "last_payments": [
+        {
+          "ex_date": "2025-11-26",
+          "amount": 0.2684
+        },
+        {
+          "ex_date": "2025-12-30",
+          "amount": 0.27069
+        },
+        {
+          "ex_date": "2026-01-29",
+          "amount": 0.24458
+        },
+        {
+          "ex_date": "2026-02-26",
+          "amount": 0.23625
+        },
+        {
+          "ex_date": "2026-03-30",
+          "amount": 0.24457
+        },
+        {
+          "ex_date": "2026-04-29",
+          "amount": 0.27088
+        }
+      ]
     },
     "EDD": {
       "name": "Morgan Stanley Emerging Markets Domestic Debt Fund, Inc.",
@@ -24005,7 +24057,32 @@
       "payout_ratio": null,
       "frequency": "monthly",
       "ex_dividend_date": null,
-      "last_payments": []
+      "last_payments": [
+        {
+          "ex_date": "2025-12-01",
+          "amount": 0.37414
+        },
+        {
+          "ex_date": "2026-01-02",
+          "amount": 0.37549
+        },
+        {
+          "ex_date": "2026-02-02",
+          "amount": 0.37627
+        },
+        {
+          "ex_date": "2026-03-02",
+          "amount": 0.3718
+        },
+        {
+          "ex_date": "2026-04-01",
+          "amount": 0.35339
+        },
+        {
+          "ex_date": "2026-05-01",
+          "amount": 0.38314
+        }
+      ]
     },
     "KTF": {
       "name": "DWS Municipal Income Trust",
@@ -32662,7 +32739,32 @@
       "payout_ratio": null,
       "frequency": "monthly",
       "ex_dividend_date": null,
-      "last_payments": []
+      "last_payments": [
+        {
+          "ex_date": "2025-12-01",
+          "amount": 0.31291
+        },
+        {
+          "ex_date": "2025-12-19",
+          "amount": 0.32305
+        },
+        {
+          "ex_date": "2026-02-02",
+          "amount": 0.30924
+        },
+        {
+          "ex_date": "2026-03-02",
+          "amount": 0.2724
+        },
+        {
+          "ex_date": "2026-04-01",
+          "amount": 0.29269
+        },
+        {
+          "ex_date": "2026-05-01",
+          "amount": 0.29792
+        }
+      ]
     },
     "BSCQ": {
       "name": "Invesco BulletShares 2026 Corporate Bond ETF",
@@ -58787,7 +58889,32 @@
       "payout_ratio": null,
       "frequency": "monthly",
       "ex_dividend_date": null,
-      "last_payments": []
+      "last_payments": [
+        {
+          "ex_date": "2025-11-26",
+          "amount": 1.0181
+        },
+        {
+          "ex_date": "2025-12-24",
+          "amount": 0.99666
+        },
+        {
+          "ex_date": "2026-01-21",
+          "amount": 1.0427
+        },
+        {
+          "ex_date": "2026-02-18",
+          "amount": 0.7608
+        },
+        {
+          "ex_date": "2026-03-18",
+          "amount": 0.7804
+        },
+        {
+          "ex_date": "2026-04-22",
+          "amount": 0.7982
+        }
+      ]
     },
     "SPYI": {
       "name": "NEOS S&P 500 High Income ETF",
@@ -58798,7 +58925,32 @@
       "payout_ratio": null,
       "frequency": "monthly",
       "ex_dividend_date": null,
-      "last_payments": []
+      "last_payments": [
+        {
+          "ex_date": "2025-11-26",
+          "amount": 0.5216
+        },
+        {
+          "ex_date": "2025-12-24",
+          "amount": 0.53163
+        },
+        {
+          "ex_date": "2026-01-21",
+          "amount": 0.5309
+        },
+        {
+          "ex_date": "2026-02-18",
+          "amount": 0.5219
+        },
+        {
+          "ex_date": "2026-03-18",
+          "amount": 0.5104
+        },
+        {
+          "ex_date": "2026-04-22",
+          "amount": 0.5247
+        }
+      ]
     },
     "KSLV": {
       "name": "Kurv Silver Enhanced Income ETF",
@@ -58809,7 +58961,32 @@
       "payout_ratio": null,
       "frequency": "monthly",
       "ex_dividend_date": null,
-      "last_payments": []
+      "last_payments": [
+        {
+          "ex_date": "2025-11-19",
+          "amount": 0.5
+        },
+        {
+          "ex_date": "2025-12-17",
+          "amount": 0.55
+        },
+        {
+          "ex_date": "2026-01-21",
+          "amount": 0.75
+        },
+        {
+          "ex_date": "2026-02-18",
+          "amount": 0.75
+        },
+        {
+          "ex_date": "2026-03-18",
+          "amount": 0.75
+        },
+        {
+          "ex_date": "2026-04-22",
+          "amount": 0.75
+        }
+      ]
     },
     "MLPI": {
       "name": "NEOS MLP & Energy Infrastructure High Income ETF",
@@ -58820,7 +58997,28 @@
       "payout_ratio": null,
       "frequency": "monthly",
       "ex_dividend_date": null,
-      "last_payments": []
+      "last_payments": [
+        {
+          "ex_date": "2025-12-24",
+          "amount": 0.65239
+        },
+        {
+          "ex_date": "2026-01-21",
+          "amount": 0.6608
+        },
+        {
+          "ex_date": "2026-02-18",
+          "amount": 0.6739
+        },
+        {
+          "ex_date": "2026-03-18",
+          "amount": 0.68
+        },
+        {
+          "ex_date": "2026-04-22",
+          "amount": 0.6667
+        }
+      ]
     },
     "KGLD": {
       "name": "Kurv Gold Enhanced Income ETF",
@@ -58831,7 +59029,32 @@
       "payout_ratio": null,
       "frequency": "monthly",
       "ex_dividend_date": null,
-      "last_payments": []
+      "last_payments": [
+        {
+          "ex_date": "2025-12-03",
+          "amount": 0.3
+        },
+        {
+          "ex_date": "2026-01-07",
+          "amount": 0.3
+        },
+        {
+          "ex_date": "2026-02-04",
+          "amount": 0.3
+        },
+        {
+          "ex_date": "2026-03-04",
+          "amount": 0.45
+        },
+        {
+          "ex_date": "2026-04-08",
+          "amount": 0.45
+        },
+        {
+          "ex_date": "2026-05-06",
+          "amount": 0.4
+        }
+      ]
     }
   }
 }
