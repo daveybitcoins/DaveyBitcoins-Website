@@ -115,12 +115,16 @@
                 if (matches.length >= 10) break;
             }
 
-            if (matches.length === 0) { dropdown.style.display = "none"; return; }
-
-            dropdown.innerHTML = matches.map(function (m) {
+            var html = matches.map(function (m) {
                 return '<div class="ticker-option" data-symbol="' + m.symbol + '"><strong>' + m.symbol + '</strong><span>' + m.name + '</span></div>';
             }).join("");
-            dropdown.style.display = "";
+
+            if (matches.length === 0 && val.length >= 1) {
+                html = '<div class="ticker-option" data-symbol="' + val + '"><strong>' + val + '</strong><span style="opacity:0.6">Not in dividend data — add anyway</span></div>';
+            }
+
+            dropdown.innerHTML = html;
+            dropdown.style.display = "block";
 
             dropdown.querySelectorAll(".ticker-option").forEach(function (opt) {
                 opt.addEventListener("click", function () {
