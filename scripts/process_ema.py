@@ -27,12 +27,18 @@ CROSSOVER_THRESHOLD = 1.0  # percent
 TOP_N = 300  # Filter to top N stocks by market cap
 
 
+def _date_from_path(filepath):
+    """Extract the YYYY-MM-DD date string embedded in a CSV filename."""
+    m = re.search(r"(\d{4}-\d{2}-\d{2})", os.path.basename(filepath))
+    return m.group(1) if m else ""
+
+
 def find_latest_csv():
     pattern = os.path.join(CSV_DIR, "Weekly EMA Values_*.csv")
     files = glob.glob(pattern)
     if not files:
         raise FileNotFoundError(f"No Weekly EMA CSV files found in {CSV_DIR}")
-    return max(files, key=os.path.getmtime)
+    return max(files, key=_date_from_path)
 
 
 def find_latest_index_csv():
@@ -41,7 +47,7 @@ def find_latest_index_csv():
     files = glob.glob(pattern)
     if not files:
         return None
-    return max(files, key=os.path.getmtime)
+    return max(files, key=_date_from_path)
 
 
 def extract_date_from_filename(filepath):
@@ -1020,7 +1026,7 @@ def build_vix_context():
     files = glob.glob(pattern)
     if not files:
         return None
-    latest = max(files, key=os.path.getmtime)
+    latest = max(files, key=_date_from_path)
     try:
         with open(latest, "r") as f:
             return json.load(f)
