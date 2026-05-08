@@ -395,9 +395,9 @@
             const last = pts[n - 1];
             const risk = last.riskCombo;
             let zone, zone_color;
-            if (risk < 0.25) { zone = "Accumulate"; zone_color = "#2563eb"; }
+            if (risk < 0.20) { zone = "Accumulate"; zone_color = "#2563eb"; }
             else if (risk < 0.50) { zone = "Neutral"; zone_color = "#10b981"; }
-            else if (risk < 0.75) { zone = "Caution"; zone_color = "#eab308"; }
+            else if (risk < 0.80) { zone = "Caution"; zone_color = "#eab308"; }
             else { zone = "Euphoria"; zone_color = "#ef4444"; }
 
             btcRiskData = { risk_combo: risk, zone, zone_color };
