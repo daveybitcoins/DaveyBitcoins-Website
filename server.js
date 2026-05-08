@@ -71,6 +71,47 @@ app.get('/api/options/:symbol', async (req, res) => {
     }
 });
 
+// Yahoo Finance dividend history proxy
+app.get('/api/dividends/:symbol', async (req, res) => {
+    const symbol = encodeURIComponent(req.params.symbol.toUpperCase());
+    try {
+        await getYahooCrumb();
+        const now = Math.floor(Date.now() / 1000);
+        const oneYearAgo = now - 365 * 86400;
+        let url = `https://query2.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${oneYearAgo}&period2=${now}&interval=1mo&events=div&crumb=${encodeURIComponent(yahooCrumb)}`;
+
+        let resp = await fetch(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+                'Cookie': yahooCookie
+            }
+        });
+
+        if (resp.status === 401) {
+            yahooCrumb = null;
+            crumbExpiry = 0;
+            await getYahooCrumb();
+            url = `https://query2.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${oneYearAgo}&period2=${now}&events=div&crumb=${encodeURIComponent(yahooCrumb)}`;
+            resp = await fetch(url, {
+                headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', 'Cookie': yahooCookie }
+            });
+        }
+
+        const data = await resp.json();
+        const events = data?.chart?.result?.[0]?.events?.dividends || {};
+        const payments = Object.values(events)
+            .map(e => ({
+                ex_date: new Date(e.date * 1000).toISOString().slice(0, 10),
+                amount: Math.round(e.amount * 10000) / 10000,
+            }))
+            .sort((a, b) => a.ex_date.localeCompare(b.ex_date));
+
+        res.json({ symbol: req.params.symbol.toUpperCase(), payments });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // This tells Express to serve your index.html and any other static files (like data.csv) in this folder
 app.use(express.static(path.join(__dirname)));
 

@@ -158,6 +158,66 @@ async function handleOptionsProxy(request) {
   }
 }
 
+// ====== YAHOO FINANCE DIVIDEND HISTORY PROXY ======
+async function handleDividendHistoryProxy(request) {
+  const url = new URL(request.url);
+  const parts = url.pathname.split('/');
+  const symbol = parts[3]?.toUpperCase();
+  if (!symbol) {
+    return new Response(JSON.stringify({ error: 'Missing symbol' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+    });
+  }
+
+  try {
+    await getYahooCrumb();
+    // Fetch last 12 months of dividend events
+    const now = Math.floor(Date.now() / 1000);
+    const oneYearAgo = now - 365 * 86400;
+    const yahooUrl = `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?period1=${oneYearAgo}&period2=${now}&interval=1mo&events=div&crumb=${encodeURIComponent(yahooCrumb)}`;
+
+    let resp = await fetch(yahooUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+        'Cookie': yahooCookie,
+      },
+    });
+
+    if (resp.status === 401) {
+      yahooCrumb = null;
+      crumbExpiry = 0;
+      await getYahooCrumb();
+      resp = await fetch(
+        `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?period1=${oneYearAgo}&period2=${now}&interval=1mo&events=div&crumb=${encodeURIComponent(yahooCrumb)}`,
+        { headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', 'Cookie': yahooCookie } }
+      );
+    }
+
+    const data = await resp.json();
+    const events = data?.chart?.result?.[0]?.events?.dividends || {};
+    const payments = Object.values(events)
+      .map(e => ({
+        ex_date: new Date(e.date * 1000).toISOString().slice(0, 10),
+        amount: Math.round(e.amount * 10000) / 10000,
+      }))
+      .sort((a, b) => a.ex_date.localeCompare(b.ex_date));
+
+    return new Response(JSON.stringify({ symbol, payments }), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=3600',
+        ...CORS_HEADERS,
+      },
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+    });
+  }
+}
+
 // ====== MASSIVE (OPTIONS GREEKS) PROXY ======
 async function handleMassiveProxy(request, env) {
   const url = new URL(request.url);
@@ -247,6 +307,11 @@ export default {
     // Yahoo Finance options proxy: /api/options/NVDA?date=1716595200
     if (url.pathname.startsWith('/api/options/')) {
       return handleOptionsProxy(request);
+    }
+
+    // Yahoo Finance dividend history: /api/dividends/AAPL
+    if (url.pathname.startsWith('/api/dividends/')) {
+      return handleDividendHistoryProxy(request);
     }
 
     // Massive API proxy: /api/massive/options/AAPL or /api/massive/stock/AAPL

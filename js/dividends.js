@@ -2,6 +2,8 @@
     "use strict";
 
     const WORKER_URL = "https://daveybitcoins-api.dave-erazo78.workers.dev";
+    var IS_LOCAL = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+    var API_BASE = IS_LOCAL ? "" : WORKER_URL;
     const STORAGE_KEY = "dividend_holdings";
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
@@ -66,6 +68,7 @@
 
         if (holdings.length > 0) {
             await fetchLivePrices();
+            await fetchDividendHistory();
         }
 
         var now = new Date();
@@ -97,6 +100,63 @@
         var div = getDividendInfo(ticker);
         if (div && div.close) return div.close;
         return null;
+    }
+
+    // === DIVIDEND HISTORY (fetched from Yahoo Finance via worker) ===
+    var DIV_HISTORY_TTL = 24 * 60 * 60 * 1000; // 24 hours
+
+    function getDivHistoryCache() {
+        try {
+            var raw = localStorage.getItem("dividend_history_cache");
+            return raw ? JSON.parse(raw) : {};
+        } catch { return {}; }
+    }
+
+    function setDivHistoryCache(cache) {
+        localStorage.setItem("dividend_history_cache", JSON.stringify(cache));
+    }
+
+    async function fetchDividendHistory() {
+        var cache = getDivHistoryCache();
+        var now = Date.now();
+        var stale = [];
+
+        holdings.forEach(function (h) {
+            var entry = cache[h.ticker];
+            if (!entry || now - entry.ts > DIV_HISTORY_TTL) {
+                stale.push(h.ticker);
+            }
+        });
+
+        if (stale.length === 0) {
+            applyDividendHistory(cache);
+            return;
+        }
+
+        await Promise.all(stale.map(async function (ticker) {
+            try {
+                var resp = await fetch(API_BASE + "/api/dividends/" + encodeURIComponent(ticker));
+                var data = await resp.json();
+                if (data.payments && data.payments.length > 0) {
+                    cache[ticker] = { ts: now, payments: data.payments };
+                }
+            } catch { /* keep stale cache or skip */ }
+        }));
+
+        setDivHistoryCache(cache);
+        applyDividendHistory(cache);
+    }
+
+    function applyDividendHistory(cache) {
+        for (var ticker in cache) {
+            var div = dividendData.tickers[ticker];
+            if (div && cache[ticker].payments && cache[ticker].payments.length > 0) {
+                var existing = div.last_payments || [];
+                if (existing.length < cache[ticker].payments.length) {
+                    div.last_payments = cache[ticker].payments;
+                }
+            }
+        }
     }
 
     // === TICKER AUTOCOMPLETE ===
