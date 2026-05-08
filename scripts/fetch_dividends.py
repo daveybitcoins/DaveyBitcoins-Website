@@ -94,7 +94,11 @@ def _enrich_one(symbol, tv_data):
         payout_ratio = info.get("payoutRatio")
 
         if dividend_yield:
-            dividend_yield = round(dividend_yield * 100, 2)
+            # yfinance returns yield as decimal (0.0055) or already percent (13.96)
+            if dividend_yield < 1:
+                dividend_yield = round(dividend_yield * 100, 2)
+            else:
+                dividend_yield = round(dividend_yield, 2)
 
         ex_date_str = None
         if ex_date_epoch:
@@ -128,6 +132,18 @@ def _enrich_one(symbol, tv_data):
 
         if dividend_yield is None and tv_data.get("dividend_yield_recent"):
             dividend_yield = round(tv_data["dividend_yield_recent"], 2)
+
+        # Compute dividend_rate from history if yfinance didn't provide it
+        if dividend_rate is None and last_payments:
+            avg_payment = sum(p["amount"] for p in last_payments) / len(last_payments)
+            if frequency == "monthly":
+                dividend_rate = round(avg_payment * 12, 4)
+            elif frequency == "semi-annual":
+                dividend_rate = round(avg_payment * 2, 4)
+            elif frequency == "annual":
+                dividend_rate = round(avg_payment, 4)
+            else:
+                dividend_rate = round(avg_payment * 4, 4)
 
         if dividend_rate is None and tv_data.get("dividends_per_share_fq"):
             dps_fq = tv_data["dividends_per_share_fq"]
