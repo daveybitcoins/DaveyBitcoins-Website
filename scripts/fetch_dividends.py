@@ -94,11 +94,7 @@ def _enrich_one(symbol, tv_data):
         payout_ratio = info.get("payoutRatio")
 
         if dividend_yield:
-            # yfinance returns yield as decimal (0.0055) or already percent (13.96)
-            if dividend_yield < 1:
-                dividend_yield = round(dividend_yield * 100, 2)
-            else:
-                dividend_yield = round(dividend_yield, 2)
+            dividend_yield = round(dividend_yield, 2)
 
         ex_date_str = None
         if ex_date_epoch:
