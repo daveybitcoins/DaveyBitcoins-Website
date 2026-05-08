@@ -131,9 +131,14 @@ def build_ticker_data(df):
         if payout and not (isinstance(payout, float) and math.isnan(payout)):
             payout_ratio = round(payout, 2)
 
+        close_price = None
+        if price and not (isinstance(price, float) and math.isnan(price)):
+            close_price = round(price, 2)
+
         tickers[symbol] = {
             "name": desc,
             "sector": row.get("sector", ""),
+            "close": close_price,
             "dividend_yield": dividend_yield,
             "dividend_rate": dividend_rate,
             "payout_ratio": payout_ratio,
