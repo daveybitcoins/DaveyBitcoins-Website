@@ -44,7 +44,7 @@ def fetch_tv_universe():
         .select(*TV_FIELDS)
         .where(
             col("dividend_yield_recent") > 0,
-            col("is_primary"),
+            col("is_primary") == True,
             col("exchange").isin(["NYSE", "NASDAQ", "AMEX"]),
             col("type") == "stock",
         )
