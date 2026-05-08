@@ -2,7 +2,7 @@
   "meta": {
     "date": "2026-05-08",
     "generated_at": "2026-05-08T18:09:46.335799",
-    "total_tickers": 5343
+    "total_tickers": 5348
   },
   "tickers": {
     "ICON": {
@@ -58775,6 +58775,61 @@
       "dividend_rate": null,
       "payout_ratio": null,
       "frequency": "quarterly",
+      "ex_dividend_date": null,
+      "last_payments": []
+    },
+    "BTCI": {
+      "name": "NEOS Bitcoin High Income ETF",
+      "sector": "Digital Assets",
+      "close": null,
+      "dividend_yield": 25.0,
+      "dividend_rate": 9.58,
+      "payout_ratio": null,
+      "frequency": "monthly",
+      "ex_dividend_date": null,
+      "last_payments": []
+    },
+    "SPYI": {
+      "name": "NEOS S&P 500 High Income ETF",
+      "sector": "Miscellaneous",
+      "close": null,
+      "dividend_yield": 12.09,
+      "dividend_rate": 6.23,
+      "payout_ratio": null,
+      "frequency": "monthly",
+      "ex_dividend_date": null,
+      "last_payments": []
+    },
+    "KSLV": {
+      "name": "Kurv Silver Enhanced Income ETF",
+      "sector": "Miscellaneous",
+      "close": null,
+      "dividend_yield": 27.35,
+      "dividend_rate": 9.0,
+      "payout_ratio": null,
+      "frequency": "monthly",
+      "ex_dividend_date": null,
+      "last_payments": []
+    },
+    "MLPI": {
+      "name": "NEOS MLP & Energy Infrastructure High Income ETF",
+      "sector": "Energy Minerals",
+      "close": null,
+      "dividend_yield": 14.88,
+      "dividend_rate": 8.17,
+      "payout_ratio": null,
+      "frequency": "monthly",
+      "ex_dividend_date": null,
+      "last_payments": []
+    },
+    "KGLD": {
+      "name": "Kurv Gold Enhanced Income ETF",
+      "sector": "Miscellaneous",
+      "close": null,
+      "dividend_yield": 10.36,
+      "dividend_rate": 3.3,
+      "payout_ratio": null,
+      "frequency": "monthly",
       "ex_dividend_date": null,
       "last_payments": []
     }

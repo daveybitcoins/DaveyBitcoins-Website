@@ -36,7 +36,48 @@ MONTHLY_ETFS = {
     "PFLT", "PSEC", "OXLC", "PNNT", "GLAD", "TPVG", "ARCC", "HTGC",
     "HRZN", "OXSQ", "SLRC", "GBDC", "BXSL", "OBDC", "CSWC", "FDUS",
     "MFIC", "CCAP", "TRIN", "ADIT", "LTC", "EPR", "SLG", "LAND",
-    "GOOD", "ADC",
+    "GOOD", "ADC", "BTCI", "KSLV", "MLPI", "KGLD",
+}
+
+# Tickers TradingView often misses — merged into output as fallbacks.
+# Values are periodically verified; the script prefers TradingView data
+# when available.
+FALLBACK_TICKERS = {
+    "BTCI": {
+        "name": "NEOS Bitcoin High Income ETF",
+        "sector": "Digital Assets",
+        "dividend_yield": 25.0,
+        "dividend_rate": 9.58,
+        "frequency": "monthly",
+    },
+    "SPYI": {
+        "name": "NEOS S&P 500 High Income ETF",
+        "sector": "Miscellaneous",
+        "dividend_yield": 12.09,
+        "dividend_rate": 6.23,
+        "frequency": "monthly",
+    },
+    "KSLV": {
+        "name": "Kurv Silver Enhanced Income ETF",
+        "sector": "Miscellaneous",
+        "dividend_yield": 27.35,
+        "dividend_rate": 9.0,
+        "frequency": "monthly",
+    },
+    "MLPI": {
+        "name": "NEOS MLP & Energy Infrastructure High Income ETF",
+        "sector": "Energy Minerals",
+        "dividend_yield": 14.88,
+        "dividend_rate": 8.17,
+        "frequency": "monthly",
+    },
+    "KGLD": {
+        "name": "Kurv Gold Enhanced Income ETF",
+        "sector": "Miscellaneous",
+        "dividend_yield": 10.36,
+        "dividend_rate": 3.30,
+        "frequency": "monthly",
+    },
 }
 
 
@@ -156,6 +197,25 @@ def main():
 
     df = fetch_tv_data()
     tickers = build_ticker_data(df)
+
+    # Merge fallback data for tickers TradingView misses
+    added_fallbacks = []
+    for symbol, fb in FALLBACK_TICKERS.items():
+        if symbol not in tickers:
+            tickers[symbol] = {
+                "name": fb["name"],
+                "sector": fb.get("sector", ""),
+                "close": None,
+                "dividend_yield": fb["dividend_yield"],
+                "dividend_rate": fb["dividend_rate"],
+                "payout_ratio": None,
+                "frequency": fb["frequency"],
+                "ex_dividend_date": None,
+                "last_payments": [],
+            }
+            added_fallbacks.append(symbol)
+    if added_fallbacks:
+        print(f"\n  Added {len(added_fallbacks)} fallback tickers: {', '.join(added_fallbacks)}")
 
     print(f"\n{len(tickers)} tickers with dividend data")
 
