@@ -1,0 +1,241 @@
+/* === ADD HOLDING FORM === */
+.add-holding-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.holding-input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.4rem 0.5rem;
+    color: var(--text);
+    font-size: 0.8rem;
+    width: 120px;
+    font-family: 'JetBrains Mono', monospace;
+    transition: border-color 0.15s;
+}
+
+.holding-input:focus {
+    border-color: var(--blue);
+    outline: none;
+}
+
+.btn-add-holding {
+    background: var(--green-dim);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.45rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.btn-add-holding:hover {
+    background: var(--green);
+}
+
+/* === EMPTY STATE === */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-dim);
+}
+
+.empty-state-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+}
+
+/* === HOLDINGS TABLE ACTIONS === */
+.btn-action {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    color: var(--text-dim);
+    transition: all 0.15s;
+}
+
+.btn-delete:hover { border-color: var(--red); color: var(--red); }
+
+.inline-edit {
+    background: var(--bg);
+    border: 1px solid var(--blue);
+    border-radius: 3px;
+    padding: 2px 4px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    width: 70px;
+    text-align: right;
+}
+
+/* === DIVIDEND CALENDAR === */
+.calendar-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.btn-cal {
+    background: rgba(20, 38, 66, 0.4);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.3rem 0.6rem;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-cal:hover {
+    border-color: var(--blue);
+    background: rgba(88, 166, 255, 0.1);
+}
+
+[data-theme="light"] .btn-cal {
+    background: rgba(255, 255, 255, 0.5);
+    border-color: var(--border);
+}
+
+.cal-month-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.cal-header, .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+
+.cal-day-header {
+    text-align: center;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0.4rem 0;
+}
+
+.cal-cell {
+    background: rgba(16, 30, 54, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    padding: 0.4rem;
+    min-height: 70px;
+    position: relative;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.cal-cell.empty {
+    background: transparent;
+    border-color: transparent;
+}
+
+.cal-cell.today {
+    border-color: var(--blue);
+}
+
+.cal-cell.has-dividend {
+    border-color: rgba(63, 185, 80, 0.2);
+    background: rgba(63, 185, 80, 0.05);
+}
+
+.cal-cell.has-dividend:hover {
+    border-color: rgba(63, 185, 80, 0.4);
+    background: rgba(63, 185, 80, 0.1);
+}
+
+[data-theme="light"] .cal-cell {
+    background: rgba(255, 255, 255, 0.5);
+    border-color: var(--border);
+}
+
+[data-theme="light"] .cal-cell.has-dividend {
+    background: rgba(26, 127, 55, 0.05);
+    border-color: rgba(26, 127, 55, 0.2);
+}
+
+.cal-day-num {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.cal-events {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    margin-top: 4px;
+}
+
+.cal-event {
+    font-size: 0.55rem;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    border-radius: 3px;
+    padding: 1px 4px;
+    cursor: default;
+}
+
+.cal-event.pay {
+    background: rgba(63, 185, 80, 0.15);
+    color: var(--green);
+    border: 1px solid rgba(63, 185, 80, 0.25);
+}
+
+.cal-event.ex {
+    background: rgba(88, 166, 255, 0.15);
+    color: var(--blue);
+    border: 1px solid rgba(88, 166, 255, 0.25);
+}
+
+.cal-total {
+    font-size: 0.65rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--green);
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+/* === FREQUENCY BADGE === */
+.freq-badge {
+    display: inline-block;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.freq-monthly { background: rgba(63, 185, 80, 0.15); color: var(--green); border: 1px solid rgba(63, 185, 80, 0.25); }
+.freq-quarterly { background: rgba(88, 166, 255, 0.15); color: var(--blue); border: 1px solid rgba(88, 166, 255, 0.25); }
+.freq-semi-annual { background: rgba(168, 85, 247, 0.15); color: var(--purple); border: 1px solid rgba(168, 85, 247, 0.25); }
+.freq-annual { background: rgba(210, 153, 34, 0.15); color: var(--yellow); border: 1px solid rgba(210, 153, 34, 0.25); }
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+    .add-holding-row { flex-direction: column; align-items: stretch; }
+    .holding-input { width: 100%; }
+    .cal-cell { min-height: 50px; padding: 0.25rem; }
+    .cal-event { font-size: 0.5rem; }
+    .cal-day-header { font-size: 0.55rem; }
+}

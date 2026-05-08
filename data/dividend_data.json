@@ -1,0 +1,223 @@
+{
+  "meta": {
+    "date": "2026-05-08",
+    "generated_at": "2026-05-08T22:00:00.000000",
+    "total_tickers": 15
+  },
+  "tickers": {
+    "AAPL": {
+      "name": "Apple Inc.",
+      "sector": "Technology",
+      "dividend_yield": 0.55,
+      "dividend_rate": 1.0,
+      "payout_ratio": 0.15,
+      "frequency": "quarterly",
+      "ex_dividend_date": "2026-05-09",
+      "last_payments": [
+        {"ex_date": "2025-11-08", "amount": 0.25},
+        {"ex_date": "2026-02-07", "amount": 0.25},
+        {"ex_date": "2026-05-09", "amount": 0.25}
+      ]
+    },
+    "MSFT": {
+      "name": "Microsoft Corp.",
+      "sector": "Technology",
+      "dividend_yield": 0.72,
+      "dividend_rate": 3.32,
+      "payout_ratio": 0.25,
+      "frequency": "quarterly",
+      "ex_dividend_date": "2026-05-14",
+      "last_payments": [
+        {"ex_date": "2025-11-20", "amount": 0.83},
+        {"ex_date": "2026-02-19", "amount": 0.83},
+        {"ex_date": "2026-05-14", "amount": 0.83}
+      ]
+    },
+    "SCHD": {
+      "name": "Schwab US Dividend Equity ETF",
+      "sector": "Miscellaneous",
+      "dividend_yield": 3.45,
+      "dividend_rate": 2.78,
+      "payout_ratio": null,
+      "frequency": "quarterly",
+      "ex_dividend_date": "2026-06-23",
+      "last_payments": [
+        {"ex_date": "2025-12-18", "amount": 0.76},
+        {"ex_date": "2026-03-19", "amount": 0.65},
+        {"ex_date": "2026-06-23", "amount": 0.70}
+      ]
+    },
+    "O": {
+      "name": "Realty Income Corp",
+      "sector": "Real estate",
+      "dividend_yield": 5.2,
+      "dividend_rate": 3.10,
+      "payout_ratio": 0.75,
+      "frequency": "monthly",
+      "ex_dividend_date": "2026-05-30",
+      "last_payments": [
+        {"ex_date": "2026-02-28", "amount": 0.2625},
+        {"ex_date": "2026-03-31", "amount": 0.2625},
+        {"ex_date": "2026-04-30", "amount": 0.2625},
+        {"ex_date": "2026-05-30", "amount": 0.2625}
+      ]
+    },
+    "VYM": {
+      "name": "Vanguard High Dividend Yield ETF",
+      "sector": "Miscellaneous",
+      "dividend_yield": 2.75,
+      "dividend_rate": 3.52,
+      "payout_ratio": null,
+      "frequency": "quarterly",
+      "ex_dividend_date": "2026-06-15",
+      "last_payments": [
+        {"ex_date": "2025-12-20", "amount": 1.02},
+        {"ex_date": "2026-03-20", "amount": 0.78},
+        {"ex_date": "2026-06-15", "amount": 0.88}
+      ]
+    },
+    "JNJ": {
+      "name": "Johnson & Johnson",
+      "sector": "Health Technology",
+      "dividend_yield": 3.1,
+      "dividend_rate": 5.04,
+      "payout_ratio": 0.44,
+      "frequency": "quarterly",
+      "ex_dividend_date": "2026-05-26",
+      "last_payments": [
+        {"ex_date": "2025-11-24", "amount": 1.26},
+        {"ex_date": "2026-02-23", "amount": 1.26},
+        {"ex_date": "2026-05-26", "amount": 1.26}
+      ]
+    },
+    "KO": {
+      "name": "Coca-Cola Co",
+      "sector": "Consumer Non-Durables",
+      "dividend_yield": 2.85,
+      "dividend_rate": 2.04,
+      "payout_ratio": 0.68,
+      "frequency": "quarterly",
+      "ex_dividend_date": "2026-06-12",
+      "last_payments": [
+        {"ex_date": "2025-12-12", "amount": 0.51},
+        {"ex_date": "2026-03-13", "amount": 0.51},
+        {"ex_date": "2026-06-12", "amount": 0.51}
+      ]
+    },
+    "JEPI": {
+      "name": "JPMorgan Equity Premium Income ETF",
+      "sector": "Miscellaneous",
+      "dividend_yield": 7.15,
+      "dividend_rate": 4.32,
+      "payout_ratio": null,
+      "frequency": "monthly",
+      "ex_dividend_date": "2026-06-02",
+      "last_payments": [
+        {"ex_date": "2026-03-03", "amount": 0.36},
+        {"ex_date": "2026-04-01", "amount": 0.36},
+        {"ex_date": "2026-05-01", "amount": 0.36},
+        {"ex_date": "2026-06-02", "amount": 0.36}
+      ]
+    },
+    "PG": {
+      "name": "Procter & Gamble Co",
+      "sector": "Consumer Non-Durables",
+      "dividend_yield": 2.45,
+      "dividend_rate": 4.03,
+      "payout_ratio": 0.60,
+      "frequency": "quarterly",
+      "ex_dividend_date": "2026-07-16",
+      "last_payments": [
+        {"ex_date": "2026-01-22", "amount": 1.0075},
+        {"ex_date": "2026-04-17", "amount": 1.0075},
+        {"ex_date": "2026-07-16", "amount": 1.0075}
+      ]
+    },
+    "T": {
+      "name": "AT&T Inc.",
+      "sector": "Communications",
+      "dividend_yield": 4.85,
+      "dividend_rate": 1.11,
+      "payout_ratio": 0.52,
+      "frequency": "quarterly",
+      "ex_dividend_date": "2026-07-09",
+      "last_payments": [
+        {"ex_date": "2026-01-09", "amount": 0.2775},
+        {"ex_date": "2026-04-09", "amount": 0.2775},
+        {"ex_date": "2026-07-09", "amount": 0.2775}
+      ]
+    },
+    "MAIN": {
+      "name": "Main Street Capital Corp",
+      "sector": "Finance",
+      "dividend_yield": 5.65,
+      "dividend_rate": 3.00,
+      "payout_ratio": 0.82,
+      "frequency": "monthly",
+      "ex_dividend_date": "2026-05-19",
+      "last_payments": [
+        {"ex_date": "2026-02-17", "amount": 0.25},
+        {"ex_date": "2026-03-18", "amount": 0.25},
+        {"ex_date": "2026-04-18", "amount": 0.25},
+        {"ex_date": "2026-05-19", "amount": 0.25}
+      ]
+    },
+    "ABBV": {
+      "name": "AbbVie Inc.",
+      "sector": "Health Technology",
+      "dividend_yield": 3.35,
+      "dividend_rate": 6.56,
+      "payout_ratio": 0.51,
+      "frequency": "quarterly",
+      "ex_dividend_date": "2026-07-14",
+      "last_payments": [
+        {"ex_date": "2026-01-14", "amount": 1.64},
+        {"ex_date": "2026-04-14", "amount": 1.64},
+        {"ex_date": "2026-07-14", "amount": 1.64}
+      ]
+    },
+    "STAG": {
+      "name": "STAG Industrial Inc.",
+      "sector": "Real estate",
+      "dividend_yield": 3.95,
+      "dividend_rate": 1.49,
+      "payout_ratio": 0.70,
+      "frequency": "monthly",
+      "ex_dividend_date": "2026-05-29",
+      "last_payments": [
+        {"ex_date": "2026-02-27", "amount": 0.1242},
+        {"ex_date": "2026-03-30", "amount": 0.1242},
+        {"ex_date": "2026-04-29", "amount": 0.1242},
+        {"ex_date": "2026-05-29", "amount": 0.1242}
+      ]
+    },
+    "SPY": {
+      "name": "SPDR S&P 500 ETF Trust",
+      "sector": "Miscellaneous",
+      "dividend_yield": 1.22,
+      "dividend_rate": 7.10,
+      "payout_ratio": null,
+      "frequency": "quarterly",
+      "ex_dividend_date": "2026-06-19",
+      "last_payments": [
+        {"ex_date": "2025-12-19", "amount": 2.07},
+        {"ex_date": "2026-03-20", "amount": 1.61},
+        {"ex_date": "2026-06-19", "amount": 1.77}
+      ]
+    },
+    "QQQ": {
+      "name": "Invesco QQQ Trust",
+      "sector": "Miscellaneous",
+      "dividend_yield": 0.58,
+      "dividend_rate": 3.22,
+      "payout_ratio": null,
+      "frequency": "quarterly",
+      "ex_dividend_date": "2026-06-22",
+      "last_payments": [
+        {"ex_date": "2025-12-22", "amount": 0.92},
+        {"ex_date": "2026-03-23", "amount": 0.72},
+        {"ex_date": "2026-06-22", "amount": 0.81}
+      ]
+    }
+  }
+}

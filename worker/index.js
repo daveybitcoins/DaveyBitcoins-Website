@@ -37,6 +37,45 @@ async function handleFinnhubProxy(request, env) {
   });
 }
 
+// ====== FINNHUB BATCH QUOTES PROXY ======
+async function handleFinnhubBatchProxy(request, env) {
+  const url = new URL(request.url);
+  const symbols = (url.searchParams.get('symbols') || '')
+    .split(',')
+    .map(s => s.trim().toUpperCase())
+    .filter(Boolean)
+    .slice(0, 50);
+
+  if (!symbols.length) {
+    return new Response(JSON.stringify({ error: 'Missing symbols parameter' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+    });
+  }
+
+  const results = await Promise.all(
+    symbols.map(async (symbol) => {
+      try {
+        const resp = await fetch(
+          `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${env.FINNHUB_KEY}`
+        );
+        const data = await resp.json();
+        return [symbol, data];
+      } catch {
+        return [symbol, { error: 'fetch failed' }];
+      }
+    })
+  );
+
+  return new Response(JSON.stringify(Object.fromEntries(results)), {
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'public, max-age=60',
+      ...CORS_HEADERS,
+    },
+  });
+}
+
 // ====== YAHOO FINANCE OPTIONS PROXY ======
 let yahooCrumb = null;
 let yahooCookie = null;
@@ -198,6 +237,11 @@ export default {
     // Finnhub quote proxy: /api/quote?symbol=SPY
     if (url.pathname === '/api/quote') {
       return handleFinnhubProxy(request, env);
+    }
+
+    // Finnhub batch quotes: /api/quotes?symbols=AAPL,MSFT,O
+    if (url.pathname === '/api/quotes') {
+      return handleFinnhubBatchProxy(request, env);
     }
 
     // Yahoo Finance options proxy: /api/options/NVDA?date=1716595200
