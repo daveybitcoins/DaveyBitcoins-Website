@@ -167,7 +167,7 @@ def _enrich_one(symbol, tv_data):
         }
 
     except Exception as e:
-        return symbol, None
+        return symbol, {"_error": str(e)}
 
 
 def enrich_with_yfinance(tickers):
@@ -175,6 +175,7 @@ def enrich_with_yfinance(tickers):
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
     results = {}
+    errors = {}
     total = len(tickers)
     done = 0
 
@@ -188,8 +189,26 @@ def enrich_with_yfinance(tickers):
             if done % 200 == 0:
                 print(f"  Progress: {done}/{total}")
             sym, data = future.result()
-            if data is not None:
+            if data is None:
+                continue
+            if "_error" in data:
+                errors[sym] = data["_error"]
+            else:
                 results[sym] = data
+
+    if errors:
+        print(f"  {len(errors)} tickers errored, retrying with 4 threads...")
+        time.sleep(2)
+        retry_tickers = {s: tickers[s] for s in errors if s in tickers}
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            futures = {
+                pool.submit(_enrich_one, sym, tv): sym
+                for sym, tv in retry_tickers.items()
+            }
+            for future in as_completed(futures):
+                sym, data = future.result()
+                if data and "_error" not in data:
+                    results[sym] = data
 
     return results
 
@@ -228,6 +247,11 @@ def main():
         tickers = enrich_with_yfinance(tv_data)
 
     print(f"\n{len(tickers)} tickers have dividend data")
+
+    # Diagnostic: check specific high-interest tickers
+    for check in ["QQQI", "SCHD", "JEPI", "O", "SPY"]:
+        status = "FOUND" if check in tickers else ("in TV data" if check in tv_data else "MISSING from TV")
+        print(f"  {check}: {status}")
 
     # Write output
     os.makedirs(DATA_DIR, exist_ok=True)
