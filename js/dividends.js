@@ -336,7 +336,7 @@
 
         var html = '<div class="table-wrap"><table id="holdings-table"><thead><tr>' +
             '<th>Ticker</th><th>Name</th><th>Shares</th><th>Cost Basis / Share</th><th>Cost Basis / Total</th><th>Price</th><th>Current Value</th>' +
-            '<th>Yield</th><th>Annual Div</th><th>Frequency</th>' +
+            '<th>Yield</th><th>Div / Share</th><th>Annual Div</th><th>Monthly Div</th><th>Frequency</th>' +
             '<th>% of Portfolio</th><th></th>' +
             '</tr></thead><tbody>';
 
@@ -373,7 +373,9 @@
                 '<td class="num">' + (price ? fmtUSD(price) + (gainLoss ? ' ' + gainLoss : '') : "--") + '</td>' +
                 '<td class="num">' + (value ? fmtUSD(value) : "--") + '</td>' +
                 '<td class="num">' + (yld ? fmtPct(yld) : "--") + '</td>' +
+                '<td class="num">' + (div && div.dividend_rate ? fmtUSD(div.dividend_rate) : "--") + '</td>' +
                 '<td class="num pos">' + (annualDiv ? fmtUSD(annualDiv) : "--") + '</td>' +
+                '<td class="num pos">' + (annualDiv ? fmtUSD(annualDiv / 12) : "--") + '</td>' +
                 '<td style="text-align:center">' + freqBadge + '</td>' +
                 '<td class="num">' + (pctPortfolio ? fmtPct(pctPortfolio) : "--") + '</td>' +
                 '<td><button class="btn-action btn-delete" data-index="' + i + '" title="Remove">&#10005;</button></td>' +
