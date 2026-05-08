@@ -151,11 +151,9 @@
             padding: 0 1rem;
         }
 
-        /* Bottom row cards span 1.5 columns each (use 6-col sub-grid trick) */
+        /* Two rows of three — each tile spans 2 of 6 columns */
         .bento { grid-template-columns: repeat(6, 1fr); }
-        .bento .tile:nth-child(-n+3) { grid-column: span 2; }
-        .bento .tile:nth-child(4) { grid-column: span 3; }
-        .bento .tile:nth-child(5) { grid-column: span 3; }
+        .bento .tile { grid-column: span 2; }
 
         .tile {
             position: relative;
@@ -182,6 +180,7 @@
         .tile:nth-child(3) { animation-delay: 0.19s; }
         .tile:nth-child(4) { animation-delay: 0.26s; }
         .tile:nth-child(5) { animation-delay: 0.33s; }
+        .tile:nth-child(6) { animation-delay: 0.40s; }
 
         @keyframes fadeInUp {
             to { opacity: 1; transform: translateY(0); }
@@ -229,6 +228,7 @@
         .tile-qqq   { --glow-color: #a855f7; --shadow-color: rgba(168, 85, 247, 0.1); }
         .tile-options { --glow-color: #10b981; --shadow-color: rgba(16, 185, 129, 0.1); }
         .tile-btc   { --glow-color: #f97316; --shadow-color: rgba(249, 115, 22, 0.1); }
+        .tile-dividend { --glow-color: #22c55e; --shadow-color: rgba(34, 197, 94, 0.1); }
 
         /* Live page preview via scaled iframe */
         .tile-preview {
@@ -313,6 +313,12 @@
             border: 1px solid rgba(234, 179, 8, 0.2);
         }
 
+        .tag-dividend {
+            background: rgba(34, 197, 94, 0.12);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
         .tag-live::before {
             content: '';
             display: inline-block;
@@ -372,10 +378,7 @@
             .bento {
                 grid-template-columns: repeat(2, 1fr);
             }
-            .bento .tile:nth-child(-n+3) { grid-column: span 1; }
-            .bento .tile:nth-child(3) { grid-column: span 2; }
-            .bento .tile:nth-child(4) { grid-column: span 1; }
-            .bento .tile:nth-child(5) { grid-column: span 1; }
+            .bento .tile { grid-column: span 1; }
         }
 
         @media (max-width: 600px) {
@@ -451,6 +454,15 @@
                 </div>
                 <div class="tile-name">Bitcoin Risk Metric</div>
                 <div class="tile-desc">Power-law regression with combined structural and momentum risk. Interactive charts and forward returns by risk decile.</div>
+                <div class="tile-arrow">Explore &rarr;</div>
+            </a>
+            <a href="dividend-tracker.html" class="tile tile-dividend">
+                <div class="tile-preview"><iframe src="dividend-tracker.html" loading="lazy" title="Dividend Tracker Preview"></iframe></div>
+                <div class="tile-header">
+                    <span class="tile-tag tag-dividend">Personal</span>
+                </div>
+                <div class="tile-name">Dividend Portfolio Tracker</div>
+                <div class="tile-desc">Track dividend income, yields, and upcoming payouts. Add your holdings and see projected monthly/annual income with a payout calendar.</div>
                 <div class="tile-arrow">Explore &rarr;</div>
             </a>
         </div>

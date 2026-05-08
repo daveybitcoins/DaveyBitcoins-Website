@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dividend Portfolio Tracker — DaveyBitcoins</title>
+    <meta property="og:title" content="Dividend Portfolio Tracker — DaveyBitcoins">
+    <meta property="og:description" content="Track dividend income, yields, and upcoming payouts with a payout calendar.">
+    <meta property="og:url" content="https://daveybitcoins.com/dividend-tracker.html">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0f1e'/%3E%3Ctext x='16' y='23' font-family='serif' font-size='22' font-weight='bold' fill='%23f97316' text-anchor='middle'%3E%E2%82%BF%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css?v=202605081500">
+    <link rel="stylesheet" href="css/dividends.css?v=202605081500">
+</head>
+<body>
+    <div class="bg-mesh"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+    <div class="noise"></div>
+
+    <div class="sticky-top" id="sticky-top">
+        <header>
+            <div class="header-content">
+                <div class="header-top">
+                    <div>
+                        <h1>Dividend Portfolio Tracker</h1>
+                        <p class="subtitle">Track income, yields &amp; upcoming payouts</p>
+                        <p class="data-date" id="data-date"></p>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <a href="/" class="back-link">&#8592; DaveyBitcoins</a>
+                        <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
+                            <span class="theme-icon" id="theme-icon">&#9789;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </div>
+
+    <main id="main-content">
+        <div class="loading" id="loading">Loading dividend data&hellip;</div>
+
+        <div id="app-content" style="display:none;">
+            <!-- Add Holdings -->
+            <section class="card" id="holdings-form-card">
+                <h2>My Holdings</h2>
+                <div class="add-holding-row">
+                    <div class="ticker-search-wrap" id="ticker-search-wrap">
+                        <input class="search-input" id="ticker-input" placeholder="Search ticker..." autocomplete="off">
+                        <div class="ticker-dropdown" id="ticker-dropdown"></div>
+                    </div>
+                    <input type="number" class="holding-input" id="shares-input" placeholder="Shares" min="0.01" step="any">
+                    <input type="number" class="holding-input" id="cost-input" placeholder="Avg cost (optional)" min="0" step="any">
+                    <button class="btn-add-holding" id="btn-add">Add</button>
+                </div>
+            </section>
+
+            <!-- Income Summary -->
+            <section class="stats-row" id="income-summary">
+                <div class="stat-box">
+                    <div class="value" id="annual-income">$0</div>
+                    <div class="label">Annual Income</div>
+                </div>
+                <div class="stat-box">
+                    <div class="value" id="monthly-income">$0</div>
+                    <div class="label">Monthly Income</div>
+                </div>
+                <div class="stat-box">
+                    <div class="value" id="portfolio-yield">0.00%</div>
+                    <div class="label">Portfolio Yield</div>
+                </div>
+                <div class="stat-box">
+                    <div class="value" id="portfolio-value">$0</div>
+                    <div class="label">Portfolio Value</div>
+                </div>
+                <div class="stat-box">
+                    <div class="value" id="next-payout">--</div>
+                    <div class="label">Next Ex-Date</div>
+                </div>
+            </section>
+
+            <!-- Holdings Table -->
+            <section class="card" id="holdings-table-card">
+                <h2>Holdings</h2>
+                <div id="holdings-table-wrap"></div>
+            </section>
+
+            <!-- Calendar -->
+            <section class="card" id="calendar-card">
+                <h2>Upcoming Payouts</h2>
+                <div class="calendar-nav">
+                    <button class="btn-cal" id="cal-prev">&larr;</button>
+                    <span class="cal-month-label" id="cal-month-label"></span>
+                    <button class="btn-cal" id="cal-next">&rarr;</button>
+                </div>
+                <div id="dividend-calendar"></div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>Data sourced from Yahoo Finance &amp; Finnhub. Not financial advice.</p>
+    </footer>
+
+    <script src="js/dividends.js?v=202605081500"></script>
+</body>
+</html>
