@@ -31,140 +31,154 @@ TV_FIELDS = [
 
 
 def fetch_tv_universe():
-    """Fetch top 300 US stocks + popular dividend ETFs from TradingView."""
+    """Fetch all US dividend-paying stocks and ETFs from TradingView."""
     from tradingview_screener import col, Query
+    import pandas as pd
 
-    print("Fetching stock universe from TradingView...")
-    count, df = (
+    dfs = []
+
+    # Dividend-paying stocks (no market cap floor — include everything)
+    print("Fetching dividend-paying stocks from TradingView...")
+    count, stock_df = (
         Query()
         .select(*TV_FIELDS)
         .where(
-            col("market_cap_basic") > 1e9,
+            col("dividend_yield_recent") > 0,
             col("is_primary"),
             col("exchange").isin(["NYSE", "NASDAQ", "AMEX"]),
             col("type") == "stock",
         )
-        .order_by("market_cap_basic", ascending=False)
-        .limit(300)
+        .order_by("dividend_yield_recent", ascending=False)
+        .limit(5000)
         .get_scanner_data()
     )
-    print(f"  TradingView returned {len(df)} stocks")
+    print(f"  {len(stock_df)} dividend-paying stocks")
+    dfs.append(stock_df)
 
-    # Also fetch popular dividend ETFs
-    etf_tickers = [
-        "SCHD", "VYM", "DGRO", "HDV", "SPYD", "DVY", "VIG", "NOBL",
-        "SDY", "DIVO", "JEPI", "JEPQ", "O", "MAIN", "STAG",
-    ]
+    # ETFs and funds (separate query since type differs)
+    print("Fetching dividend-paying ETFs/funds from TradingView...")
     try:
         etf_count, etf_df = (
             Query()
             .select(*TV_FIELDS)
-            .where(col("name").isin(etf_tickers))
-            .limit(50)
+            .where(
+                col("dividend_yield_recent") > 0,
+                col("exchange").isin(["NYSE", "NASDAQ", "AMEX"]),
+                col("type") == "fund",
+            )
+            .order_by("dividend_yield_recent", ascending=False)
+            .limit(3000)
             .get_scanner_data()
         )
-        print(f"  TradingView returned {len(etf_df)} dividend ETFs")
-        # Merge, avoiding duplicates
-        existing = set(df["name"].values)
-        new_rows = etf_df[~etf_df["name"].isin(existing)]
-        if len(new_rows) > 0:
-            import pandas as pd
-            df = pd.concat([df, new_rows], ignore_index=True)
+        print(f"  {len(etf_df)} dividend-paying ETFs/funds")
+        dfs.append(etf_df)
     except Exception as e:
         print(f"  Warning: ETF fetch failed: {e}")
 
+    df = pd.concat(dfs, ignore_index=True)
+    df = df.drop_duplicates(subset=["name"], keep="first")
+    print(f"  {len(df)} total unique tickers")
     return df
 
 
-def enrich_with_yfinance(tickers):
-    """Fetch detailed dividend info from yfinance for each ticker."""
+def _enrich_one(symbol, tv_data):
+    """Fetch dividend details for a single ticker via yfinance."""
     import yfinance as yf
+
+    try:
+        ticker = yf.Ticker(symbol)
+        info = ticker.info or {}
+
+        dividend_yield = info.get("dividendYield")
+        dividend_rate = info.get("dividendRate")
+        ex_date_epoch = info.get("exDividendDate")
+        payout_ratio = info.get("payoutRatio")
+
+        if dividend_yield:
+            dividend_yield = round(dividend_yield * 100, 2)
+
+        ex_date_str = None
+        if ex_date_epoch:
+            ex_date_str = datetime.utcfromtimestamp(ex_date_epoch).strftime("%Y-%m-%d")
+
+        divs = ticker.dividends
+        last_payments = []
+        frequency = None
+
+        if divs is not None and len(divs) > 0:
+            recent = divs.tail(8)
+            for dt, amount in recent.items():
+                last_payments.append({
+                    "ex_date": dt.strftime("%Y-%m-%d"),
+                    "amount": round(float(amount), 4),
+                })
+
+            if len(divs) >= 2:
+                dates = divs.index.sort_values()
+                gaps = [(dates[j] - dates[j - 1]).days for j in range(max(1, len(dates) - 4), len(dates))]
+                if gaps:
+                    avg_gap = sum(gaps) / len(gaps)
+                    if avg_gap < 45:
+                        frequency = "monthly"
+                    elif avg_gap < 120:
+                        frequency = "quarterly"
+                    elif avg_gap < 220:
+                        frequency = "semi-annual"
+                    else:
+                        frequency = "annual"
+
+        if dividend_yield is None and tv_data.get("dividend_yield_recent"):
+            dividend_yield = round(tv_data["dividend_yield_recent"], 2)
+
+        if dividend_rate is None and tv_data.get("dividends_per_share_fq"):
+            dps_fq = tv_data["dividends_per_share_fq"]
+            if frequency == "monthly":
+                dividend_rate = round(dps_fq * 12, 4)
+            elif frequency == "semi-annual":
+                dividend_rate = round(dps_fq * 2, 4)
+            elif frequency == "annual":
+                dividend_rate = round(dps_fq, 4)
+            else:
+                dividend_rate = round(dps_fq * 4, 4)
+
+        if not dividend_yield and not dividend_rate and not last_payments:
+            return symbol, None
+
+        return symbol, {
+            "name": tv_data.get("name_full", symbol),
+            "sector": tv_data.get("sector", ""),
+            "dividend_yield": dividend_yield,
+            "dividend_rate": round(dividend_rate, 4) if dividend_rate else None,
+            "payout_ratio": round(payout_ratio, 2) if payout_ratio else None,
+            "frequency": frequency,
+            "ex_dividend_date": ex_date_str,
+            "last_payments": last_payments[-4:],
+        }
+
+    except Exception as e:
+        return symbol, None
+
+
+def enrich_with_yfinance(tickers):
+    """Fetch detailed dividend info from yfinance using thread pool."""
+    from concurrent.futures import ThreadPoolExecutor, as_completed
 
     results = {}
     total = len(tickers)
+    done = 0
 
-    for i, (symbol, tv_data) in enumerate(tickers.items()):
-        if i > 0 and i % 50 == 0:
-            print(f"  Progress: {i}/{total}")
-
-        try:
-            ticker = yf.Ticker(symbol)
-            info = ticker.info or {}
-
-            dividend_yield = info.get("dividendYield")
-            dividend_rate = info.get("dividendRate")
-            ex_date_epoch = info.get("exDividendDate")
-            payout_ratio = info.get("payoutRatio")
-
-            if dividend_yield:
-                dividend_yield = round(dividend_yield * 100, 2)
-
-            ex_date_str = None
-            if ex_date_epoch:
-                ex_date_str = datetime.utcfromtimestamp(ex_date_epoch).strftime("%Y-%m-%d")
-
-            # Get dividend history
-            divs = ticker.dividends
-            last_payments = []
-            frequency = None
-
-            if divs is not None and len(divs) > 0:
-                recent = divs.tail(8)
-                for dt, amount in recent.items():
-                    last_payments.append({
-                        "ex_date": dt.strftime("%Y-%m-%d"),
-                        "amount": round(float(amount), 4),
-                    })
-
-                # Determine frequency from spacing
-                if len(divs) >= 2:
-                    dates = divs.index.sort_values()
-                    gaps = [(dates[j] - dates[j - 1]).days for j in range(max(1, len(dates) - 4), len(dates))]
-                    if gaps:
-                        avg_gap = sum(gaps) / len(gaps)
-                        if avg_gap < 45:
-                            frequency = "monthly"
-                        elif avg_gap < 120:
-                            frequency = "quarterly"
-                        elif avg_gap < 220:
-                            frequency = "semi-annual"
-                        else:
-                            frequency = "annual"
-
-            # Use TV yield as fallback
-            if dividend_yield is None and tv_data.get("dividend_yield_recent"):
-                dividend_yield = round(tv_data["dividend_yield_recent"], 2)
-
-            if dividend_rate is None and tv_data.get("dividends_per_share_fq"):
-                dps_fq = tv_data["dividends_per_share_fq"]
-                if frequency == "monthly":
-                    dividend_rate = round(dps_fq * 12, 4)
-                elif frequency == "semi-annual":
-                    dividend_rate = round(dps_fq * 2, 4)
-                elif frequency == "annual":
-                    dividend_rate = round(dps_fq, 4)
-                else:
-                    dividend_rate = round(dps_fq * 4, 4)
-
-            # Skip non-dividend payers
-            if not dividend_yield and not dividend_rate and not last_payments:
-                continue
-
-            results[symbol] = {
-                "name": tv_data.get("name_full", symbol),
-                "sector": tv_data.get("sector", ""),
-                "dividend_yield": dividend_yield,
-                "dividend_rate": round(dividend_rate, 4) if dividend_rate else None,
-                "payout_ratio": round(payout_ratio, 2) if payout_ratio else None,
-                "frequency": frequency,
-                "ex_dividend_date": ex_date_str,
-                "last_payments": last_payments[-4:],
-            }
-
-        except Exception as e:
-            print(f"  Warning: {symbol} failed: {e}")
-
-        time.sleep(0.3)
+    with ThreadPoolExecutor(max_workers=10) as pool:
+        futures = {
+            pool.submit(_enrich_one, sym, tv): sym
+            for sym, tv in tickers.items()
+        }
+        for future in as_completed(futures):
+            done += 1
+            if done % 200 == 0:
+                print(f"  Progress: {done}/{total}")
+            sym, data = future.result()
+            if data is not None:
+                results[sym] = data
 
     return results
 
