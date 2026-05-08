@@ -55,22 +55,21 @@ def fetch_tv_universe():
     print(f"  {len(stock_df)} dividend-paying stocks")
     dfs.append(stock_df)
 
-    # ETFs and funds (separate query since type differs)
-    print("Fetching dividend-paying ETFs/funds from TradingView...")
+    # ETFs and funds — fetch ALL, let yfinance filter to dividend payers
+    print("Fetching ETFs/funds from TradingView...")
     try:
         etf_count, etf_df = (
             Query()
             .select(*TV_FIELDS)
             .where(
-                col("dividend_yield_recent") > 0,
                 col("exchange").isin(["NYSE", "NASDAQ", "AMEX"]),
                 col("type") == "fund",
             )
-            .order_by("dividend_yield_recent", ascending=False)
-            .limit(3000)
+            .order_by("volume", ascending=False)
+            .limit(5000)
             .get_scanner_data()
         )
-        print(f"  {len(etf_df)} dividend-paying ETFs/funds")
+        print(f"  {len(etf_df)} ETFs/funds")
         dfs.append(etf_df)
     except Exception as e:
         print(f"  Warning: ETF fetch failed: {e}")
