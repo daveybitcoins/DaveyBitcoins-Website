@@ -415,7 +415,7 @@
                 addEvent(div.ex_dividend_date, h.ticker, income, "ex");
             }
 
-            // Project from last_payments
+            // Project from last_payments if available
             if (div.last_payments && div.last_payments.length > 0) {
                 var lastPayment = div.last_payments[div.last_payments.length - 1];
                 var lastDate = new Date(lastPayment.ex_date + "T00:00:00");
@@ -430,6 +430,21 @@
                     var projStr = projected.toISOString().slice(0, 10);
                     if (projStr === div.ex_dividend_date) continue;
                     addEvent(projStr, h.ticker, income, "ex");
+                }
+            } else {
+                // No payment history — project estimated dates from start of year
+                var monthsPerPayment;
+                if (freq === "monthly") monthsPerPayment = 1;
+                else if (freq === "quarterly") monthsPerPayment = 3;
+                else if (freq === "semi-annual") monthsPerPayment = 6;
+                else monthsPerPayment = 12;
+
+                for (var m = 0; m < 12; m += monthsPerPayment) {
+                    var mid = 15;
+                    var projDate = new Date(year, m, mid);
+                    var pStr = projDate.toISOString().slice(0, 10);
+                    if (pStr === div.ex_dividend_date) continue;
+                    addEvent(pStr, h.ticker, income, "est");
                 }
             }
         });
