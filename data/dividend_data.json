@@ -19691,7 +19691,7 @@
       "dividend_yield": 37.09,
       "dividend_rate": 17.6548,
       "payout_ratio": null,
-      "frequency": "quarterly",
+      "frequency": "monthly",
       "ex_dividend_date": null,
       "last_payments": []
     },
@@ -20857,7 +20857,7 @@
       "dividend_yield": 14.36,
       "dividend_rate": 8.0976,
       "payout_ratio": null,
-      "frequency": "quarterly",
+      "frequency": "monthly",
       "ex_dividend_date": null,
       "last_payments": []
     },
@@ -21374,7 +21374,7 @@
       "dividend_yield": 12.46,
       "dividend_rate": 6.6549,
       "payout_ratio": null,
-      "frequency": "quarterly",
+      "frequency": "monthly",
       "ex_dividend_date": null,
       "last_payments": []
     },
@@ -22463,7 +22463,7 @@
       "dividend_yield": 10.18,
       "dividend_rate": 3.0825,
       "payout_ratio": null,
-      "frequency": "quarterly",
+      "frequency": "monthly",
       "ex_dividend_date": null,
       "last_payments": []
     },
@@ -24003,7 +24003,7 @@
       "dividend_yield": 8.05,
       "dividend_rate": 4.4166,
       "payout_ratio": null,
-      "frequency": "quarterly",
+      "frequency": "monthly",
       "ex_dividend_date": null,
       "last_payments": []
     },
@@ -32660,7 +32660,7 @@
       "dividend_yield": 4.13,
       "dividend_rate": 4.1496,
       "payout_ratio": null,
-      "frequency": "quarterly",
+      "frequency": "monthly",
       "ex_dividend_date": null,
       "last_payments": []
     },
