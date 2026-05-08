@@ -240,18 +240,6 @@
             totalValue > 0 ? fmtPct((totalAnnual / totalValue) * 100) : "0.00%";
         document.getElementById("portfolio-value").textContent = fmtUSD(totalValue);
 
-        // Next ex-date
-        var nextDate = null;
-        var today = new Date().toISOString().slice(0, 10);
-        holdings.forEach(function (h) {
-            var div = getDividendInfo(h.ticker);
-            if (div && div.ex_dividend_date && div.ex_dividend_date >= today) {
-                if (!nextDate || div.ex_dividend_date < nextDate) {
-                    nextDate = div.ex_dividend_date;
-                }
-            }
-        });
-        document.getElementById("next-payout").textContent = nextDate || "--";
     }
 
     function getDividendInfo(ticker) {
