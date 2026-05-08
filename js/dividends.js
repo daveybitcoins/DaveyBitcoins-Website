@@ -124,7 +124,7 @@
             }
 
             dropdown.innerHTML = html;
-            dropdown.style.display = "";
+            dropdown.style.display = "block";
 
             dropdown.querySelectorAll(".ticker-option").forEach(function (opt) {
                 opt.addEventListener("click", function () {
