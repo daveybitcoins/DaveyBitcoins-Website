@@ -5,22 +5,40 @@
     var IS_LOCAL = location.hostname === "localhost" || location.hostname === "127.0.0.1";
     var API_BASE = IS_LOCAL ? "" : WORKER_URL;
     const STORAGE_KEY = "dividend_holdings";
+    const PORTFOLIOS_KEY = "dividend_portfolios";
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
     let dividendData = null;
-    let holdings = [];
+    let portfolios = [];
+    let activePortfolioIndex = 0;
     let liveQuotes = {};
     let calYear, calMonth;
 
-    // === LOCALSTORAGE ===
-    function loadHoldings() {
-        try {
-            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-        } catch { return []; }
+    function getHoldings() {
+        var p = portfolios[activePortfolioIndex];
+        return p ? p.holdings : [];
     }
 
-    function saveHoldings() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(holdings));
+    // === LOCALSTORAGE ===
+    function loadPortfolios() {
+        try {
+            var saved = JSON.parse(localStorage.getItem(PORTFOLIOS_KEY));
+            if (saved && saved.length > 0) return saved;
+        } catch {}
+
+        // Migrate from old flat holdings format
+        try {
+            var old = JSON.parse(localStorage.getItem(STORAGE_KEY));
+            if (old && old.length > 0) {
+                return [{ name: "Main", holdings: old }];
+            }
+        } catch {}
+
+        return [{ name: "Main", holdings: [] }];
+    }
+
+    function savePortfolios() {
+        localStorage.setItem(PORTFOLIOS_KEY, JSON.stringify(portfolios));
     }
 
     // === FORMATTING ===
@@ -53,7 +71,8 @@
     // === INIT ===
     async function init() {
         setupTheme();
-        holdings = loadHoldings();
+        portfolios = loadPortfolios();
+        activePortfolioIndex = 0;
 
         try {
             var resp = await fetch("data/dividend_data.json?v=" + Date.now());
@@ -66,7 +85,7 @@
             '<span class="pill pill-date">' + (dividendData.meta.date || "N/A") + '</span>' +
             '<span class="pill pill-count">' + (dividendData.meta.total_tickers || 0) + ' dividend stocks</span>';
 
-        if (holdings.length > 0) {
+        if (getHoldings().length > 0) {
             await fetchLivePrices();
             await fetchDividendHistory();
         }
@@ -84,10 +103,14 @@
 
     // === LIVE PRICES ===
     async function fetchLivePrices() {
-        if (holdings.length === 0) { liveQuotes = {}; return; }
-        var symbols = holdings.map(function (h) { return h.ticker; }).join(",");
+        var allTickers = {};
+        portfolios.forEach(function (p) {
+            p.holdings.forEach(function (h) { allTickers[h.ticker] = true; });
+        });
+        var symbols = Object.keys(allTickers);
+        if (symbols.length === 0) { liveQuotes = {}; return; }
         try {
-            var resp = await fetch(WORKER_URL + "/api/quotes?symbols=" + encodeURIComponent(symbols));
+            var resp = await fetch(WORKER_URL + "/api/quotes?symbols=" + encodeURIComponent(symbols.join(",")));
             liveQuotes = await resp.json();
         } catch {
             liveQuotes = {};
@@ -103,7 +126,7 @@
     }
 
     // === DIVIDEND HISTORY (fetched from Yahoo Finance via worker) ===
-    var DIV_HISTORY_TTL = 24 * 60 * 60 * 1000; // 24 hours
+    var DIV_HISTORY_TTL = 24 * 60 * 60 * 1000;
 
     function getDivHistoryCache() {
         try {
@@ -120,6 +143,7 @@
         var cache = getDivHistoryCache();
         var now = Date.now();
         var stale = [];
+        var holdings = getHoldings();
 
         holdings.forEach(function (h) {
             var entry = cache[h.ticker];
@@ -140,7 +164,7 @@
                 if (data.payments && data.payments.length > 0) {
                     cache[ticker] = { ts: now, payments: data.payments };
                 }
-            } catch { /* keep stale cache or skip */ }
+            } catch {}
         }));
 
         setDivHistoryCache(cache);
@@ -157,6 +181,46 @@
                 }
             }
         }
+    }
+
+    // === PORTFOLIO MANAGEMENT ===
+    function switchPortfolio(index) {
+        activePortfolioIndex = index;
+        renderAll();
+        fetchLivePrices().then(function () {
+            fetchDividendHistory().then(function () {
+                renderAll();
+            });
+        });
+    }
+
+    function addPortfolio() {
+        var name = prompt("Portfolio name:");
+        if (!name || !name.trim()) return;
+        portfolios.push({ name: name.trim(), holdings: [] });
+        savePortfolios();
+        activePortfolioIndex = portfolios.length - 1;
+        renderAll();
+    }
+
+    function renamePortfolio(index) {
+        var current = portfolios[index].name;
+        var name = prompt("Rename portfolio:", current);
+        if (!name || !name.trim() || name.trim() === current) return;
+        portfolios[index].name = name.trim();
+        savePortfolios();
+        renderPortfolioTabs();
+    }
+
+    function deletePortfolio(index) {
+        if (portfolios.length <= 1) return;
+        if (!confirm('Delete portfolio "' + portfolios[index].name + '"? This removes all its holdings.')) return;
+        portfolios.splice(index, 1);
+        if (activePortfolioIndex >= portfolios.length) {
+            activePortfolioIndex = portfolios.length - 1;
+        }
+        savePortfolios();
+        renderAll();
     }
 
     // === TICKER AUTOCOMPLETE ===
@@ -242,6 +306,7 @@
 
         if (!ticker || isNaN(shares) || shares <= 0) return;
 
+        var holdings = getHoldings();
         var existing = holdings.findIndex(function (h) { return h.ticker === ticker; });
         if (existing >= 0) {
             var old = holdings[existing];
@@ -257,7 +322,7 @@
             holdings.push({ ticker: ticker, shares: shares, costBasis: cost });
         }
 
-        saveHoldings();
+        savePortfolios();
         tickerInput.value = "";
         sharesInput.value = "";
         costInput.value = "";
@@ -268,29 +333,71 @@
     }
 
     function deleteHolding(index) {
-        holdings.splice(index, 1);
-        saveHoldings();
+        getHoldings().splice(index, 1);
+        savePortfolios();
         renderAll();
     }
 
     function updateShares(index, newShares) {
         if (isNaN(newShares) || newShares <= 0) return;
-        holdings[index].shares = newShares;
-        saveHoldings();
+        getHoldings()[index].shares = newShares;
+        savePortfolios();
         renderAll();
     }
 
     // === RENDER ALL ===
     function renderAll() {
+        renderPortfolioTabs();
         renderSummaryCards();
         renderHoldingsTable();
         renderCalendar();
+    }
+
+    // === PORTFOLIO TABS ===
+    function renderPortfolioTabs() {
+        var wrap = document.getElementById("portfolio-tabs");
+        var html = '<div class="ptabs-row">';
+
+        portfolios.forEach(function (p, i) {
+            var active = i === activePortfolioIndex ? " active" : "";
+            html += '<div class="ptab' + active + '" data-index="' + i + '">';
+            html += '<span class="ptab-name">' + p.name + '</span>';
+            if (portfolios.length > 1) {
+                html += '<button class="ptab-close" data-delete="' + i + '" title="Delete portfolio">&#10005;</button>';
+            }
+            html += '</div>';
+        });
+
+        html += '<button class="ptab-add" id="ptab-add-btn" title="New portfolio">+</button>';
+        html += '</div>';
+        wrap.innerHTML = html;
+
+        wrap.querySelectorAll(".ptab").forEach(function (tab) {
+            tab.addEventListener("click", function (e) {
+                if (e.target.closest(".ptab-close")) return;
+                switchPortfolio(parseInt(tab.dataset.index));
+            });
+            tab.addEventListener("dblclick", function (e) {
+                if (e.target.closest(".ptab-close")) return;
+                renamePortfolio(parseInt(tab.dataset.index));
+            });
+        });
+
+        wrap.querySelectorAll(".ptab-close").forEach(function (btn) {
+            btn.addEventListener("click", function (e) {
+                e.stopPropagation();
+                deletePortfolio(parseInt(btn.dataset.delete));
+            });
+        });
+
+        document.getElementById("ptab-add-btn").addEventListener("click", addPortfolio);
     }
 
     // === SUMMARY CARDS ===
     function renderSummaryCards() {
         var totalAnnual = 0;
         var totalValue = 0;
+        var holdings = getHoldings();
 
         holdings.forEach(function (h) {
             var div = getDividendInfo(h.ticker);
@@ -306,7 +413,6 @@
         document.getElementById("portfolio-yield").textContent =
             totalValue > 0 ? fmtPct((totalAnnual / totalValue) * 100) : "0.00%";
         document.getElementById("portfolio-value").textContent = fmtUSD(totalValue);
-
     }
 
     function getDividendInfo(ticker) {
@@ -317,6 +423,7 @@
     // === HOLDINGS TABLE ===
     function renderHoldingsTable() {
         var wrap = document.getElementById("holdings-table-wrap");
+        var holdings = getHoldings();
 
         if (holdings.length === 0) {
             wrap.innerHTML =
@@ -447,6 +554,7 @@
 
     function buildCalendarEvents(year, month) {
         var events = {};
+        var holdings = getHoldings();
 
         function addEvent(dateStr, ticker, amount, type) {
             var d = new Date(dateStr + "T00:00:00");
@@ -471,16 +579,13 @@
 
             var income = h.shares * perPayment;
 
-            // Use known ex-date
             if (div.ex_dividend_date) {
                 addEvent(div.ex_dividend_date, h.ticker, income, "ex");
             }
 
-            // Project from last_payments if available
             if (div.last_payments && div.last_payments.length > 0) {
                 var payments = div.last_payments;
 
-                // Add known payments that fall in the calendar year
                 payments.forEach(function (p) {
                     var d = new Date(p.ex_date + "T00:00:00");
                     if (d.getFullYear() === year) {
@@ -488,7 +593,6 @@
                     }
                 });
 
-                // Compute average day-of-month from history for projections
                 var daySum = 0;
                 payments.forEach(function (p) {
                     daySum += new Date(p.ex_date + "T00:00:00").getDate();
@@ -501,16 +605,13 @@
                 else if (freq === "semi-annual") monthsPerPayment = 6;
                 else monthsPerPayment = 12;
 
-                // Find the last known payment month
                 var lastP = payments[payments.length - 1];
                 var lastPDate = new Date(lastP.ex_date + "T00:00:00");
                 var lastPMonth = lastPDate.getFullYear() * 12 + lastPDate.getMonth();
 
-                // Known payment dates (to avoid duplicates)
                 var knownDates = {};
                 payments.forEach(function (p) { knownDates[p.ex_date] = true; });
 
-                // Project forward from last payment
                 for (var p = 1; p <= 12; p++) {
                     var projMonth = lastPMonth + p * monthsPerPayment;
                     var projYear = Math.floor(projMonth / 12);
@@ -524,7 +625,6 @@
                     }
                 }
             } else {
-                // No payment history — project estimated dates from start of year
                 var monthsPerPayment;
                 if (freq === "monthly") monthsPerPayment = 1;
                 else if (freq === "quarterly") monthsPerPayment = 3;

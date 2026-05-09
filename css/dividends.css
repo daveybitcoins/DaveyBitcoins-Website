@@ -1,3 +1,92 @@
+/* === PORTFOLIO TABS === */
+.portfolio-tabs {
+    margin-bottom: 1rem;
+}
+
+.ptabs-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+    padding-bottom: 2px;
+    border-bottom: 1px solid var(--border);
+}
+
+.ptab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.45rem 0.9rem;
+    border-radius: 6px 6px 0 0;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-bottom: none;
+    transition: all 0.15s;
+    user-select: none;
+    position: relative;
+    bottom: -1px;
+}
+
+.ptab:hover {
+    color: var(--text);
+    background: rgba(88, 166, 255, 0.05);
+}
+
+.ptab.active {
+    color: var(--text);
+    background: var(--bg-card);
+    border-color: var(--border);
+    font-weight: 600;
+}
+
+.ptab-name {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.ptab-close {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 0.65rem;
+    cursor: pointer;
+    padding: 0 2px;
+    line-height: 1;
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s;
+}
+
+.ptab:hover .ptab-close {
+    opacity: 1;
+}
+
+.ptab-close:hover {
+    color: var(--red);
+}
+
+.ptab-add {
+    background: none;
+    border: 1px dashed var(--border);
+    border-radius: 6px 6px 0 0;
+    border-bottom: none;
+    color: var(--text-dim);
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.3rem 0.7rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    bottom: -1px;
+}
+
+.ptab-add:hover {
+    color: var(--blue);
+    border-color: var(--blue);
+    background: rgba(88, 166, 255, 0.05);
+}
+
 /* === ADD HOLDING FORM === */
 .add-holding-row {
     display: flex;
