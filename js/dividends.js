@@ -347,50 +347,44 @@
 
     // === RENDER ALL ===
     function renderAll() {
-        renderPortfolioTabs();
+        renderPortfolioControls();
         renderSummaryCards();
         renderHoldingsTable();
         renderCalendar();
     }
 
-    // === PORTFOLIO TABS ===
-    function renderPortfolioTabs() {
-        var wrap = document.getElementById("portfolio-tabs");
-        var html = '<div class="ptabs-row">';
+    // === PORTFOLIO CONTROLS ===
+    function renderPortfolioControls() {
+        var wrap = document.getElementById("portfolio-controls");
+        var html = '<select class="portfolio-select" id="portfolio-select">';
 
         portfolios.forEach(function (p, i) {
-            var active = i === activePortfolioIndex ? " active" : "";
-            html += '<div class="ptab' + active + '" data-index="' + i + '">';
-            html += '<span class="ptab-name">' + p.name + '</span>';
-            if (portfolios.length > 1) {
-                html += '<button class="ptab-close" data-delete="' + i + '" title="Delete portfolio">&#10005;</button>';
-            }
-            html += '</div>';
+            var sel = i === activePortfolioIndex ? " selected" : "";
+            html += '<option value="' + i + '"' + sel + '>' + p.name + '</option>';
         });
 
-        html += '<button class="ptab-add" id="ptab-add-btn" title="New portfolio">+</button>';
-        html += '</div>';
+        html += '</select>';
+        html += '<button class="portfolio-btn" id="portfolio-add-btn" title="New portfolio">+ New</button>';
+        html += '<button class="portfolio-btn" id="portfolio-rename-btn" title="Rename portfolio">Rename</button>';
+        if (portfolios.length > 1) {
+            html += '<button class="portfolio-btn btn-del" id="portfolio-del-btn" title="Delete portfolio">Delete</button>';
+        }
+
         wrap.innerHTML = html;
 
-        wrap.querySelectorAll(".ptab").forEach(function (tab) {
-            tab.addEventListener("click", function (e) {
-                if (e.target.closest(".ptab-close")) return;
-                switchPortfolio(parseInt(tab.dataset.index));
-            });
-            tab.addEventListener("dblclick", function (e) {
-                if (e.target.closest(".ptab-close")) return;
-                renamePortfolio(parseInt(tab.dataset.index));
-            });
+        document.getElementById("portfolio-select").addEventListener("change", function () {
+            switchPortfolio(parseInt(this.value));
         });
-
-        wrap.querySelectorAll(".ptab-close").forEach(function (btn) {
-            btn.addEventListener("click", function (e) {
-                e.stopPropagation();
-                deletePortfolio(parseInt(btn.dataset.delete));
-            });
+        document.getElementById("portfolio-add-btn").addEventListener("click", addPortfolio);
+        document.getElementById("portfolio-rename-btn").addEventListener("click", function () {
+            renamePortfolio(activePortfolioIndex);
         });
-
-        document.getElementById("ptab-add-btn").addEventListener("click", addPortfolio);
+        var delBtn = document.getElementById("portfolio-del-btn");
+        if (delBtn) {
+            delBtn.addEventListener("click", function () {
+                deletePortfolio(activePortfolioIndex);
+            });
+        }
     }
 
     // === SUMMARY CARDS ===
