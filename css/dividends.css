@@ -97,36 +97,26 @@
     cursor: pointer;
     position: relative;
     transition: all 0.15s;
-    background: rgba(16, 30, 54, 0.5);
-    border: 1px solid rgba(100, 171, 246, 0.12);
+    background: var(--bg) !important;
+    border: 1px solid var(--border) !important;
     border-radius: 4px;
-    padding: 4px 8px !important;
+    padding: 6px 10px !important;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
 }
 
 .editable-cell:hover {
-    background: rgba(88, 166, 255, 0.1);
-    border-color: rgba(100, 171, 246, 0.35);
-    box-shadow: 0 0 8px rgba(100, 171, 246, 0.08);
-}
-
-.editable-cell:hover::after {
-    content: "\270E";
-    position: absolute;
-    top: 3px;
-    right: 3px;
-    font-size: 0.6rem;
-    color: var(--blue);
-    opacity: 0.7;
+    border-color: var(--blue) !important;
+    box-shadow: 0 0 0 1px rgba(100, 171, 246, 0.15);
 }
 
 [data-theme="light"] .editable-cell {
-    background: rgba(37, 99, 235, 0.04);
-    border-color: rgba(37, 99, 235, 0.12);
+    background: #fff !important;
+    border-color: var(--border) !important;
 }
 
 [data-theme="light"] .editable-cell:hover {
-    background: rgba(37, 99, 235, 0.08);
-    border-color: rgba(37, 99, 235, 0.3);
+    border-color: var(--blue) !important;
 }
 
 /* === ADD HOLDING FORM === */
