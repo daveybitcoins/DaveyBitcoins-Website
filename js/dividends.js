@@ -345,6 +345,13 @@
         renderAll();
     }
 
+    function updateCostBasis(index, newCost) {
+        if (isNaN(newCost) || newCost < 0) return;
+        getHoldings()[index].costBasis = newCost || null;
+        savePortfolios();
+        renderAll();
+    }
+
     // === RENDER ALL ===
     function renderAll() {
         renderPortfolioControls();
@@ -468,8 +475,8 @@
             html += '<tr>' +
                 '<td><strong style="font-family:JetBrains Mono,monospace">' + h.ticker + '</strong></td>' +
                 '<td class="name-cell">' + name + '</td>' +
-                '<td class="num">' + h.shares + '</td>' +
-                '<td class="num">' + (h.costBasis ? fmtUSD(h.costBasis) : "--") + '</td>' +
+                '<td class="num editable-cell" data-index="' + i + '" data-field="shares" title="Click to edit">' + h.shares + '</td>' +
+                '<td class="num editable-cell" data-index="' + i + '" data-field="costBasis" title="Click to edit">' + (h.costBasis ? fmtUSD(h.costBasis) : "--") + '</td>' +
                 '<td class="num">' + (h.costBasis ? fmtUSD(h.costBasis * h.shares) : "--") + '</td>' +
                 '<td class="num">' + (price ? fmtUSD(price) + (gainLoss ? ' ' + gainLoss : '') : "--") + '</td>' +
                 '<td class="num">' + (value ? fmtUSD(value) : "--") + '</td>' +
@@ -489,6 +496,43 @@
         wrap.querySelectorAll(".btn-delete").forEach(function (btn) {
             btn.addEventListener("click", function () {
                 deleteHolding(parseInt(btn.dataset.index));
+            });
+        });
+
+        wrap.querySelectorAll(".editable-cell").forEach(function (cell) {
+            cell.addEventListener("click", function () {
+                if (cell.querySelector(".inline-edit")) return;
+                var idx = parseInt(cell.dataset.index);
+                var field = cell.dataset.field;
+                var h = getHoldings()[idx];
+                var raw = field === "shares" ? h.shares : (h.costBasis || "");
+
+                var input = document.createElement("input");
+                input.type = "number";
+                input.className = "inline-edit";
+                input.value = raw;
+                input.step = "any";
+                input.min = field === "shares" ? "0.01" : "0";
+
+                cell.textContent = "";
+                cell.appendChild(input);
+                input.focus();
+                input.select();
+
+                function commit() {
+                    var val = parseFloat(input.value);
+                    if (field === "shares") {
+                        updateShares(idx, val);
+                    } else {
+                        updateCostBasis(idx, val);
+                    }
+                }
+
+                input.addEventListener("blur", commit);
+                input.addEventListener("keydown", function (e) {
+                    if (e.key === "Enter") { input.blur(); }
+                    if (e.key === "Escape") { renderHoldingsTable(); }
+                });
             });
         });
     }

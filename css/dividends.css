@@ -92,6 +92,32 @@
     .portfolio-controls { justify-content: flex-start; }
 }
 
+/* === EDITABLE CELLS === */
+.editable-cell {
+    cursor: pointer;
+    position: relative;
+    transition: background 0.15s;
+    border-radius: 3px;
+}
+
+.editable-cell:hover {
+    background: rgba(88, 166, 255, 0.08);
+}
+
+.editable-cell:hover::after {
+    content: "\270E";
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-size: 0.6rem;
+    color: var(--blue);
+    opacity: 0.6;
+}
+
+[data-theme="light"] .editable-cell:hover {
+    background: rgba(37, 99, 235, 0.06);
+}
+
 /* === ADD HOLDING FORM === */
 .add-holding-row {
     display: flex;
