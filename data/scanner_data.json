@@ -2,7 +2,7 @@
   "meta": {
     "date": "2026-05-10",
     "total_stocks": 300,
-    "generated_at": "2026-05-10T13:46:03.781776",
+    "generated_at": "2026-05-10T21:00:57.759358",
     "index_etfs": [
       "SPY",
       "QQQ",
@@ -57,26 +57,26 @@
     {
       "symbol": "BTC",
       "name": "Bitcoin",
-      "price": 80921.39,
-      "ema8": 75803.35,
-      "ema13": 75980.16,
-      "ema21": 78859.39,
+      "price": 80687.32,
+      "ema8": 75751.33,
+      "ema13": 75946.72,
+      "ema21": 78838.11,
       "signal": "Bear Rally above 13W",
-      "price_vs_8w": 6.75,
-      "price_vs_13w": 6.5,
-      "price_vs_21w": 2.61,
-      "ema8_vs_13": -0.23,
-      "ema13_vs_21": -3.65,
-      "spread_score": -3.88,
-      "chg_1d": 0.91,
-      "chg_1w": 2.88,
-      "chg_1m": 12.75,
-      "crossover_alert": "8W just below 13W (0.23%) \u2014 bullish cross potential",
-      "risk_combo": 0.239,
-      "risk_mm": 0.266,
-      "risk_zs": 0.215,
-      "fair_value": 134143.18,
-      "dev_pct": -39.7,
+      "price_vs_8w": 6.52,
+      "price_vs_13w": 6.24,
+      "price_vs_21w": 2.35,
+      "ema8_vs_13": -0.26,
+      "ema13_vs_21": -3.67,
+      "spread_score": -3.93,
+      "chg_1d": 0.62,
+      "chg_1w": 2.58,
+      "chg_1m": 12.42,
+      "crossover_alert": "8W just below 13W (0.26%) \u2014 bullish cross potential",
+      "risk_combo": 0.237,
+      "risk_mm": 0.264,
+      "risk_zs": 0.212,
+      "fair_value": 134143.01,
+      "dev_pct": -39.8,
       "zone": "Neutral",
       "zone_color": "#10b981"
     }
@@ -4892,7 +4892,7 @@
       "spread_score": -2.42,
       "pe_ttm": 32.3,
       "fwd_pe": 27.8,
-      "peg": 2.0,
+      "peg": 2.01,
       "sma5": 48.641,
       "sma20": 48.015749999999954,
       "sma50": 45.95160000000006,
@@ -24596,7 +24596,7 @@
       "spread_score": -2.42,
       "pe_ttm": 32.3,
       "fwd_pe": 27.8,
-      "peg": 2.0,
+      "peg": 2.01,
       "sma5": 48.641,
       "sma20": 48.015749999999954,
       "sma50": 45.95160000000006,
@@ -26506,9 +26506,9 @@
   "ai_summary": {
     "market_overview": {
       "bias": "bullish",
-      "bias_label": "Strongly Bullish",
-      "headline": "Market remains in robust uptrend with 88% of stocks in bullish structures despite geopolitical noise.",
-      "detail": "SPY and QQQ both in Full Bull mode with strong momentum, while 44% of stocks are in Full Bull patterns averaging +17.7% vs 21W EMA. Only 20% remain in bearish structures.",
+      "bias_label": "Leaning Bullish",
+      "headline": "Broad market strength continues with both SPY and QQQ in Full Bull structure, though crypto divergence warrants attention.",
+      "detail": "43% of top 300 stocks in Full Bull mode (avg +18.6% vs 21W EMA), while only 20% remain in Full Bear territory. BTC showing Bear Rally structure creates risk-on divergence to monitor.",
       "index_signals": {
         "SPY": "Full Bull",
         "QQQ": "Full Bull",
@@ -26516,22 +26516,38 @@
       }
     },
     "reversal_candidates": {
-      "headline": "Bear Rally Reversal Setups",
+      "headline": "Bear Rally Reversals with Bullish Cross Potential",
       "items": [
         {
           "symbol": "TSLA",
           "name": "Tesla, Inc.",
           "signal": "Bear Rally above 13W",
-          "crossover_detail": "8W just below 13W (0.48%) \u2014 bullish cross potential; 13W just below 21W (0.86%) \u2014 bullish cross potential",
-          "note": "Mega-cap showing strong momentum with both key EMAs poised for bullish crossovers",
+          "crossover_detail": "8W just below 13W (0.47%) \u2014 bullish cross potential; 13W just below 21W (0.86%) \u2014 bullish cross potential",
+          "note": "Mega-cap EV leader showing strong momentum above both shorter EMAs with dual bullish cross setup brewing",
           "type": "bull"
         },
         {
           "symbol": "MSFT",
           "name": "Microsoft Corporation",
           "signal": "Bear Rally above 13W",
-          "crossover_detail": "8W just below 13W (0.76%) \u2014 bullish cross potential",
-          "note": "Tech giant testing resistance with 8W EMA nearing bullish cross",
+          "crossover_detail": "8W just below 13W (0.78%) \u2014 bullish cross potential",
+          "note": "Tech giant rallying +2.1% above 8W with imminent bullish EMA cross could signal major reversal",
+          "type": "bull"
+        },
+        {
+          "symbol": "DIS",
+          "name": "Walt Disney Company (The)",
+          "signal": "Bear Rally above 13W",
+          "crossover_detail": "8W just below 13W (0.25%) \u2014 bullish cross potential",
+          "note": "Media giant showing strong bounce with tight EMA spread suggesting imminent bullish structural shift",
+          "type": "bull"
+        },
+        {
+          "symbol": "V",
+          "name": "Visa Inc.",
+          "signal": "Bear Rally above 13W",
+          "crossover_detail": "8W just below 13W (0.35%) \u2014 bullish cross potential",
+          "note": "Payment processor holding above 13W EMA with bullish cross setup in quality financial name",
           "type": "bull"
         },
         {
@@ -26539,71 +26555,55 @@
           "name": "Meta Platforms, Inc.",
           "signal": "Full Bear",
           "crossover_detail": "8W just below 13W (0.52%) \u2014 bullish cross potential",
-          "note": "Social media leader showing early reversal signs despite bearish structure",
-          "type": "bull"
-        },
-        {
-          "symbol": "V",
-          "name": "Visa Inc.",
-          "signal": "Bear Rally above 13W",
-          "crossover_detail": "8W just below 13W (0.36%) \u2014 bullish cross potential",
-          "note": "Payments giant rallying above 13W with imminent 8W crossover",
-          "type": "bull"
-        },
-        {
-          "symbol": "UBER",
-          "name": "Uber Technologies, Inc.",
-          "signal": "Bear Rally above 13W",
-          "crossover_detail": "8W just below 13W (0.92%) \u2014 bullish cross potential",
-          "note": "Mobility stock showing momentum with EMA structure improving",
+          "note": "Social media giant showing first signs of EMA convergence despite Full Bear classification",
           "type": "bull"
         }
       ]
     },
     "pullback_setups": {
-      "headline": "Quality Pullback Entries",
+      "headline": "Quality Pullback Entry Opportunities",
       "items": [
         {
           "symbol": "FANG",
           "name": "Diamondback Energy, Inc.",
           "signal": "Bull Pullback \u2192 13W",
-          "price_vs_21w": 6.07,
-          "vol_quality": "Low Vol",
-          "note": "Energy leader showing orderly pullback with low volume suggesting institutional accumulation",
+          "price_vs_21w": 5.76,
+          "vol_quality": "Normal Vol",
+          "note": "Energy leader pulling back to 13W support on normal volume \u2014 orderly consolidation in strong uptrend",
           "type": "bull"
         },
         {
-          "symbol": "CNQ",
-          "name": "Canadian Natural Resources Limited",
+          "symbol": "HLT",
+          "name": "Hilton Worldwide Holdings Inc.",
           "signal": "Bull Pullback \u2192 13W",
-          "price_vs_21w": 5.79,
+          "price_vs_21w": 3.44,
           "vol_quality": "Low Vol",
-          "note": "Large-cap energy pullback on minimal volume indicates controlled selling",
+          "note": "Hospitality name showing low volume pullback to 13W \u2014 high quality entry setup in travel recovery theme",
+          "type": "bull"
+        },
+        {
+          "symbol": "NEE",
+          "name": "NextEra Energy, Inc.",
+          "signal": "Bull Pullback \u2192 13W",
+          "price_vs_21w": 3.43,
+          "vol_quality": "Low Vol",
+          "note": "Utility giant in orderly low-volume pullback \u2014 defensive quality with yield support near 13W EMA",
           "type": "bull"
         },
         {
           "symbol": "LIN",
           "name": "Linde plc",
           "signal": "Bull Pullback \u2192 13W",
-          "price_vs_21w": 3.18,
+          "price_vs_21w": 2.48,
           "vol_quality": "Low Vol",
-          "note": "Industrial gas giant offering high-quality entry with muted selling pressure",
-          "type": "bull"
-        },
-        {
-          "symbol": "DE",
-          "name": "Deere & Company",
-          "signal": "Bull Pullback \u2192 13W",
-          "price_vs_21w": 3.3,
-          "vol_quality": "Low Vol",
-          "note": "Ag equipment leader in shallow pullback with constructive volume profile",
+          "note": "Industrial gas leader showing textbook low-volume pullback \u2014 quality defensive play in established uptrend",
           "type": "bull"
         }
       ]
     },
     "momentum_themes": {
-      "headline": "Memory/Storage Mania Leads Tech Surge",
-      "detail": "Electronic technology sector dominates with memory and storage stocks showing explosive momentum. Memory ETF (DRAM) raised $5B since April launch, highlighting institutional flows into this theme.",
+      "headline": "Tech Hardware & Semiconductor Acceleration",
+      "detail": "Electronic technology showing explosive momentum with semiconductor names like INTC (+105% vs 21W) and memory stocks SNDK, WDC leading charge. Data center and AI hardware themes driving massive outperformance.",
       "top_names": [
         "SNDK",
         "INTC",
@@ -26613,92 +26613,92 @@
       ]
     },
     "sector_analysis": {
-      "headline": "Sector Rotation Snapshot",
+      "headline": "Energy & Tech Leading, Healthcare Lagging",
       "strongest": [
         {
           "sector": "Energy minerals",
           "net_score": 100.0,
           "bull_pct": 100.0,
-          "note": "Perfect bullish structure with all 14 names in uptrends"
+          "note": "Perfect bullish positioning with 100% of energy names in bullish structure"
         },
         {
           "sector": "Producer manufacturing",
           "net_score": 61.1,
           "bull_pct": 77.8,
-          "note": "Industrial strength with 78% bullish participation"
+          "note": "Industrial strength with strong earnings backdrop supporting machinery and equipment names"
         },
         {
           "sector": "Electronic technology",
-          "net_score": 55.6,
+          "net_score": 53.4,
           "bull_pct": 75.6,
-          "note": "Tech hardware leading with memory/storage momentum"
+          "note": "AI and semiconductor boom driving massive outperformance across chip names"
         }
       ],
       "weakest": [
         {
           "sector": "Health technology",
-          "net_score": -76.2,
-          "bear_pct": 76.2,
-          "note": "Biotech carnage with 76% in bearish structures"
+          "net_score": -85.7,
+          "bear_pct": 85.7,
+          "note": "Biotech and pharma names under severe pressure with 86% in bearish structure"
         },
         {
           "sector": "Commercial services",
           "net_score": -50.0,
           "bear_pct": 75.0,
-          "note": "Services sector under pressure amid economic uncertainty"
+          "note": "Business services facing headwinds with majority of names in bearish trends"
         },
         {
           "sector": "Consumer durables",
           "net_score": -50.0,
           "bear_pct": 75.0,
-          "note": "Consumer discretionary weakness despite TSLA strength"
+          "note": "Consumer discretionary weakness persisting with autos and durables under pressure"
         }
       ],
-      "detail": "Clear rotation into cyclicals and away from defensives. Energy and industrials leading while healthcare and services lag badly."
+      "detail": "Clear rotation from defensive healthcare into cyclical energy and technology. Industrial strength suggests economic optimism while healthcare weakness may reflect valuation concerns."
     },
     "risk_warnings": {
-      "headline": "Key Risks to Monitor",
+      "headline": "Key Risk Factors to Monitor",
       "items": [
         {
-          "text": "Health technology sector showing severe deterioration with 76% in bearish structures",
+          "text": "BTC showing bear structure while equities bullish \u2014 watch for correlation breakdown",
+          "type": "caution"
+        },
+        {
+          "text": "Healthcare sector in deep bearish structure with 86% of names trending down",
           "type": "bear"
         },
         {
-          "text": "BTC struggling in bear structure while equities rally suggests crypto divergence",
+          "text": "Technology services lagging despite hardware strength \u2014 software rotation risk",
           "type": "caution"
         },
         {
-          "text": "Iran tensions creating geopolitical uncertainty despite market resilience",
-          "type": "caution"
-        },
-        {
-          "text": "Technology services (42% bullish) lagging broader tech hardware rally",
+          "text": "18 Bull Breakdown names suggest some uptrend cracks developing",
           "type": "caution"
         }
       ]
     },
     "news_drivers": {
       "headline": "What Moved Markets",
-      "summary": "Iran tensions dominated headlines with tanker seizures and geopolitical discussions, while memory sector mania drove tech gains. UK political uncertainty and Toyota's Iran war impact warnings added to global concerns, but markets shrugged off geopolitical risks.",
+      "summary": "Market continued sixth consecutive weekly winning streak driven by AI partnership optimism and data center strength. Middle East geopolitical tensions provided backdrop volatility while Netflix pricing changes highlighted streaming evolution dynamics.",
       "items": [
         {
-          "text": "Iran seized oil tanker in Gulf of Oman, sparking energy market volatility"
+          "text": "Jim Cramer's backing of AI data center winners supported continued semiconductor and tech hardware momentum"
         },
         {
-          "text": "Memory ETF (DRAM) added $1B in single day as semiconductor rotation accelerated"
+          "text": "Upcoming April inflation data and earnings from Qnity Electronics key focuses for week ahead"
         },
         {
-          "text": "Toyota warned of $4.3B hit from Iran war effects, highlighting supply chain risks"
+          "text": "Middle East tensions with Iran drone attacks and regional military responses created defensive undertones"
         },
         {
-          "text": "UK PM Starmer faced election losses amid cost-of-living pressures, weakening sterling"
+          "text": "Netflix $20 ad-free plan signals streaming industry maturation and pricing power themes"
         },
         {
-          "text": "China confirmed Strait of Hormuz oil tanker attack, escalating Middle East tensions"
+          "text": "S&P 500's six-week winning streak reflects broad positive earnings and economic data momentum"
         }
       ]
     },
-    "generated_at": "2026-05-08T15:33:36.707010",
+    "generated_at": "2026-05-10T21:01:38.010342",
     "model": "claude-sonnet-4-20250514"
   }
 }
