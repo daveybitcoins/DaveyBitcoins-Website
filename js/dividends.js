@@ -444,7 +444,7 @@
 
         var html = '<div class="table-wrap"><table id="holdings-table"><thead><tr>' +
             '<th>Ticker</th><th>Name</th><th>Shares</th><th>Cost Basis / Share</th><th>Cost Basis / Total</th><th>Price</th><th>Current Value</th>' +
-            '<th>Yield</th><th>Div / Share</th><th>Annual Div</th><th>Monthly Div</th><th>Frequency</th>' +
+            '<th>Yield</th><th>Div / Share (Yr)</th><th>Annual Div</th><th>Monthly Div</th><th>Frequency</th>' +
             '<th>% of Portfolio</th><th></th>' +
             '</tr></thead><tbody>';
 
@@ -491,6 +491,7 @@
         });
 
         html += '</tbody></table></div>';
+        html += '<p class="dividend-disclaimer">Dividend payments are subject to change by the company or fund manager. Check their documentation for the most up-to-date distribution details.</p>';
         wrap.innerHTML = html;
 
         wrap.querySelectorAll(".btn-delete").forEach(function (btn) {

@@ -119,6 +119,16 @@
     border-color: var(--blue) !important;
 }
 
+/* === DIVIDEND DISCLAIMER === */
+.dividend-disclaimer {
+    margin-top: 0.75rem;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    opacity: 0.7;
+    font-style: italic;
+    text-align: center;
+}
+
 /* === ADD HOLDING FORM === */
 .add-holding-row {
     display: flex;
