@@ -254,7 +254,7 @@
   <div class="ema-section">
     <div class="ema-section-header">
       <h2>📊 <span>8 / 13 / 21 EMA Strategy</span></h2>
-      <div class="subtitle">Weekly Timeframe · Gap Exit Mode (3%)</div>
+      <div class="subtitle">Weekly Timeframe · Gap Exit Mode (5%)</div>
     </div>
     <div class="dashboard" id="emaDashboard"></div>
     <div class="risk-lows-wrap">
@@ -283,7 +283,7 @@
     <div class="methodology">
       <h3>Strategy Rules (8/13/21 EMA)</h3>
       <p><span class="hl">Entry:</span> Weekly <code>8 EMA</code> crosses above <code>13 EMA</code> while both are below the <code>21 EMA</code>. This "early entry" catches the trend reversal before the full bullish stack forms.</p>
-      <p><span class="hl">Exit (Gap Mode):</span> When the gap <code>(21W − 8W) / 21W</code> crosses above <code>3%</code>, meaning the 8-week EMA has fallen far enough below the 21-week EMA to signal momentum loss.</p>
+      <p><span class="hl">Exit (Gap Mode):</span> When the gap <code>(21W − 8W) / 21W</code> crosses above <code>5%</code>, meaning the 8-week EMA has fallen far enough below the 21-week EMA to signal momentum loss.</p>
       <p><span class="hl">Note:</span> This is a backtest on weekly closes from historical data. Past performance does not guarantee future results. Signals may differ slightly from TradingView due to weekly candle alignment.</p>
     </div>
   </div>
@@ -1356,7 +1356,7 @@ async function main() {
     });
 
     // Generate trade signals from 2015
-    const GAP_THRESH = 3.0;
+    const GAP_THRESH = 5.0;
     const sIdx = weeks.findIndex(w => w.date >= '2015-01-01');
     const trades = [];
     let inTrade = false;
