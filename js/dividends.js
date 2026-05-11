@@ -172,15 +172,18 @@
     }
 
     function applyDividendHistory(cache) {
+        var applied = false;
         for (var ticker in cache) {
             var div = dividendData.tickers[ticker];
             if (div && cache[ticker].payments && cache[ticker].payments.length > 0) {
                 var existing = div.last_payments || [];
                 if (existing.length < cache[ticker].payments.length) {
                     div.last_payments = cache[ticker].payments;
+                    applied = true;
                 }
             }
         }
+        if (applied) renderAll();
     }
 
     // === PORTFOLIO MANAGEMENT ===

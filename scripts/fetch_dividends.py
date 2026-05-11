@@ -196,8 +196,22 @@ def main():
     print(f"Dividend Data Fetcher — {datetime.now().strftime('%Y-%m-%d %H:%M')}")
     print("=" * 50)
 
+    # Load existing data to preserve last_payments
+    existing_data = {}
+    if os.path.exists(OUTPUT_FILE):
+        try:
+            with open(OUTPUT_FILE) as f:
+                existing_data = json.load(f).get("tickers", {})
+        except Exception:
+            existing_data = {}
+
     df = fetch_tv_data()
     tickers = build_ticker_data(df)
+
+    # Preserve last_payments from existing data
+    for symbol, data in tickers.items():
+        if symbol in existing_data and existing_data[symbol].get("last_payments"):
+            data["last_payments"] = existing_data[symbol]["last_payments"]
 
     # Merge fallback data for tickers TradingView misses
     added_fallbacks = []
