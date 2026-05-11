@@ -287,8 +287,8 @@ async function main() {
 
   let cards = '<div class="card" style="--glow:rgba(247,147,26,0.3)">' +
     '<div class="card-label">BTC Price</div>' +
-    '<div class="card-value" style="--val-color:#f7931a;font-size:1.6rem">$' + lastDaily.price.toLocaleString(undefined, { maximumFractionDigits: 0 }) + '</div>' +
-    '<div class="card-sub">' + lastDaily.date + '</div></div>';
+    '<div class="card-value" id="btc-live-price" style="--val-color:#f7931a;font-size:1.6rem">$' + lastDaily.price.toLocaleString(undefined, { maximumFractionDigits: 0 }) + '</div>' +
+    '<div class="card-sub" id="btc-live-time">' + lastDaily.date + '</div></div>';
 
   cards += '<div class="card" style="--glow:' + statusGlow + '">' +
     '<div class="card-label">Position</div>' +
@@ -516,6 +516,22 @@ async function main() {
 }
 
 main();
+
+// Auto-refresh BTC price every 60 seconds
+setInterval(async function () {
+  try {
+    const resp = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_last_updated_at=true');
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const price = data.bitcoin.usd;
+    const dt = new Date(data.bitcoin.last_updated_at * 1000);
+    const timeStr = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const el = document.getElementById('btc-live-price');
+    const sub = document.getElementById('btc-live-time');
+    if (el) el.textContent = '$' + price.toLocaleString(undefined, { maximumFractionDigits: 0 });
+    if (sub) sub.textContent = 'Updated ' + timeStr;
+  } catch {}
+}, 60000);
 </script>
 </body>
 </html>
