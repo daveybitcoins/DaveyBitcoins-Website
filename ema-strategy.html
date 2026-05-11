@@ -202,24 +202,15 @@ async function fetchLivePrice(rawData) {
 
 async function main() {
   let rawData = await loadCSV();
-  const liveResult = await fetchLivePrice(rawData);
 
-  // Filter to valid data
-  const dailyPts = rawData
+  // Build weekly candles from CSV data FIRST (before live price modifies it)
+  const csvPts = rawData
     .map(([ds, p]) => ({ date: ds, price: p }))
     .filter(p => p.price > 0);
 
-  const lastDaily = dailyPts[dailyPts.length - 1];
-  const isLive = !!liveResult;
-
-  // Header date
-  const hd = document.getElementById('headerDate');
-  hd.innerHTML = '<span style="width:6px;height:6px;background:#22c55e;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> as of ' + lastDaily.date + (isLive ? ' · live' : '');
-
-  // Convert daily to weekly candles
   const weeks = [];
   let curWeekKey = null;
-  dailyPts.forEach(p => {
+  csvPts.forEach(p => {
     const d = new Date(p.date + 'T00:00:00Z');
     const dow = d.getUTCDay();
     const mon = new Date(d);
@@ -233,6 +224,23 @@ async function main() {
       weeks[weeks.length - 1].date = p.date;
     }
   });
+
+  // Now fetch live price and update only the last candle's close
+  const liveResult = await fetchLivePrice(rawData);
+  const dailyPts = rawData
+    .map(([ds, p]) => ({ date: ds, price: p }))
+    .filter(p => p.price > 0);
+  const lastDaily = dailyPts[dailyPts.length - 1];
+  const isLive = !!liveResult;
+
+  if (isLive && weeks.length > 0) {
+    weeks[weeks.length - 1].close = lastDaily.price;
+    weeks[weeks.length - 1].date = lastDaily.date;
+  }
+
+  // Header date
+  const hd = document.getElementById('headerDate');
+  hd.innerHTML = '<span style="width:6px;height:6px;background:#22c55e;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> as of ' + lastDaily.date + (isLive ? ' · live' : '');
 
   // Calculate EMAs
   const closes = weeks.map(w => w.close);
