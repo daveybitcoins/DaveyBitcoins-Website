@@ -307,10 +307,11 @@ async function main() {
   if (inTrade) {
     const unrealPct = ((lastDaily.price / entryWeek.price - 1) * 100);
     const unrealColor = unrealPct >= 0 ? '#10b981' : '#ef4444';
-    cards += '<div class="card" style="--glow:' + unrealColor + '">' +
+    cards += '<div class="card" id="unreal-card" style="--glow:' + unrealColor + '">' +
       '<div class="card-label">Unrealized Return</div>' +
-      '<div class="card-value" style="--val-color:' + unrealColor + '">' + (unrealPct >= 0 ? '+' : '') + unrealPct.toFixed(1) + '%</div>' +
+      '<div class="card-value" id="unreal-value" style="--val-color:' + unrealColor + '">' + (unrealPct >= 0 ? '+' : '') + unrealPct.toFixed(1) + '%</div>' +
       '<div class="card-sub">Entry: $' + entryWeek.price.toLocaleString(undefined, { maximumFractionDigits: 0 }) + '</div></div>';
+    window.__entryPrice = entryWeek.price;
     cards += '<div class="card" style="--glow:#a78bfa">' +
       '<div class="card-label">Current Trade</div>' +
       '<div class="card-value" style="--val-color:#a78bfa">#' + (trades.length + 1) + '</div>' +
@@ -533,6 +534,18 @@ setInterval(async function () {
     const sub = document.getElementById('btc-live-time');
     if (el) el.textContent = '$' + price.toLocaleString(undefined, { maximumFractionDigits: 0 });
     if (sub) sub.textContent = 'Updated ' + timeStr;
+    // Update unrealized return
+    if (window.__entryPrice) {
+      var pct = ((price / window.__entryPrice - 1) * 100);
+      var uVal = document.getElementById('unreal-value');
+      var uCard = document.getElementById('unreal-card');
+      if (uVal) {
+        var col = pct >= 0 ? '#10b981' : '#ef4444';
+        uVal.textContent = (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%';
+        uVal.style.setProperty('--val-color', col);
+        if (uCard) uCard.style.setProperty('--glow', col);
+      }
+    }
   } catch {}
 }, 60000);
 </script>
