@@ -285,7 +285,12 @@ async function main() {
   const statusText = inTrade ? 'IN TRADE' : 'OUT';
   const statusGlow = inTrade ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)';
 
-  let cards = '<div class="card" style="--glow:' + statusGlow + '">' +
+  let cards = '<div class="card" style="--glow:rgba(247,147,26,0.3)">' +
+    '<div class="card-label">BTC Price</div>' +
+    '<div class="card-value" style="--val-color:#f7931a;font-size:1.6rem">$' + lastDaily.price.toLocaleString(undefined, { maximumFractionDigits: 0 }) + '</div>' +
+    '<div class="card-sub">' + lastDaily.date + '</div></div>';
+
+  cards += '<div class="card" style="--glow:' + statusGlow + '">' +
     '<div class="card-label">Position</div>' +
     '<div class="card-value" style="--val-color:' + statusColor + ';font-size:1.6rem">' + statusText + '</div>' +
     '<div class="card-sub">' + (inTrade ? 'Since ' + entryWeek.date : 'Waiting for entry signal') + '</div></div>';
