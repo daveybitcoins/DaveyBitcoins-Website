@@ -172,9 +172,10 @@
     <div id="headerDate" style="margin-top:10px;font-size:0.65rem;letter-spacing:1px;color:var(--text-dim);display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border:1px solid rgba(88,166,255,0.2);border-radius:4px;background:rgba(88,166,255,0.06);font-family:'JetBrains Mono',monospace;"></div>
   </header>
   <div class="dashboard">
-    <div class="card card-price" style="--glow:rgba(226,228,234,0.5)">
-      <div class="card-label"><span class="live-dot"></span>BTC / USD</div>
-      <div class="card-value" id="vPrice" style="font-size:2.4rem;letter-spacing:-2px;font-weight:700;color:var(--text-heading)">—</div>
+    <div class="card card-price" style="--glow:rgba(247,147,26,0.3)">
+      <div class="card-label">BTC Price</div>
+      <div class="card-value" id="vPrice" style="--val-color:#f7931a;font-size:2.4rem;letter-spacing:-2px;font-weight:700">—</div>
+      <div class="card-sub" id="vPriceTime"></div>
     </div>
     <div class="card" style="--glow:#f97316"><div class="card-label">Combined Risk</div><div class="card-value" id="vRisk" style="--val-color:#f97316">—</div>
       <div class="risk-bar-wrap"><div class="risk-bar-bg"></div><div class="risk-bar-needle" id="needle"></div></div>
@@ -390,6 +391,7 @@ async function main() {
 
   // Dashboard
   document.getElementById('vPrice').textContent = '$' + last.price.toLocaleString(undefined,{maximumFractionDigits:0});
+  document.getElementById('vPriceTime').textContent = last.date;
   const hd = document.getElementById('headerDate');
   hd.innerHTML = '<span style="width:6px;height:6px;background:#22c55e;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> as of ' + last.date + (isLive ? ' · live' : '');
   document.getElementById('vRisk').textContent = last.riskCombo.toFixed(3);
@@ -1327,6 +1329,22 @@ async function main() {
 }
 
 main();
+
+// Auto-refresh BTC price every 60 seconds
+setInterval(async function () {
+  try {
+    const resp = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_last_updated_at=true');
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const price = data.bitcoin.usd;
+    const dt = new Date(data.bitcoin.last_updated_at * 1000);
+    const timeStr = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const el = document.getElementById('vPrice');
+    const sub = document.getElementById('vPriceTime');
+    if (el) el.textContent = '$' + price.toLocaleString(undefined, { maximumFractionDigits: 0 });
+    if (sub) sub.textContent = 'Updated ' + timeStr;
+  } catch {}
+}, 60000);
 </script>
 </body>
 </html>
