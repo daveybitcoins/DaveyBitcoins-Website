@@ -227,7 +227,7 @@ async function main() {
     const wk = mon.toISOString().slice(0, 10);
     if (curWeekKey !== wk) {
       curWeekKey = wk;
-      weeks.push({ date: p.date, close: p.price });
+      weeks.push({ date: p.date, open: p.price, close: p.price });
     } else {
       weeks[weeks.length - 1].close = p.price;
       weeks[weeks.length - 1].date = p.date;
@@ -267,7 +267,7 @@ async function main() {
 
     if (!inTrade && earlyEntry) {
       inTrade = true;
-      entryWeek = { idx: i, date: w.date, price: w.close };
+      entryWeek = { idx: i, date: w.date, price: w.open };
     } else if (inTrade && exitGap) {
       trades.push({
         entryDate: entryWeek.date, entryPrice: entryWeek.price,
