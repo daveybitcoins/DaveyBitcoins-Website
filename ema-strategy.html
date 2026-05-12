@@ -103,6 +103,25 @@
   .ema-legend-item{display:flex;align-items:center;gap:6px;font-size:0.62rem;color:var(--text-dim)}
   .ema-legend-swatch{width:24px;height:2px;border-radius:1px}
   footer{text-align:center;margin-top:36px;padding-bottom:20px;font-size:0.58rem;color:var(--footer-text);letter-spacing:1.5px}
+  .pine-disclosure{margin-top:16px}
+  .pine-disclosure summary{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:0.72rem;color:var(--text-dim);letter-spacing:1px;padding:6px 14px;border:1px solid var(--border);border-radius:6px;transition:all 0.2s;list-style:none}
+  .pine-disclosure summary::-webkit-details-marker{display:none}
+  .pine-disclosure summary::before{content:'>';font-family:'JetBrains Mono',monospace;font-size:0.65rem;transition:transform 0.2s;display:inline-block}
+  .pine-disclosure[open] summary::before{transform:rotate(90deg)}
+  .pine-disclosure summary:hover{background:var(--btn-hover);border-color:var(--accent-blue);color:var(--text-bright)}
+  .pine-code-wrap{position:relative;margin-top:14px;border-radius:10px;border:1px solid var(--border);overflow:hidden}
+  .pine-copy-btn{position:absolute;top:8px;right:8px;background:var(--btn-bg);border:1px solid var(--btn-border);border-radius:5px;padding:4px 12px;font:0.6rem 'JetBrains Mono',monospace;color:var(--btn-text);cursor:pointer;transition:all 0.2s;z-index:2}
+  .pine-copy-btn:hover{background:var(--btn-hover);color:var(--btn-hover-text);border-color:var(--accent-blue)}
+  .pine-copy-btn.copied{background:rgba(34,197,94,0.15);border-color:#22c55e;color:#22c55e}
+  .pine-pre{margin:0;padding:16px 20px;background:var(--bg);overflow-x:auto;font-size:0.68rem;line-height:1.8;color:var(--meth-text);white-space:pre;tab-size:4;max-height:480px;overflow-y:auto}
+  .pine-pre::-webkit-scrollbar{width:6px;height:6px}
+  .pine-pre::-webkit-scrollbar-track{background:transparent}
+  .pine-pre::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  .pine-pre .cm{color:var(--text-dimmer)}
+  .pine-pre .kw{color:#c084fc}
+  .pine-pre .fn{color:#4af}
+  .pine-pre .st{color:#86efac}
+  .pine-pre .nb{color:#fbbf24}
   @media(max-width:640px){
     header{padding-top:48px}
     .header-nav{position:relative;justify-content:center;margin-bottom:12px}
@@ -160,6 +179,88 @@
     <p><span class="hl">Entry:</span> Weekly <code>8 EMA</code> crosses above <code>13 EMA</code> while both are below the <code>21 EMA</code>. This "early entry" catches the trend reversal before the full bullish stack forms.</p>
     <p><span class="hl">Exit (Gap Mode):</span> When the gap <code>(21W − 8W) / 21W</code> crosses above <code>5%</code>, meaning the 8-week EMA has fallen far enough below the 21-week EMA to signal momentum loss.</p>
     <p><span class="hl">Note:</span> This is a backtest on weekly closes from historical data. Past performance does not guarantee future results. Signals may differ slightly from TradingView due to weekly candle alignment.</p>
+    <details class="pine-disclosure">
+      <summary>Pine Script (TradingView)</summary>
+      <div class="pine-code-wrap">
+        <button class="pine-copy-btn" id="copyPine" onclick="(function(btn){var el=document.getElementById('pineCode');navigator.clipboard.writeText(el.textContent).then(function(){btn.textContent='Copied!';btn.classList.add('copied');setTimeout(function(){btn.textContent='Copy';btn.classList.remove('copied')},2000)});})(this)">Copy</button>
+        <pre class="pine-pre" id="pineCode">//@version=5
+strategy("8/13/21 EMA - Full Stack", overlay=true, shorttitle="8/13/21 FullStack",
+     initial_capital=10000,
+     default_qty_type=strategy.percent_of_equity, default_qty_value=100,
+     commission_type=strategy.commission.percent, commission_value=0.05,
+     pyramiding=0,
+     process_orders_on_close=true)
+
+// ─── EMAs ────────────────────────────────────────────────
+fastLen = input.int(8,  "Fast EMA")
+midLen  = input.int(13, "Mid EMA")
+slowLen = input.int(21, "Slow EMA")
+
+// ─── Date filter ─────────────────────────────────────────
+useDateFilter = input.bool(true, "Limit to date range", group="Backtest Window")
+startDate = input.time(timestamp("2015-01-01"), "Start", group="Backtest Window")
+endDate   = input.time(timestamp("2030-01-01"), "End",   group="Backtest Window")
+inWindow  = not useDateFilter or (time >= startDate and time <= endDate)
+
+// ─── Exit logic ──────────────────────────────────────────
+exitMode = input.string("Gap: 8W is X% below 21W", "Red Triangle Definition",
+     options=["8 under 21 (fast)", "13 under 21 (slower)", "Bearish stack (8&lt;13&lt;21)", "Gap: 8W is X% below 21W"],
+     group="Exit Logic")
+gapPct = input.float(3.0, "Gap % threshold (gap mode)", minval=0.1, step=0.5, group="Exit Logic")
+
+// ─── EMAs ────────────────────────────────────────────────
+ema8  = ta.ema(close, fastLen)
+ema13 = ta.ema(close, midLen)
+ema21 = ta.ema(close, slowLen)
+
+plot(ema8,  "8 EMA",  color=color.yellow, linewidth=2)
+plot(ema13, "13 EMA", color=color.orange, linewidth=2)
+plot(ema21, "21 EMA", color=color.red,    linewidth=2)
+
+// ─── Signals ─────────────────────────────────────────────
+earlyEntry = ta.crossover(ema8, ema13) and ema21 > ema8 and ema21 > ema13
+gap = (ema21 - ema8) / ema21 * 100
+
+exit_Fast  = ta.crossunder(ema8, ema21)
+exit_Mid   = ta.crossunder(ema13, ema21)
+exit_Stack = ema8 &lt; ema13 and ema13 &lt; ema21 and not (ema8[1] &lt; ema13[1] and ema13[1] &lt; ema21[1])
+exit_Gap   = ta.crossover(gap, gapPct)
+
+redSignal = switch exitMode
+    "8 under 21 (fast)"             =&gt; exit_Fast
+    "13 under 21 (slower)"          =&gt; exit_Mid
+    "Bearish stack (8&lt;13&lt;21)"       =&gt; exit_Stack
+    "Gap: 8W is X% below 21W"       =&gt; exit_Gap
+    =&gt; false
+
+// ─── Strategy ────────────────────────────────────────────
+if redSignal and strategy.position_size > 0
+    strategy.close_all()
+
+if earlyEntry and inWindow and strategy.position_size == 0
+    strategy.entry("Long", strategy.long)
+
+// ─── Markers ─────────────────────────────────────────────
+plotshape(earlyEntry and strategy.position_size == 0, title="Entry", style=shape.triangleup, location=location.belowbar, color=color.green, size=size.small)
+plotshape(redSignal and strategy.position_size > 0, title="Exit", style=shape.triangledown, location=location.abovebar, color=color.red, size=size.normal)
+
+// ─── Gap indicator at bottom ─────────────────────────────
+plotchar(gap > gapPct, title="Gap > threshold", char="•", location=location.bottom, color=color.red, size=size.tiny)
+
+// ─── Info table ──────────────────────────────────────────
+var table info = table.new(position.top_right, 2, 4, bgcolor=color.new(color.black, 80), border_width=1)
+if barstate.islast
+    inTradeNow = strategy.position_size > 0
+    table.cell(info, 0, 0, "In trade?",   text_color=color.white)
+    table.cell(info, 1, 0, inTradeNow ? "YES" : "no", text_color=inTradeNow ? color.lime : color.gray)
+    table.cell(info, 0, 1, "Current gap", text_color=color.white)
+    table.cell(info, 1, 1, str.tostring(gap, "0.00") + "%", text_color=gap > gapPct ? color.red : color.aqua)
+    table.cell(info, 0, 2, "Equity",      text_color=color.white)
+    table.cell(info, 1, 2, "$" + str.tostring(strategy.equity, "#,###"), text_color=color.lime)
+    table.cell(info, 0, 3, "Position $",  text_color=color.white)
+    table.cell(info, 1, 3, "$" + str.tostring(strategy.position_size * close, "#,###"), text_color=color.aqua)</pre>
+      </div>
+    </details>
   </div>
 
   <footer>Not financial advice</footer>
