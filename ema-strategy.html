@@ -206,7 +206,7 @@ inWindow  = not useDateFilter or (time >= startDate and time <= endDate)
 exitMode = input.string("Gap: 8W is X% below 21W", "Red Triangle Definition",
      options=["8 under 21 (fast)", "13 under 21 (slower)", "Bearish stack (8&lt;13&lt;21)", "Gap: 8W is X% below 21W"],
      group="Exit Logic")
-gapPct = input.float(3.0, "Gap % threshold (gap mode)", minval=0.1, step=0.5, group="Exit Logic")
+gapPct = input.float(5.0, "Gap % threshold (gap mode)", minval=0.1, step=0.5, group="Exit Logic")
 
 // ─── EMAs ────────────────────────────────────────────────
 ema8  = ta.ema(close, fastLen)
