@@ -446,7 +446,7 @@
         });
 
         var html = '<div class="table-wrap"><table id="holdings-table"><thead><tr>' +
-            '<th>Ticker</th><th>Name</th><th>Shares</th><th>Cost Basis / Share</th><th>Cost Basis / Total</th><th>Price</th><th>Current Value</th>' +
+            '<th>Ticker</th><th>Name</th><th>Shares</th><th>Cost Basis / Share</th><th>Cost Basis / Total</th><th>Price</th><th>% Gain</th><th>Current Value</th>' +
             '<th>Yield</th><th>Div / Share (Yr)</th><th>Annual Div</th><th>Monthly Div</th><th>Frequency</th>' +
             '<th>% of Portfolio</th><th></th>' +
             '</tr></thead><tbody>';
@@ -481,7 +481,8 @@
                 '<td class="num editable-cell" data-index="' + i + '" data-field="shares" title="Click to edit">' + h.shares + '</td>' +
                 '<td class="num editable-cell" data-index="' + i + '" data-field="costBasis" title="Click to edit">' + (h.costBasis ? fmtUSD(h.costBasis) : "--") + '</td>' +
                 '<td class="num">' + (h.costBasis ? fmtUSD(h.costBasis * h.shares) : "--") + '</td>' +
-                '<td class="num">' + (price ? fmtUSD(price) + (gainLoss ? ' ' + gainLoss : '') : "--") + '</td>' +
+                '<td class="num">' + (price ? fmtUSD(price) : "--") + '</td>' +
+                '<td class="num">' + (gainLoss ? gainLoss : "--") + '</td>' +
                 '<td class="num">' + (value ? fmtUSD(value) : "--") + '</td>' +
                 '<td class="num">' + (yld ? fmtPct(yld) : "--") + '</td>' +
                 '<td class="num">' + (div && div.dividend_rate ? fmtUSD(div.dividend_rate) : "--") + '</td>' +
