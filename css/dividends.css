@@ -333,7 +333,8 @@
     border: 1px solid rgba(63, 185, 80, 0.25);
 }
 
-.cal-event.ex {
+.cal-event.ex,
+.cal-event.est {
     background: rgba(88, 166, 255, 0.15);
     color: var(--blue);
     border: 1px solid rgba(88, 166, 255, 0.25);
