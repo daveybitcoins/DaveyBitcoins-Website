@@ -700,7 +700,7 @@
         <span class="badge badge-bull">PREMIUM SCREENER</span>
       </div>
       <div class="overview-subtitle">Top 10 Cash-Secured Put Plays — 20Δ Premium Income</div>
-      <p class="overview-desc">Scans 40+ popular, high-volume options stocks to find the best cash-secured put plays at the ~20 delta strike (~80% probability OTM). Ranked by annualized return on capital. Only shows options with real volume and last traded prices.</p>
+      <p class="overview-desc">Scans your watchlist stocks to find the best cash-secured put plays at the ~20 delta strike (~80% probability OTM). Ranked by annualized return on capital. Only shows options with real volume and last traded prices.</p>
     </div>
     <div class="scanner-controls">
       <button class="btn-scan" id="btn-scan-csp">Scan Market</button>
@@ -740,7 +740,7 @@
     <div class="methodology">
       <h3>How It Works</h3>
       <ul>
-        <li><span class="hl">Ticker universe:</span> Scans 40+ of the most popular, high-volume options trading stocks — names like SOFI, HOOD, AMD, PLTR, COIN, NVDA, TSLA, and more.</li>
+        <li><span class="hl">Ticker universe:</span> Scans your watchlist: AAPL, GOOG, AMZN, NVDA, HOOD, IBIT, BRK.B.</li>
         <li><span class="hl">Strike selection:</span> Targets the ~20 delta put using real greeks data (delta range -0.15 to -0.25). ~80% probability of expiring worthless (you keep the premium).</li>
         <li><span class="hl">Expiration:</span> Auto-selects the first expiration <code>30–45 DTE</code> out — the theta decay sweet spot.</li>
         <li><span class="hl">Liquidity filter:</span> Only shows puts with volume, valid greeks, and real implied volatility. No illiquid garbage.</li>
@@ -759,7 +759,7 @@
         <span class="badge badge-bull">PREMIUM SCREENER</span>
       </div>
       <div class="overview-subtitle">Top 10 Covered Call Plays — 30Δ Premium Income</div>
-      <p class="overview-desc">Scans popular options stocks to find the best covered call plays at the ~30 delta strike (~70% probability OTM). Assumes you own 100 shares and sell 1 call. Ranked by annualized return on capital.</p>
+      <p class="overview-desc">Scans your watchlist stocks to find the best covered call plays at the ~30 delta strike (~70% probability OTM). Assumes you own 100 shares and sell 1 call. Ranked by annualized return on capital.</p>
     </div>
     <div class="scanner-controls">
       <button class="btn-scan" id="btn-scan-cc">Scan Market</button>
@@ -2383,9 +2383,7 @@ async function scanCSP() {
   cspResults = [];
 
   // Fixed watchlist for CSP scanning
-  const tickers = [
-    'AAPL','MSFT','NVDA','GOOG','AMZN','AMD','TSLA','NFLX','SHOP','SOFI','HOOD','PLTR','CRWD','UBER','MSTR','IBIT'
-  ];
+  const tickers = ['AAPL','GOOG','AMZN','NVDA','HOOD','IBIT','BRK.B'];
 
   // Calculate 30-45 DTE date range for Massive API
   const now = new Date();
@@ -2595,7 +2593,7 @@ async function scanCC() {
   barFill.style.width = '0%';
   ccResults = [];
 
-  const tickers = ['AAPL','MSFT','NVDA','GOOG','AMZN','AMD','TSLA','NFLX','SHOP','SOFI','HOOD','PLTR','CRWD','UBER','MSTR','IBIT'];
+  const tickers = ['AAPL','GOOG','AMZN','NVDA','HOOD','IBIT','BRK.B'];
 
   const now = new Date();
   const dte30 = new Date(now.getTime() + 30 * 86400000);
@@ -2795,7 +2793,7 @@ async function scanUA() {
   barFill.style.width = '0%';
   uaResults = [];
 
-  const tickers = ['AAPL','MSFT','NVDA','GOOG','AMZN','AMD','TSLA','NFLX','SHOP','SOFI','HOOD','PLTR','CRWD','UBER','MSTR','IBIT'];
+  const tickers = ['AAPL','GOOG','AMZN','NVDA','HOOD','IBIT','BRK.B'];
 
   const now = new Date();
   const dte7 = new Date(now.getTime() + 7 * 86400000);
