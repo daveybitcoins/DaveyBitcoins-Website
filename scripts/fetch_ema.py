@@ -191,7 +191,8 @@ INDEX_TICKERS = ["SPY", "QQQ"]
 
 
 def fetch_index_data():
-    """Fetch index ETF data (SPY, QQQ) from TradingView scanner API."""
+    """Fetch index ETF data (SPY, QQQ) from TradingView scanner API,
+    falling back to yfinance if TradingView returns nothing."""
     print("Fetching index ETF data (SPY, QQQ)...")
 
     count, df = (Query()
@@ -204,7 +205,104 @@ def fetch_index_data():
     )
 
     print(f"  API returned {len(df)} index ETFs")
+
+    if len(df) == 0:
+        print("  TradingView returned 0 — falling back to yfinance...")
+        df = _fetch_index_yfinance()
+
     return df
+
+
+def _fetch_index_yfinance():
+    """Fetch SPY/QQQ data from yfinance as a fallback.
+    Calculates weekly EMAs from historical data to match TradingView format."""
+    try:
+        import yfinance as yf
+        import pandas as pd
+
+        rows = []
+        for symbol in INDEX_TICKERS:
+            tk = yf.Ticker(symbol)
+            # Need ~6 months of weekly data to compute 21-week EMA
+            hist = tk.history(period="6mo", interval="1wk")
+            daily = tk.history(period="5d", interval="1d")
+            if hist.empty or daily.empty:
+                print(f"    {symbol}: no data from yfinance, skipping")
+                continue
+
+            # Current price and daily stats from the latest daily bar
+            last_daily = daily.iloc[-1]
+            prev_daily = daily.iloc[-2] if len(daily) >= 2 else last_daily
+            price = float(last_daily["Close"])
+            change_pct = ((price - float(prev_daily["Close"])) / float(prev_daily["Close"])) * 100
+            volume = int(last_daily["Volume"])
+
+            # Weekly EMAs from weekly close data
+            weekly_close = hist["Close"].astype(float)
+            ema8 = float(weekly_close.ewm(span=8, adjust=False).mean().iloc[-1])
+            ema13 = float(weekly_close.ewm(span=13, adjust=False).mean().iloc[-1])
+            ema21 = float(weekly_close.ewm(span=21, adjust=False).mean().iloc[-1])
+
+            # Weekly change from open
+            last_week = hist.iloc[-1]
+            week_open = float(last_week["Open"])
+            chg_from_open_w = ((price - week_open) / week_open) * 100 if week_open else 0
+
+            # Performance metrics from daily history
+            daily_close = daily["Close"].astype(float)
+            month_hist = tk.history(period="1mo", interval="1d")
+            month_close = month_hist["Close"].astype(float) if not month_hist.empty else daily_close
+            perf_1m = ((price - float(month_close.iloc[0])) / float(month_close.iloc[0])) * 100 if not month_close.empty else 0
+            ytd_hist = tk.history(period="ytd", interval="1d")
+            ytd_close = ytd_hist["Close"].astype(float) if not ytd_hist.empty else daily_close
+            perf_ytd = ((price - float(ytd_close.iloc[0])) / float(ytd_close.iloc[0])) * 100 if not ytd_close.empty else 0
+
+            # SMAs from daily data (use a longer fetch for SMA200)
+            sma_hist = tk.history(period="1y", interval="1d")
+            sma_close = sma_hist["Close"].astype(float) if not sma_hist.empty else daily_close
+            sma5 = float(sma_close.tail(5).mean()) if len(sma_close) >= 5 else price
+            sma20 = float(sma_close.tail(20).mean()) if len(sma_close) >= 20 else price
+            sma50 = float(sma_close.tail(50).mean()) if len(sma_close) >= 50 else price
+            sma200 = float(sma_close.tail(200).mean()) if len(sma_close) >= 200 else price
+
+            info = tk.info or {}
+            rows.append({
+                "ticker": symbol,
+                "name": symbol,
+                "description": info.get("shortName", symbol),
+                "close": price,
+                "change": change_pct,
+                "volume": volume,
+                "relative_volume": 0,
+                "market_cap_basic": 0,
+                "sector": "Miscellaneous",
+                "recommendation_mark": None,
+                "EMA8|1W": ema8,
+                "EMA13|1W": ema13,
+                "EMA21|1W": ema21,
+                "change_from_open|1W": chg_from_open_w,
+                "Perf.1M": perf_1m,
+                "Perf.YTD": perf_ytd,
+                "SMA5": sma5,
+                "SMA20": sma20,
+                "SMA50": sma50,
+                "SMA200": sma200,
+                "price_earnings_ttm": None,
+                "earnings_per_share_forecast_next_fq": None,
+                "earnings_per_share_diluted_yoy_growth_ttm": None,
+            })
+            print(f"    {symbol}: ${price:.2f} (8W: {ema8:.2f}, 13W: {ema13:.2f}, 21W: {ema21:.2f})")
+
+        if rows:
+            return pd.DataFrame(rows)
+        return pd.DataFrame()
+
+    except ImportError:
+        print("    yfinance not installed, cannot fall back")
+        return pd.DataFrame()
+    except Exception as e:
+        print(f"    yfinance fallback failed: {e}")
+        return pd.DataFrame()
 
 
 def fetch_vix_data(date_str):
