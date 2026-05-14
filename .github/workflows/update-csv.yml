@@ -179,6 +179,45 @@ jobs:
           update_with_finnhub('QQQ', 'data_qqq.csv')
           "
 
+      - name: Fetch live BTC quote from CoinGecko
+        run: |
+          python3 -c "
+          import urllib.request, json, csv
+          from datetime import datetime, timezone
+
+          url = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd'
+          try:
+              resp = urllib.request.urlopen(url)
+              data = json.loads(resp.read())
+          except Exception as e:
+              print(f'CoinGecko simple price error: {e}')
+              exit(0)
+
+          price = data.get('bitcoin', {}).get('usd')
+          if not price:
+              print('No BTC price returned')
+              exit(0)
+
+          price = str(round(price, 2))
+          today = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+
+          # Read existing CSV (no header, just date,price)
+          rows = {}
+          with open('data.csv', 'r') as f:
+              for line in f:
+                  line = line.strip()
+                  if line and ',' in line:
+                      d, p = line.split(',', 1)
+                      rows[d] = p
+
+          old = rows.get(today, 'N/A')
+          rows[today] = price
+          with open('data.csv', 'w') as f:
+              for d in sorted(rows.keys()):
+                  f.write(f'{d},{rows[d]}\n')
+          print(f'  BTC: CoinGecko live \${price} for {today} (was {old})')
+          "
+
       - name: Commit and push if changed
         run: |
           git config user.name "github-actions[bot]"
