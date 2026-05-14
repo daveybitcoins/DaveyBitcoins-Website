@@ -237,6 +237,14 @@ def _fetch_index_yfinance():
             change_pct = ((price - float(prev_daily["Close"])) / float(prev_daily["Close"])) * 100
             volume = int(last_daily["Volume"])
 
+            # Relative volume: today's volume vs 20-day average
+            vol_hist = tk.history(period="1mo", interval="1d")
+            if not vol_hist.empty and len(vol_hist) >= 5:
+                avg_vol = float(vol_hist["Volume"].iloc[:-1].tail(20).mean())
+                rel_vol = volume / avg_vol if avg_vol > 0 else 1.0
+            else:
+                rel_vol = 1.0
+
             # Weekly EMAs from weekly close data
             weekly_close = hist["Close"].astype(float)
             ema8 = float(weekly_close.ewm(span=8, adjust=False).mean().iloc[-1])
@@ -273,7 +281,7 @@ def _fetch_index_yfinance():
                 "close": price,
                 "change": change_pct,
                 "volume": volume,
-                "relative_volume": 0,
+                "relative_volume": rel_vol,
                 "market_cap_basic": 0,
                 "sector": "Miscellaneous",
                 "recommendation_mark": None,
