@@ -623,13 +623,17 @@ def _load_breadth_history(days=None):
     with open(BREADTH_HISTORY, "r") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            rows.append({
-                "date": row["date"],
-                "above_5d": float(row["above_5d"]),
-                "above_20d": float(row["above_20d"]),
-                "above_50d": float(row["above_50d"]),
-                "above_200d": float(row["above_200d"]),
-            })
+            try:
+                rows.append({
+                    "date": row["date"],
+                    "above_5d": float(row["above_5d"]),
+                    "above_20d": float(row["above_20d"]),
+                    "above_50d": float(row["above_50d"]),
+                    "above_200d": float(row["above_200d"]),
+                })
+            except (KeyError, ValueError) as e:
+                print(f"  Skipping malformed breadth row: {row} ({e})")
+                continue
 
     return rows[-days:] if days else rows
 

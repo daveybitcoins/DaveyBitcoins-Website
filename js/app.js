@@ -309,13 +309,16 @@
         if (anyUpdated) {
             const datePill = document.querySelector('.pill-date');
             if (datePill) {
-                const today = new Date().toLocaleDateString('en-CA');
+                const today = new Date().toISOString().slice(0, 10);
                 datePill.textContent = today;
             }
         }
     }
 
-    setInterval(refreshLivePrices, 60000);
+    setInterval(function() {
+        if (document.visibilityState === 'hidden') return;
+        refreshLivePrices();
+    }, 60000);
 
     function riskColor(r) {
         const stops = [[0,[37,99,235]],[0.12,[6,182,212]],[0.25,[16,185,129]],[0.40,[132,204,22]],[0.55,[234,179,8]],[0.70,[249,115,22]],[0.85,[239,68,68]],[1,[153,27,27]]];
@@ -453,6 +456,19 @@
             const raw = rows.map(r => { const [d,p] = r.split(','); return [d, parseFloat(p)]; }).filter(r => !isNaN(r[1]));
             if (raw.length < 252) return;
 
+            try {
+                const liveResp = await fetch(WORKER_URL + '/api/quote?symbol=SPY');
+                if (liveResp.ok) {
+                    const ld = await liveResp.json();
+                    if (ld.c && ld.c > 0) {
+                        const today = new Date().toISOString().slice(0, 10);
+                        const lastDate = raw[raw.length - 1][0];
+                        if (today === lastDate) raw[raw.length - 1][1] = ld.c;
+                        else if (today > lastDate) raw.push([today, ld.c]);
+                    }
+                }
+            } catch (e) { console.warn('SPY live quote failed:', e); }
+
             const GENESIS = new Date('1960-01-04T00:00:00Z').getTime();
             const pts = raw.map(([ds, p]) => {
                 const ms = new Date(ds + 'T00:00:00Z').getTime();
@@ -502,6 +518,19 @@
             const rows = text.trim().split('\n').slice(1);
             const raw = rows.map(r => { const [d,p] = r.split(','); return [d, parseFloat(p)]; }).filter(r => !isNaN(r[1]));
             if (raw.length < 252) return;
+
+            try {
+                const liveResp = await fetch(WORKER_URL + '/api/quote?symbol=QQQ');
+                if (liveResp.ok) {
+                    const ld = await liveResp.json();
+                    if (ld.c && ld.c > 0) {
+                        const today = new Date().toISOString().slice(0, 10);
+                        const lastDate = raw[raw.length - 1][0];
+                        if (today === lastDate) raw[raw.length - 1][1] = ld.c;
+                        else if (today > lastDate) raw.push([today, ld.c]);
+                    }
+                }
+            } catch (e) { console.warn('QQQ live quote failed:', e); }
 
             const GENESIS = new Date('1999-03-10T00:00:00Z').getTime();
             const pts = raw.map(([ds, p]) => {

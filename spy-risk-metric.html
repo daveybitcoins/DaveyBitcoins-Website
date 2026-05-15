@@ -432,7 +432,7 @@ async function fetchLivePrice(rawData, symbol) {
     if (!data.c || data.c === 0) return false;
     const price = data.c;
     const dt = new Date(data.t * 1000);
-    const dateStr = dt.toLocaleDateString('en-CA'); // YYYY-MM-DD in local timezone
+    const dateStr = dt.toISOString().slice(0, 10);
     const lastDate = rawData[rawData.length-1][0];
     if (dateStr === lastDate) {
       rawData[rawData.length-1][1] = price;
@@ -1525,6 +1525,28 @@ async function main() {
 }
 
 main();
+
+// Auto-refresh SPY price every 60 seconds
+let refreshTimer = setInterval(async function () {
+  if (document.visibilityState === 'hidden') return;
+  try {
+    const resp = await fetch(WORKER_URL + '/api/quote?symbol=SPY');
+    if (!resp.ok) return;
+    const data = await resp.json();
+    if (!data.c || data.c === 0) return;
+    const el = document.getElementById('vPrice');
+    if (el) el.textContent = '$' + data.c.toLocaleString(undefined, {maximumFractionDigits:2});
+    const hd = document.getElementById('headerDate');
+    const today = new Date().toISOString().slice(0,10);
+    if (hd) hd.innerHTML = '<span style="width:6px;height:6px;background:#22c55e;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> as of ' + today + ' · live';
+  } catch (e) { console.warn('SPY refresh failed:', e); }
+}, 60000);
+
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible') {
+    refreshTimer = refreshTimer || setInterval(arguments.callee, 60000);
+  }
+});
 </script>
 </body>
 </html>

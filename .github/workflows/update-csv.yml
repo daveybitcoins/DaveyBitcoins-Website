@@ -5,6 +5,10 @@ on:
   # (daveybitcoins-api.dave-erazo78.workers.dev) at 9:45 AM + 5:00 PM ET weekdays
   workflow_dispatch:         # manual trigger (+ Cloudflare Worker cron)
 
+concurrency:
+  group: price-data-update
+  cancel-in-progress: true
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -15,7 +19,7 @@ jobs:
 
       - name: Fetch latest daily close and append to CSV
         run: |
-          LAST_DATE=$(tail -1 data.csv | cut -d',' -f1)
+          LAST_DATE=$(awk -F',' 'NF && $1~/^[0-9]/{line=$1} END{print line}' data.csv)
           echo "Last date in CSV: $LAST_DATE"
 
           # Fetch recent daily data from CoinGecko (free, no key needed)
@@ -36,9 +40,17 @@ jobs:
               ADDED=$((ADDED+1))
               echo "Added: $DATE, $PRICE"
             elif [[ "$DATE" == "$LAST_DATE" ]]; then
-              OLD_PRICE=$(tail -1 data.csv | cut -d',' -f2)
+              OLD_PRICE=$(awk -F',' 'NF && $1~/^[0-9]/{p=$2} END{print p}' data.csv)
               if [[ "$PRICE" != "$OLD_PRICE" ]]; then
-                sed -i "$ s/.*/${DATE},${PRICE}/" data.csv
+                python3 -c "
+import sys
+lines = open('data.csv').readlines()
+for i in range(len(lines)-1, -1, -1):
+    if lines[i].strip() and lines[i][0].isdigit():
+        lines[i] = sys.argv[1] + ',' + sys.argv[2] + '\n'
+        break
+open('data.csv','w').writelines(lines)
+" "$DATE" "$PRICE"
                 UPDATED=1
                 echo "Updated: $DATE, $OLD_PRICE -> $PRICE"
               fi
@@ -201,7 +213,7 @@ jobs:
           price = str(round(price, 2))
           today = datetime.now(timezone.utc).strftime('%Y-%m-%d')
 
-          # Read existing CSV (no header, just date,price)
+          # Read existing CSV (has date,price header)
           rows = {}
           with open('data.csv', 'r') as f:
               for line in f:
@@ -214,6 +226,7 @@ jobs:
           old = rows.get(today, 'N/A')
           rows[today] = price
           with open('data.csv', 'w') as f:
+              f.write('date,price\n')
               for d in sorted(rows.keys()):
                   f.write(f'{d},{rows[d]}\n')
           print(f'  BTC: CoinGecko live \${price} for {today} (was {old})')
@@ -226,4 +239,5 @@ jobs:
           git add data.csv data_spy.csv data_qqq.csv data_vix.csv
           git diff --cached --quiet && echo "No changes" && exit 0
           git commit -m "Update price data $(date -u +%Y-%m-%d)"
+          git pull --rebase --autostash
           git push

@@ -283,7 +283,7 @@ async function loadCSV() {
   const resp = await fetch('data.csv?v=' + Date.now());
   const text = await resp.text();
   const rows = text.trim().split('\n').slice(1);
-  return rows.map(r => { const [d,p] = r.split(','); return [d, parseFloat(p)]; }).filter(([d, p]) => !isNaN(p) && /^\d{4}/.test(d));
+  return rows.map(r => { const [d,p] = r.split(','); return [d, parseFloat(p)]; });
 }
 
 async function fetchLivePrice(rawData) {
@@ -640,6 +640,7 @@ main();
 
 // Auto-refresh BTC price every 60 seconds
 setInterval(async function () {
+  if (document.visibilityState === 'hidden') return;
   try {
     const resp = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_last_updated_at=true');
     if (!resp.ok) return;
@@ -663,7 +664,7 @@ setInterval(async function () {
         if (uCard) uCard.style.setProperty('--glow', col);
       }
     }
-  } catch {}
+  } catch (e) { console.warn('BTC refresh failed:', e); }
 }, 60000);
 </script>
 </body>

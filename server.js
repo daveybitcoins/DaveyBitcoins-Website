@@ -5,7 +5,7 @@ const PORT = process.env.PORT || 3000;
 
 // Prevent Chrome from caching HTML pages (so updated cache-bust params take effect)
 app.use((req, res, next) => {
-    if (req.path.endsWith('.html') || req.path === '/') {
+    if (req.path.endsWith('.html') || req.path === '/' || req.path.endsWith('.csv') || req.path.endsWith('.json')) {
         res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     }
     next();

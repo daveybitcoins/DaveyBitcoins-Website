@@ -164,7 +164,7 @@
                 if (data.payments && data.payments.length > 0) {
                     cache[ticker] = { ts: now, payments: data.payments };
                 }
-            } catch {}
+            } catch (e) { console.warn('Dividend history fetch failed for ' + ticker + ':', e); }
         }));
 
         setDivHistoryCache(cache);
@@ -686,6 +686,13 @@
 
         return events;
     }
+
+    // Auto-refresh live prices every 60 seconds
+    setInterval(function () {
+        if (document.visibilityState === 'hidden') return;
+        if (getHoldings().length === 0) return;
+        fetchLivePrices().then(function () { renderAll(); });
+    }, 60000);
 
     // === BOOT ===
     document.addEventListener("DOMContentLoaded", init);

@@ -5,11 +5,17 @@
  * 2. Triggers GitHub Actions workflows on a reliable cron schedule
  */
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
+const ALLOWED_ORIGINS = ['https://daveybitcoins.com', 'https://www.daveybitcoins.com', 'http://localhost:3000'];
+
+function corsHeaders(request) {
+  const origin = request?.headers?.get('Origin') || '';
+  const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    'Access-Control-Allow-Origin': allowed,
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  };
+}
 
 // ====== FINNHUB PROXY ======
 async function handleFinnhubProxy(request, env) {
@@ -19,25 +25,34 @@ async function handleFinnhubProxy(request, env) {
   if (!symbol) {
     return new Response(JSON.stringify({ error: 'Missing symbol parameter' }), {
       status: 400,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
     });
   }
 
-  const finnhubUrl = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${env.FINNHUB_KEY}`;
-  const resp = await fetch(finnhubUrl);
-  const data = await resp.json();
+  try {
+    const finnhubUrl = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${env.FINNHUB_KEY}`;
+    const resp = await fetch(finnhubUrl);
+    const data = await resp.json();
+    const cacheHeader = resp.ok ? 'public, max-age=60' : 'no-store';
 
-  return new Response(JSON.stringify(data), {
-    status: resp.status,
-    headers: {
-      'Content-Type': 'application/json',
-      'Cache-Control': 'public, max-age=60',
-      ...CORS_HEADERS,
-    },
-  });
+    return new Response(JSON.stringify(data), {
+      status: resp.status,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': cacheHeader,
+        ...corsHeaders(request),
+      },
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 502,
+      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...corsHeaders(request) },
+    });
+  }
 }
 
 // ====== FINNHUB BATCH QUOTES PROXY ======
+const BATCH_CONCURRENCY = 10;
 async function handleFinnhubBatchProxy(request, env) {
   const url = new URL(request.url);
   const symbols = (url.searchParams.get('symbols') || '')
@@ -49,29 +64,35 @@ async function handleFinnhubBatchProxy(request, env) {
   if (!symbols.length) {
     return new Response(JSON.stringify({ error: 'Missing symbols parameter' }), {
       status: 400,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
     });
   }
 
-  const results = await Promise.all(
-    symbols.map(async (symbol) => {
-      try {
-        const resp = await fetch(
-          `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${env.FINNHUB_KEY}`
-        );
-        const data = await resp.json();
-        return [symbol, data];
-      } catch {
-        return [symbol, { error: 'fetch failed' }];
-      }
-    })
-  );
+  const results = [];
+  for (let i = 0; i < symbols.length; i += BATCH_CONCURRENCY) {
+    const chunk = symbols.slice(i, i + BATCH_CONCURRENCY);
+    const batch = await Promise.all(
+      chunk.map(async (symbol) => {
+        try {
+          const resp = await fetch(
+            `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${env.FINNHUB_KEY}`
+          );
+          const data = await resp.json();
+          return [symbol, data];
+        } catch (err) {
+          console.warn(`Finnhub fetch failed for ${symbol}:`, err.message);
+          return [symbol, { error: 'fetch failed' }];
+        }
+      })
+    );
+    results.push(...batch);
+  }
 
   return new Response(JSON.stringify(Object.fromEntries(results)), {
     headers: {
       'Content-Type': 'application/json',
       'Cache-Control': 'public, max-age=60',
-      ...CORS_HEADERS,
+      ...corsHeaders(request),
     },
   });
 }
@@ -110,7 +131,7 @@ async function handleOptionsProxy(request) {
   if (!symbol) {
     return new Response(JSON.stringify({ error: 'Missing symbol' }), {
       status: 400,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
     });
   }
 
@@ -147,13 +168,13 @@ async function handleOptionsProxy(request) {
       headers: {
         'Content-Type': 'application/json',
         'Cache-Control': 'public, max-age=30',
-        ...CORS_HEADERS,
+        ...corsHeaders(request),
       },
     });
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
     });
   }
 }
@@ -166,7 +187,7 @@ async function handleDividendHistoryProxy(request) {
   if (!symbol) {
     return new Response(JSON.stringify({ error: 'Missing symbol' }), {
       status: 400,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
     });
   }
 
@@ -207,13 +228,13 @@ async function handleDividendHistoryProxy(request) {
       headers: {
         'Content-Type': 'application/json',
         'Cache-Control': 'public, max-age=3600',
-        ...CORS_HEADERS,
+        ...corsHeaders(request),
       },
     });
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
     });
   }
 }
@@ -226,7 +247,7 @@ async function handleMassiveProxy(request, env) {
   if (!symbol) {
     return new Response(JSON.stringify({ error: 'Missing symbol' }), {
       status: 400,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
     });
   }
 
@@ -243,7 +264,7 @@ async function handleMassiveProxy(request, env) {
   } else {
     return new Response(JSON.stringify({ error: 'Invalid endpoint' }), {
       status: 400,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
     });
   }
 
@@ -255,13 +276,13 @@ async function handleMassiveProxy(request, env) {
       headers: {
         'Content-Type': 'application/json',
         'Cache-Control': 'public, max-age=60',
-        ...CORS_HEADERS,
+        ...corsHeaders(request),
       },
     });
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
     });
   }
 }
@@ -289,7 +310,7 @@ export default {
   async fetch(request, env) {
     // Handle CORS preflight
     if (request.method === 'OPTIONS') {
-      return new Response(null, { headers: CORS_HEADERS });
+      return new Response(null, { headers: corsHeaders(request) });
     }
 
     const url = new URL(request.url);
@@ -322,7 +343,7 @@ export default {
     // Health check
     if (url.pathname === '/health') {
       return new Response(JSON.stringify({ status: 'ok', time: new Date().toISOString() }), {
-        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+        headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
       });
     }
 

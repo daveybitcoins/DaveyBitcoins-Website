@@ -110,16 +110,20 @@ def fetch_data():
     """Fetch stock data from TradingView scanner API."""
     print("Fetching data from TradingView scanner API...")
 
-    count, df = (Query()
-        .select(*API_FIELDS)
-        .where(
-            col("market_cap_basic") > 1_000_000_000,
-            col("type") == "stock",
+    try:
+        count, df = (Query()
+            .select(*API_FIELDS)
+            .where(
+                col("market_cap_basic") > 1_000_000_000,
+                col("type") == "stock",
+            )
+            .order_by("market_cap_basic", ascending=False)
+            .limit(BATCH_SIZE)
+            .get_scanner_data()
         )
-        .order_by("market_cap_basic", ascending=False)
-        .limit(BATCH_SIZE)
-        .get_scanner_data()
-    )
+    except Exception as e:
+        print(f"  TradingView API error: {e}")
+        raise SystemExit(1)
 
     print(f"  API returned {len(df)} stocks (of {count} matching)")
     return df
