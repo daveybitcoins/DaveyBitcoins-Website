@@ -911,17 +911,17 @@ def build_btc_context():
         print("No data.csv found, skipping BTC context")
         return None
 
-    # Load daily data
+    # Load daily data (no header row — just date,price per line)
     daily = []
     with open(BTC_CSV, "r") as f:
-        reader = csv.DictReader(f)
+        reader = csv.reader(f)
         for row in reader:
             try:
-                date = datetime.strptime(row["date"], "%Y-%m-%d")
-                price = float(row["price"])
+                date = datetime.strptime(row[0], "%Y-%m-%d")
+                price = float(row[1])
                 if price > 0:
                     daily.append((date, price))
-            except (ValueError, KeyError):
+            except (ValueError, IndexError):
                 continue
 
     if len(daily) < 200:  # need enough history for 21-week EMA
