@@ -294,8 +294,10 @@
             fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd').then(r => r.ok ? r.json() : null).then(d => d && d.bitcoin ? { symbol: 'BTC', price: d.bitcoin.usd } : null).catch(() => null)
         );
         const results = await Promise.all(updates);
+        let anyUpdated = false;
         results.forEach(r => {
             if (!r) return;
+            anyUpdated = true;
             const pill = document.getElementById('pill-' + r.symbol);
             if (pill) {
                 const priceEl = pill.querySelector('.pill-price');
@@ -304,6 +306,13 @@
             const idx = DATA.index_context.find(i => i.symbol === r.symbol);
             if (idx) idx.price = r.price;
         });
+        if (anyUpdated) {
+            const datePill = document.querySelector('.pill-date');
+            if (datePill) {
+                const today = new Date().toLocaleDateString('en-CA');
+                datePill.textContent = today;
+            }
+        }
     }
 
     setInterval(refreshLivePrices, 60000);
