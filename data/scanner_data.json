@@ -2,10 +2,11 @@
   "meta": {
     "date": "2026-05-14",
     "total_stocks": 300,
-    "generated_at": "2026-05-14T18:16:12.633485",
+    "generated_at": "2026-05-15T15:04:25.659120",
     "index_etfs": [
       "SPY",
-      "QQQ"
+      "QQQ",
+      "BTC"
     ]
   },
   "index_context": [
@@ -52,6 +53,32 @@
       "rel_vol": 0.62,
       "vol_quality": "Low Vol",
       "crossover_alert": null
+    },
+    {
+      "symbol": "BTC",
+      "name": "Bitcoin",
+      "price": 81818.0,
+      "ema8": 77097.87,
+      "ema13": 76784.34,
+      "ema21": 79108.24,
+      "signal": "Bullish (unstacked)",
+      "price_vs_8w": 6.12,
+      "price_vs_13w": 6.56,
+      "price_vs_21w": 3.43,
+      "ema8_vs_13": 0.41,
+      "ema13_vs_21": -2.94,
+      "spread_score": -2.53,
+      "chg_1d": 1.66,
+      "chg_1w": 0.48,
+      "chg_1m": 9.8,
+      "crossover_alert": "8W just above 13W (0.41%) \u2014 bearish cross risk",
+      "risk_combo": 0.246,
+      "risk_mm": 0.27,
+      "risk_zs": 0.224,
+      "fair_value": 134506.08,
+      "dev_pct": -39.2,
+      "zone": "Neutral",
+      "zone_color": "#10b981"
     }
   ],
   "dashboard": {
