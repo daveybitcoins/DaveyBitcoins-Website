@@ -208,7 +208,8 @@ jobs:
                   line = line.strip()
                   if line and ',' in line:
                       d, p = line.split(',', 1)
-                      rows[d] = p
+                      if d[:4].isdigit():
+                          rows[d] = p
 
           old = rows.get(today, 'N/A')
           rows[today] = price

@@ -256,13 +256,15 @@
     }
 
     // === INDEX CONTEXT ===
+    const WORKER_URL = 'https://daveybitcoins-api.dave-erazo78.workers.dev';
+
     function renderIndexHeader() {
         if (!DATA.index_context || DATA.index_context.length === 0) return;
         const el = document.getElementById("data-date");
         let html = el.innerHTML;
         DATA.index_context.forEach(idx => {
             const cls = idx.symbol === "BTC" ? "pill-btc" : idx.symbol === "SPY" ? "pill-spy" : "pill-qqq";
-            html += `<span class="pill ${cls}"><strong>${idx.symbol}</strong> ${fmtPrice(idx.price)}</span>`;
+            html += `<span class="pill ${cls}" id="pill-${idx.symbol}"><strong>${idx.symbol}</strong> <span class="pill-price">${fmtPrice(idx.price)}</span></span>`;
         });
         if (DATA.vix_context) {
             const vix = DATA.vix_context.level;
@@ -270,10 +272,10 @@
             const dailyPct = vix / Math.sqrt(252);
             const spyIdx = DATA.index_context.find(i => i.symbol === "SPY");
             const dailyDollar = spyIdx ? (spyIdx.price * dailyPct / 100) : null;
-            let vixText = `<strong>VIX</strong> ${vix.toFixed(1)} <span class="pill-detail">±${dailyPct.toFixed(2)}%`;
+            let vixText = `<strong>VIX</strong> <span class="pill-price">${vix.toFixed(1)}</span> <span class="pill-detail">±${dailyPct.toFixed(2)}%`;
             if (dailyDollar) vixText += ` / ±$${dailyDollar.toFixed(2)}`;
             vixText += `</span>`;
-            html += `<span class="pill ${cls}">${vixText}</span>`;
+            html += `<span class="pill ${cls}" id="pill-VIX">${vixText}</span>`;
         }
         if (DATA.ai_summary && DATA.ai_summary.market_overview) {
             const s = DATA.ai_summary.market_overview;
@@ -281,7 +283,30 @@
             html += `<span class="pill ${cls}">${s.bias_label}</span>`;
         }
         el.innerHTML = html;
+        refreshLivePrices();
     }
+
+    async function refreshLivePrices() {
+        const updates = [];
+        updates.push(
+            fetch(WORKER_URL + '/api/quote?symbol=SPY').then(r => r.ok ? r.json() : null).then(d => d && d.c ? { symbol: 'SPY', price: d.c } : null).catch(() => null),
+            fetch(WORKER_URL + '/api/quote?symbol=QQQ').then(r => r.ok ? r.json() : null).then(d => d && d.c ? { symbol: 'QQQ', price: d.c } : null).catch(() => null),
+            fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd').then(r => r.ok ? r.json() : null).then(d => d && d.bitcoin ? { symbol: 'BTC', price: d.bitcoin.usd } : null).catch(() => null)
+        );
+        const results = await Promise.all(updates);
+        results.forEach(r => {
+            if (!r) return;
+            const pill = document.getElementById('pill-' + r.symbol);
+            if (pill) {
+                const priceEl = pill.querySelector('.pill-price');
+                if (priceEl) priceEl.textContent = fmtPrice(r.price);
+            }
+            const idx = DATA.index_context.find(i => i.symbol === r.symbol);
+            if (idx) idx.price = r.price;
+        });
+    }
+
+    setInterval(refreshLivePrices, 60000);
 
     function riskColor(r) {
         const stops = [[0,[37,99,235]],[0.12,[6,182,212]],[0.25,[16,185,129]],[0.40,[132,204,22]],[0.55,[234,179,8]],[0.70,[249,115,22]],[0.85,[239,68,68]],[1,[153,27,27]]];
