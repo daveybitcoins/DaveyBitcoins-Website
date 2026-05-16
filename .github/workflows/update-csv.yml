@@ -1,9 +1,8 @@
 name: Update price data
 
 on:
-  # Cron schedules removed — now triggered reliably by Cloudflare Worker
-  # (daveybitcoins-api.dave-erazo78.workers.dev) at 9:45 AM + 5:00 PM ET weekdays
-  workflow_dispatch:         # manual trigger (+ Cloudflare Worker cron)
+  # Triggered by Cloudflare Worker at 9:45 AM + 5:00 PM ET weekdays
+  workflow_dispatch:
 
 concurrency:
   group: price-data-update
