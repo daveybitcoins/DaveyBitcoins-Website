@@ -298,11 +298,13 @@
         results.forEach(r => {
             if (!r) return;
             anyUpdated = true;
+            // Update header pill
             const pill = document.getElementById('pill-' + r.symbol);
             if (pill) {
                 const priceEl = pill.querySelector('.pill-price');
                 if (priceEl) priceEl.textContent = fmtPrice(r.price);
             }
+            // Update DATA so future renders use live price
             const idx = DATA.index_context.find(i => i.symbol === r.symbol);
             if (idx) idx.price = r.price;
         });
@@ -311,6 +313,14 @@
             if (datePill) {
                 const today = new Date().toISOString().slice(0, 10);
                 datePill.textContent = today;
+            }
+            // Re-render the dashboard index card with live prices
+            const indexCard = document.querySelector('.index-context-card');
+            if (indexCard) {
+                const tmp = document.createElement('div');
+                tmp.innerHTML = renderIndexCard();
+                const newCard = tmp.querySelector('.index-context-card');
+                if (newCard) indexCard.replaceWith(newCard);
             }
         }
     }
