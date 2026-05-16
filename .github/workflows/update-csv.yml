@@ -41,15 +41,9 @@ jobs:
             elif [[ "$DATE" == "$LAST_DATE" ]]; then
               OLD_PRICE=$(awk -F',' 'NF && $1~/^[0-9]/{p=$2} END{print p}' data.csv)
               if [[ "$PRICE" != "$OLD_PRICE" ]]; then
-                python3 -c "
-import sys
-lines = open('data.csv').readlines()
-for i in range(len(lines)-1, -1, -1):
-    if lines[i].strip() and lines[i][0].isdigit():
-        lines[i] = sys.argv[1] + ',' + sys.argv[2] + '\n'
-        break
-open('data.csv','w').writelines(lines)
-" "$DATE" "$PRICE"
+                # Replace the last data line in CSV with updated price
+                TMPF=$(mktemp)
+                awk -F',' -v d="$DATE" -v p="$PRICE" 'NR==FNR{last=NR;next} FNR==last && $1==d{print d","p;next} {print}' data.csv data.csv > "$TMPF" && mv "$TMPF" data.csv
                 UPDATED=1
                 echo "Updated: $DATE, $OLD_PRICE -> $PRICE"
               fi
