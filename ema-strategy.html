@@ -334,9 +334,36 @@ async function main() {
   const lastDaily = dailyPts[dailyPts.length - 1];
   const isLive = !!liveResult;
 
-  if (isLive && weeks.length > 0) {
-    weeks[weeks.length - 1].close = lastDaily.price;
-    weeks[weeks.length - 1].date = lastDaily.date;
+  // Use live price for display even if CoinGecko date doesn't match CSV timeline
+  const displayPrice = isLive ? liveResult.price : lastDaily.price;
+  const displayDate = isLive ? liveResult.date : lastDaily.date;
+
+  // Update last weekly candle close with the most current price
+  if (weeks.length > 0) {
+    const latestPrice = isLive ? liveResult.price : lastDaily.price;
+    const latestDate = lastDaily.date; // Use CSV date for week boundary calc
+
+    const liveDate = new Date(latestDate + 'T00:00:00Z');
+    const liveDow = liveDate.getUTCDay();
+    const liveMon = new Date(liveDate);
+    liveMon.setUTCDate(liveDate.getUTCDate() - ((liveDow + 6) % 7));
+    const liveWeekKey = liveMon.toISOString().slice(0, 10);
+
+    const lastCandle = weeks[weeks.length - 1];
+    const lcDate = new Date(lastCandle.openDate + 'T00:00:00Z');
+    const lcDow = lcDate.getUTCDay();
+    const lcMon = new Date(lcDate);
+    lcMon.setUTCDate(lcDate.getUTCDate() - ((lcDow + 6) % 7));
+    const lastWeekKey = lcMon.toISOString().slice(0, 10);
+
+    if (liveWeekKey === lastWeekKey) {
+      // Same week — update close with latest price
+      lastCandle.close = latestPrice;
+      lastCandle.date = latestDate;
+    } else {
+      // New week — create a new candle
+      weeks.push({ date: latestDate, openDate: latestDate, open: latestPrice, close: latestPrice });
+    }
   }
 
   // Header date
@@ -399,8 +426,8 @@ async function main() {
 
   let cards = '<div class="card" style="--glow:rgba(247,147,26,0.3)">' +
     '<div class="card-label">BTC Price</div>' +
-    '<div class="card-value" id="btc-live-price" style="--val-color:#f7931a;font-size:1.6rem">$' + lastDaily.price.toLocaleString(undefined, { maximumFractionDigits: 0 }) + '</div>' +
-    '<div class="card-sub" id="btc-live-time">' + lastDaily.date + '</div></div>';
+    '<div class="card-value" id="btc-live-price" style="--val-color:#f7931a;font-size:1.6rem">$' + displayPrice.toLocaleString(undefined, { maximumFractionDigits: 0 }) + '</div>' +
+    '<div class="card-sub" id="btc-live-time">' + displayDate + (isLive ? ' · live' : '') + '</div></div>';
 
   cards += '<div class="card" style="--glow:' + statusGlow + '">' +
     '<div class="card-label">Position</div>' +
@@ -422,7 +449,7 @@ async function main() {
     '</div></div>';
 
   if (inTrade) {
-    const unrealPct = ((lastDaily.price / entryWeek.price - 1) * 100);
+    const unrealPct = ((displayPrice / entryWeek.price - 1) * 100);
     const unrealColor = unrealPct >= 0 ? '#10b981' : '#ef4444';
     cards += '<div class="card" id="unreal-card" style="--glow:' + unrealColor + '">' +
       '<div class="card-label">Unrealized Return</div>' +
@@ -455,22 +482,22 @@ async function main() {
   if (inTrade) {
     displayTrades.push({
       entryDate: entryWeek.date, entryPrice: entryWeek.price,
-      exitDate: null, exitPrice: lastDaily.price,
-      returnPct: ((lastDaily.price / entryWeek.price - 1) * 100), open: true
+      exitDate: null, exitPrice: null,
+      returnPct: ((displayPrice / entryWeek.price - 1) * 100), open: true
     });
   }
   displayTrades.reverse().forEach((t, i) => {
     const num = displayTrades.length - i;
     const retColor = t.returnPct >= 0 ? '#10b981' : '#ef4444';
     const epStr = '$' + t.entryPrice.toLocaleString(undefined, { maximumFractionDigits: 0 });
-    const xpStr = '$' + (t.open ? lastDaily.price : t.exitPrice).toLocaleString(undefined, { maximumFractionDigits: 0 });
+    const xpStr = t.open ? '—' : '$' + t.exitPrice.toLocaleString(undefined, { maximumFractionDigits: 0 });
     const tr = document.createElement('tr');
     tr.innerHTML = '<td>' + num + '</td>' +
       '<td style="color:#22c55e">Long</td>' +
       '<td>' + t.entryDate + '</td>' +
       '<td class="td-price">' + epStr + '</td>' +
       '<td>' + (t.open ? '<span style="color:#22c55e">Open</span>' : t.exitDate) + '</td>' +
-      '<td class="td-price">' + xpStr + (t.open ? ' <span style="font-size:0.6rem;color:var(--text-dimmer)">(live)</span>' : '') + '</td>' +
+      '<td class="td-price">' + xpStr + '</td>' +
       '<td class="td-return" style="color:' + retColor + '">' + (t.returnPct >= 0 ? '+' : '') + t.returnPct.toFixed(1) + '%' + (t.open ? ' <span style="animation:pulse 2s infinite;display:inline-block;width:5px;height:5px;background:#22c55e;border-radius:50%;vertical-align:middle"></span>' : '') + '</td>';
     tbody.appendChild(tr);
   });
