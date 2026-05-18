@@ -37,7 +37,7 @@ MONTHLY_ETFS = {
     "HRZN", "OXSQ", "SLRC", "GBDC", "BXSL", "OBDC", "CSWC", "FDUS",
     "MFIC", "CCAP", "TRIN", "ADIT", "LTC", "EPR", "SLG", "LAND",
     "GOOD", "ADC", "BTCI", "KSLV", "MLPI", "KGLD",
-    "QDVO", "GPIX", "ROCQ", "ROCY", "SGOV", "XBCI",
+    "QDVO", "GPIX", "ROCQ", "ROCY", "SGOV", "XBCI", "AIPI",
 }
 
 # Tickers TradingView often misses — merged into output as fallbacks.

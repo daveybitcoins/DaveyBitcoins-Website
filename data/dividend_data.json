@@ -19691,7 +19691,7 @@
       "dividend_yield": 38.35,
       "dividend_rate": 14.2432,
       "payout_ratio": null,
-      "frequency": "quarterly",
+      "frequency": "monthly",
       "ex_dividend_date": null,
       "last_payments": []
     },
