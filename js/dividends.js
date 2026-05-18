@@ -76,6 +76,7 @@
 
         try {
             var resp = await fetch("data/dividend_data.json?v=" + Date.now());
+            if (!resp.ok) throw new Error(resp.status);
             dividendData = await resp.json();
         } catch {
             dividendData = { meta: { date: "N/A", total_tickers: 0 }, tickers: {} };
@@ -111,6 +112,7 @@
         if (symbols.length === 0) { liveQuotes = {}; return; }
         try {
             var resp = await fetch(WORKER_URL + "/api/quotes?symbols=" + encodeURIComponent(symbols.join(",")));
+            if (!resp.ok) throw new Error(resp.status);
             liveQuotes = await resp.json();
         } catch {
             liveQuotes = {};
@@ -160,6 +162,7 @@
         await Promise.all(stale.map(async function (ticker) {
             try {
                 var resp = await fetch(API_BASE + "/api/dividends/" + encodeURIComponent(ticker));
+                if (!resp.ok) throw new Error(resp.status);
                 var data = await resp.json();
                 if (data.payments && data.payments.length > 0) {
                     cache[ticker] = { ts: now, payments: data.payments };
@@ -552,7 +555,8 @@
 
         var firstDay = new Date(calYear, calMonth, 1).getDay();
         var daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
-        var todayStr = new Date().toISOString().slice(0, 10);
+        var now = new Date();
+        var todayStr = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
 
         var html = '<div class="cal-header">';
         ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(function (d) {
@@ -655,7 +659,7 @@
                 var knownDates = {};
                 payments.forEach(function (p) { knownDates[p.ex_date] = true; });
 
-                for (var p = 1; p <= 12; p++) {
+                for (var p = 1; p <= 24; p++) {
                     var projMonth = lastPMonth + p * monthsPerPayment;
                     var projYear = Math.floor(projMonth / 12);
                     var projM = projMonth % 12;

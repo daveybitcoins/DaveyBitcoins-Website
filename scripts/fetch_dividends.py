@@ -44,55 +44,62 @@ MONTHLY_FALLBACK = {
 FREQ_WORKERS = 20
 
 
-def _infer_frequency_single(symbol):
-    """Fetch dividend history from Yahoo Finance and infer payment frequency."""
+def _fetch_yahoo_data(symbol):
+    """Fetch dividend history and current price from Yahoo Finance."""
     import yfinance as yf
 
     try:
         ticker = yf.Ticker(symbol)
+        info = ticker.fast_info
+        price = round(info.last_price, 2) if hasattr(info, "last_price") and info.last_price else None
+
         divs = ticker.dividends
-        if divs is None or len(divs) == 0:
-            return symbol, None
+        freq = None
+        if divs is not None and len(divs) > 0:
+            cutoff = datetime.now() - timedelta(days=730)
+            recent = divs[divs.index >= str(cutoff.date())]
+            count = len(recent)
 
-        cutoff = datetime.now() - timedelta(days=730)
-        recent = divs[divs.index >= str(cutoff.date())]
-        count = len(recent)
+            if count >= 18:
+                freq = "monthly"
+            elif count >= 6:
+                freq = "quarterly"
+            elif count >= 3:
+                freq = "semi-annual"
+            elif count >= 1:
+                freq = "annual"
 
-        if count >= 18:
-            return symbol, "monthly"
-        elif count >= 6:
-            return symbol, "quarterly"
-        elif count >= 3:
-            return symbol, "semi-annual"
-        elif count >= 1:
-            return symbol, "annual"
-        return symbol, None
+        return symbol, freq, price
     except Exception:
-        return symbol, None
+        return symbol, None, None
 
 
-def detect_frequencies(symbols):
-    """Auto-detect dividend frequency for a list of symbols using Yahoo Finance."""
-    print(f"\nDetecting dividend frequencies via Yahoo Finance ({len(symbols)} tickers)...")
-    results = {}
+def enrich_from_yahoo(symbols):
+    """Fetch frequency and price data from Yahoo Finance for all symbols."""
+    print(f"\nEnriching data via Yahoo Finance ({len(symbols)} tickers)...")
+    frequencies = {}
+    prices = {}
     done = 0
 
     with ThreadPoolExecutor(max_workers=FREQ_WORKERS) as pool:
-        futures = {pool.submit(_infer_frequency_single, s): s for s in symbols}
+        futures = {pool.submit(_fetch_yahoo_data, s): s for s in symbols}
         for future in as_completed(futures):
-            symbol, freq = future.result()
+            symbol, freq, price = future.result()
             if freq:
-                results[symbol] = freq
+                frequencies[symbol] = freq
+            if price:
+                prices[symbol] = price
             done += 1
             if done % 500 == 0:
                 print(f"  {done}/{len(symbols)} checked...")
 
-    monthly = sum(1 for f in results.values() if f == "monthly")
-    quarterly = sum(1 for f in results.values() if f == "quarterly")
-    other = len(results) - monthly - quarterly
-    print(f"  Detected: {monthly} monthly, {quarterly} quarterly, {other} other "
-          f"({len(symbols) - len(results)} unknown)")
-    return results
+    monthly = sum(1 for f in frequencies.values() if f == "monthly")
+    quarterly = sum(1 for f in frequencies.values() if f == "quarterly")
+    other = len(frequencies) - monthly - quarterly
+    print(f"  Frequencies: {monthly} monthly, {quarterly} quarterly, {other} other "
+          f"({len(symbols) - len(frequencies)} unknown)")
+    print(f"  Prices: {len(prices)} fetched from Yahoo")
+    return frequencies, prices
 
 # Tickers TradingView often misses — merged into output as fallbacks.
 # Values are periodically verified; the script prefers TradingView data
@@ -261,15 +268,25 @@ def main():
         if symbol in existing_data and existing_data[symbol].get("last_payments"):
             data["last_payments"] = existing_data[symbol]["last_payments"]
 
-    # Auto-detect frequency from Yahoo Finance dividend history
-    detected = detect_frequencies(list(tickers.keys()))
+    # Enrich with Yahoo Finance data (frequency + missing prices)
+    detected_freq, yahoo_prices = enrich_from_yahoo(list(tickers.keys()))
+    price_backfills = 0
     for symbol, data in tickers.items():
-        if symbol in detected:
-            data["frequency"] = detected[symbol]
+        if symbol in detected_freq:
+            data["frequency"] = detected_freq[symbol]
         elif symbol in MONTHLY_FALLBACK:
             data["frequency"] = "monthly"
         else:
             data["frequency"] = "quarterly"
+
+        if not data["close"] and symbol in yahoo_prices:
+            data["close"] = yahoo_prices[symbol]
+            if data["dividend_yield"] and not data["dividend_rate"]:
+                data["dividend_rate"] = round(yahoo_prices[symbol] * data["dividend_yield"] / 100, 4)
+            price_backfills += 1
+
+    if price_backfills:
+        print(f"  Backfilled {price_backfills} missing prices from Yahoo Finance")
 
     # Merge fallback data for tickers TradingView misses
     added_fallbacks = []
@@ -289,6 +306,14 @@ def main():
             added_fallbacks.append(symbol)
     if added_fallbacks:
         print(f"\n  Added {len(added_fallbacks)} fallback tickers: {', '.join(added_fallbacks)}")
+        _, fb_prices = enrich_from_yahoo(added_fallbacks)
+        for symbol in added_fallbacks:
+            if symbol in fb_prices:
+                tickers[symbol]["close"] = fb_prices[symbol]
+                if tickers[symbol]["dividend_yield"] and not tickers[symbol]["dividend_rate"]:
+                    tickers[symbol]["dividend_rate"] = round(
+                        fb_prices[symbol] * tickers[symbol]["dividend_yield"] / 100, 4
+                    )
 
     print(f"\n{len(tickers)} tickers with dividend data")
 
