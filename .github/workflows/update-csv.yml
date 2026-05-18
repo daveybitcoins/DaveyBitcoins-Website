@@ -1,7 +1,9 @@
 name: Update price data
 
 on:
-  # Triggered by Cloudflare Worker at 9:45 AM + 5:00 PM ET weekdays
+  schedule:
+    - cron: '0 15 * * 1-5'   # 11:00 AM ET weekdays
+    - cron: '0 21 * * 1-5'   # 5:00 PM ET weekdays
   workflow_dispatch:
 
 concurrency:
