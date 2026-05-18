@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Fetch dividend data for the portfolio tracker.
 
-Uses TradingView scanner API exclusively — single bulk request per asset type,
-no per-ticker API calls, no rate limiting issues.
+Uses TradingView scanner API for bulk ticker data, then Yahoo Finance
+(via yfinance) to auto-detect dividend payment frequency from history.
 
 Output: data/dividend_data.json
 """
@@ -11,7 +11,8 @@ import json
 import math
 import os
 import sys
-from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timedelta
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(SCRIPT_DIR)
@@ -30,7 +31,7 @@ TV_FIELDS = [
     "dps_common_stock_prim_issue_fy",
 ]
 
-MONTHLY_ETFS = {
+MONTHLY_FALLBACK = {
     "JEPI", "JEPQ", "QQQI", "SPYI", "DIVO", "NUSI", "QYLD", "XYLD",
     "RYLD", "SDIV", "SPHD", "MAIN", "O", "STAG", "AGNC", "NLY",
     "PFLT", "PSEC", "OXLC", "PNNT", "GLAD", "TPVG", "ARCC", "HTGC",
@@ -39,6 +40,59 @@ MONTHLY_ETFS = {
     "GOOD", "ADC", "BTCI", "KSLV", "MLPI", "KGLD",
     "QDVO", "GPIX", "ROCQ", "ROCY", "SGOV", "XBCI", "AIPI",
 }
+
+FREQ_WORKERS = 20
+
+
+def _infer_frequency_single(symbol):
+    """Fetch dividend history from Yahoo Finance and infer payment frequency."""
+    import yfinance as yf
+
+    try:
+        ticker = yf.Ticker(symbol)
+        divs = ticker.dividends
+        if divs is None or len(divs) == 0:
+            return symbol, None
+
+        cutoff = datetime.now() - timedelta(days=730)
+        recent = divs[divs.index >= str(cutoff.date())]
+        count = len(recent)
+
+        if count >= 18:
+            return symbol, "monthly"
+        elif count >= 6:
+            return symbol, "quarterly"
+        elif count >= 3:
+            return symbol, "semi-annual"
+        elif count >= 1:
+            return symbol, "annual"
+        return symbol, None
+    except Exception:
+        return symbol, None
+
+
+def detect_frequencies(symbols):
+    """Auto-detect dividend frequency for a list of symbols using Yahoo Finance."""
+    print(f"\nDetecting dividend frequencies via Yahoo Finance ({len(symbols)} tickers)...")
+    results = {}
+    done = 0
+
+    with ThreadPoolExecutor(max_workers=FREQ_WORKERS) as pool:
+        futures = {pool.submit(_infer_frequency_single, s): s for s in symbols}
+        for future in as_completed(futures):
+            symbol, freq = future.result()
+            if freq:
+                results[symbol] = freq
+            done += 1
+            if done % 500 == 0:
+                print(f"  {done}/{len(symbols)} checked...")
+
+    monthly = sum(1 for f in results.values() if f == "monthly")
+    quarterly = sum(1 for f in results.values() if f == "quarterly")
+    other = len(results) - monthly - quarterly
+    print(f"  Detected: {monthly} monthly, {quarterly} quarterly, {other} other "
+          f"({len(symbols) - len(results)} unknown)")
+    return results
 
 # Tickers TradingView often misses — merged into output as fallbacks.
 # Values are periodically verified; the script prefers TradingView data
@@ -161,13 +215,7 @@ def build_ticker_data(df):
         elif price and dividend_yield:
             dividend_rate = round(price * dividend_yield / 100, 4)
 
-        # Estimate frequency
-        if symbol in MONTHLY_ETFS:
-            frequency = "monthly"
-        elif dps_fq and not (isinstance(dps_fq, float) and math.isnan(dps_fq)):
-            frequency = "quarterly"
-        else:
-            frequency = "quarterly"
+        frequency = None
 
         payout_ratio = None
         if payout and not (isinstance(payout, float) and math.isnan(payout)):
@@ -212,6 +260,16 @@ def main():
     for symbol, data in tickers.items():
         if symbol in existing_data and existing_data[symbol].get("last_payments"):
             data["last_payments"] = existing_data[symbol]["last_payments"]
+
+    # Auto-detect frequency from Yahoo Finance dividend history
+    detected = detect_frequencies(list(tickers.keys()))
+    for symbol, data in tickers.items():
+        if symbol in detected:
+            data["frequency"] = detected[symbol]
+        elif symbol in MONTHLY_FALLBACK:
+            data["frequency"] = "monthly"
+        else:
+            data["frequency"] = "quarterly"
 
     # Merge fallback data for tickers TradingView misses
     added_fallbacks = []
