@@ -64,7 +64,7 @@ function startServer() {
 
 async function expectText(page, text) {
   const body = await page.locator('body').innerText({ timeout: 5000 });
-  if (!body.includes(text)) throw new Error(`missing expected text: ${text}`);
+  if (!body.toLowerCase().includes(text.toLowerCase())) throw new Error(`missing expected text: ${text}`);
 }
 
 function isIgnoredConsoleError(text) {

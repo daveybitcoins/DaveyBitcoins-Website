@@ -12,7 +12,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0f1e'/%3E%3Ctext x='16' y='23' font-family='serif' font-size='22' font-weight='bold' fill='%23f97316' text-anchor='middle'%3E%E2%82%BF%3C/text%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -395,6 +395,188 @@
             }
             .bento .tile:nth-child(n) { grid-column: span 1; }
             .tile { padding: 1.25rem; }
+        }
+
+        /* Terminal market desk theme */
+        body {
+            background:
+                radial-gradient(circle at 14% -8%, rgba(240, 179, 77, 0.12), transparent 34rem),
+                linear-gradient(180deg, #0b0c09 0%, #070806 55%, #050604 100%);
+            color: #e8e0cc;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            letter-spacing: 0;
+        }
+
+        .bg-mesh {
+            background:
+                linear-gradient(rgba(240, 179, 77, 0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(240, 179, 77, 0.025) 1px, transparent 1px);
+            background-size: 48px 48px;
+            opacity: 0.42;
+        }
+
+        .bg-mesh .orb {
+            display: none;
+        }
+
+        .noise {
+            opacity: 0.16;
+        }
+
+        .page {
+            align-items: stretch;
+            max-width: 1340px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 3rem;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            align-items: center;
+            gap: 1.25rem;
+            margin: 0 0 1.25rem;
+            padding: 1rem 0 1.25rem;
+            border-bottom: 1px solid #2a3027;
+            text-align: left;
+        }
+
+        .hero-avatar {
+            width: 86px;
+            height: 86px;
+            border: 1px solid #2a3027;
+            border-radius: 2px;
+            box-shadow: none;
+            animation: none;
+            margin: 0;
+        }
+
+        .hero-brand {
+            background: none;
+            -webkit-text-fill-color: currentColor;
+            color: #e8e0cc;
+            font-size: clamp(2.25rem, 5vw, 4rem);
+            font-weight: 800;
+            letter-spacing: 0;
+            animation: none;
+            margin: 0 0 0.25rem;
+        }
+
+        .hero-brand::before {
+            content: ">";
+            color: #f0b34d;
+            font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+            margin-right: 0.5rem;
+        }
+
+        .hero-tagline {
+            grid-column: 2;
+            color: #8f917f;
+            font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        .bento {
+            gap: 0.75rem;
+            max-width: none;
+            padding: 0;
+        }
+
+        .tile {
+            background: rgba(16, 18, 15, 0.92);
+            border: 1px solid #2a3027;
+            border-radius: 2px;
+            box-shadow: none;
+            color: #e8e0cc;
+            padding: 1rem;
+            opacity: 1;
+            transform: none;
+            animation: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+
+        .tile::before {
+            display: none;
+        }
+
+        .tile::after {
+            display: none;
+        }
+
+        .tile:hover {
+            border-color: #f0b34d;
+            box-shadow: inset 3px 0 0 rgba(240, 179, 77, 0.75);
+            transform: none;
+        }
+
+        .tile-preview {
+            background: #070806;
+            border: 1px solid #252a22;
+            border-radius: 2px;
+        }
+
+        .tile-tag {
+            border-radius: 2px;
+            font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+            font-size: 0.56rem;
+            letter-spacing: 0.08em;
+        }
+
+        .tile-name {
+            color: #f4ead3;
+            font-size: 1.12rem;
+            letter-spacing: 0;
+        }
+
+        .tile-desc {
+            color: #8f917f;
+            font-size: 0.78rem;
+        }
+
+        .tile-arrow {
+            color: #f0b34d;
+            font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+        }
+
+        .tile:hover .tile-arrow {
+            color: #f4ead3;
+            transform: translateX(2px);
+        }
+
+        .footer {
+            border-top: 1px solid #2a3027;
+            color: #6d6f61;
+            font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .page {
+                padding: 1rem;
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+                gap: 0.85rem;
+            }
+
+            .hero-avatar {
+                width: 72px;
+                height: 72px;
+            }
+
+            .hero-brand {
+                font-size: 2.2rem;
+            }
+
+            .hero-tagline {
+                grid-column: auto;
+            }
         }
     </style>
 </head>
