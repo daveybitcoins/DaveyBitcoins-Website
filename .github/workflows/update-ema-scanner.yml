@@ -27,7 +27,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install tradingview-screener anthropic yfinance
+        run: pip install -r requirements-actions.txt
 
       - name: Fetch & process EMA data
         env:
@@ -52,11 +52,14 @@ jobs:
           sed -i "s/style\.css?v=[0-9]*/style.css?v=${STAMP}/" ema-scanner.html dividend-tracker.html
           sed -i "s/dividends\.css?v=[0-9]*/dividends.css?v=${STAMP}/" dividend-tracker.html
 
+      - name: Validate generated scanner data
+        run: python scripts/validate_data.py --scanner
+
       - name: Commit and push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -f csv/ data/scanner_data.json ema-scanner.html
+          git add -f csv/ data/scanner_data.json ema-scanner.html dividend-tracker.html
           git diff --cached --quiet && echo "No changes" && exit 0
           git commit -m "Update EMA scanner data $(date -u +'%Y-%m-%d %H:%M')"
           git pull --rebase --autostash

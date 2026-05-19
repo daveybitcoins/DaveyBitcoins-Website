@@ -70,8 +70,8 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install yfinance
-        run: pip install yfinance
+      - name: Install dependencies
+        run: pip install -r requirements-actions.txt
 
       - name: Fetch latest SPY and VIX data
         run: |
@@ -226,6 +226,9 @@ jobs:
                   f.write(f'{d},{rows[d]}\n')
           print(f'  BTC: CoinGecko live \${price} for {today} (was {old})')
           "
+
+      - name: Validate generated price data
+        run: python scripts/validate_data.py --prices
 
       - name: Commit and push if changed
         run: |
