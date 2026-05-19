@@ -25,5 +25,8 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0"
+  },
+  "overrides": {
+    "path-to-regexp": "^8.4.0"
   }
 }
