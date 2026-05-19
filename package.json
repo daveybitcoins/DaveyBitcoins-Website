@@ -1,0 +1,29 @@
+{
+  "name": "btc-risk-metric",
+  "version": "1.0.0",
+  "description": "BTC Risk Metric",
+  "main": "server.js",
+  "scripts": {
+    "test": "npm run smoke",
+    "smoke": "node tests/smoke.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daveybitcoins/BTC-Risk-Metric.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/daveybitcoins/BTC-Risk-Metric/issues"
+  },
+  "homepage": "https://github.com/daveybitcoins/BTC-Risk-Metric#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
+  }
+}
