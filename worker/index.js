@@ -6,6 +6,20 @@
  */
 
 const ALLOWED_ORIGINS = ['https://daveybitcoins.com', 'https://www.daveybitcoins.com', 'http://localhost:3000'];
+const SYMBOL_RE = /^[A-Z0-9][A-Z0-9.:-]{0,14}$/;
+const MASSIVE_ALLOWED_PARAMS = new Set([
+  'contract_type',
+  'expiration_date',
+  'expiration_date.gte',
+  'expiration_date.lte',
+  'strike_price',
+  'strike_price.gte',
+  'strike_price.lte',
+  'limit',
+  'sort',
+  'order',
+]);
+const MASSIVE_MAX_LIMIT = 250;
 
 function corsHeaders(request) {
   const origin = request?.headers?.get('Origin') || '';
@@ -17,16 +31,56 @@ function corsHeaders(request) {
   };
 }
 
+function jsonResponse(request, body, init = {}) {
+  return new Response(JSON.stringify(body), {
+    ...init,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(init.headers || {}),
+      ...corsHeaders(request),
+    },
+  });
+}
+
+function errorResponse(request, message, status = 400, extraHeaders = {}) {
+  return jsonResponse(request, { error: message }, {
+    status,
+    headers: { 'Cache-Control': 'no-store', ...extraHeaders },
+  });
+}
+
+function normalizeSymbol(value) {
+  const symbol = (value || '').trim().toUpperCase();
+  return SYMBOL_RE.test(symbol) ? symbol : null;
+}
+
+function parseYahooDate(value) {
+  if (!value) return null;
+  return /^\d{1,12}$/.test(value) ? value : false;
+}
+
+function sanitizedMassiveParams(searchParams) {
+  const params = new URLSearchParams();
+  for (const [key, value] of searchParams) {
+    if (!MASSIVE_ALLOWED_PARAMS.has(key)) continue;
+    if (key === 'limit') {
+      const limit = Math.min(Math.max(parseInt(value, 10) || 1, 1), MASSIVE_MAX_LIMIT);
+      params.set(key, String(limit));
+      continue;
+    }
+    params.append(key, value);
+  }
+  if (!params.has('limit')) params.set('limit', String(MASSIVE_MAX_LIMIT));
+  return params;
+}
+
 // ====== FINNHUB PROXY ======
 async function handleFinnhubProxy(request, env) {
   const url = new URL(request.url);
-  const symbol = url.searchParams.get('symbol');
+  const symbol = normalizeSymbol(url.searchParams.get('symbol'));
 
   if (!symbol) {
-    return new Response(JSON.stringify({ error: 'Missing symbol parameter' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
-    });
+    return errorResponse(request, 'Missing or invalid symbol parameter');
   }
 
   try {
@@ -35,19 +89,14 @@ async function handleFinnhubProxy(request, env) {
     const data = await resp.json();
     const cacheHeader = resp.ok ? 'public, max-age=60' : 'no-store';
 
-    return new Response(JSON.stringify(data), {
+    return jsonResponse(request, data, {
       status: resp.status,
       headers: {
-        'Content-Type': 'application/json',
         'Cache-Control': cacheHeader,
-        ...corsHeaders(request),
       },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 502,
-      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...corsHeaders(request) },
-    });
+    return errorResponse(request, err.message, 502);
   }
 }
 
@@ -57,15 +106,12 @@ async function handleFinnhubBatchProxy(request, env) {
   const url = new URL(request.url);
   const symbols = (url.searchParams.get('symbols') || '')
     .split(',')
-    .map(s => s.trim().toUpperCase())
+    .map(normalizeSymbol)
     .filter(Boolean)
     .slice(0, 50);
 
   if (!symbols.length) {
-    return new Response(JSON.stringify({ error: 'Missing symbols parameter' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
-    });
+    return errorResponse(request, 'Missing or invalid symbols parameter');
   }
 
   const results = [];
@@ -88,11 +134,9 @@ async function handleFinnhubBatchProxy(request, env) {
     results.push(...batch);
   }
 
-  return new Response(JSON.stringify(Object.fromEntries(results)), {
+  return jsonResponse(request, Object.fromEntries(results), {
     headers: {
-      'Content-Type': 'application/json',
       'Cache-Control': 'public, max-age=60',
-      ...corsHeaders(request),
     },
   });
 }
@@ -127,18 +171,16 @@ async function getYahooCrumb() {
 async function handleOptionsProxy(request) {
   const url = new URL(request.url);
   const parts = url.pathname.split('/'); // /api/options/NVDA
-  const symbol = parts[3]?.toUpperCase();
+  const symbol = normalizeSymbol(parts[3]);
   if (!symbol) {
-    return new Response(JSON.stringify({ error: 'Missing symbol' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
-    });
+    return errorResponse(request, 'Missing or invalid symbol');
   }
 
   try {
     await getYahooCrumb();
     let yahooUrl = `https://query2.finance.yahoo.com/v7/finance/options/${encodeURIComponent(symbol)}?crumb=${encodeURIComponent(yahooCrumb)}`;
-    const date = url.searchParams.get('date');
+    const date = parseYahooDate(url.searchParams.get('date'));
+    if (date === false) return errorResponse(request, 'Invalid date parameter');
     if (date) yahooUrl += `&date=${date}`;
 
     let resp = await fetch(yahooUrl, {
@@ -163,19 +205,14 @@ async function handleOptionsProxy(request) {
     }
 
     const data = await resp.json();
-    return new Response(JSON.stringify(data), {
+    return jsonResponse(request, data, {
       status: resp.status,
       headers: {
-        'Content-Type': 'application/json',
         'Cache-Control': 'public, max-age=30',
-        ...corsHeaders(request),
       },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
-    });
+    return errorResponse(request, err.message, 500);
   }
 }
 
@@ -183,12 +220,9 @@ async function handleOptionsProxy(request) {
 async function handleDividendHistoryProxy(request) {
   const url = new URL(request.url);
   const parts = url.pathname.split('/');
-  const symbol = parts[3]?.toUpperCase();
+  const symbol = normalizeSymbol(parts[3]);
   if (!symbol) {
-    return new Response(JSON.stringify({ error: 'Missing symbol' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
-    });
+    return errorResponse(request, 'Missing or invalid symbol');
   }
 
   try {
@@ -224,18 +258,13 @@ async function handleDividendHistoryProxy(request) {
       }))
       .sort((a, b) => a.ex_date.localeCompare(b.ex_date));
 
-    return new Response(JSON.stringify({ symbol, payments }), {
+    return jsonResponse(request, { symbol, payments }, {
       headers: {
-        'Content-Type': 'application/json',
         'Cache-Control': 'public, max-age=3600',
-        ...corsHeaders(request),
       },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
-    });
+    return errorResponse(request, err.message, 500);
   }
 }
 
@@ -243,16 +272,12 @@ async function handleDividendHistoryProxy(request) {
 async function handleMassiveProxy(request, env) {
   const url = new URL(request.url);
   const parts = url.pathname.split('/'); // /api/massive/options/AAPL
-  const symbol = parts[4]?.toUpperCase();
+  const symbol = normalizeSymbol(parts[4]);
   if (!symbol) {
-    return new Response(JSON.stringify({ error: 'Missing symbol' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
-    });
+    return errorResponse(request, 'Missing or invalid symbol');
   }
 
-  // Forward all query params and append the API key
-  const params = new URLSearchParams(url.search);
+  const params = sanitizedMassiveParams(url.searchParams);
   params.set('apiKey', env.MASSIVE_KEY);
 
   const endpoint = parts[3]; // 'options' or 'stock'
@@ -262,28 +287,20 @@ async function handleMassiveProxy(request, env) {
   } else if (endpoint === 'stock') {
     massiveUrl = `https://api.massive.com/v2/aggs/ticker/${encodeURIComponent(symbol)}/prev?${params}`;
   } else {
-    return new Response(JSON.stringify({ error: 'Invalid endpoint' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
-    });
+    return errorResponse(request, 'Invalid endpoint');
   }
 
   try {
     const resp = await fetch(massiveUrl);
     const data = await resp.json();
-    return new Response(JSON.stringify(data), {
+    return jsonResponse(request, data, {
       status: resp.status,
       headers: {
-        'Content-Type': 'application/json',
         'Cache-Control': 'public, max-age=60',
-        ...corsHeaders(request),
       },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
-    });
+    return errorResponse(request, err.message, 500);
   }
 }
 
@@ -342,9 +359,7 @@ export default {
 
     // Health check
     if (url.pathname === '/health') {
-      return new Response(JSON.stringify({ status: 'ok', time: new Date().toISOString() }), {
-        headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
-      });
+      return jsonResponse(request, { status: 'ok', time: new Date().toISOString() });
     }
 
     return new Response('Not found', { status: 404 });

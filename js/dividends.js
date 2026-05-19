@@ -52,6 +52,12 @@
         return n.toFixed(2) + "%";
     }
 
+    function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, function (ch) {
+            return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch];
+        });
+    }
+
     // === THEME ===
     function setupTheme() {
         const saved = localStorage.getItem("theme");
@@ -83,7 +89,7 @@
         }
 
         document.getElementById("data-date").innerHTML =
-            '<span class="pill pill-date">' + (dividendData.meta.date || "N/A") + '</span>' +
+            '<span class="pill pill-date">' + escapeHtml(dividendData.meta.date || "N/A") + '</span>' +
             '<span class="pill pill-count">' + (dividendData.meta.total_tickers || 0) + ' dividend stocks</span>';
 
         if (getHoldings().length > 0) {
@@ -248,11 +254,11 @@
             }
 
             var html = matches.map(function (m) {
-                return '<div class="ticker-option" data-symbol="' + m.symbol + '"><strong>' + m.symbol + '</strong><span>' + m.name + '</span></div>';
+                return '<div class="ticker-option" data-symbol="' + escapeHtml(m.symbol) + '"><strong>' + escapeHtml(m.symbol) + '</strong><span>' + escapeHtml(m.name) + '</span></div>';
             }).join("");
 
             if (matches.length === 0 && val.length >= 1) {
-                html = '<div class="ticker-option" data-symbol="' + val + '"><strong>' + val + '</strong><span style="opacity:0.6">Not in dividend data — add anyway</span></div>';
+                html = '<div class="ticker-option" data-symbol="' + escapeHtml(val) + '"><strong>' + escapeHtml(val) + '</strong><span style="opacity:0.6">Not in dividend data — add anyway</span></div>';
             }
 
             dropdown.innerHTML = html;
@@ -373,7 +379,7 @@
 
         portfolios.forEach(function (p, i) {
             var sel = i === activePortfolioIndex ? " selected" : "";
-            html += '<option value="' + i + '"' + sel + '>' + p.name + '</option>';
+            html += '<option value="' + i + '"' + sel + '>' + escapeHtml(p.name) + '</option>';
         });
 
         html += '</select>';
@@ -467,8 +473,8 @@
 
             var freqBadge = "";
             if (freq) {
-                var cls = "freq-" + freq.replace("_", "-");
-                freqBadge = '<span class="freq-badge ' + cls + '">' + freq + '</span>';
+                var cls = "freq-" + String(freq).replace("_", "-").replace(/[^a-z0-9-]/gi, "");
+                freqBadge = '<span class="freq-badge ' + cls + '">' + escapeHtml(freq) + '</span>';
             }
 
             var gainLoss = "";
@@ -479,8 +485,8 @@
             }
 
             html += '<tr>' +
-                '<td><strong style="font-family:JetBrains Mono,monospace">' + h.ticker + '</strong></td>' +
-                '<td class="name-cell">' + name + '</td>' +
+                '<td><strong style="font-family:JetBrains Mono,monospace">' + escapeHtml(h.ticker) + '</strong></td>' +
+                '<td class="name-cell">' + escapeHtml(name) + '</td>' +
                 '<td class="num editable-cell" data-index="' + i + '" data-field="shares" title="Click to edit">' + h.shares + '</td>' +
                 '<td class="num editable-cell" data-index="' + i + '" data-field="costBasis" title="Click to edit">' + (h.costBasis ? fmtUSD(h.costBasis) : "--") + '</td>' +
                 '<td class="num">' + (h.costBasis ? fmtUSD(h.costBasis * h.shares) : "--") + '</td>' +
@@ -585,7 +591,7 @@
                 html += '<div class="cal-events">';
                 var total = 0;
                 dayEvents.forEach(function (ev) {
-                    html += '<span class="cal-event ' + ev.type + '" title="' + ev.ticker + ': ' + fmtUSD(ev.amount) + ' (' + ev.type + ')">' + ev.ticker + '</span>';
+                    html += '<span class="cal-event ' + escapeHtml(ev.type) + '" title="' + escapeHtml(ev.ticker) + ': ' + fmtUSD(ev.amount) + ' (' + escapeHtml(ev.type) + ')">' + escapeHtml(ev.ticker) + '</span>';
                     total += ev.amount;
                 });
                 html += '</div>';

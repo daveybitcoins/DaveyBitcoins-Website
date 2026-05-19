@@ -205,6 +205,17 @@
         return "$" + Number(val).toFixed(1) + "B";
     }
 
+    function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, function (ch) {
+            return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch];
+        });
+    }
+
+    function safeNoteType(type, fallback) {
+        const value = String(type || fallback || "caution");
+        return /^[a-z0-9_-]+$/i.test(value) ? value : fallback;
+    }
+
     function colorClass(val) {
         if (val > 0) return "pos";
         if (val < 0) return "neg";
@@ -223,7 +234,8 @@
     }
 
     function signalBadge(signal) {
-        return `<span class="signal ${signalClass(signal)}">${signal}</span>`;
+        signal = signal || "";
+        return `<span class="signal ${signalClass(signal)}">${escapeHtml(signal)}</span>`;
     }
 
     function volBadge(volQuality) {
@@ -236,7 +248,7 @@
         if (volQuality === "High Vol") {
             return `<span class="vol-badge vol-high">High Vol</span>`;
         }
-        return `<span class="vol-badge vol-normal">${volQuality}</span>`;
+        return `<span class="vol-badge vol-normal">${escapeHtml(volQuality)}</span>`;
     }
 
     function pctCell(val) {
@@ -247,11 +259,11 @@
         if (!text) return "-";
         return text.split("; ").map((part) => {
             if (part.includes("bullish cross potential")) {
-                return `<span class="alert-bull">${part}</span>`;
+                return `<span class="alert-bull">${escapeHtml(part)}</span>`;
             } else if (part.includes("bearish cross risk")) {
-                return `<span class="alert-bear">${part}</span>`;
+                return `<span class="alert-bear">${escapeHtml(part)}</span>`;
             }
-            return part;
+            return escapeHtml(part);
         }).join("<br>");
     }
 
@@ -264,7 +276,7 @@
         let html = el.innerHTML;
         DATA.index_context.forEach(idx => {
             const cls = idx.symbol === "BTC" ? "pill-btc" : idx.symbol === "SPY" ? "pill-spy" : "pill-qqq";
-            html += `<span class="pill ${cls}" id="pill-${idx.symbol}"><strong>${idx.symbol}</strong> <span class="pill-price">${fmtPrice(idx.price)}</span></span>`;
+            html += `<span class="pill ${cls}" id="pill-${escapeHtml(idx.symbol)}"><strong>${escapeHtml(idx.symbol)}</strong> <span class="pill-price">${fmtPrice(idx.price)}</span></span>`;
         });
         if (DATA.vix_context) {
             const vix = DATA.vix_context.level;
@@ -280,7 +292,7 @@
         if (DATA.ai_summary && DATA.ai_summary.market_overview) {
             const s = DATA.ai_summary.market_overview;
             const cls = s.bias === "bullish" ? "pill-bull" : s.bias === "bearish" ? "pill-bear" : "pill-neutral";
-            html += `<span class="pill ${cls}">${s.bias_label}</span>`;
+            html += `<span class="pill ${cls}">${escapeHtml(s.bias_label)}</span>`;
         }
         el.innerHTML = html;
         refreshLivePrices();
@@ -642,7 +654,7 @@
                 html += '<button type="button" class="multi-select-btn">All ' + pluralLabel + ' <span class="multi-select-badge" style="display:none"></span></button>';
                 html += '<div class="multi-select-dropdown">';
                 values.forEach((v) => {
-                    html += '<label class="multi-select-item"><input type="checkbox" value="' + v + '"> ' + v + '</label>';
+                    html += '<label class="multi-select-item"><input type="checkbox" value="' + escapeHtml(v) + '"> ' + escapeHtml(v) + '</label>';
                 });
                 html += '<div class="multi-select-clear">Clear all</div>';
                 html += '</div></div>';
@@ -700,7 +712,7 @@
         if (!container) return;
         const tickers = filterState[tabId].selectedTickers || [];
         container.innerHTML = tickers.map(t =>
-            '<span class="ticker-chip">' + t + '<button type="button" class="chip-remove" data-ticker="' + t + '">&times;</button></span>'
+            '<span class="ticker-chip">' + escapeHtml(t) + '<button type="button" class="chip-remove" data-ticker="' + escapeHtml(t) + '">&times;</button></span>'
         ).join("");
         container.querySelectorAll(".chip-remove").forEach(btn => {
             btn.addEventListener("click", (e) => {
@@ -731,70 +743,7 @@
         if (matches.length === 0) { dropdown.innerHTML = ""; dropdown.style.display = "none"; return; }
 
         dropdown.innerHTML = matches.map(d =>
-            '<div class="ticker-option" data-symbol="' + d.symbol + '"><strong>' + d.symbol + '</strong> <span>' + d.name + '</span></div>'
-        ).join("");
-        dropdown.style.display = "block";
-
-        dropdown.querySelectorAll(".ticker-option").forEach(opt => {
-            opt.addEventListener("mousedown", (e) => {
-                e.preventDefault();
-                addTicker(tabId, opt.dataset.symbol);
-            });
-        });
-    }
-
-    function addTicker(tabId, symbol) {
-        const state = filterState[tabId];
-        if (!state.selectedTickers) state.selectedTickers = [];
-        const upper = symbol.toUpperCase();
-        if (state.selectedTickers.includes(upper)) return;
-        state.selectedTickers.push(upper);
-        state.search = "";
-        const input = document.querySelector('.search-input[data-tab-id="' + tabId + '"]');
-        if (input) input.value = "";
-        const dropdown = document.getElementById("dropdown-" + tabId);
-        if (dropdown) { dropdown.innerHTML = ""; dropdown.style.display = "none"; }
-        renderChips(tabId);
-        applyFilters(tabId);
-    }
-
-    function renderChips(tabId) {
-        const container = document.getElementById("chips-" + tabId);
-        if (!container) return;
-        const tickers = filterState[tabId].selectedTickers || [];
-        container.innerHTML = tickers.map(t =>
-            '<span class="ticker-chip">' + t + '<button type="button" class="chip-remove" data-ticker="' + t + '">&times;</button></span>'
-        ).join("");
-        container.querySelectorAll(".chip-remove").forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                const ticker = btn.dataset.ticker;
-                filterState[tabId].selectedTickers = filterState[tabId].selectedTickers.filter(t => t !== ticker);
-                renderChips(tabId);
-                applyFilters(tabId);
-            });
-        });
-    }
-
-    function showDropdown(tabId, query) {
-        const dropdown = document.getElementById("dropdown-" + tabId);
-        if (!dropdown || !tabRegistry[tabId]) return;
-        const data = tabRegistry[tabId].data;
-        const selected = filterState[tabId].selectedTickers || [];
-        const q = query.toLowerCase();
-
-        if (!q) { dropdown.innerHTML = ""; dropdown.style.display = "none"; return; }
-
-        const matches = data.filter(d =>
-            (d.symbol && d.symbol.toLowerCase().includes(q)) ||
-            (d.name && d.name.toLowerCase().includes(q))
-        ).filter(d => !selected.includes(d.symbol))
-         .slice(0, 8);
-
-        if (matches.length === 0) { dropdown.innerHTML = ""; dropdown.style.display = "none"; return; }
-
-        dropdown.innerHTML = matches.map(d =>
-            '<div class="ticker-option" data-symbol="' + d.symbol + '"><strong>' + d.symbol + '</strong> <span>' + d.name + '</span></div>'
+            '<div class="ticker-option" data-symbol="' + escapeHtml(d.symbol) + '"><strong>' + escapeHtml(d.symbol) + '</strong> <span>' + escapeHtml(d.name) + '</span></div>'
         ).join("");
         dropdown.style.display = "block";
 
@@ -973,35 +922,35 @@
         if (s && s.market_overview) {
             aiHtml = `
             <div class="card">
-                <h2>${s.market_overview.headline}</h2>
-                <p>${s.market_overview.detail}</p>
+                <h2>${escapeHtml(s.market_overview.headline)}</h2>
+                <p>${escapeHtml(s.market_overview.detail)}</p>
                 <p class="summary-meta">Generated by Claude AI &mdash;
                    ${new Date(s.generated_at).toLocaleString()}</p>
             </div>
 
             ${s.news_drivers && s.news_drivers.items && s.news_drivers.items.length > 0 ? `
             <div class="card">
-                <h2>${s.news_drivers.headline || "What Moved Markets"}</h2>
-                ${s.news_drivers.summary ? '<p>' + s.news_drivers.summary + '</p>' : ''}
+                <h2>${escapeHtml(s.news_drivers.headline || "What Moved Markets")}</h2>
+                ${s.news_drivers.summary ? '<p>' + escapeHtml(s.news_drivers.summary) + '</p>' : ''}
                 <ul class="news-drivers-list">
                     ${s.news_drivers.items.map(item => `
-                        <li>${item.text}</li>
+                        <li>${escapeHtml(item.text)}</li>
                     `).join("")}
                 </ul>
             </div>` : ''}
 
             ${s.reversal_candidates.items.length > 0 ? `
             <div class="card">
-                <h2>${s.reversal_candidates.headline}</h2>
+                <h2>${escapeHtml(s.reversal_candidates.headline)}</h2>
                 <div class="notes-grid">
                     ${s.reversal_candidates.items.map(item => `
-                        <div class="note-item ${item.type || "bull"}">
-                            <strong>${item.symbol} ${signalBadge(item.signal)}</strong>
+                        <div class="note-item ${safeNoteType(item.type, "bull")}">
+                            <strong>${escapeHtml(item.symbol)} ${signalBadge(item.signal)}</strong>
                             ${item.crossover_detail
                                 ? '<span class="alert-text"><span class="alert-bull">'
-                                  + item.crossover_detail + '</span></span><br>'
+                                  + escapeHtml(item.crossover_detail) + '</span></span><br>'
                                 : ''}
-                            ${item.note}
+                            ${escapeHtml(item.note)}
                         </div>
                     `).join("")}
                 </div>
@@ -1009,27 +958,27 @@
 
             ${s.pullback_setups.items.length > 0 ? `
             <div class="card">
-                <h2>${s.pullback_setups.headline}</h2>
+                <h2>${escapeHtml(s.pullback_setups.headline)}</h2>
                 <div class="notes-grid">
                     ${s.pullback_setups.items.map(item => `
-                        <div class="note-item ${item.type || "bull"}">
-                            <strong>${item.symbol} ${signalBadge(item.signal)} ${item.vol_quality ? volBadge(item.vol_quality) : ''}</strong>
+                        <div class="note-item ${safeNoteType(item.type, "bull")}">
+                            <strong>${escapeHtml(item.symbol)} ${signalBadge(item.signal)} ${item.vol_quality ? volBadge(item.vol_quality) : ''}</strong>
                             ${item.price_vs_21w != null
                                 ? '<span class="num ' + colorClass(item.price_vs_21w) + '">'
                                   + fmtPct(item.price_vs_21w) + ' vs 21W</span><br>'
                                 : ''}
-                            ${item.note}
+                            ${escapeHtml(item.note)}
                         </div>
                     `).join("")}
                 </div>
             </div>` : ''}
 
             <div class="card">
-                <h2>${s.risk_warnings.headline}</h2>
+                <h2>${escapeHtml(s.risk_warnings.headline)}</h2>
                 <div class="notes-grid">
                     ${s.risk_warnings.items.map(item => `
-                        <div class="note-item ${item.type || "caution"}">
-                            ${item.text}
+                        <div class="note-item ${safeNoteType(item.type, "caution")}">
+                            ${escapeHtml(item.text)}
                         </div>
                     `).join("")}
                 </div>
@@ -1260,9 +1209,9 @@
         const renderRow = (s) => `
             <tr>
                 <td class="num">${s.rank}</td>
-                <td><strong>${s.symbol}</strong></td>
-                <td class="name-cell" title="${s.name}">${s.name}</td>
-                <td>${s.sector}</td>
+                <td><strong>${escapeHtml(s.symbol)}</strong></td>
+                <td class="name-cell" title="${escapeHtml(s.name)}">${escapeHtml(s.name)}</td>
+                <td>${escapeHtml(s.sector)}</td>
                 <td class="num">${fmtPrice(s.price)}</td>
                 <td class="num">${fmtCap(s.mkt_cap_b)}</td>
                 <td class="num">${fmt(s.rel_vol)}</td>
@@ -1277,7 +1226,7 @@
                 <td>${signalBadge(s.signal)}</td>
                 ${pctCell(s.chg_1d)}
                 ${pctCell(s.chg_1w)}
-                <td>${s.analyst}</td>
+                <td>${escapeHtml(s.analyst)}</td>
             </tr>`;
 
         el.innerHTML = `
@@ -1325,8 +1274,8 @@
 
         const renderRow = (s) => `
             <tr>
-                <td><strong>${s.symbol}</strong></td>
-                <td class="name-cell" title="${s.name}">${s.name}</td>
+                <td><strong>${escapeHtml(s.symbol)}</strong></td>
+                <td class="name-cell" title="${escapeHtml(s.name)}">${escapeHtml(s.name)}</td>
                 <td class="num">${fmtPrice(s.price)}</td>
                 <td class="num">${fmtCap(s.mkt_cap_b)}</td>
                 <td class="num">${s.fwd_pe != null ? s.fwd_pe.toFixed(1) + '×' : '—'}</td>
@@ -1349,7 +1298,7 @@
                 <p>Stocks with bullish EMA structure (8W > 13W > 21W) but price has pulled back &mdash; potential entry zones.</p>
                 <div style="margin-top:0.5rem;padding:0.5rem 0.75rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);font-size:0.78rem;line-height:1.6;">
                     <strong style="color:var(--text);">Volume Guide:</strong>
-                    ${volBadge("Low Vol")} <span style="color:var(--text-dim);">< 0.8x avg &mdash; orderly selling, higher quality entry</span>
+                    ${volBadge("Low Vol")} <span style="color:var(--text-dim);">&lt; 0.8x avg &mdash; orderly selling, higher quality entry</span>
                     <span style="margin:0 0.4rem;color:var(--border);">|</span>
                     ${volBadge("Normal Vol")} <span style="color:var(--text-dim);">0.8x&ndash;1.5x avg &mdash; neutral volume</span>
                     <span style="margin:0 0.4rem;color:var(--border);">|</span>
@@ -1397,8 +1346,8 @@
 
         const renderRow = (s) => `
             <tr>
-                <td><strong>${s.symbol}</strong></td>
-                <td class="name-cell" title="${s.name}">${s.name}</td>
+                <td><strong>${escapeHtml(s.symbol)}</strong></td>
+                <td class="name-cell" title="${escapeHtml(s.name)}">${escapeHtml(s.name)}</td>
                 <td class="num">${fmtPrice(s.price)}</td>
                 <td class="num">${fmtCap(s.mkt_cap_b)}</td>
                 <td class="num">${s.fwd_pe != null ? s.fwd_pe.toFixed(1) + '×' : '—'}</td>
@@ -1458,8 +1407,8 @@
 
         const renderRow = (s) => `
             <tr>
-                <td><strong>${s.symbol}</strong></td>
-                <td class="name-cell" title="${s.name}">${s.name}</td>
+                <td><strong>${escapeHtml(s.symbol)}</strong></td>
+                <td class="name-cell" title="${escapeHtml(s.name)}">${escapeHtml(s.name)}</td>
                 <td class="num">${fmtPrice(s.price)}</td>
                 <td class="num">${fmtCap(s.mkt_cap_b)}</td>
                 <td class="num">${s.fwd_pe != null ? s.fwd_pe.toFixed(1) + '×' : '—'}</td>
@@ -1519,16 +1468,16 @@
 
         const renderRow = (s) => `
             <tr>
-                <td><strong>${s.symbol}</strong></td>
-                <td class="name-cell" title="${s.name}">${s.name}</td>
-                <td>${s.sector}</td>
+                <td><strong>${escapeHtml(s.symbol)}</strong></td>
+                <td class="name-cell" title="${escapeHtml(s.name)}">${escapeHtml(s.name)}</td>
+                <td>${escapeHtml(s.sector)}</td>
                 <td class="num">${fmtPrice(s.price)}</td>
                 <td class="num">${fmtCap(s.mkt_cap_b)}</td>
                 <td class="num">${s.fwd_pe != null ? s.fwd_pe.toFixed(1) + '×' : '—'}</td>
                 <td class="num">${s.peg != null ? s.peg.toFixed(2) + '×' : '—'}</td>
                 <td class="num">${s.implied_growth != null ? (s.implied_growth > 100 ? '>100%' : s.implied_growth.toFixed(0) + '%') : '—'}</td>
                 <td>${signalBadge(s.signal)}</td>
-                <td>${s.analyst}</td>
+                <td>${escapeHtml(s.analyst)}</td>
                 ${pctCell(s.pct_from_50)}
                 ${pctCell(s.pct_from_200)}
                 ${pctCell(s.chg_ytd)}
@@ -1588,9 +1537,9 @@
         const renderRow = (s, i) => `
             <tr>
                 <td class="num">${(i != null ? i : data.indexOf(s)) + 1}</td>
-                <td><strong>${s.symbol}</strong></td>
-                <td class="name-cell" title="${s.name}">${s.name}</td>
-                <td>${s.sector}</td>
+                <td><strong>${escapeHtml(s.symbol)}</strong></td>
+                <td class="name-cell" title="${escapeHtml(s.name)}">${escapeHtml(s.name)}</td>
+                <td>${escapeHtml(s.sector)}</td>
                 <td class="num">${fmtPrice(s.price)}</td>
                 <td>${signalBadge(s.signal)}</td>
                 ${pctCell(s.chg_1w)}
@@ -1615,7 +1564,7 @@
                     <div class="stat-box"><div class="stat-val" style="color:var(--green)">+${avgAlpha1w.toFixed(2)}%</div><div class="stat-label">Avg 1W Rel to SPY</div></div>
                     <div class="stat-box"><div class="stat-val" style="color:var(--green)">+${avgAlphaYtd.toFixed(2)}%</div><div class="stat-label">Avg YTD Rel to SPY</div></div>
                 </div>
-                <div style="margin-top:8px;font-size:0.75rem;color:var(--text-dim)">Top YTD: <strong>${topYtd}</strong> &middot; SPY 1W: ${fmt(spy1w)}% &middot; SPY YTD: ${fmt(spyYtd)}%</div>
+                <div style="margin-top:8px;font-size:0.75rem;color:var(--text-dim)">Top YTD: <strong>${escapeHtml(topYtd)}</strong> &middot; SPY 1W: ${fmt(spy1w)}% &middot; SPY YTD: ${fmt(spyYtd)}%</div>
             </div>
             <div class="card">
                 <h3>${data.length} Outperformers</h3>
@@ -1662,7 +1611,7 @@
             const barSign = s.net_score >= 0 ? "+" : "";
             return `
                 <tr>
-                    <td><strong>${s.sector}</strong></td>
+                    <td><strong>${escapeHtml(s.sector)}</strong></td>
                     <td class="num">${s.count}</td>
                     <td class="num">${s.full_bull}</td>
                     <td class="num">${s.all_bullish}</td>
@@ -1718,8 +1667,8 @@
 
         const renderRow = (s) => `
             <tr>
-                <td><strong>${s.symbol}</strong></td>
-                <td class="name-cell" title="${s.name}">${s.name}</td>
+                <td><strong>${escapeHtml(s.symbol)}</strong></td>
+                <td class="name-cell" title="${escapeHtml(s.name)}">${escapeHtml(s.name)}</td>
                 <td class="num">${fmtPrice(s.price)}</td>
                 <td>${signalBadge(s.signal)}</td>
                 <td class="num">${fmtPrice(s.ema8)}</td>

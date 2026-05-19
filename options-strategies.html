@@ -1115,6 +1115,9 @@ function formatExp(ts) {
 
 function fmt$(v) { return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function fmtInt$(v) { return '$' + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }); }
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch]));
+}
 
 // Spread liquidity warning — returns short text label for dropdowns/tables
 // EMA signal data cache (loaded from scanner_data.json)
@@ -1148,7 +1151,7 @@ function emaBadge(symbol) {
   else if (s.includes('bear rally')) color = '#f59e0b';
   else if (s.includes('bearish')) color = '#f87171';
   else if (s.includes('full bear')) color = '#ef4444';
-  return `<span style="color:${color};font-size:0.6rem;font-weight:600;white-space:nowrap">${sig}</span>`;
+  return `<span style="color:${color};font-size:0.6rem;font-weight:600;white-space:nowrap">${escapeHtml(sig)}</span>`;
 }
 
 function spreadTag(spreadPct) {
@@ -1936,8 +1939,8 @@ function updateTab(tabId, data) {
     const cls = l.action === 'Buy' ? 'buy-row' : 'sell-row';
     const sPct = (l.bid && l.ask && l.mid) ? ((l.ask - l.bid) / l.mid * 100) : 0;
     return `<tr class="${cls}">
-      <td>${l.action}</td><td class="mono">${l.qty}</td><td>${l.type}</td>
-      <td class="mono">$${l.strike}</td><td class="mono">${l.exp}</td>
+      <td>${escapeHtml(l.action)}</td><td class="mono">${l.qty}</td><td>${escapeHtml(l.type)}</td>
+      <td class="mono">$${l.strike}</td><td class="mono">${escapeHtml(l.exp)}</td>
       <td class="mono">${Number(l.delta || 0).toFixed(2)}</td>
       <td class="mono">${fmt$(l.bid||0)}</td><td class="mono">${fmt$(l.ask||0)}</td>
       <td class="mono">${fmt$(l.mid)}</td><td>${spreadBadge(sPct)}</td></tr>`;
@@ -1948,7 +1951,7 @@ function updateTab(tabId, data) {
   cardsEl.innerHTML = data.cards.map(c => {
     const glow = c.glow ? ` style="--glow:${c.glow}"` : '';
     const valStyle = c.valColor ? ` style="--val-color:${c.valColor}"` : '';
-    return `<div class="card"${glow}><div class="card-label">${c.label}</div><div class="card-value mono"${valStyle}>${c.value}</div><div class="card-sub">${c.sub}</div></div>`;
+    return `<div class="card"${glow}><div class="card-label">${escapeHtml(c.label)}</div><div class="card-value mono"${valStyle}>${escapeHtml(c.value)}</div><div class="card-sub">${escapeHtml(c.sub)}</div></div>`;
   }).join('');
 
   // Payoff notes
@@ -2498,15 +2501,15 @@ function renderCSPTable() {
     totalPremium += prem;
     totalCapital += cap;
     return `<tr>
-    <td><button class="btn-dismiss" data-symbol="${r.symbol}" title="Remove ${r.symbol}">✕</button></td>
+    <td><button class="btn-dismiss" data-symbol="${escapeHtml(r.symbol)}" title="Remove ${escapeHtml(r.symbol)}">✕</button></td>
     <td class="rank-cell">${i+1}</td>
-    <td class="ticker-cell">${r.symbol}</td>
+    <td class="ticker-cell">${escapeHtml(r.symbol)}</td>
     <td>$${r.price.toFixed(2)}</td>
     <td>$${r.strike}</td>
     <td>${r.delta.toFixed(2)}</td>
     <td>${r.otmPct.toFixed(1)}%</td>
     <td>$${r.mid.toFixed(2)}</td>
-    <td><input type="number" class="contracts-input" value="${qty}" min="0" max="999" data-symbol="${r.symbol}" /></td>
+    <td><input type="number" class="contracts-input" value="${qty}" min="0" max="999" data-symbol="${escapeHtml(r.symbol)}" /></td>
     <td class="premium-cell">$${prem.toLocaleString()}</td>
     <td>$${cap.toLocaleString()}</td>
     <td>${r.returnOnCap.toFixed(1)}%</td>
@@ -2701,15 +2704,15 @@ function renderCCTable() {
     totalPremium += prem;
     totalCapital += cap;
     return `<tr>
-    <td><button class="btn-dismiss" data-symbol="${r.symbol}" title="Remove ${r.symbol}">✕</button></td>
+    <td><button class="btn-dismiss" data-symbol="${escapeHtml(r.symbol)}" title="Remove ${escapeHtml(r.symbol)}">✕</button></td>
     <td class="rank-cell">${i+1}</td>
-    <td class="ticker-cell">${r.symbol}</td>
+    <td class="ticker-cell">${escapeHtml(r.symbol)}</td>
     <td>$${r.price.toFixed(2)}</td>
     <td>$${r.strike}</td>
     <td>${r.delta.toFixed(2)}</td>
     <td>${r.otmPct.toFixed(1)}%</td>
     <td>$${r.mid.toFixed(2)}</td>
-    <td><input type="number" class="contracts-input" value="${qty}" min="0" max="999" data-symbol="${r.symbol}" /></td>
+    <td><input type="number" class="contracts-input" value="${qty}" min="0" max="999" data-symbol="${escapeHtml(r.symbol)}" /></td>
     <td class="premium-cell">$${prem.toLocaleString()}</td>
     <td>$${cap.toLocaleString()}</td>
     <td>${r.returnOnCap.toFixed(1)}%</td>
@@ -2892,10 +2895,10 @@ function renderUATable() {
     const volOiColor = r.volOi >= 5 ? '#f59e0b' : r.volOi >= 3 ? '#22c55e' : 'var(--text)';
     const dismissKey = r.symbol + r.strike + r.type;
     return `<tr>
-    <td><button class="btn-dismiss" data-key="${dismissKey}" title="Remove">✕</button></td>
+    <td><button class="btn-dismiss" data-key="${escapeHtml(dismissKey)}" title="Remove">✕</button></td>
     <td class="rank-cell">${i+1}</td>
-    <td class="ticker-cell">${r.symbol}</td>
-    <td style="color:${typeColor};font-weight:600">${r.type}</td>
+    <td class="ticker-cell">${escapeHtml(r.symbol)}</td>
+    <td style="color:${typeColor};font-weight:600">${escapeHtml(r.type)}</td>
     <td>$${r.price.toFixed(2)}</td>
     <td>$${r.strike}</td>
     <td>${r.delta.toFixed(2)}</td>
