@@ -476,3 +476,22 @@
 .freq-badge {
     border-radius: 2px;
 }
+
+.cal-event.ex,
+.cal-event.est,
+.freq-quarterly {
+    background: rgba(240, 179, 77, 0.12);
+    border-color: rgba(240, 179, 77, 0.32);
+    color: var(--yellow);
+}
+
+.freq-semi-annual {
+    background: rgba(213, 181, 108, 0.12);
+    border-color: rgba(213, 181, 108, 0.3);
+    color: var(--purple);
+}
+
+.ticker-option:hover,
+.ticker-option.active {
+    background: rgba(240, 179, 77, 0.08);
+}

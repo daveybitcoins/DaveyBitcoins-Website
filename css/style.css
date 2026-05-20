@@ -1360,6 +1360,35 @@ tr:hover td {
     color: var(--yellow);
 }
 
+.pill-date,
+.pill-count,
+.pill-qqq,
+.vol-normal {
+    background: rgba(240, 179, 77, 0.1);
+    border-color: rgba(240, 179, 77, 0.28);
+    color: var(--yellow);
+}
+
+.pill-spy,
+.pill-vix-low {
+    background: rgba(114, 192, 106, 0.1);
+    border-color: rgba(114, 192, 106, 0.3);
+    color: var(--green);
+}
+
+.pill-btc,
+.pill-vix-mid {
+    background: rgba(213, 181, 108, 0.1);
+    border-color: rgba(213, 181, 108, 0.28);
+    color: var(--purple);
+}
+
+.pill-vix-high {
+    background: rgba(226, 132, 52, 0.11);
+    border-color: rgba(226, 132, 52, 0.32);
+    color: #e28434;
+}
+
 .ticker-dropdown,
 .multi-select-dropdown {
     background: var(--bg-card);
