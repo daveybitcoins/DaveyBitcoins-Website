@@ -12,9 +12,9 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0f1e'/%3E%3Ctext x='16' y='23' font-family='serif' font-size='22' font-weight='bold' fill='%23f97316' text-anchor='middle'%3E%E2%82%BF%3C/text%3E%3C/svg%3E">
 <script>(function(){ var t = localStorage.getItem('risk-theme'); if(t) document.documentElement.setAttribute('data-theme', t); })();</script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
 
-  :root{
+  :root,[data-theme="dark"]{
     --bg:#101e36;--bg-card:#142642;--bg-canvas:#122240;
     --border:#243a5c;--border-light:#1e3460;--border-accent:#2a4468;
     --text:#c8cad0;--text-dim:#7a90b0;--text-dimmer:#5a7498;
@@ -226,6 +226,58 @@
     .search-bar{gap:8px}
     .search-bar input[type="text"]{width:100px}
   }
+
+  /* Terminal market desk theme */
+  :root,[data-theme="dark"]{
+    --bg:#070806;--bg-card:#10120f;--bg-canvas:#0b0d0a;--bg-surface:#0b0d0a;
+    --border:#2a3027;--border-light:#20251f;--border-accent:#3f3520;
+    --text:#e8e0cc;--text-dim:#8f917f;--text-dimmer:#6d6f61;
+    --text-bright:#f4ead3;--text-heading:#f4ead3;
+    --accent-blue:#f0b34d;--accent-purple:#b8a36e;
+    --header-line:linear-gradient(90deg,transparent,rgba(240,179,77,0.45),transparent);
+    --tooltip-bg:#10120f;--footer-text:#6d6f61;--meth-text:#aaa48f;
+    --btn-bg:#0b0d0a;--btn-text:#b8a36e;--btn-border:#2a3027;--btn-hover:#171a15;--btn-hover-text:#f4ead3;
+  }
+  [data-theme="light"]{
+    --bg:#f3f0e7;--bg-card:#fffaf0;--bg-canvas:#f7f1e4;--bg-surface:#f7f1e4;
+    --border:#c9c0ad;--border-light:#ded4c1;--border-accent:#b99b64;
+    --text:#1f211b;--text-dim:#6d6a5f;--text-dimmer:#837c70;
+    --text-bright:#1f211b;--text-heading:#151711;
+    --accent-blue:#9a650f;--accent-purple:#705b1f;
+    --header-line:linear-gradient(90deg,transparent,rgba(154,101,15,0.38),transparent);
+    --tooltip-bg:#fffaf0;--footer-text:#837c70;--meth-text:#5c574b;
+    --btn-bg:#f7f1e4;--btn-text:#5c574b;--btn-border:#c9c0ad;--btn-hover:#efe2c6;--btn-hover-text:#151711;
+  }
+  body{background:radial-gradient(circle at 14% -8%,rgba(240,179,77,0.12),transparent 34rem),linear-gradient(180deg,#0b0c09 0%,var(--bg) 48%,#050604 100%);font-family:'IBM Plex Mono','JetBrains Mono',monospace;letter-spacing:0}
+  [data-theme="light"] body{background:radial-gradient(circle at 12% -12%,rgba(154,101,15,0.13),transparent 32rem),linear-gradient(180deg,#fbf7ec 0%,var(--bg) 100%)}
+  .bg-mesh{background:linear-gradient(rgba(240,179,77,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(240,179,77,0.025) 1px,transparent 1px);background-size:48px 48px;opacity:0.42}
+  .bg-mesh .orb{display:none}
+  .noise-overlay{opacity:0.16}
+  .container{max-width:1540px;padding:24px 28px}
+  header{text-align:left;border-bottom:1px solid var(--border);padding-bottom:22px;margin-bottom:24px}
+  header::after{width:100%;margin:18px 0 0}
+  h1{font-family:'Inter',sans-serif;letter-spacing:0;font-size:clamp(1.8rem,3.5vw,2.8rem)}
+  h1 span,[data-theme="light"] h1 span{background:none;-webkit-text-fill-color:currentColor;color:var(--text-heading)}
+  h1::before{content:'>';color:var(--accent-blue);font-family:'IBM Plex Mono',monospace;margin-right:0.45rem}
+  .subtitle,.chart-label,.card-label,.legs-table-wrap h4,.methodology h3,.strategy-overview h2,.strike-selector h4,.leg-selectors h4,.scanner-table-wrap h4{letter-spacing:0.06em}
+  .header-nav a,.theme-toggle,.search-bar input[type="text"],.search-bar select,.btn-analyze,.btn-scan,.tab-bar,.strike-btn,.leg-select,.scanner-table .contracts-input,.price-badge,.badge{border-radius:2px;box-shadow:none}
+  .header-nav a:hover,.theme-toggle:hover,.search-bar input[type="text"]:focus,.search-bar select:focus,.btn-analyze:hover,.btn-scan:hover,.strike-btn:hover,.leg-select:focus,.scanner-table .contracts-input:focus{box-shadow:inset 3px 0 0 rgba(240,179,77,0.65);opacity:1}
+  .tab-bar{background:color-mix(in srgb,var(--bg-card) 92%,transparent);border-color:var(--border)}
+  .tab{font-family:'IBM Plex Mono','JetBrains Mono',monospace;letter-spacing:0.04em;text-transform:uppercase}
+  .tab:hover{background:var(--btn-hover)}
+  .tab.active{background:#1a150c;color:var(--accent-blue);border-bottom-color:var(--accent-blue)}
+  [data-theme="light"] .tab.active{background:#efe2c6}
+  .dashboard{gap:12px;margin-bottom:24px}
+  .card,.strategy-overview,.date-slider-wrap,.strike-selector,.leg-selectors,.legs-table-wrap,.chart-panel,.methodology,.scanner-table-wrap,[data-theme="light"] .card,[data-theme="light"] .strategy-overview,[data-theme="light"] .date-slider-wrap,[data-theme="light"] .strike-selector,[data-theme="light"] .leg-selectors,[data-theme="light"] .legs-table-wrap,[data-theme="light"] .chart-panel,[data-theme="light"] .methodology,[data-theme="light"] .scanner-table-wrap{background:color-mix(in srgb,var(--bg-card) 92%,transparent);border:1px solid var(--border);border-radius:2px;box-shadow:none}
+  .card::before{top:0;left:0;right:auto;width:3px;height:100%;background:var(--accent-blue);opacity:0.75}
+  .card-value,.price-badge .ticker-name,.price-badge .ticker-price,.overview-header h2,.scanner-table .ticker-cell{font-family:'IBM Plex Mono','JetBrains Mono',monospace}
+  .when-to-use{background:rgba(240,179,77,0.08);border-color:rgba(240,179,77,0.22);border-radius:2px}
+  .strike-btn.active{background:rgba(240,179,77,0.12);box-shadow:none}
+  .date-slider-wrap{border-top:1px solid var(--border);border-radius:2px}
+  table th,.legs-table th,.scanner-table th{color:var(--accent-blue);font-family:'IBM Plex Mono','JetBrains Mono',monospace}
+  table td,.legs-table td,.scanner-table td{border-bottom-color:var(--border-light)}
+  .scanner-table tr:hover td{background:rgba(240,179,77,0.055)}
+  @media(max-width:768px){header{text-align:left}.header-nav{justify-content:flex-start}}
 </style>
 </head>
 <body>
