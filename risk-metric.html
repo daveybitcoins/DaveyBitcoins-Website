@@ -57,7 +57,7 @@
   .theme-toggle{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:0.3rem 0.5rem;cursor:pointer;color:var(--text);font-size:1rem;line-height:1;transition:background 0.15s,border-color 0.15s}
   .theme-toggle:hover{background:var(--bg-card);border-color:var(--accent-blue)}
   h1{font-family:'Outfit',sans-serif;font-size:2.6rem;font-weight:700;letter-spacing:-2px;color:var(--text-heading);margin-bottom:6px}
-  h1 span{background:linear-gradient(135deg,#4af,#a78bfa,#f87171);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  h1 span{background:linear-gradient(135deg,var(--accent-blue),var(--text-heading),#f87171);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
   [data-theme="light"] h1 span{background:linear-gradient(135deg,#0969da,#8250df,#cf222e);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
   [data-theme="light"] #vPrice{color:#1a1a2e}
   .subtitle{font-size:0.72rem;color:var(--text-dim);letter-spacing:3px;text-transform:uppercase}
@@ -120,7 +120,7 @@
   .zoom-btn{background:var(--btn-bg);color:var(--btn-text);border:1px solid var(--btn-border);border-radius:6px;padding:4px 14px;font:11px JetBrains Mono,monospace;cursor:pointer;transition:all 0.2s}
   .zoom-btn:hover{background:var(--btn-hover);color:var(--btn-hover-text)}
   .zoom-btn.active{background:var(--btn-hover);color:var(--btn-hover-text)}
-  .brush-overlay{position:absolute;top:0;bottom:0;background:rgba(88,166,255,0.15);border-left:1px solid rgba(88,166,255,0.5);border-right:1px solid rgba(88,166,255,0.5);pointer-events:none;display:none;z-index:5}
+  .brush-overlay{position:absolute;top:0;bottom:0;background:rgba(240,179,77,0.15);border-left:1px solid rgba(240,179,77,0.5);border-right:1px solid rgba(240,179,77,0.5);pointer-events:none;display:none;z-index:5}
   footer{text-align:center;margin-top:36px;padding-bottom:20px;font-size:0.58rem;color:var(--footer-text);letter-spacing:1.5px}
   .card-price{background:linear-gradient(140deg,var(--bg-card) 0%,rgba(22,40,72,0.95) 100%)}
   .card-price::after{content:'';position:absolute;inset:0;border-radius:14px;background:radial-gradient(ellipse at 50% 0%,rgba(200,212,240,0.07) 0%,transparent 65%);pointer-events:none}
@@ -204,6 +204,7 @@
   .tooltip,.info-popup{border-radius:2px;box-shadow:0 14px 32px rgba(0,0,0,0.38)}
   table th,.proj-table th,.risk-lows-table th,.pe-proj-table th,.trade-table th{color:var(--accent-blue);font-family:'IBM Plex Mono','JetBrains Mono',monospace}
   table td,.proj-table td,.risk-lows-table td,.pe-proj-table td,.trade-table td{border-bottom-color:var(--border-light)}
+  #headerDate{border-color:rgba(240,179,77,0.24)!important;background:rgba(240,179,77,0.07)!important;font-family:'IBM Plex Mono','JetBrains Mono',monospace!important}
   @media(max-width:640px){header{text-align:left}.header-nav{justify-content:flex-start}}
 </style>
 </head>
@@ -220,7 +221,7 @@
     </div>
     <h1>₿ <span>Bitcoin Risk Metric</span></h1>
     <div class="subtitle"><span class="live-dot"></span>Combined Structural + Momentum · Power-Law Regression</div>
-    <div id="headerDate" style="margin-top:10px;font-size:0.65rem;letter-spacing:1px;color:var(--text-dim);display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border:1px solid rgba(88,166,255,0.2);border-radius:4px;background:rgba(88,166,255,0.06);font-family:'JetBrains Mono',monospace;"></div>
+    <div id="headerDate" style="margin-top:10px;font-size:0.65rem;letter-spacing:1px;color:var(--text-dim);display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border:1px solid rgba(240,179,77,0.24);border-radius:4px;background:rgba(240,179,77,0.07);font-family:'JetBrains Mono',monospace;"></div>
   </header>
   <div class="dashboard">
     <div class="card card-price" style="--glow:rgba(247,147,26,0.3)">
@@ -232,7 +233,7 @@
       <div class="risk-bar-wrap"><div class="risk-bar-bg"></div><div class="risk-bar-needle" id="needle"></div></div>
       <div class="zone-labels"><span>Accumulate</span><span>Neutral</span><span>Caution</span></div></div>
     <div class="card" style="--glow:#10b981"><div class="card-label">Fair Value</div><div class="card-value" id="vFair" style="--val-color:#10b981">—</div><div class="card-sub" id="vGrowth"></div></div>
-    <div class="card" style="--glow:#a78bfa"><div class="card-label">Deviation</div><div class="card-value" id="vDev" style="--val-color:#a78bfa">—</div><div class="card-sub" id="vPoints"></div></div>
+    <div class="card" style="--glow:#d5b56c"><div class="card-label">Deviation</div><div class="card-value" id="vDev" style="--val-color:#d5b56c">—</div><div class="card-sub" id="vPoints"></div></div>
   </div>
   <div class="risk-table-wrap">
     <h4>Price at Each Risk Level (Combined)</h4>
@@ -311,22 +312,22 @@
 function themeColors() {
   const light = document.documentElement.getAttribute('data-theme') === 'light';
   return {
-    canvasBg: light ? '#f0f3f6' : '#122240',
-    gridLine: light ? '#e1e6ed' : '#1e3460',
-    gridLineMinor: light ? '#e8ecf0' : '#1a2c52',
-    gridZero: light ? '#b8c0cc' : '#3a5580',
-    axisText: light ? '#656d76' : '#ffffff',
-    regressionLine: light ? 'rgba(80,120,180,0.50)' : 'rgba(140,190,255,0.50)',
-    zoneLabels: light ? '#8892a0' : '#4a6890',
-    zoneA: light ? 'rgba(37,99,235,0.05)' : 'rgba(37,99,235,0.08)',
-    zoneB: light ? 'rgba(132,204,22,0.03)' : 'rgba(132,204,22,0.04)',
-    zoneC: light ? 'rgba(234,179,8,0.03)' : 'rgba(234,179,8,0.04)',
-    zoneD: light ? 'rgba(239,68,68,0.05)' : 'rgba(239,68,68,0.08)',
-    zoneDash: light ? '#c0c8d4' : '#2a4468',
-    barValueText: light ? '#1f2328' : '#fff',
-    areaGrad0: light ? 'rgba(239,68,68,0.15)' : 'rgba(239,68,68,0.20)',
-    areaGrad5: light ? 'rgba(234,179,8,0.07)' : 'rgba(234,179,8,0.10)',
-    areaGrad1: light ? 'rgba(37,99,235,0.04)' : 'rgba(37,99,235,0.06)',
+    canvasBg: light ? '#f7f1e4' : '#0b0d0a',
+    gridLine: light ? '#ded4c1' : '#20251f',
+    gridLineMinor: light ? '#eee6d7' : '#171a15',
+    gridZero: light ? '#c9c0ad' : '#3f3520',
+    axisText: light ? '#6d6a5f' : '#8f917f',
+    regressionLine: light ? 'rgba(154,101,15,0.46)' : 'rgba(240,179,77,0.46)',
+    zoneLabels: light ? '#837c70' : '#6d6f61',
+    zoneA: light ? 'rgba(114,192,106,0.06)' : 'rgba(114,192,106,0.07)',
+    zoneB: light ? 'rgba(132,204,22,0.03)' : 'rgba(132,204,22,0.035)',
+    zoneC: light ? 'rgba(240,179,77,0.04)' : 'rgba(240,179,77,0.05)',
+    zoneD: light ? 'rgba(230,109,96,0.06)' : 'rgba(230,109,96,0.07)',
+    zoneDash: light ? '#c9c0ad' : '#3f3520',
+    barValueText: light ? '#1f211b' : '#f4ead3',
+    areaGrad0: light ? 'rgba(230,109,96,0.14)' : 'rgba(230,109,96,0.18)',
+    areaGrad5: light ? 'rgba(240,179,77,0.08)' : 'rgba(240,179,77,0.10)',
+    areaGrad1: light ? 'rgba(114,192,106,0.04)' : 'rgba(114,192,106,0.05)',
   };
 }
 

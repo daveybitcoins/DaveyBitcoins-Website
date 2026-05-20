@@ -56,7 +56,7 @@
   .theme-toggle{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:0.3rem 0.5rem;cursor:pointer;color:var(--text);font-size:1rem;line-height:1;transition:background 0.15s,border-color 0.15s}
   .theme-toggle:hover{background:var(--bg-card);border-color:var(--accent-blue)}
   h1{font-family:'Outfit',sans-serif;font-size:2.6rem;font-weight:700;letter-spacing:-2px;color:var(--text-heading);margin-bottom:6px}
-  h1 span{background:linear-gradient(135deg,#4af,#a78bfa,#f87171);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  h1 span{background:linear-gradient(135deg,var(--accent-blue),var(--text-heading),#f87171);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
   [data-theme="light"] h1 span{background:linear-gradient(135deg,#0969da,#8250df,#cf222e);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
   .subtitle{font-size:0.72rem;color:var(--text-dim);letter-spacing:3px;text-transform:uppercase}
 
@@ -82,8 +82,8 @@
   /* Tab bar */
   .tab-bar{display:flex;gap:0;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;overflow-x:auto;margin-bottom:32px;-webkit-overflow-scrolling:touch}
   .tab{background:none;border:none;padding:14px 24px;font-family:'Outfit',sans-serif;font-size:0.78rem;font-weight:500;color:var(--text-dim);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color 0.2s,border-color 0.2s,background 0.2s}
-  .tab:hover{color:var(--text-bright);background:rgba(68,170,255,0.04)}
-  .tab.active{color:var(--text-heading);border-bottom-color:var(--accent-blue);background:rgba(68,170,255,0.06)}
+  .tab:hover{color:var(--text-bright);background:rgba(240,179,77,0.06)}
+  .tab.active{color:var(--text-heading);border-bottom-color:var(--accent-blue);background:rgba(240,179,77,0.09)}
   .tab-content{display:none}
   .tab-content.active{display:block}
 
@@ -102,7 +102,7 @@
   .overview-header h2{font-family:'Outfit',sans-serif;font-size:1.4rem;font-weight:700;color:var(--text-heading);letter-spacing:-0.5px}
   .overview-subtitle{font-size:0.7rem;color:var(--text-dim);margin-bottom:14px;letter-spacing:0.5px}
   .overview-desc{font-size:0.8rem;color:var(--meth-text);line-height:1.8;margin-bottom:14px}
-  .when-to-use{font-size:0.75rem;color:var(--text);line-height:1.7;padding:12px 16px;background:rgba(68,170,255,0.05);border:1px solid rgba(68,170,255,0.15);border-radius:8px}
+  .when-to-use{font-size:0.75rem;color:var(--text);line-height:1.7;padding:12px 16px;background:rgba(240,179,77,0.06);border:1px solid rgba(240,179,77,0.18);border-radius:8px}
   .when-to-use strong{color:var(--accent-blue)}
 
   /* Badges */
@@ -129,15 +129,15 @@
   .strike-selector.visible{display:block}
   .strike-selector h4{font-family:'Outfit',sans-serif;font-size:0.65rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:14px;text-align:center}
   .strike-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}
-  .strike-btn{background:var(--bg-surface,rgba(68,170,255,0.04));border:1px solid var(--border);border-radius:8px;padding:10px 8px;text-align:center;cursor:pointer;transition:all 0.2s;font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text)}
-  .strike-btn:hover{border-color:var(--accent-blue);background:rgba(68,170,255,0.08)}
-  .strike-btn.active{border-color:var(--accent-blue);background:rgba(68,170,255,0.12);color:var(--text-heading);box-shadow:0 0 12px rgba(68,170,255,0.2)}
+  .strike-btn{background:var(--bg-surface,rgba(240,179,77,0.04));border:1px solid var(--border);border-radius:8px;padding:10px 8px;text-align:center;cursor:pointer;transition:all 0.2s;font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text)}
+  .strike-btn:hover{border-color:var(--accent-blue);background:rgba(240,179,77,0.08)}
+  .strike-btn.active{border-color:var(--accent-blue);background:rgba(240,179,77,0.12);color:var(--text-heading);box-shadow:0 0 12px rgba(240,179,77,0.2)}
   .strike-btn .strike-price{font-weight:600;font-size:0.82rem;display:block;margin-bottom:2px}
   .strike-btn .strike-delta{font-size:0.55rem;color:var(--text-dimmer)}
   .strike-btn .strike-label{font-size:0.5rem;color:var(--accent-blue);text-transform:uppercase;letter-spacing:1px;margin-top:2px;display:block}
   .strike-btn.itm{border-left:2px solid rgba(34,197,94,0.4)}
   .strike-btn.otm{border-left:2px solid rgba(239,68,68,0.4)}
-  .strike-btn.atm{border-left:2px solid rgba(68,170,255,0.6)}
+  .strike-btn.atm{border-left:2px solid rgba(240,179,77,0.6)}
 
   /* Leg strike selectors for multi-leg strategies */
   .leg-selectors{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:18px 24px;margin-bottom:28px;display:none;transition:background 0.3s,border-color 0.3s}
@@ -149,8 +149,8 @@
   .leg-label .leg-action{font-size:0.55rem;text-transform:uppercase;letter-spacing:1px;padding:2px 6px;border-radius:3px;margin-right:6px}
   .leg-label .buy{background:rgba(34,197,94,0.15);color:#22c55e}
   .leg-label .sell{background:rgba(239,68,68,0.15);color:#ef4444}
-  .leg-select{background:var(--bg-surface,rgba(68,170,255,0.04));border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text);cursor:pointer;min-width:200px}
-  .leg-select:focus{outline:none;border-color:var(--accent-blue);box-shadow:0 0 0 2px rgba(68,170,255,0.2)}
+  .leg-select{background:var(--bg-surface,rgba(240,179,77,0.04));border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text);cursor:pointer;min-width:200px}
+  .leg-select:focus{outline:none;border-color:var(--accent-blue);box-shadow:0 0 0 2px rgba(240,179,77,0.2)}
   .leg-select option{background:var(--bg-card);color:var(--text)}
 
   /* Legs table */
@@ -198,7 +198,7 @@
   .scanner-table th .sort-arrow{margin-left:4px;font-size:0.5rem}
   .scanner-table td{font-size:0.75rem;padding:10px 12px;border-bottom:1px solid var(--border-light);color:var(--text);font-family:'JetBrains Mono',monospace}
   .scanner-table tr:last-child td{border-bottom:none}
-  .scanner-table tr:hover td{background:rgba(68,170,255,0.04)}
+  .scanner-table tr:hover td{background:rgba(240,179,77,0.05)}
   .scanner-table .rank-cell{font-weight:700;color:var(--accent-blue);text-align:center;width:30px}
   .scanner-table .ticker-cell{font-weight:700;color:var(--text-heading);font-family:'Outfit',sans-serif;font-size:0.82rem}
   .scanner-table .premium-cell{color:#22c55e;font-weight:600}
@@ -277,6 +277,7 @@
   table th,.legs-table th,.scanner-table th{color:var(--accent-blue);font-family:'IBM Plex Mono','JetBrains Mono',monospace}
   table td,.legs-table td,.scanner-table td{border-bottom-color:var(--border-light)}
   .scanner-table tr:hover td{background:rgba(240,179,77,0.055)}
+  .scan-bar-fill{background:var(--accent-blue)}
   @media(max-width:768px){header{text-align:left}.header-nav{justify-content:flex-start}}
 </style>
 </head>
@@ -952,15 +953,15 @@ document.querySelectorAll('.tab').forEach(btn => {
 function themeColors() {
   const dark = document.documentElement.getAttribute('data-theme') !== 'light';
   return {
-    bg:       dark ? '#122240' : '#f0f3f6',
-    grid:     dark ? 'rgba(58,96,144,0.3)' : 'rgba(180,190,205,0.4)',
-    axis:     dark ? '#7a90b0' : '#656d76',
-    text:     dark ? '#c8cad0' : '#2c3e50',
-    zero:     dark ? 'rgba(200,202,208,0.25)' : 'rgba(44,62,80,0.2)',
+    bg:       dark ? '#0b0d0a' : '#f7f1e4',
+    grid:     dark ? 'rgba(240,179,77,0.13)' : 'rgba(154,101,15,0.16)',
+    axis:     dark ? '#8f917f' : '#6d6a5f',
+    text:     dark ? '#e8e0cc' : '#1f211b',
+    zero:     dark ? 'rgba(232,224,204,0.22)' : 'rgba(31,33,27,0.18)',
     profit:   '#22c55e',
     loss:     '#ef4444',
-    line:     dark ? '#4af' : '#0969da',
-    breakEven:dark ? '#eab308' : '#ca8a04',
+    line:     dark ? '#f0b34d' : '#9a650f',
+    breakEven:dark ? '#f0b34d' : '#9a650f',
     profitFill: dark ? 'rgba(34,197,94,0.12)' : 'rgba(34,197,94,0.1)',
     lossFill:   dark ? 'rgba(239,68,68,0.12)' : 'rgba(239,68,68,0.1)',
   };
@@ -1288,7 +1289,7 @@ function selectLongCallStrike(strike) {
     ],
     cards: [
       { label:'Premium / Max Loss', value:fmtInt$(premium), sub:`${fmt$(c._mid)} × 100`, valColor:'#ef4444', glow:'rgba(239,68,68,0.5)' },
-      { label:'Break-Even', value:fmt$(breakEven), sub:`${pctMove > 0 ? '+' : ''}${pctMove}% move needed`, valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
+      { label:'Break-Even', value:fmt$(breakEven), sub:`${pctMove > 0 ? '+' : ''}${pctMove}% move needed`, valColor:'#f0b34d', glow:'rgba(240,179,77,0.5)' },
       { label:'Delta', value:'+' + c._delta.toFixed(2), sub:`≈ ${(c._delta*100).toFixed(0)} shares exposure` },
       { label:'IV', value:iv + '%', sub:'Implied volatility' },
       { label:'Intrinsic / Extrinsic', value:fmtInt$(intrinsic) + ' / ' + fmtInt$(extrinsic), sub:intrinsic > 0 ? 'ITM — has intrinsic value' : 'ATM/OTM — all extrinsic' },
@@ -1383,7 +1384,7 @@ function selectLongPutStrike(strike) {
     ],
     cards: [
       { label:'Premium / Max Loss', value:fmtInt$(premium), sub:`${fmt$(p._mid)} × 100`, valColor:'#ef4444', glow:'rgba(239,68,68,0.5)' },
-      { label:'Break-Even', value:fmt$(breakEven), sub:`${pctMove > 0 ? '-' : ''}${pctMove}% move needed`, valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
+      { label:'Break-Even', value:fmt$(breakEven), sub:`${pctMove > 0 ? '-' : ''}${pctMove}% move needed`, valColor:'#f0b34d', glow:'rgba(240,179,77,0.5)' },
       { label:'Max Profit', value:fmtInt$(maxProfit), sub:`If stock goes to $0`, valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
       { label:'Delta', value:p._delta.toFixed(2), sub:`≈ ${Math.abs(p._delta*100).toFixed(0)} shares short exposure` },
       { label:'IV', value:iv + '%', sub:'Implied volatility' },
@@ -1459,7 +1460,7 @@ function rebuildZebra() {
       { label:'Credit Received', value:fmtInt$(credit), sub:`1 × ${fmt$(shortC._mid)} × 100`, valColor:'#22c55e' },
       { label:'Net Debit / Max Loss', value:fmtInt$(netDebit), sub:`vs ~${fmtInt$(price*100)} for 100 shares`, valColor:'#ef4444', glow:'rgba(239,68,68,0.5)' },
       { label:'Net Delta', value:'+' + netDelta.toFixed(2), sub:'≈ 100 shares exposure', valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
-      { label:'Break-Even', value:fmt$(breakEven), sub:'Long strike + net debit/share', valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
+      { label:'Break-Even', value:fmt$(breakEven), sub:'Long strike + net debit/share', valColor:'#f0b34d', glow:'rgba(240,179,77,0.5)' },
     ],
     notes: [
       `<span class="hl">Break-even ≈ ${fmt$(breakEven)}</span> — ${breakEven < price * 1.02 ? 'near current price, minimal theta drag' : 'above current price, needs move to profit'}.`,
@@ -1507,7 +1508,7 @@ function rebuildPutRatio() {
       { label:'Short Put Credit', value:fmtInt$(shortCredit), sub:`2 × ${fmt$(shortP._mid)} × 100`, valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
       { label: isCredit ? 'Net Credit' : 'Net Debit', value: fmtInt$(Math.abs(netCreditDebit)), sub: isCredit ? 'Received upfront' : 'Paid upfront', valColor: isCredit ? '#22c55e' : '#ef4444', glow: isCredit ? 'rgba(34,197,94,0.5)' : 'rgba(239,68,68,0.5)' },
       { label:'Max Profit', value:fmtInt$(maxProfit), sub:`At $${shortP.strike} at expiration`, valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
-      { label:'Upper Break-Even', value:fmt$(upperBE), sub: isCredit ? 'No loss above long strike' : 'Long strike – net debit', valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
+      { label:'Upper Break-Even', value:fmt$(upperBE), sub: isCredit ? 'No loss above long strike' : 'Long strike – net debit', valColor:'#f0b34d', glow:'rgba(240,179,77,0.5)' },
       { label:'Lower Break-Even', value:fmt$(lowerBE), sub:'⚠️ Naked risk below this', valColor:'#f59e0b', glow:'rgba(245,158,11,0.5)' },
       { label:'Net Delta', value:netDelta.toFixed(2), sub:'Long Δ – 2 × short Δ' },
     ],
@@ -1553,7 +1554,7 @@ function rebuildBullCall() {
     cards: [
       { label:'Net Debit / Max Loss', value:fmtInt$(netDebit), sub:'Premium paid', valColor:'#ef4444', glow:'rgba(239,68,68,0.5)' },
       { label:'Max Profit', value:fmtInt$(maxProfit), sub:'Spread width – net debit', valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
-      { label:'Break-Even', value:fmt$(breakEven), sub:'Long strike + net debit', valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
+      { label:'Break-Even', value:fmt$(breakEven), sub:'Long strike + net debit', valColor:'#f0b34d', glow:'rgba(240,179,77,0.5)' },
       { label:'Net Delta', value:'+' + netDelta.toFixed(2), sub:'Long Δ – short Δ' },
       { label:'Risk / Reward', value:rr, sub:'Max loss : max profit' },
     ],
@@ -1599,7 +1600,7 @@ function rebuildPmcc() {
       { label:'Premium Collected', value:fmtInt$(credit), sub:'Short call credit', valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
       { label:'Net Debit / Max Loss', value:fmtInt$(netDebit), sub:'LEAPS cost – credits', valColor:'#ef4444', glow:'rgba(239,68,68,0.5)' },
       { label:'Net Delta', value:'+' + netDelta.toFixed(2), sub:'Long Δ – short Δ' },
-      { label:'Break-Even', value:fmt$(breakEven), sub:'LEAPS strike + net debit', valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
+      { label:'Break-Even', value:fmt$(breakEven), sub:'LEAPS strike + net debit', valColor:'#f0b34d', glow:'rgba(240,179,77,0.5)' },
       { label:'DTE', value:dte + 'd', sub:'Days to expiration' },
     ],
     notes: [
@@ -1641,7 +1642,7 @@ function rebuildDebitSpread() {
     cards: [
       { label:'Net Debit / Max Loss', value:fmtInt$(netDebit), sub:'Premium paid', valColor:'#ef4444', glow:'rgba(239,68,68,0.5)' },
       { label:'Max Profit', value:fmtInt$(maxProfit), sub:'Spread width – debit', valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
-      { label:'Break-Even', value:fmt$(breakEven), sub:'Long strike + net debit', valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
+      { label:'Break-Even', value:fmt$(breakEven), sub:'Long strike + net debit', valColor:'#f0b34d', glow:'rgba(240,179,77,0.5)' },
       { label:'Net Delta', value:'+' + netDelta.toFixed(2), sub:'Long Δ – short Δ' },
       { label:'Risk / Reward', value:rr, sub:'Max loss : max profit' },
     ],
@@ -1684,7 +1685,7 @@ function rebuildBearPut() {
     cards: [
       { label:'Net Debit / Max Loss', value:fmtInt$(netDebit), sub:'Premium paid', valColor:'#ef4444', glow:'rgba(239,68,68,0.5)' },
       { label:'Max Profit', value:fmtInt$(maxProfit), sub:'Spread width – net debit', valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
-      { label:'Break-Even', value:fmt$(breakEven), sub:'Long strike – net debit', valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
+      { label:'Break-Even', value:fmt$(breakEven), sub:'Long strike – net debit', valColor:'#f0b34d', glow:'rgba(240,179,77,0.5)' },
       { label:'Net Delta', value:netDelta.toFixed(2), sub:'Long Δ – short Δ' },
       { label:'Risk / Reward', value:rr, sub:'Max loss : max profit' },
     ],
@@ -1755,7 +1756,7 @@ function rebuildCashPut() {
     cards: [
       { label:'Premium Collected', value:fmtInt$(premium), sub:`${fmt$(p._mid)} × 100`, valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
       { label:'Cash Required', value:fmtInt$(collateral), sub:'Strike × 100 shares' },
-      { label:'Break-Even', value:fmt$(breakEven), sub:`${cushion}% below current price`, valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
+      { label:'Break-Even', value:fmt$(breakEven), sub:`${cushion}% below current price`, valColor:'#f0b34d', glow:'rgba(240,179,77,0.5)' },
       { label:'Return on Capital', value:returnOnCap + '%', sub:`${annualized}% annualized (${dte}d)`, valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
       { label:'Cost If Assigned', value:fmt$(breakEven), sub:`${((1 - breakEven/price)*100).toFixed(1)}% discount to current`, valColor:'#f59e0b', glow:'rgba(245,158,11,0.5)' },
       { label:'IV', value:iv + '%', sub:'Implied volatility' },
@@ -1803,7 +1804,7 @@ function rebuildCoveredCall() {
     ],
     cards: [
       { label:'Premium Collected', value:fmtInt$(premium), sub:`${fmt$(c._mid)} × 100`, valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
-      { label:'Break-Even', value:fmt$(breakEven), sub:`${((price - breakEven)/price*100).toFixed(1)}% cushion`, valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
+      { label:'Break-Even', value:fmt$(breakEven), sub:`${((price - breakEven)/price*100).toFixed(1)}% cushion`, valColor:'#f0b34d', glow:'rgba(240,179,77,0.5)' },
       { label:'Max Profit If Called', value:fmtInt$(maxProfit), sub:`${calledAwayReturn}% return · stock at $${c.strike}+`, valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
       { label:'Return on Stock', value:returnOnStock + '%', sub:`${annualized}% annualized (${dte}d)`, valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
       { label:'Upside to Strike', value:upside + '%', sub:`Stock → $${c.strike}`, valColor:'#f59e0b', glow:'rgba(245,158,11,0.5)' },
@@ -1871,8 +1872,8 @@ function rebuildWheel() {
       { label:'Cost Basis If Assigned', value:fmt$(costBasis), sub:`${((1 - costBasis/price)*100).toFixed(1)}% discount`, valColor:'#f59e0b', glow:'rgba(245,158,11,0.5)' },
       { label:'Call Premium (Step 3)', value:fmtInt$(callPremium), sub:`${fmt$(c._mid)} per share · ${c._delta.toFixed(2)}Δ`, valColor:'#22c55e', glow:'rgba(34,197,94,0.5)' },
       { label:'Capital Gain If Called', value:fmtInt$(Math.max(0, callGain)), sub:`Shares sold at $${c.strike}`, valColor:'#22c55e' },
-      { label:'Puts Only (Annual)', value:fmtInt$(putOnlyAnnual), sub:`${putOnlyReturn}% return · ~${cyclesPerYear} cycles`, valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
-      { label:'Covered Calls (Annual)', value:fmtInt$(callOnlyAnnual), sub:`${callOnlyReturn}% return · ~${cyclesPerYear} cycles`, valColor:'#4af', glow:'rgba(68,170,255,0.5)' },
+      { label:'Puts Only (Annual)', value:fmtInt$(putOnlyAnnual), sub:`${putOnlyReturn}% return · ~${cyclesPerYear} cycles`, valColor:'#f0b34d', glow:'rgba(240,179,77,0.5)' },
+      { label:'Covered Calls (Annual)', value:fmtInt$(callOnlyAnnual), sub:`${callOnlyReturn}% return · ~${cyclesPerYear} cycles`, valColor:'#f0b34d', glow:'rgba(240,179,77,0.5)' },
     ],
     notes: [
       `<span class="hl">Step 1 — Sell Put:</span> Collect ${fmtInt$(putPremium)} on $${p.strike} put. If stock stays above, keep premium and repeat (${putOnlyReturn}% annualized).`,
@@ -2282,7 +2283,7 @@ function drawAllPayoffs() {
     octx.textAlign = 'left'; octx.textBaseline = 'top';
     octx.fillStyle = '#94a3b8'; octx.font = '10px JetBrains Mono, monospace';
     octx.fillText(priceStr, bx + 8, by + 6);
-    octx.fillStyle = '#4af'; octx.font = '10px JetBrains Mono, monospace';
+    octx.fillStyle = '#f0b34d'; octx.font = '10px JetBrains Mono, monospace';
     octx.fillText(theoStr, bx + 8, by + 20);
     octx.fillStyle = pnl >= 0 ? '#22c55e' : '#ef4444'; octx.font = 'bold 11px JetBrains Mono, monospace';
     octx.fillText(pnlStr + '  ' + roiStr, bx + 8, by + 36);
@@ -2565,7 +2566,7 @@ function renderCSPTable() {
     <td class="premium-cell">$${prem.toLocaleString()}</td>
     <td>$${cap.toLocaleString()}</td>
     <td>${r.returnOnCap.toFixed(1)}%</td>
-    <td class="return-cell" style="color:${r.annReturn >= 15 ? '#22c55e' : r.annReturn >= 8 ? '#4af' : 'var(--text)'}">${r.annReturn.toFixed(1)}%</td>
+    <td class="return-cell" style="color:${r.annReturn >= 15 ? '#22c55e' : r.annReturn >= 8 ? '#f0b34d' : 'var(--text)'}">${r.annReturn.toFixed(1)}%</td>
     <td>${r.volume.toLocaleString()}</td>
     <td>${r.oi.toLocaleString()}</td>
     <td>${r.dte}d</td>
@@ -2768,7 +2769,7 @@ function renderCCTable() {
     <td class="premium-cell">$${prem.toLocaleString()}</td>
     <td>$${cap.toLocaleString()}</td>
     <td>${r.returnOnCap.toFixed(1)}%</td>
-    <td class="return-cell" style="color:${r.annReturn >= 15 ? '#22c55e' : r.annReturn >= 8 ? '#4af' : 'var(--text)'}">${r.annReturn.toFixed(1)}%</td>
+    <td class="return-cell" style="color:${r.annReturn >= 15 ? '#22c55e' : r.annReturn >= 8 ? '#f0b34d' : 'var(--text)'}">${r.annReturn.toFixed(1)}%</td>
     <td>${r.volume.toLocaleString()}</td>
     <td>${r.oi.toLocaleString()}</td>
     <td>${r.dte}d</td>

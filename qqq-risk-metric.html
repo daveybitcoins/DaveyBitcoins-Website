@@ -110,12 +110,12 @@
   .zoom-btn{background:var(--btn-bg);color:var(--btn-text);border:1px solid var(--btn-border);border-radius:6px;padding:4px 14px;font:11px JetBrains Mono,monospace;cursor:pointer;transition:all 0.2s}
   .zoom-btn:hover{background:var(--btn-hover);color:var(--btn-hover-text)}
   .zoom-btn.active{background:var(--btn-hover);color:var(--btn-hover-text)}
-  .brush-overlay{position:absolute;top:0;bottom:0;background:rgba(88,166,255,0.15);border-left:1px solid rgba(88,166,255,0.5);border-right:1px solid rgba(88,166,255,0.5);pointer-events:none;display:none;z-index:5}
+  .brush-overlay{position:absolute;top:0;bottom:0;background:rgba(240,179,77,0.15);border-left:1px solid rgba(240,179,77,0.5);border-right:1px solid rgba(240,179,77,0.5);pointer-events:none;display:none;z-index:5}
   footer{text-align:center;margin-top:36px;padding-bottom:20px;font-size:0.58rem;color:var(--footer-text);letter-spacing:1.5px}
   .card-price{background:linear-gradient(140deg,var(--bg-card) 0%,rgba(22,40,72,0.95) 100%)}
-  .card-price::after{content:'';position:absolute;inset:0;border-radius:14px;background:radial-gradient(ellipse at 50% 0%,rgba(37,99,235,0.07) 0%,transparent 65%);pointer-events:none}
+  .card-price::after{content:'';position:absolute;inset:0;border-radius:14px;background:radial-gradient(ellipse at 50% 0%,rgba(240,179,77,0.08) 0%,transparent 65%);pointer-events:none}
   [data-theme="light"] .card-price{background:linear-gradient(140deg,#fff 0%,#eef2f8 100%)}
-  [data-theme="light"] .card-price::after{background:radial-gradient(ellipse at 50% 0%,rgba(9,105,218,0.05) 0%,transparent 65%)}
+  [data-theme="light"] .card-price::after{background:radial-gradient(ellipse at 50% 0%,rgba(178,122,37,0.08) 0%,transparent 65%)}
   .risk-lows-wrap{background:rgba(20,38,66,0.4);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:20px 24px;margin-bottom:36px;overflow-x:auto;transition:background 0.3s,border-color 0.3s}
   [data-theme="light"] .risk-lows-wrap{background:rgba(255,255,255,0.7);border-color:var(--border)}
   .risk-lows-wrap h4{font-family:'Outfit',sans-serif;font-size:0.65rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;text-align:center}
@@ -144,8 +144,8 @@
   .dca-toggle-group .zoom-btn{border-radius:0;margin:0}
   .dca-toggle-group .zoom-btn:first-child{border-radius:6px 0 0 6px}
   .dca-toggle-group .zoom-btn:last-child{border-radius:0 6px 6px 0}
-  #dcaRunBtn{margin-top:8px;padding:8px 24px;background:rgba(37,99,235,0.2);border-color:rgba(37,99,235,0.4);color:var(--accent-blue);font-weight:600;letter-spacing:0.5px}
-  #dcaRunBtn:hover{background:rgba(37,99,235,0.35)}
+  #dcaRunBtn{margin-top:8px;padding:8px 24px;background:rgba(240,179,77,0.16);border-color:rgba(240,179,77,0.36);color:var(--accent-blue);font-weight:600;letter-spacing:0.5px}
+  #dcaRunBtn:hover{background:rgba(240,179,77,0.25)}
   .dca-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:18px 0}
   .dca-stats .card{padding:18px 20px}
   #dcaTradesWrap{max-height:400px;overflow-y:auto;scrollbar-width:thin;margin-top:8px}
@@ -201,6 +201,7 @@
   .tooltip,.info-popup{border-radius:2px;box-shadow:0 14px 32px rgba(0,0,0,0.38)}
   table th,.risk-lows-table th{color:var(--accent-blue);font-family:'IBM Plex Mono','JetBrains Mono',monospace}
   table td,.risk-lows-table td{border-bottom-color:var(--border-light)}
+  #headerDate{border-color:rgba(240,179,77,0.24)!important;background:rgba(240,179,77,0.07)!important;font-family:'IBM Plex Mono','JetBrains Mono',monospace!important}
   @media(max-width:640px){header{text-align:left}.header-nav{justify-content:flex-start}}
 </style>
 </head>
@@ -217,10 +218,10 @@
     </div>
     <h1>&#128200; <span>QQQ Risk Metric</span></h1>
     <div class="subtitle"><span class="live-dot"></span>Structural Risk · Log-Linear Regression</div>
-    <div id="headerDate" style="margin-top:10px;font-size:0.65rem;letter-spacing:1px;color:var(--text-dim);display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border:1px solid rgba(88,166,255,0.2);border-radius:4px;background:rgba(88,166,255,0.06);font-family:'JetBrains Mono',monospace;"></div>
+    <div id="headerDate" style="margin-top:10px;font-size:0.65rem;letter-spacing:1px;color:var(--text-dim);display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border:1px solid rgba(240,179,77,0.24);border-radius:4px;background:rgba(240,179,77,0.07);font-family:'JetBrains Mono',monospace;"></div>
   </header>
   <div class="dashboard">
-    <div class="card card-price" style="--glow:rgba(37,99,235,0.5)">
+    <div class="card card-price" style="--glow:rgba(240,179,77,0.5)">
       <div class="card-label">QQQ / USD</div>
       <div class="card-value" id="vPrice" style="font-size:2.4rem;letter-spacing:-2px;font-weight:700;color:var(--text-heading)">—</div>
     </div>
@@ -228,7 +229,7 @@
       <div class="risk-bar-wrap"><div class="risk-bar-bg"></div><div class="risk-bar-needle" id="needle"></div></div>
       <div class="zone-labels"><span>Accumulate</span><span>Neutral</span><span>Caution</span></div></div>
     <div class="card" style="--glow:#10b981"><div class="card-label">Fair Value</div><div class="card-value" id="vFair" style="--val-color:#10b981">—</div><div class="card-sub" id="vGrowth"></div></div>
-    <div class="card" style="--glow:#a78bfa"><div class="card-label">Deviation</div><div class="card-value" id="vDev" style="--val-color:#a78bfa">—</div></div>
+    <div class="card" style="--glow:#d5b56c"><div class="card-label">Deviation</div><div class="card-value" id="vDev" style="--val-color:#d5b56c">—</div></div>
     <div class="card" style="--glow:#ef4444"><div class="card-label">VIX (Close)</div><div class="card-value" id="vVixLevel" style="--val-color:#ef4444">—</div><div class="card-sub" id="vVixImplied"></div></div>
   </div>
   <div class="risk-table-wrap">
@@ -361,22 +362,22 @@
 function themeColors() {
   const light = document.documentElement.getAttribute('data-theme') === 'light';
   return {
-    canvasBg: light ? '#f0f3f6' : '#122240',
-    gridLine: light ? '#e1e6ed' : '#1e3460',
-    gridLineMinor: light ? '#e8ecf0' : '#1a2c52',
-    gridZero: light ? '#b8c0cc' : '#3a5580',
-    axisText: light ? '#656d76' : '#5a7498',
-    regressionLine: light ? 'rgba(80,120,180,0.50)' : 'rgba(140,190,255,0.50)',
-    zoneLabels: light ? '#8892a0' : '#4a6890',
-    zoneA: light ? 'rgba(37,99,235,0.05)' : 'rgba(37,99,235,0.08)',
-    zoneB: light ? 'rgba(132,204,22,0.03)' : 'rgba(132,204,22,0.04)',
-    zoneC: light ? 'rgba(234,179,8,0.03)' : 'rgba(234,179,8,0.04)',
-    zoneD: light ? 'rgba(239,68,68,0.05)' : 'rgba(239,68,68,0.08)',
-    zoneDash: light ? '#c0c8d4' : '#2a4468',
-    barValueText: light ? '#1f2328' : '#fff',
-    areaGrad0: light ? 'rgba(239,68,68,0.15)' : 'rgba(239,68,68,0.20)',
-    areaGrad5: light ? 'rgba(234,179,8,0.07)' : 'rgba(234,179,8,0.10)',
-    areaGrad1: light ? 'rgba(37,99,235,0.04)' : 'rgba(37,99,235,0.06)',
+    canvasBg: light ? '#f7f1e4' : '#0b0d0a',
+    gridLine: light ? '#ded4c1' : '#20251f',
+    gridLineMinor: light ? '#eee6d7' : '#171a15',
+    gridZero: light ? '#c9c0ad' : '#3f3520',
+    axisText: light ? '#6d6a5f' : '#8f917f',
+    regressionLine: light ? 'rgba(154,101,15,0.46)' : 'rgba(240,179,77,0.46)',
+    zoneLabels: light ? '#837c70' : '#6d6f61',
+    zoneA: light ? 'rgba(114,192,106,0.06)' : 'rgba(114,192,106,0.07)',
+    zoneB: light ? 'rgba(132,204,22,0.03)' : 'rgba(132,204,22,0.035)',
+    zoneC: light ? 'rgba(240,179,77,0.04)' : 'rgba(240,179,77,0.05)',
+    zoneD: light ? 'rgba(230,109,96,0.06)' : 'rgba(230,109,96,0.07)',
+    zoneDash: light ? '#c9c0ad' : '#3f3520',
+    barValueText: light ? '#1f211b' : '#f4ead3',
+    areaGrad0: light ? 'rgba(230,109,96,0.14)' : 'rgba(230,109,96,0.18)',
+    areaGrad5: light ? 'rgba(240,179,77,0.08)' : 'rgba(240,179,77,0.10)',
+    areaGrad1: light ? 'rgba(114,192,106,0.04)' : 'rgba(114,192,106,0.05)',
   };
 }
 
@@ -1128,8 +1129,8 @@ async function main() {
         '<div class="card" style="--glow:#f97316"><div class="card-label">Total Invested</div>' +
         '<div class="card-value" style="font-size:1.5rem;--val-color:#f97316">$' + r.totalInvested.toLocaleString(undefined,{maximumFractionDigits:0}) + '</div>' +
         '<div class="card-sub">Buying ' + r.buyCount + ' of ' + r.totalPeriods + ' periods</div></div>' +
-        '<div class="card" style="--glow:#a78bfa"><div class="card-label">Accumulated ' + ASSET + '</div>' +
-        '<div class="card-value" style="font-size:1.5rem;--val-color:#a78bfa">' + r.totalShares.toFixed(2) + ' <span style="font-size:0.7rem;color:var(--text-dim)">' + ASSET + '</span></div>' +
+        '<div class="card" style="--glow:#d5b56c"><div class="card-label">Accumulated ' + ASSET + '</div>' +
+        '<div class="card-value" style="font-size:1.5rem;--val-color:#d5b56c">' + r.totalShares.toFixed(2) + ' <span style="font-size:0.7rem;color:var(--text-dim)">' + ASSET + '</span></div>' +
         '<div class="card-sub">Avg: $' + r.avgPrice.toLocaleString(undefined,{maximumFractionDigits:2}) + ' · Last: $' + r.lastPrice.toLocaleString(undefined,{maximumFractionDigits:2}) + '</div></div>' +
         '<div class="card" style="--glow:' + gainColor + '"><div class="card-label">Current Portfolio Value</div>' +
         '<div class="card-value" style="font-size:1.5rem;--val-color:' + gainColor + '">$' + r.portfolioValue.toLocaleString(undefined,{maximumFractionDigits:0}) + '</div>' +
@@ -1208,7 +1209,7 @@ async function main() {
         }
       }
 
-      ctx.strokeStyle='rgba(167,139,250,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+      ctx.strokeStyle='rgba(213,181,108,0.55)';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
       ctx.beginPath();
       for (var i=0; i<tn; i+=S) {
         var x=xOf(i), y=yOf(tl[i].lumpSumValue);
@@ -1225,7 +1226,7 @@ async function main() {
       ctx.stroke(); ctx.setLineDash([]);
 
       var light = document.documentElement.getAttribute('data-theme') === 'light';
-      ctx.strokeStyle= light ? 'rgba(37,99,235,0.9)' : 'rgba(255,255,255,0.9)';
+      ctx.strokeStyle= light ? 'rgba(178,122,37,0.9)' : 'rgba(240,179,77,0.9)';
       ctx.lineWidth=2.5;
       ctx.beginPath();
       for (var i=0; i<tn; i+=S) {
@@ -1244,9 +1245,9 @@ async function main() {
 
       var lx = P.l + 12, ly = P.t + 16;
       ctx.font='10px JetBrains Mono';
-      [[light?'rgba(37,99,235,0.9)':'rgba(255,255,255,0.9)', ASSET + ' Portfolio', false],
+      [[light?'rgba(178,122,37,0.9)':'rgba(240,179,77,0.9)', ASSET + ' Portfolio', false],
        ['rgba(16,185,129,0.7)', 'Invested', true],
-       ['rgba(167,139,250,0.5)', 'Lump Sum', true]].forEach(function(item, idx){
+       ['rgba(213,181,108,0.55)', 'Lump Sum', true]].forEach(function(item, idx){
         var cy = ly + idx * 16;
         ctx.strokeStyle=item[0];ctx.lineWidth=2;
         if(item[2]) ctx.setLineDash([4,4]); else ctx.setLineDash([]);
