@@ -488,9 +488,9 @@ async function main() {
     }
 
     const label = base.crossed
-      ? base.weeks + 'W'
+      ? formatWeek(base.date)
       : high.crossed
-        ? high.weeks + 'W+'
+        ? formatWeek(high.date) + '+'
         : 'No Cross';
     const baseDate = base.crossed ? 'flat: ' + formatWeek(base.date) : 'flat: no 12W cross';
     const highDate = high.crossed ? '+5%: ' + formatWeek(high.date) : '+5%: no 12W cross';
