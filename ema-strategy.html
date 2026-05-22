@@ -74,6 +74,7 @@
   .card-label{font-size:0.58rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:2.5px;margin-bottom:10px}
   .card-value{font-family:'Outfit',sans-serif;font-size:1.8rem;font-weight:600;color:var(--val-color,var(--text-heading))}
   .card-sub{font-size:0.55rem;color:var(--text-dimmer);margin-top:5px}
+  .card-sub.tight{line-height:1.55}
   .chart-panel{background:rgba(20,38,66,0.4);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:28px;margin-bottom:24px;position:relative;transition:background 0.3s,border-color 0.3s}
   .chart-panel:hover{border-color:rgba(255,255,255,0.1)}
   [data-theme="light"] .chart-panel{background:rgba(255,255,255,0.7);border-color:var(--border)}
@@ -439,6 +440,71 @@ async function main() {
     w.gap = (w.ema21 - w.ema8) / w.ema21 * 100;
   });
 
+  function addWeeks(dateStr, weeksToAdd) {
+    const d = new Date(dateStr + 'T00:00:00Z');
+    d.setUTCDate(d.getUTCDate() + weeksToAdd * 7);
+    return d;
+  }
+
+  function formatWeek(date) {
+    return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' });
+  }
+
+  function estimateCrossScenario(lastWeek, closePrice, maxWeeks) {
+    const k8 = 2 / (8 + 1);
+    const k21 = 2 / (21 + 1);
+    let e8 = lastWeek.ema8;
+    let e21 = lastWeek.ema21;
+
+    if (e8 >= e21) {
+      return { weeks: 0, date: new Date(lastWeek.openDate + 'T00:00:00Z'), crossed: true };
+    }
+
+    for (let i = 1; i <= maxWeeks; i++) {
+      e8 = closePrice * k8 + e8 * (1 - k8);
+      e21 = closePrice * k21 + e21 * (1 - k21);
+      if (e8 >= e21) {
+        return { weeks: i, date: addWeeks(lastWeek.openDate, i), crossed: true };
+      }
+    }
+
+    return { weeks: maxWeeks, date: addWeeks(lastWeek.openDate, maxWeeks), crossed: false };
+  }
+
+  function buildCrossEstimate(lastWeek, displayPrice) {
+    const MAX_WEEKS = 12;
+    const low = estimateCrossScenario(lastWeek, displayPrice * 0.95, MAX_WEEKS);
+    const base = estimateCrossScenario(lastWeek, displayPrice, MAX_WEEKS);
+    const high = estimateCrossScenario(lastWeek, displayPrice * 1.05, MAX_WEEKS);
+    const gapPct = ((lastWeek.ema21 - lastWeek.ema8) / lastWeek.ema21) * 100;
+
+    if (base.weeks === 0) {
+      return {
+        label: 'Now',
+        detail: '8W is already above 21W',
+        color: '#22c55e',
+        gapPct
+      };
+    }
+
+    const label = base.crossed
+      ? base.weeks + 'W'
+      : high.crossed
+        ? high.weeks + 'W+'
+        : 'No Cross';
+    const baseDate = base.crossed ? 'flat: ' + formatWeek(base.date) : 'flat: no 12W cross';
+    const highDate = high.crossed ? '+5%: ' + formatWeek(high.date) : '+5%: no 12W cross';
+    const lowDate = low.crossed ? '-5%: ' + formatWeek(low.date) : '-5%: no 12W cross';
+    const color = base.crossed && base.weeks <= 4 ? '#22c55e' : high.crossed && high.weeks <= 4 ? '#f0b34d' : '#ef4444';
+
+    return {
+      label,
+      detail: highDate + ' · ' + baseDate + ' · ' + lowDate,
+      color,
+      gapPct
+    };
+  }
+
   // Generate trade signals from 2015
   const GAP_THRESH = 5.0;
   const sIdx = weeks.findIndex(w => w.date >= '2015-01-01');
@@ -467,6 +533,7 @@ async function main() {
 
   const lastW = weeks[weeks.length - 1];
   const currentGap = lastW.gap;
+  const crossEstimate = buildCrossEstimate(lastW, displayPrice);
 
   // Dashboard cards
   const dash = document.getElementById('emaDashboard');
@@ -489,6 +556,11 @@ async function main() {
     '<div class="card-label">8W / 21W Gap</div>' +
     '<div class="card-value" style="--val-color:' + gapColor + '">' + currentGap.toFixed(2) + '%</div>' +
     '<div class="card-sub">Exit threshold: ' + GAP_THRESH + '%</div></div>';
+
+  cards += '<div class="card" style="--glow:' + crossEstimate.color + '">' +
+    '<div class="card-label">8W / 21W Cross ETA</div>' +
+    '<div class="card-value" style="--val-color:' + crossEstimate.color + '">' + crossEstimate.label + '</div>' +
+    '<div class="card-sub tight">' + crossEstimate.detail + '<br>Current gap: ' + crossEstimate.gapPct.toFixed(2) + '%</div></div>';
 
   cards += '<div class="card" style="--glow:rgba(240,179,77,0.25)">' +
     '<div class="card-label">Weekly EMAs</div>' +
