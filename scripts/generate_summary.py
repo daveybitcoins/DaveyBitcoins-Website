@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
 AI Market Summary Generator
-Reads scanner_data.json, sends key data to Claude, and writes an AI-generated
+Reads scanner_data.json, sends key data to OpenAI, and writes an AI-generated
 market summary back into scanner_data.json for the website.
 
 Usage: python3 scripts/generate_summary.py [--force]
-  - Requires ANTHROPIC_API_KEY environment variable
+  - Requires OPENAI_API_KEY environment variable
   - Use --force to regenerate even if summary already exists for today
   - Reads data/scanner_data.json (must exist)
   - Adds "ai_summary" key to scanner_data.json
@@ -22,8 +22,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(SCRIPT_DIR)
 DATA_FILE = os.path.join(PROJECT_DIR, "data", "scanner_data.json")
 
-MODEL = "claude-sonnet-4-20250514"
-MAX_TOKENS = 2500
+MODEL = os.environ.get("OPENAI_MODEL", "gpt-5.2")
+MAX_COMPLETION_TOKENS = 5000
 
 SYSTEM_PROMPT = """You are a senior market analyst writing a concise daily EMA scanner briefing.
 You analyze weekly EMA trend data (8W, 13W, 21W) across the top 300 US stocks by market cap.
@@ -154,7 +154,7 @@ def fetch_market_news(max_headlines=15):
 
 
 def extract_prompt_data(data):
-    """Extract focused data for the Claude prompt."""
+    """Extract focused data for the OpenAI prompt."""
     dashboard = data["dashboard"]
 
     # Top pullback setups (first 10)
@@ -292,20 +292,35 @@ Rules:
 """
 
 
-def call_claude(system_prompt, user_prompt):
-    """Call Anthropic API and return parsed JSON."""
-    import anthropic
+def call_openai(system_prompt, user_prompt):
+    """Call OpenAI Chat Completions API and return parsed JSON."""
+    api_key = os.environ["OPENAI_API_KEY"]
+    payload = {
+        "model": MODEL,
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        "response_format": {"type": "json_object"},
+        "max_completion_tokens": MAX_COMPLETION_TOKENS,
+        "reasoning_effort": "low",
+    }
 
-    client = anthropic.Anthropic()  # Uses ANTHROPIC_API_KEY env var
-
-    message = client.messages.create(
-        model=MODEL,
-        max_tokens=MAX_TOKENS,
-        system=system_prompt,
-        messages=[{"role": "user", "content": user_prompt}]
+    req = urllib.request.Request(
+        "https://api.openai.com/v1/chat/completions",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+            "User-Agent": "DaveyBitcoins/1.0",
+        },
+        method="POST",
     )
 
-    raw_text = message.content[0].text.strip()
+    with urllib.request.urlopen(req, timeout=120) as resp:
+        response = json.loads(resp.read().decode("utf-8"))
+
+    raw_text = response["choices"][0]["message"]["content"].strip()
 
     # Strip any accidental markdown code fences
     if raw_text.startswith("```"):
@@ -349,8 +364,8 @@ def main():
     force = "--force" in sys.argv
 
     # Check for API key
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        print("Warning: ANTHROPIC_API_KEY not set. Skipping AI summary generation.")
+    if not os.environ.get("OPENAI_API_KEY"):
+        print("Warning: OPENAI_API_KEY not set. Skipping AI summary generation.")
         return 0
 
     # Load existing scanner data
@@ -376,7 +391,7 @@ def main():
         user_prompt = build_user_prompt(prompt_data)
 
         print("Generating AI market summary...")
-        summary = call_claude(SYSTEM_PROMPT, user_prompt)
+        summary = call_openai(SYSTEM_PROMPT, user_prompt)
 
         # Validate structure
         validate_summary(summary)
@@ -384,6 +399,8 @@ def main():
         # Add metadata
         summary["generated_at"] = datetime.now().isoformat()
         summary["model"] = MODEL
+        summary["provider"] = "openai"
+        summary["generated_by"] = "Codex"
 
         # Write back to scanner_data.json
         data["ai_summary"] = summary
