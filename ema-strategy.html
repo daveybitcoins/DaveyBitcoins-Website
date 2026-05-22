@@ -490,7 +490,7 @@ async function main() {
     const label = base.crossed
       ? formatWeek(base.date)
       : high.crossed
-        ? formatWeek(high.date) + '+'
+        ? formatWeek(high.date)
         : 'No Cross';
     const baseDate = base.crossed ? 'flat: ' + formatWeek(base.date) : 'flat: no 12W cross';
     const highDate = high.crossed ? '+5%: ' + formatWeek(high.date) : '+5%: no 12W cross';
@@ -560,7 +560,7 @@ async function main() {
   cards += '<div class="card" style="--glow:' + crossEstimate.color + '">' +
     '<div class="card-label">8W / 21W Cross ETA</div>' +
     '<div class="card-value" style="--val-color:' + crossEstimate.color + '">' + crossEstimate.label + '</div>' +
-    '<div class="card-sub tight">' + crossEstimate.detail + '<br>Current gap: ' + crossEstimate.gapPct.toFixed(2) + '%</div></div>';
+    '<div class="card-sub tight">Current gap: ' + crossEstimate.gapPct.toFixed(2) + '%</div></div>';
 
   cards += '<div class="card" style="--glow:rgba(240,179,77,0.25)">' +
     '<div class="card-label">Weekly EMAs</div>' +
