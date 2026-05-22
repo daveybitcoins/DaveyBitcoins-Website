@@ -447,7 +447,12 @@ async function main() {
   }
 
   function formatWeek(date) {
-    return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' });
+    return date.toLocaleDateString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: '2-digit',
+      timeZone: 'UTC'
+    });
   }
 
   function estimateCrossScenario(lastWeek, closePrice, maxWeeks) {
@@ -473,17 +478,13 @@ async function main() {
 
   function buildCrossEstimate(lastWeek, displayPrice) {
     const MAX_WEEKS = 12;
-    const low = estimateCrossScenario(lastWeek, displayPrice * 0.95, MAX_WEEKS);
     const base = estimateCrossScenario(lastWeek, displayPrice, MAX_WEEKS);
     const high = estimateCrossScenario(lastWeek, displayPrice * 1.05, MAX_WEEKS);
-    const gapPct = ((lastWeek.ema21 - lastWeek.ema8) / lastWeek.ema21) * 100;
 
     if (base.weeks === 0) {
       return {
         label: 'Now',
-        detail: '8W is already above 21W',
-        color: '#22c55e',
-        gapPct
+        color: '#22c55e'
       };
     }
 
@@ -492,16 +493,11 @@ async function main() {
       : high.crossed
         ? formatWeek(high.date)
         : 'No Cross';
-    const baseDate = base.crossed ? 'flat: ' + formatWeek(base.date) : 'flat: no 12W cross';
-    const highDate = high.crossed ? '+5%: ' + formatWeek(high.date) : '+5%: no 12W cross';
-    const lowDate = low.crossed ? '-5%: ' + formatWeek(low.date) : '-5%: no 12W cross';
     const color = base.crossed && base.weeks <= 4 ? '#22c55e' : high.crossed && high.weeks <= 4 ? '#f0b34d' : '#ef4444';
 
     return {
       label,
-      detail: highDate + ' · ' + baseDate + ' · ' + lowDate,
-      color,
-      gapPct
+      color
     };
   }
 
@@ -557,10 +553,11 @@ async function main() {
     '<div class="card-value" style="--val-color:' + gapColor + '">' + currentGap.toFixed(2) + '%</div>' +
     '<div class="card-sub">Exit threshold: ' + GAP_THRESH + '%</div></div>';
 
-  cards += '<div class="card" style="--glow:' + crossEstimate.color + '">' +
-    '<div class="card-label">8W / 21W Cross ETA</div>' +
-    '<div class="card-value" style="--val-color:' + crossEstimate.color + '">' + crossEstimate.label + '</div>' +
-    '<div class="card-sub tight">Current gap: ' + crossEstimate.gapPct.toFixed(2) + '%</div></div>';
+  if (inTrade) {
+    cards += '<div class="card" style="--glow:' + crossEstimate.color + '">' +
+      '<div class="card-label">8W / 21W Cross ETA</div>' +
+      '<div class="card-value" style="--val-color:' + crossEstimate.color + '">' + crossEstimate.label + '</div></div>';
+  }
 
   cards += '<div class="card" style="--glow:rgba(240,179,77,0.25)">' +
     '<div class="card-label">Weekly EMAs</div>' +
