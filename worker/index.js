@@ -7,19 +7,6 @@
 
 const ALLOWED_ORIGINS = ['https://daveybitcoins.com', 'https://www.daveybitcoins.com', 'http://localhost:3000'];
 const SYMBOL_RE = /^[A-Z0-9][A-Z0-9.:-]{0,14}$/;
-const MASSIVE_ALLOWED_PARAMS = new Set([
-  'contract_type',
-  'expiration_date',
-  'expiration_date.gte',
-  'expiration_date.lte',
-  'strike_price',
-  'strike_price.gte',
-  'strike_price.lte',
-  'limit',
-  'sort',
-  'order',
-]);
-const MASSIVE_MAX_LIMIT = 250;
 
 function corsHeaders(request) {
   const origin = request?.headers?.get('Origin') || '';
@@ -52,26 +39,6 @@ function errorResponse(request, message, status = 400, extraHeaders = {}) {
 function normalizeSymbol(value) {
   const symbol = (value || '').trim().toUpperCase();
   return SYMBOL_RE.test(symbol) ? symbol : null;
-}
-
-function parseYahooDate(value) {
-  if (!value) return null;
-  return /^\d{1,12}$/.test(value) ? value : false;
-}
-
-function sanitizedMassiveParams(searchParams) {
-  const params = new URLSearchParams();
-  for (const [key, value] of searchParams) {
-    if (!MASSIVE_ALLOWED_PARAMS.has(key)) continue;
-    if (key === 'limit') {
-      const limit = Math.min(Math.max(parseInt(value, 10) || 1, 1), MASSIVE_MAX_LIMIT);
-      params.set(key, String(limit));
-      continue;
-    }
-    params.append(key, value);
-  }
-  if (!params.has('limit')) params.set('limit', String(MASSIVE_MAX_LIMIT));
-  return params;
 }
 
 // ====== FINNHUB PROXY ======
@@ -141,7 +108,7 @@ async function handleFinnhubBatchProxy(request, env) {
   });
 }
 
-// ====== YAHOO FINANCE OPTIONS PROXY ======
+// ====== YAHOO FINANCE DIVIDEND HISTORY PROXY ======
 let yahooCrumb = null;
 let yahooCookie = null;
 let crumbExpiry = 0;
@@ -168,55 +135,6 @@ async function getYahooCrumb() {
   crumbExpiry = Date.now() + 25 * 60 * 1000; // cache 25 min
 }
 
-async function handleOptionsProxy(request) {
-  const url = new URL(request.url);
-  const parts = url.pathname.split('/'); // /api/options/NVDA
-  const symbol = normalizeSymbol(parts[3]);
-  if (!symbol) {
-    return errorResponse(request, 'Missing or invalid symbol');
-  }
-
-  try {
-    await getYahooCrumb();
-    let yahooUrl = `https://query2.finance.yahoo.com/v7/finance/options/${encodeURIComponent(symbol)}?crumb=${encodeURIComponent(yahooCrumb)}`;
-    const date = parseYahooDate(url.searchParams.get('date'));
-    if (date === false) return errorResponse(request, 'Invalid date parameter');
-    if (date) yahooUrl += `&date=${date}`;
-
-    let resp = await fetch(yahooUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
-        'Cookie': yahooCookie,
-      },
-    });
-
-    // Retry once on auth failure
-    if (resp.status === 401) {
-      yahooCrumb = null;
-      crumbExpiry = 0;
-      await getYahooCrumb();
-      yahooUrl = `https://query2.finance.yahoo.com/v7/finance/options/${encodeURIComponent(symbol)}?crumb=${encodeURIComponent(yahooCrumb)}` + (date ? `&date=${date}` : '');
-      resp = await fetch(yahooUrl, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
-          'Cookie': yahooCookie,
-        },
-      });
-    }
-
-    const data = await resp.json();
-    return jsonResponse(request, data, {
-      status: resp.status,
-      headers: {
-        'Cache-Control': 'public, max-age=30',
-      },
-    });
-  } catch (err) {
-    return errorResponse(request, err.message, 500);
-  }
-}
-
-// ====== YAHOO FINANCE DIVIDEND HISTORY PROXY ======
 async function handleDividendHistoryProxy(request) {
   const url = new URL(request.url);
   const parts = url.pathname.split('/');
@@ -268,42 +186,6 @@ async function handleDividendHistoryProxy(request) {
   }
 }
 
-// ====== MASSIVE (OPTIONS GREEKS) PROXY ======
-async function handleMassiveProxy(request, env) {
-  const url = new URL(request.url);
-  const parts = url.pathname.split('/'); // /api/massive/options/AAPL
-  const symbol = normalizeSymbol(parts[4]);
-  if (!symbol) {
-    return errorResponse(request, 'Missing or invalid symbol');
-  }
-
-  const params = sanitizedMassiveParams(url.searchParams);
-  params.set('apiKey', env.MASSIVE_KEY);
-
-  const endpoint = parts[3]; // 'options' or 'stock'
-  let massiveUrl;
-  if (endpoint === 'options') {
-    massiveUrl = `https://api.massive.com/v3/snapshot/options/${encodeURIComponent(symbol)}?${params}`;
-  } else if (endpoint === 'stock') {
-    massiveUrl = `https://api.massive.com/v2/aggs/ticker/${encodeURIComponent(symbol)}/prev?${params}`;
-  } else {
-    return errorResponse(request, 'Invalid endpoint');
-  }
-
-  try {
-    const resp = await fetch(massiveUrl);
-    const data = await resp.json();
-    return jsonResponse(request, data, {
-      status: resp.status,
-      headers: {
-        'Cache-Control': 'public, max-age=60',
-      },
-    });
-  } catch (err) {
-    return errorResponse(request, err.message, 500);
-  }
-}
-
 // ====== GITHUB WORKFLOW TRIGGER ======
 async function triggerGitHubWorkflow(env, workflowFile) {
   const resp = await fetch(
@@ -342,19 +224,9 @@ export default {
       return handleFinnhubBatchProxy(request, env);
     }
 
-    // Yahoo Finance options proxy: /api/options/NVDA?date=1716595200
-    if (url.pathname.startsWith('/api/options/')) {
-      return handleOptionsProxy(request);
-    }
-
     // Yahoo Finance dividend history: /api/dividends/AAPL
     if (url.pathname.startsWith('/api/dividends/')) {
       return handleDividendHistoryProxy(request);
-    }
-
-    // Massive API proxy: /api/massive/options/AAPL or /api/massive/stock/AAPL
-    if (url.pathname.startsWith('/api/massive/')) {
-      return handleMassiveProxy(request, env);
     }
 
     // Health check

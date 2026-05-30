@@ -26,16 +26,6 @@ const checks = [
       await expectText(page, 'dividend stocks');
     },
   },
-  {
-    path: '/options-strategies.html',
-    name: 'Options strategies',
-    assert: async (page) => {
-      await page.waitForSelector('#ticker-input', { timeout: 10000 });
-      await expectText(page, 'Options Strategies');
-      await expectText(page, 'CSP Scanner');
-      await expectText(page, 'Long Call');
-    },
-  },
 ];
 
 function startServer() {
