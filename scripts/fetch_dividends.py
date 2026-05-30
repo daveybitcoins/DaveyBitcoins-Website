@@ -55,6 +55,8 @@ def _fetch_yahoo_data(symbol):
 
         divs = ticker.dividends
         freq = None
+        payments = []
+        trailing_rate = None
         if divs is not None and len(divs) > 0:
             cutoff = datetime.now() - timedelta(days=730)
             recent = divs[divs.index >= str(cutoff.date())]
@@ -69,9 +71,20 @@ def _fetch_yahoo_data(symbol):
             elif count >= 1:
                 freq = "annual"
 
-        return symbol, freq, price
+            one_year_cutoff = datetime.now() - timedelta(days=365)
+            last_year = divs[divs.index >= str(one_year_cutoff.date())]
+            trailing_rate = round(float(last_year.sum()), 4) if len(last_year) > 0 else None
+            payments = [
+                {
+                    "ex_date": idx.strftime("%Y-%m-%d"),
+                    "amount": round(float(amount), 4),
+                }
+                for idx, amount in recent.tail(12).items()
+            ]
+
+        return symbol, freq, price, trailing_rate, payments
     except Exception:
-        return symbol, None, None
+        return symbol, None, None, None, []
 
 
 def enrich_from_yahoo(symbols):
@@ -79,16 +92,22 @@ def enrich_from_yahoo(symbols):
     print(f"\nEnriching data via Yahoo Finance ({len(symbols)} tickers)...")
     frequencies = {}
     prices = {}
+    rates = {}
+    payments = {}
     done = 0
 
     with ThreadPoolExecutor(max_workers=FREQ_WORKERS) as pool:
         futures = {pool.submit(_fetch_yahoo_data, s): s for s in symbols}
         for future in as_completed(futures):
-            symbol, freq, price = future.result()
+            symbol, freq, price, trailing_rate, last_payments = future.result()
             if freq:
                 frequencies[symbol] = freq
             if price:
                 prices[symbol] = price
+            if trailing_rate:
+                rates[symbol] = trailing_rate
+            if last_payments:
+                payments[symbol] = last_payments
             done += 1
             if done % 500 == 0:
                 print(f"  {done}/{len(symbols)} checked...")
@@ -99,7 +118,8 @@ def enrich_from_yahoo(symbols):
     print(f"  Frequencies: {monthly} monthly, {quarterly} quarterly, {other} other "
           f"({len(symbols) - len(frequencies)} unknown)")
     print(f"  Prices: {len(prices)} fetched from Yahoo")
-    return frequencies, prices
+    print(f"  Dividend payment histories: {len(payments)} fetched from Yahoo")
+    return frequencies, prices, rates, payments
 
 # Tickers TradingView often misses — merged into output as fallbacks.
 # Values are periodically verified; the script prefers TradingView data
@@ -268,9 +288,11 @@ def main():
         if symbol in existing_data and existing_data[symbol].get("last_payments"):
             data["last_payments"] = existing_data[symbol]["last_payments"]
 
-    # Enrich with Yahoo Finance data (frequency + missing prices)
-    detected_freq, yahoo_prices = enrich_from_yahoo(list(tickers.keys()))
+    # Enrich with Yahoo Finance data (frequency, prices, rates, and payments)
+    detected_freq, yahoo_prices, yahoo_rates, yahoo_payments = enrich_from_yahoo(list(tickers.keys()))
     price_backfills = 0
+    payment_refreshes = 0
+    rate_refreshes = 0
     for symbol, data in tickers.items():
         if symbol in detected_freq:
             data["frequency"] = detected_freq[symbol]
@@ -285,8 +307,23 @@ def main():
                 data["dividend_rate"] = round(yahoo_prices[symbol] * data["dividend_yield"] / 100, 4)
             price_backfills += 1
 
+        if symbol in yahoo_payments:
+            data["last_payments"] = yahoo_payments[symbol]
+            payment_refreshes += 1
+
+        if symbol in yahoo_rates and yahoo_rates[symbol] > 0:
+            data["dividend_rate"] = yahoo_rates[symbol]
+            price = data["close"] or yahoo_prices.get(symbol)
+            if price:
+                data["dividend_yield"] = round((yahoo_rates[symbol] / price) * 100, 2)
+            rate_refreshes += 1
+
     if price_backfills:
         print(f"  Backfilled {price_backfills} missing prices from Yahoo Finance")
+    if payment_refreshes:
+        print(f"  Refreshed {payment_refreshes} dividend payment histories from Yahoo Finance")
+    if rate_refreshes:
+        print(f"  Refreshed {rate_refreshes} trailing dividend rates from Yahoo Finance")
 
     # Merge fallback data for tickers TradingView misses
     added_fallbacks = []
@@ -306,7 +343,7 @@ def main():
             added_fallbacks.append(symbol)
     if added_fallbacks:
         print(f"\n  Added {len(added_fallbacks)} fallback tickers: {', '.join(added_fallbacks)}")
-        _, fb_prices = enrich_from_yahoo(added_fallbacks)
+        _, fb_prices, fb_rates, fb_payments = enrich_from_yahoo(added_fallbacks)
         for symbol in added_fallbacks:
             if symbol in fb_prices:
                 tickers[symbol]["close"] = fb_prices[symbol]
@@ -314,6 +351,13 @@ def main():
                     tickers[symbol]["dividend_rate"] = round(
                         fb_prices[symbol] * tickers[symbol]["dividend_yield"] / 100, 4
                     )
+            if symbol in fb_rates and fb_rates[symbol] > 0:
+                tickers[symbol]["dividend_rate"] = fb_rates[symbol]
+                price = tickers[symbol]["close"] or fb_prices.get(symbol)
+                if price:
+                    tickers[symbol]["dividend_yield"] = round((fb_rates[symbol] / price) * 100, 2)
+            if symbol in fb_payments:
+                tickers[symbol]["last_payments"] = fb_payments[symbol]
 
     print(f"\n{len(tickers)} tickers with dividend data")
 

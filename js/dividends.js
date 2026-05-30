@@ -160,6 +160,8 @@
             }
         });
 
+        stale = Array.from(new Set(stale));
+
         if (stale.length === 0) {
             applyDividendHistory(cache);
             return;
@@ -186,7 +188,10 @@
             var div = dividendData.tickers[ticker];
             if (div && cache[ticker].payments && cache[ticker].payments.length > 0) {
                 var existing = div.last_payments || [];
-                if (existing.length < cache[ticker].payments.length) {
+                var existingLast = existing.length ? existing[existing.length - 1].ex_date : "";
+                var cached = cache[ticker].payments;
+                var cachedLast = cached[cached.length - 1].ex_date;
+                if (existing.length !== cached.length || cachedLast > existingLast) {
                     div.last_payments = cache[ticker].payments;
                     applied = true;
                 }
@@ -341,6 +346,7 @@
         tickerInput.focus();
 
         await fetchLivePrices();
+        await fetchDividendHistory();
         renderAll();
     }
 
@@ -433,6 +439,14 @@
         return dividendData.tickers[ticker] || null;
     }
 
+    function getDividendYield(ticker) {
+        var div = getDividendInfo(ticker);
+        if (!div) return null;
+        var price = getLivePrice(ticker);
+        if (price && div.dividend_rate) return (div.dividend_rate / price) * 100;
+        return div.dividend_yield || null;
+    }
+
     // === HOLDINGS TABLE ===
     function renderHoldingsTable() {
         var wrap = document.getElementById("holdings-table-wrap");
@@ -466,7 +480,7 @@
             var value = price ? h.shares * price : null;
             var annualDiv = (div && div.dividend_rate) ? h.shares * div.dividend_rate : null;
             var pctPortfolio = (value && totalValue > 0) ? (value / totalValue) * 100 : null;
-            var yld = (div && div.dividend_yield) ? div.dividend_yield : null;
+            var yld = getDividendYield(h.ticker);
             var freq = (div && div.frequency) ? div.frequency : null;
             var exDate = (div && div.ex_dividend_date) ? div.ex_dividend_date : null;
             var name = (div && div.name) ? div.name : h.ticker;
