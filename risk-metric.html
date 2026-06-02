@@ -422,13 +422,41 @@ function riskColor(r, a) {
 }
 
 // ====== FETCH LIVE PRICE ======
-async function fetchLivePrice(rawData) {
-  try {
+async function fetchCurrentBtcPrice() {
+  const providers = [
+    async function coingecko() {
     const resp = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_last_updated_at=true');
     if (!resp.ok) throw new Error('API ' + resp.status);
     const data = await resp.json();
-    const price = data.bitcoin.usd;
-    const dt = new Date(data.bitcoin.last_updated_at * 1000);
+      return { price: data.bitcoin.usd, updatedAt: new Date(data.bitcoin.last_updated_at * 1000), source: 'CoinGecko' };
+    },
+    async function binance() {
+      const resp = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
+      if (!resp.ok) throw new Error('API ' + resp.status);
+      const data = await resp.json();
+      return { price: parseFloat(data.price), updatedAt: new Date(), source: 'Binance' };
+    },
+    async function coinbase() {
+      const resp = await fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot');
+      if (!resp.ok) throw new Error('API ' + resp.status);
+      const data = await resp.json();
+      return { price: parseFloat(data.data.amount), updatedAt: new Date(), source: 'Coinbase' };
+    }
+  ];
+  for (const provider of providers) {
+    try {
+      const result = await provider();
+      if (Number.isFinite(result.price) && result.price > 0) return result;
+    } catch(e) {}
+  }
+  return null;
+}
+
+async function fetchLivePrice(rawData) {
+  const live = await fetchCurrentBtcPrice();
+  if (live) {
+    const price = live.price;
+    const dt = live.updatedAt;
     const dateStr = dt.toISOString().slice(0,10);
     const lastDate = rawData[rawData.length-1][0];
     if (dateStr === lastDate) {
@@ -436,10 +464,9 @@ async function fetchLivePrice(rawData) {
     } else if (dateStr > lastDate) {
       rawData.push([dateStr, price]);
     }
-    return true;
-  } catch(e) {
-    return false;
+    return live;
   }
+  return null;
 }
 
 // ====== BITCOIN HALVING COUNTDOWN ======
@@ -524,7 +551,7 @@ async function main() {
   document.getElementById('vPrice').textContent = '$' + last.price.toLocaleString(undefined,{maximumFractionDigits:0});
   document.getElementById('vPriceTime').textContent = last.date;
   const hd = document.getElementById('headerDate');
-  hd.innerHTML = '<span style="width:6px;height:6px;background:#22c55e;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> as of ' + last.date + (isLive ? ' · live' : '');
+  hd.innerHTML = '<span style="width:6px;height:6px;background:#22c55e;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> as of ' + last.date + (isLive ? ' · live via ' + isLive.source : ' · historical fallback');
   document.getElementById('vRisk').textContent = last.riskCombo.toFixed(3);
   document.getElementById('vRisk').style.setProperty('--val-color', riskColor(last.riskCombo));
   document.getElementById('vFair').textContent = '$' + last.regPrice.toLocaleString(undefined,{maximumFractionDigits:0});
@@ -1456,16 +1483,15 @@ setInterval(refreshHalvingCountdown, 6 * 60 * 60 * 1000);
 // Auto-refresh BTC price every 60 seconds
 setInterval(async function () {
   try {
-    const resp = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_last_updated_at=true');
-    if (!resp.ok) return;
-    const data = await resp.json();
-    const price = data.bitcoin.usd;
-    const dt = new Date(data.bitcoin.last_updated_at * 1000);
+    const live = await fetchCurrentBtcPrice();
+    if (!live) return;
+    const price = live.price;
+    const dt = live.updatedAt;
     const timeStr = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const el = document.getElementById('vPrice');
     const sub = document.getElementById('vPriceTime');
     if (el) el.textContent = '$' + price.toLocaleString(undefined, { maximumFractionDigits: 0 });
-    if (sub) sub.textContent = 'Updated ' + timeStr;
+    if (sub) sub.textContent = 'Updated ' + timeStr + ' via ' + live.source;
   } catch {}
 }, 60000);
 </script>
