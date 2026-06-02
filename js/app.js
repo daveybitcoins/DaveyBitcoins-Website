@@ -1728,22 +1728,8 @@
 
     // === THEME TOGGLE ===
     function setupTheme() {
-        const saved = localStorage.getItem("ema-theme");
-        if (saved) {
-            document.documentElement.setAttribute("data-theme", saved);
-        }
-        updateThemeIcon();
-
-        const btn = document.getElementById("theme-toggle");
-        if (btn) {
-            btn.addEventListener("click", () => {
-                const current = document.documentElement.getAttribute("data-theme");
-                const next = current === "light" ? "dark" : "light";
-                document.documentElement.setAttribute("data-theme", next);
-                localStorage.setItem("ema-theme", next);
-                updateThemeIcon();
-            });
-        }
+        if (window.DaveyTheme) window.DaveyTheme.init();
+        else updateThemeIcon();
     }
 
     function updateThemeIcon() {

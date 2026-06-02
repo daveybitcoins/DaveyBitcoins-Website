@@ -13,6 +13,7 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0f1e'/%3E%3Ctext x='16' y='23' font-family='serif' font-size='22' font-weight='bold' fill='%23f97316' text-anchor='middle'%3E%E2%82%BF%3C/text%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="js/theme.js?v=20260602"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -390,12 +391,13 @@
             .tile { padding: 1.25rem; }
         }
 
-        /* Terminal market desk theme */
+        /* Dark market desk theme */
         body {
             background:
-                radial-gradient(circle at 14% -8%, rgba(240, 179, 77, 0.12), transparent 34rem),
-                linear-gradient(180deg, #0b0c09 0%, #070806 55%, #050604 100%);
-            color: #e8e0cc;
+                radial-gradient(circle at 14% -8%, rgba(240, 179, 77, 0.10), transparent 34rem),
+                radial-gradient(circle at 84% 8%, rgba(114, 192, 106, 0.06), transparent 28rem),
+                linear-gradient(180deg, #30302d 0%, #242424 58%, #20201e 100%);
+            color: #e4dece;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             letter-spacing: 0;
         }
@@ -413,7 +415,7 @@
         }
 
         .noise {
-            opacity: 0.16;
+            opacity: 0.08;
         }
 
         .page {
@@ -425,19 +427,19 @@
 
         .hero {
             display: grid;
-            grid-template-columns: auto 1fr;
+            grid-template-columns: auto 1fr auto;
             align-items: center;
             gap: 1.25rem;
             margin: 0 0 1.25rem;
             padding: 1rem 0 1.25rem;
-            border-bottom: 1px solid #2a3027;
+            border-bottom: 1px solid #565147;
             text-align: left;
         }
 
         .hero-avatar {
             width: 86px;
             height: 86px;
-            border: 1px solid #2a3027;
+            border: 1px solid #565147;
             border-radius: 2px;
             box-shadow: none;
             animation: none;
@@ -447,7 +449,7 @@
         .hero-brand {
             background: none;
             -webkit-text-fill-color: currentColor;
-            color: #e8e0cc;
+            color: #faf3df;
             font-size: clamp(2.25rem, 5vw, 4rem);
             font-weight: 800;
             letter-spacing: 0;
@@ -464,12 +466,32 @@
 
         .hero-tagline {
             grid-column: 2;
-            color: #8f917f;
+            color: #aaa18c;
             font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
             font-size: 0.85rem;
             font-weight: 500;
             letter-spacing: 0.02em;
             text-transform: uppercase;
+        }
+
+        .theme-toggle {
+            grid-column: 3;
+            grid-row: 1 / span 2;
+            align-self: start;
+            background: #2b2b28;
+            border: 1px solid #565147;
+            border-radius: 2px;
+            color: #d8bd7a;
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1;
+            padding: 0.45rem 0.65rem;
+            box-shadow: none;
+        }
+
+        .theme-toggle:hover {
+            border-color: #f0b34d;
+            box-shadow: inset 3px 0 0 rgba(240, 179, 77, 0.65);
         }
 
         .bento {
@@ -479,11 +501,11 @@
         }
 
         .tile {
-            background: rgba(16, 18, 15, 0.92);
-            border: 1px solid #2a3027;
+            background: rgba(47, 47, 43, 0.92);
+            border: 1px solid #565147;
             border-radius: 2px;
             box-shadow: none;
-            color: #e8e0cc;
+            color: #e4dece;
             padding: 1rem;
             opacity: 1;
             transform: none;
@@ -507,8 +529,8 @@
         }
 
         .tile-preview {
-            background: #070806;
-            border: 1px solid #252a22;
+            background: #2b2b28;
+            border: 1px solid #464239;
             border-radius: 2px;
         }
 
@@ -520,13 +542,13 @@
         }
 
         .tile-name {
-            color: #f4ead3;
+            color: #faf3df;
             font-size: 1.12rem;
             letter-spacing: 0;
         }
 
         .tile-desc {
-            color: #8f917f;
+            color: #aaa18c;
             font-size: 0.78rem;
         }
 
@@ -536,16 +558,68 @@
         }
 
         .tile:hover .tile-arrow {
-            color: #f4ead3;
+            color: #faf3df;
             transform: translateX(2px);
         }
 
         .footer {
-            border-top: 1px solid #2a3027;
-            color: #6d6f61;
+            border-top: 1px solid #565147;
+            color: #7f796c;
             font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
             margin-top: 1.5rem;
             padding-top: 1rem;
+        }
+
+        [data-theme="light"] body {
+            background:
+                radial-gradient(circle at 12% -12%, rgba(154, 101, 15, 0.13), transparent 32rem),
+                linear-gradient(180deg, #fbf7ec 0%, #f3f0e7 100%);
+            color: #1f211b;
+        }
+
+        [data-theme="light"] .bg-mesh {
+            background:
+                linear-gradient(rgba(31, 33, 27, 0.055) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(31, 33, 27, 0.04) 1px, transparent 1px);
+            background-size: 48px 48px;
+            opacity: 0.38;
+        }
+
+        [data-theme="light"] .hero {
+            border-bottom-color: #c9c0ad;
+        }
+
+        [data-theme="light"] .hero-avatar,
+        [data-theme="light"] .tile,
+        [data-theme="light"] .theme-toggle,
+        [data-theme="light"] .tile-preview {
+            border-color: #c9c0ad;
+        }
+
+        [data-theme="light"] .hero-brand,
+        [data-theme="light"] .tile-name,
+        [data-theme="light"] .tile:hover .tile-arrow {
+            color: #151711;
+        }
+
+        [data-theme="light"] .hero-tagline,
+        [data-theme="light"] .tile-desc {
+            color: #6d6a5f;
+        }
+
+        [data-theme="light"] .tile,
+        [data-theme="light"] .theme-toggle {
+            background: #fffaf0;
+            color: #1f211b;
+        }
+
+        [data-theme="light"] .tile-preview {
+            background: #f7f1e4;
+        }
+
+        [data-theme="light"] .footer {
+            border-top-color: #c9c0ad;
+            color: #837c70;
         }
 
         @media (max-width: 600px) {
@@ -570,6 +644,12 @@
             .hero-tagline {
                 grid-column: auto;
             }
+
+            .theme-toggle {
+                grid-column: auto;
+                grid-row: auto;
+                justify-self: start;
+            }
         }
     </style>
 </head>
@@ -586,6 +666,9 @@
             <img src="img/brand.jpg" alt="DaveyBitcoins" class="hero-avatar">
             <div class="hero-brand">DaveyBitcoins</div>
             <div class="hero-tagline">Always be building</div>
+            <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark mode" aria-label="Toggle theme">
+                <span class="theme-icon" id="theme-icon">&#9789;</span>
+            </button>
         </div>
 
         <div class="bento">
@@ -655,6 +738,7 @@
     }
     scalePreviews();
     window.addEventListener('resize', scalePreviews);
+    if (window.DaveyTheme) window.DaveyTheme.init();
     </script>
 
 </body>

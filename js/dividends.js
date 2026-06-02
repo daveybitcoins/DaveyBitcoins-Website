@@ -60,18 +60,7 @@
 
     // === THEME ===
     function setupTheme() {
-        const saved = localStorage.getItem("theme");
-        if (saved) document.documentElement.setAttribute("data-theme", saved);
-        var icon = document.getElementById("theme-icon");
-        if (icon) icon.textContent = (saved === "light") ? "☀" : "☽";
-
-        document.getElementById("theme-toggle").addEventListener("click", function () {
-            var current = document.documentElement.getAttribute("data-theme");
-            var next = current === "light" ? "dark" : "light";
-            document.documentElement.setAttribute("data-theme", next);
-            localStorage.setItem("theme", next);
-            icon.textContent = next === "light" ? "☀" : "☽";
-        });
+        if (window.DaveyTheme) window.DaveyTheme.init();
     }
 
     // === INIT ===

@@ -11,19 +11,20 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0f1e'/%3E%3Ctext x='16' y='23' font-family='serif' font-size='22' font-weight='bold' fill='%23f97316' text-anchor='middle'%3E%E2%82%BF%3C/text%3E%3C/svg%3E">
+<script src="js/theme.js?v=20260602"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
 
   :root,[data-theme="dark"]{
-    --bg:#101e36;--bg-card:#142642;--bg-canvas:#122240;
-    --border:#243a5c;--border-light:#1e3460;--border-accent:#2a4468;
-    --text:#c8cad0;--text-dim:#7a90b0;--text-dimmer:#5a7498;
-    --text-bright:#b8d0e8;--text-heading:#fff;
-    --accent-blue:#4af;--accent-purple:#a78bfa;
-    --header-line:linear-gradient(90deg,transparent,#3a6090,transparent);
-    --tooltip-bg:#1e3460;--footer-text:#4a6890;--meth-text:#90a8c8;
-    --rc-bg:#101e36;--rc-border:#1e3460;
-    --btn-bg:#1e3460;--btn-text:#8a9dba;--btn-border:#2a4468;--btn-hover:#2a4468;--btn-hover-text:#fff;
+    --bg:#242424;--bg-card:#2f2f2b;--bg-canvas:#2b2b28;
+    --border:#565147;--border-light:#3d3b35;--border-accent:#8a754c;
+    --text:#e4dece;--text-dim:#aaa18c;--text-dimmer:#7f796c;
+    --text-bright:#f1ead8;--text-heading:#faf3df;
+    --accent-blue:#f0b34d;--accent-purple:#b8a36e;
+    --header-line:linear-gradient(90deg,transparent,rgba(240,179,77,0.45),transparent);
+    --tooltip-bg:#33332f;--footer-text:#7f796c;--meth-text:#c2b79f;
+    --rc-bg:#292925;--rc-border:#464239;
+    --btn-bg:#2b2b28;--btn-text:#d8bd7a;--btn-border:#565147;--btn-hover:#383832;--btn-hover-text:#faf3df;
   }
   [data-theme="light"]{
     --bg:#f5f7fa;--bg-card:#ffffff;--bg-canvas:#f0f3f6;
@@ -73,6 +74,11 @@
   .card-label{font-size:0.58rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:2.5px;margin-bottom:10px}
   .card-value{font-family:'Outfit',sans-serif;font-size:1.8rem;font-weight:600;color:var(--val-color,var(--text-heading))}
   .card-sub{font-size:0.55rem;color:var(--text-dimmer);margin-top:5px}
+  .halving-card .card-value{font-size:2rem}
+  .halving-progress{height:5px;background:var(--border-light);margin-top:12px;position:relative;overflow:hidden}
+  .halving-progress-bar{height:100%;width:0;background:linear-gradient(90deg,#f7931a,#d5b56c);transition:width 0.6s cubic-bezier(0.16,1,0.3,1)}
+  .halving-meta{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-size:0.5rem;color:var(--text-dimmer)}
+  .halving-meta span:last-child{text-align:right}
   .risk-bar-wrap{margin-top:14px;position:relative;height:8px;border-radius:4px;overflow:visible}
   .risk-bar-bg{position:absolute;top:0;left:0;right:0;bottom:0;border-radius:4px;background:linear-gradient(90deg,#2563eb 0%,#06b6d4 15%,#10b981 30%,#84cc16 45%,#eab308 60%,#f97316 75%,#ef4444 90%,#991b1b 100%)}
   .risk-bar-needle{position:absolute;top:-5px;width:3px;height:18px;background:#fff;border-radius:2px;box-shadow:0 0 10px rgba(255,255,255,0.5);transform:translateX(-50%);transition:left 0.6s cubic-bezier(0.16,1,0.3,1)}
@@ -157,15 +163,15 @@
 
   /* Terminal market desk theme */
   :root,[data-theme="dark"]{
-    --bg:#070806;--bg-card:#10120f;--bg-canvas:#0b0d0a;
-    --border:#2a3027;--border-light:#20251f;--border-accent:#3f3520;
-    --text:#e8e0cc;--text-dim:#8f917f;--text-dimmer:#6d6f61;
-    --text-bright:#f4ead3;--text-heading:#f4ead3;
+    --bg:#242424;--bg-card:#2f2f2b;--bg-canvas:#2b2b28;
+    --border:#565147;--border-light:#3d3b35;--border-accent:#8a754c;
+    --text:#e4dece;--text-dim:#aaa18c;--text-dimmer:#7f796c;
+    --text-bright:#f1ead8;--text-heading:#faf3df;
     --accent-blue:#f0b34d;--accent-purple:#b8a36e;
     --header-line:linear-gradient(90deg,transparent,rgba(240,179,77,0.45),transparent);
-    --tooltip-bg:#10120f;--footer-text:#6d6f61;--meth-text:#aaa48f;
-    --rc-bg:#0b0d0a;--rc-border:#2a3027;
-    --btn-bg:#0b0d0a;--btn-text:#b8a36e;--btn-border:#2a3027;--btn-hover:#171a15;--btn-hover-text:#f4ead3;
+    --tooltip-bg:#33332f;--footer-text:#7f796c;--meth-text:#c2b79f;
+    --rc-bg:#292925;--rc-border:#464239;
+    --btn-bg:#2b2b28;--btn-text:#d8bd7a;--btn-border:#565147;--btn-hover:#383832;--btn-hover-text:#faf3df;
   }
   [data-theme="light"]{
     --bg:#f3f0e7;--bg-card:#fffaf0;--bg-canvas:#f7f1e4;
@@ -178,7 +184,7 @@
     --rc-bg:#f7f1e4;--rc-border:#c9c0ad;
     --btn-bg:#f7f1e4;--btn-text:#5c574b;--btn-border:#c9c0ad;--btn-hover:#efe2c6;--btn-hover-text:#151711;
   }
-  body{background:radial-gradient(circle at 14% -8%,rgba(240,179,77,0.12),transparent 34rem),linear-gradient(180deg,#0b0c09 0%,var(--bg) 48%,#050604 100%);font-family:'IBM Plex Mono','JetBrains Mono',monospace;letter-spacing:0}
+  body{background:radial-gradient(circle at 14% -8%,rgba(240,179,77,0.10),transparent 34rem),radial-gradient(circle at 84% 8%,rgba(114,192,106,0.06),transparent 28rem),linear-gradient(180deg,#30302d 0%,var(--bg) 58%,#20201e 100%);font-family:'IBM Plex Mono','JetBrains Mono',monospace;letter-spacing:0}
   [data-theme="light"] body{background:radial-gradient(circle at 12% -12%,rgba(154,101,15,0.13),transparent 32rem),linear-gradient(180deg,#fbf7ec 0%,var(--bg) 100%)}
   .bg-mesh{background:linear-gradient(rgba(240,179,77,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(240,179,77,0.025) 1px,transparent 1px);background-size:48px 48px;opacity:0.42}
   .bg-mesh .orb{display:none}
@@ -234,6 +240,13 @@
       <div class="zone-labels"><span>Accumulate</span><span>Neutral</span><span>Caution</span></div></div>
     <div class="card" style="--glow:#10b981"><div class="card-label">Fair Value</div><div class="card-value" id="vFair" style="--val-color:#10b981">—</div><div class="card-sub" id="vGrowth"></div></div>
     <div class="card" style="--glow:#d5b56c"><div class="card-label">Deviation</div><div class="card-value" id="vDev" style="--val-color:#d5b56c">—</div><div class="card-sub" id="vPoints"></div></div>
+    <div class="card halving-card" style="--glow:rgba(247,147,26,0.28)">
+      <div class="card-label">Next Halving</div>
+      <div class="card-value" id="vHalvingDays" style="--val-color:#f7931a">—</div>
+      <div class="card-sub" id="vHalvingSub">Fetching block height...</div>
+      <div class="halving-progress"><div class="halving-progress-bar" id="halvingProgressBar"></div></div>
+      <div class="halving-meta"><span id="vHalvingBlocks">— blocks</span><span id="vHalvingProgress">—% epoch</span></div>
+    </div>
   </div>
   <div class="risk-table-wrap">
     <h4>Price at Each Risk Level (Combined)</h4>
@@ -298,6 +311,7 @@
     <p><span class="hl">Structural Risk (Decaying Envelope):</span> Normalizes the residual against a time-decaying upper envelope fitted from cycle peaks. The max deviation capacity shrinks as Bitcoin matures, producing more realistic risk boundaries.</p>
     <p><span class="hl">Momentum Risk (Rolling Z-Score → CDF):</span> 4-year rolling z-score mapped through Gaussian CDF. Cycle-sensitive, adapts to declining volatility.</p>
     <p><span class="hl">Combined:</span> Geometric mean √(S × M) of both. Pulls toward the lower signal — if either frame says low risk, that's more informative. Backtested across all deciles with strongly monotonic expected returns (above power-law trend growth).</p>
+    <p><span class="hl">Halving Countdown:</span> Uses the current Bitcoin block height when available, targets the next 210,000-block subsidy epoch, and estimates the date at 10 minutes per block. If the height API is unavailable, it falls back to a clock-based estimate from block 840,000.</p>
     <p><span class="hl">Updates:</span> On page load, fetches current BTC price from CoinGecko free API and appends it to the historical dataset. Refresh page for latest reading.</p>
   </div>
   <footer>
@@ -306,25 +320,25 @@
 </div>
 <script>
 // Restore theme before render
-(function(){var t=localStorage.getItem('risk-theme');if(t)document.documentElement.setAttribute('data-theme',t);})();
+(function(){if(window.DaveyTheme)window.DaveyTheme.apply(window.DaveyTheme.get());})();
 
 // ====== THEME-AWARE CANVAS COLORS ======
 function themeColors() {
   const light = document.documentElement.getAttribute('data-theme') === 'light';
   return {
-    canvasBg: light ? '#f7f1e4' : '#0b0d0a',
-    gridLine: light ? '#ded4c1' : '#20251f',
-    gridLineMinor: light ? '#eee6d7' : '#171a15',
-    gridZero: light ? '#c9c0ad' : '#3f3520',
-    axisText: light ? '#6d6a5f' : '#8f917f',
+    canvasBg: light ? '#fffaf0' : '#2b2b28',
+    gridLine: light ? '#e3dbc8' : '#3d3b35',
+    gridLineMinor: light ? '#f2ecdf' : '#34332f',
+    gridZero: light ? '#c9c0ad' : '#6c6558',
+    axisText: light ? '#6d6a5f' : '#aaa18c',
     regressionLine: light ? 'rgba(154,101,15,0.46)' : 'rgba(240,179,77,0.46)',
-    zoneLabels: light ? '#837c70' : '#6d6f61',
+    zoneLabels: light ? '#837c70' : '#aaa18c',
     zoneA: light ? 'rgba(114,192,106,0.06)' : 'rgba(114,192,106,0.07)',
     zoneB: light ? 'rgba(132,204,22,0.03)' : 'rgba(132,204,22,0.035)',
     zoneC: light ? 'rgba(240,179,77,0.04)' : 'rgba(240,179,77,0.05)',
     zoneD: light ? 'rgba(230,109,96,0.06)' : 'rgba(230,109,96,0.07)',
-    zoneDash: light ? '#c9c0ad' : '#3f3520',
-    barValueText: light ? '#1f211b' : '#f4ead3',
+    zoneDash: light ? '#c9c0ad' : '#6c6558',
+    barValueText: light ? '#1f211b' : '#f1ead8',
     areaGrad0: light ? 'rgba(230,109,96,0.14)' : 'rgba(230,109,96,0.18)',
     areaGrad5: light ? 'rgba(240,179,77,0.08)' : 'rgba(240,179,77,0.10)',
     areaGrad1: light ? 'rgba(114,192,106,0.04)' : 'rgba(114,192,106,0.05)',
@@ -428,12 +442,77 @@ async function fetchLivePrice(rawData) {
   }
 }
 
+// ====== BITCOIN HALVING COUNTDOWN ======
+const HALVING_INTERVAL = 210000;
+const BLOCK_MS = 10 * 60 * 1000;
+const FALLBACK_HALVING_ANCHOR = {
+  height: 840000,
+  minedAt: Date.parse('2024-04-20T00:09:27Z')
+};
+
+function formatHalvingDate(ms) {
+  return new Date(ms).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+}
+
+function fallbackBlockHeight(nowMs) {
+  return Math.max(FALLBACK_HALVING_ANCHOR.height, Math.floor(
+    FALLBACK_HALVING_ANCHOR.height + (nowMs - FALLBACK_HALVING_ANCHOR.minedAt) / BLOCK_MS
+  ));
+}
+
+async function fetchBlockHeight() {
+  const endpoints = [
+    'https://blockstream.info/api/blocks/tip/height',
+    'https://mempool.space/api/blocks/tip/height'
+  ];
+  for (const url of endpoints) {
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) continue;
+      const height = parseInt((await resp.text()).trim(), 10);
+      if (Number.isFinite(height) && height > 0) return height;
+    } catch {}
+  }
+  return null;
+}
+
+async function refreshHalvingCountdown() {
+  const nowMs = Date.now();
+  const liveHeight = await fetchBlockHeight();
+  const height = liveHeight || fallbackBlockHeight(nowMs);
+  const currentEpoch = Math.floor(height / HALVING_INTERVAL);
+  const nextHalvingHeight = (currentEpoch + 1) * HALVING_INTERVAL;
+  const epochStartHeight = currentEpoch * HALVING_INTERVAL;
+  const blocksRemaining = Math.max(0, nextHalvingHeight - height);
+  const daysRemaining = Math.ceil((blocksRemaining * BLOCK_MS) / 864e5);
+  const estimateMs = nowMs + blocksRemaining * BLOCK_MS;
+  const epochProgress = Math.max(0, Math.min(100, ((height - epochStartHeight) / HALVING_INTERVAL) * 100));
+
+  const daysEl = document.getElementById('vHalvingDays');
+  const subEl = document.getElementById('vHalvingSub');
+  const blocksEl = document.getElementById('vHalvingBlocks');
+  const progressEl = document.getElementById('vHalvingProgress');
+  const barEl = document.getElementById('halvingProgressBar');
+  if (!daysEl || !subEl || !blocksEl || !progressEl || !barEl) return;
+
+  daysEl.textContent = daysRemaining.toLocaleString() + 'd';
+  subEl.textContent = 'Est. ' + formatHalvingDate(estimateMs) + (liveHeight ? '' : ' · clock estimate');
+  blocksEl.textContent = blocksRemaining.toLocaleString() + ' blocks';
+  progressEl.textContent = epochProgress.toFixed(1) + '% epoch';
+  barEl.style.width = epochProgress + '%';
+}
+
 // ====== MAIN ======
 async function main() {
   let rawData = await loadCSV();
 
   // Fetch live price
   const live = await fetchLivePrice(rawData);
+  refreshHalvingCountdown();
 
   const { pts, slope, intercept } = buildDataset(rawData);
   const SAMPLE = Math.max(1, Math.floor(pts.length / 2000));
@@ -1361,26 +1440,18 @@ async function main() {
 
   // ====== THEME TOGGLE ======
   (function(){
-    const btn = document.getElementById('theme-toggle');
-    const icon = document.getElementById('theme-icon');
-    function updateIcon() {
-      icon.textContent = document.documentElement.getAttribute('data-theme') === 'light' ? '\u2600' : '\u263D';
-    }
-    updateIcon();
-    btn.addEventListener('click', function() {
-      const current = document.documentElement.getAttribute('data-theme');
-      const next = current === 'light' ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('risk-theme', next);
-      updateIcon();
+    if (!window.DaveyTheme) return;
+    window.DaveyTheme.init({ onChange: function() {
       renderAll();
       renderReturnsChart();
       renderMidtermChart();
-    });
+    }});
   })();
 }
 
 main();
+
+setInterval(refreshHalvingCountdown, 6 * 60 * 60 * 1000);
 
 // Auto-refresh BTC price every 60 seconds
 setInterval(async function () {

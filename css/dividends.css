@@ -17,7 +17,7 @@
 }
 
 .portfolio-select {
-    background: linear-gradient(135deg, rgba(20, 38, 66, 0.8), rgba(26, 48, 80, 0.9));
+    background: linear-gradient(135deg, rgba(47, 47, 43, 0.88), rgba(56, 56, 50, 0.92));
     border: 1px solid rgba(100, 171, 246, 0.3);
     border-radius: 8px;
     padding: 0.4rem 2rem 0.4rem 0.75rem;
@@ -57,7 +57,7 @@
 }
 
 .portfolio-btn {
-    background: rgba(20, 38, 66, 0.4);
+    background: rgba(47, 47, 43, 0.72);
     border: 1px solid var(--border);
     border-radius: 8px;
     color: var(--text-dim);
@@ -230,7 +230,7 @@
 }
 
 .btn-cal {
-    background: rgba(20, 38, 66, 0.4);
+    background: rgba(47, 47, 43, 0.72);
     border: 1px solid var(--border);
     border-radius: 6px;
     padding: 0.3rem 0.6rem;
@@ -381,7 +381,7 @@
 
 /* === DIVIDEND TRACKER TERMINAL THEME === */
 .portfolio-select {
-    background: #0b0d0a;
+    background: #2b2b28;
     border-color: var(--border);
     border-radius: 2px;
     box-shadow: none;
@@ -482,7 +482,7 @@
 .freq-quarterly {
     background: rgba(240, 179, 77, 0.12);
     border-color: rgba(240, 179, 77, 0.32);
-    color: var(--yellow);
+    color: #81540e;
 }
 
 .freq-semi-annual {
