@@ -17,6 +17,14 @@
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+        :root, [data-theme="dark"] { color-scheme: dark; }
+        [data-theme="light"] { color-scheme: light; }
+        * { scrollbar-width: thin; scrollbar-color: #545454 transparent; }
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #545454; border: 2px solid transparent; background-clip: content-box; }
+        ::-webkit-scrollbar-thumb:hover { background: #7f796c; border: 2px solid transparent; background-clip: content-box; }
+
         body {
             background: #0a0f1e;
             color: #c8cad0;
@@ -255,6 +263,11 @@
             pointer-events: none;
             opacity: 0.8;
             transition: opacity 0.4s;
+            scrollbar-width: none;
+        }
+
+        .tile-preview iframe::-webkit-scrollbar {
+            display: none;
         }
 
         .tile:hover .tile-preview iframe {
@@ -394,20 +407,19 @@
         /* Dark market desk theme */
         body {
             background:
-                radial-gradient(circle at 14% -8%, rgba(240, 179, 77, 0.10), transparent 34rem),
-                radial-gradient(circle at 84% 8%, rgba(114, 192, 106, 0.06), transparent 28rem),
-                linear-gradient(180deg, #30302d 0%, #242424 58%, #20201e 100%);
-            color: #e4dece;
+                radial-gradient(circle at 14% -8%, rgba(240, 179, 77, 0.08), transparent 34rem),
+                linear-gradient(180deg, #303030 0%, #242424 58%, #202020 100%);
+            color: #ede7d8;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             letter-spacing: 0;
         }
 
         .bg-mesh {
             background:
-                linear-gradient(rgba(240, 179, 77, 0.035) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(240, 179, 77, 0.025) 1px, transparent 1px);
+                linear-gradient(rgba(240, 179, 77, 0.026) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(240, 179, 77, 0.018) 1px, transparent 1px);
             background-size: 48px 48px;
-            opacity: 0.42;
+            opacity: 0.34;
         }
 
         .bg-mesh .orb {
@@ -432,14 +444,14 @@
             gap: 1.25rem;
             margin: 0 0 1.25rem;
             padding: 1rem 0 1.25rem;
-            border-bottom: 1px solid #565147;
+            border-bottom: 1px solid #545454;
             text-align: left;
         }
 
         .hero-avatar {
             width: 86px;
             height: 86px;
-            border: 1px solid #565147;
+            border: 1px solid #545454;
             border-radius: 2px;
             box-shadow: none;
             animation: none;
@@ -466,7 +478,7 @@
 
         .hero-tagline {
             grid-column: 2;
-            color: #aaa18c;
+            color: #b7af9d;
             font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
             font-size: 0.85rem;
             font-weight: 500;
@@ -478,8 +490,8 @@
             grid-column: 3;
             grid-row: 1 / span 2;
             align-self: start;
-            background: #2b2b28;
-            border: 1px solid #565147;
+            background: #2a2a2a;
+            border: 1px solid #545454;
             border-radius: 2px;
             color: #d8bd7a;
             cursor: pointer;
@@ -501,11 +513,11 @@
         }
 
         .tile {
-            background: rgba(47, 47, 43, 0.92);
-            border: 1px solid #565147;
+            background: rgba(46, 46, 46, 0.94);
+            border: 1px solid #545454;
             border-radius: 2px;
             box-shadow: none;
-            color: #e4dece;
+            color: #ede7d8;
             padding: 1rem;
             opacity: 1;
             transform: none;
@@ -529,8 +541,8 @@
         }
 
         .tile-preview {
-            background: #2b2b28;
-            border: 1px solid #464239;
+            background: #2a2a2a;
+            border: 1px solid #454545;
             border-radius: 2px;
         }
 
@@ -548,7 +560,7 @@
         }
 
         .tile-desc {
-            color: #aaa18c;
+            color: #b7af9d;
             font-size: 0.78rem;
         }
 
@@ -563,7 +575,7 @@
         }
 
         .footer {
-            border-top: 1px solid #565147;
+            border-top: 1px solid #545454;
             color: #7f796c;
             font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
             margin-top: 1.5rem;
@@ -673,7 +685,7 @@
 
         <div class="bento">
             <a href="ema-scanner.html" class="tile tile-ema">
-                <div class="tile-preview"><iframe src="ema-scanner.html" loading="lazy" title="EMA Scanner Preview"></iframe></div>
+                <div class="tile-preview"><iframe src="ema-scanner.html" loading="lazy" scrolling="no" title="EMA Scanner Preview"></iframe></div>
                 <div class="tile-header">
                     <span class="tile-tag tag-weekly">Updated Daily</span>
                 </div>
@@ -682,7 +694,7 @@
                 <div class="tile-arrow">Explore &rarr;</div>
             </a>
             <a href="spy-risk-metric.html" class="tile tile-spy">
-                <div class="tile-preview"><iframe src="spy-risk-metric.html" loading="lazy" title="SPY Risk Metric Preview"></iframe></div>
+                <div class="tile-preview"><iframe src="spy-risk-metric.html" loading="lazy" scrolling="no" title="SPY Risk Metric Preview"></iframe></div>
                 <div class="tile-header">
                     <span class="tile-tag tag-spy">Updated Daily</span>
                 </div>
@@ -691,7 +703,7 @@
                 <div class="tile-arrow">Explore &rarr;</div>
             </a>
             <a href="qqq-risk-metric.html" class="tile tile-qqq">
-                <div class="tile-preview"><iframe src="qqq-risk-metric.html" loading="lazy" title="QQQ Risk Metric Preview"></iframe></div>
+                <div class="tile-preview"><iframe src="qqq-risk-metric.html" loading="lazy" scrolling="no" title="QQQ Risk Metric Preview"></iframe></div>
                 <div class="tile-header">
                     <span class="tile-tag tag-spy">Updated Daily</span>
                 </div>
@@ -700,7 +712,7 @@
                 <div class="tile-arrow">Explore &rarr;</div>
             </a>
             <a href="risk-metric.html" class="tile tile-btc">
-                <div class="tile-preview"><iframe src="risk-metric.html" loading="lazy" title="Bitcoin Risk Metric Preview"></iframe></div>
+                <div class="tile-preview"><iframe src="risk-metric.html" loading="lazy" scrolling="no" title="Bitcoin Risk Metric Preview"></iframe></div>
                 <div class="tile-header">
                     <span class="tile-tag tag-weekly">Updated Daily</span>
                 </div>
@@ -709,7 +721,7 @@
                 <div class="tile-arrow">Explore &rarr;</div>
             </a>
             <a href="ema-strategy.html" class="tile tile-ema-strat">
-                <div class="tile-preview"><iframe src="ema-strategy.html" loading="lazy" title="8/13/21 EMA Strategy Preview"></iframe></div>
+                <div class="tile-preview"><iframe src="ema-strategy.html" loading="lazy" scrolling="no" title="8/13/21 EMA Strategy Preview"></iframe></div>
                 <div class="tile-header">
                     <span class="tile-tag tag-live">Live</span>
                 </div>
@@ -718,7 +730,7 @@
                 <div class="tile-arrow">Explore &rarr;</div>
             </a>
             <a href="dividend-tracker.html" class="tile tile-dividend">
-                <div class="tile-preview"><iframe src="dividend-tracker.html" loading="lazy" title="Dividend Tracker Preview"></iframe></div>
+                <div class="tile-preview"><iframe src="dividend-tracker.html" loading="lazy" scrolling="no" title="Dividend Tracker Preview"></iframe></div>
                 <div class="tile-header">
                     <span class="tile-tag tag-dividend">Personal</span>
                     <span class="tile-tag" style="background:rgba(250,204,21,0.15);color:#facc15;margin-left:6px">Under Construction</span>
@@ -736,9 +748,37 @@
             el.style.setProperty('--preview-scale', el.offsetWidth / 1200);
         });
     }
+    function preparePreviewFrame(frame) {
+        try {
+            const doc = frame.contentDocument;
+            if (!doc || !doc.documentElement || !doc.body) return;
+            const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+            doc.documentElement.setAttribute('data-theme', theme);
+            doc.documentElement.style.overflow = 'hidden';
+            doc.body.style.overflow = 'hidden';
+            doc.documentElement.style.scrollbarWidth = 'none';
+            doc.body.style.scrollbarWidth = 'none';
+            if (!doc.getElementById('preview-scrollbar-style')) {
+                const style = doc.createElement('style');
+                style.id = 'preview-scrollbar-style';
+                style.textContent = 'html,body{overflow:hidden!important;scrollbar-width:none!important}::-webkit-scrollbar{display:none!important}';
+                doc.head.appendChild(style);
+            }
+        } catch (error) {
+            // Local same-origin previews can be styled; anything else is left alone.
+        }
+    }
+    function syncPreviewThemes() {
+        document.querySelectorAll('.tile-preview iframe').forEach(preparePreviewFrame);
+    }
+    document.querySelectorAll('.tile-preview iframe').forEach(frame => {
+        frame.addEventListener('load', () => preparePreviewFrame(frame));
+        preparePreviewFrame(frame);
+    });
     scalePreviews();
     window.addEventListener('resize', scalePreviews);
-    if (window.DaveyTheme) window.DaveyTheme.init();
+    if (window.DaveyTheme) window.DaveyTheme.init({ onChange: syncPreviewThemes });
+    syncPreviewThemes();
     </script>
 
 </body>

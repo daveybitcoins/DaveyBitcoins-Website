@@ -2,13 +2,48 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { overflow-x: clip; }
 
+:root,
+[data-theme="dark"] {
+    color-scheme: dark;
+}
+
+[data-theme="light"] {
+    color-scheme: light;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-dimmer, var(--text-dim));
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
 :root, [data-theme="dark"] {
     --bg: #242424;
-    --bg-card: #2f2f2b;
-    --bg-hover: #383832;
-    --border: #565147;
-    --text: #e4dece;
-    --text-dim: #aaa18c;
+    --bg-card: #2e2e2e;
+    --bg-hover: #383838;
+    --border: #545454;
+    --text: #ede7d8;
+    --text-dim: #b7af9d;
     --green: #72c06a;
     --green-dim: #4b9e4f;
     --red: #e66d60;
@@ -16,7 +51,7 @@ html { overflow-x: clip; }
     --yellow: #d8bd7a;
     --blue: #f0b34d;
     --purple: #b8a36e;
-    --th-bg: #292925;
+    --th-bg: #282828;
     --th-text: #f1ead8;
     --signal-bull-pb-bg: #0f2a1a;
     --signal-bull-pb-border: var(--green-dim);
@@ -1020,11 +1055,11 @@ footer {
 :root,
 [data-theme="dark"] {
     --bg: #242424;
-    --bg-card: #2f2f2b;
-    --bg-hover: #383832;
-    --border: #565147;
-    --text: #e4dece;
-    --text-dim: #aaa18c;
+    --bg-card: #2e2e2e;
+    --bg-hover: #383838;
+    --border: #545454;
+    --text: #ede7d8;
+    --text-dim: #b7af9d;
     --green: #72c06a;
     --green-dim: #4b9e4f;
     --red: #e66d60;
@@ -1032,7 +1067,7 @@ footer {
     --yellow: #d8bd7a;
     --blue: #f0b34d;
     --purple: #b8a36e;
-    --th-bg: #292925;
+    --th-bg: #282828;
     --th-text: #f1ead8;
     --signal-bull-pb-bg: rgba(75, 158, 79, 0.12);
     --signal-bull-pb-border: rgba(114, 192, 106, 0.35);
@@ -1067,9 +1102,8 @@ footer {
 
 body {
     background:
-        radial-gradient(circle at 14% -8%, rgba(240, 179, 77, 0.10), transparent 34rem),
-        radial-gradient(circle at 84% 8%, rgba(114, 192, 106, 0.06), transparent 28rem),
-        linear-gradient(180deg, #30302d 0%, var(--bg) 58%, #20201e 100%);
+        radial-gradient(circle at 14% -8%, rgba(240, 179, 77, 0.08), transparent 34rem),
+        linear-gradient(180deg, #303030 0%, var(--bg) 58%, #202020 100%);
     color: var(--text);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
     letter-spacing: 0;
@@ -1083,10 +1117,10 @@ body {
 
 .bg-mesh {
     background:
-        linear-gradient(rgba(240, 179, 77, 0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(240, 179, 77, 0.025) 1px, transparent 1px);
+        linear-gradient(rgba(240, 179, 77, 0.026) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(240, 179, 77, 0.018) 1px, transparent 1px);
     background-size: 48px 48px;
-    opacity: 0.42;
+    opacity: 0.34;
 }
 
 .bg-mesh .orb {
