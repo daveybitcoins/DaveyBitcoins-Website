@@ -13,7 +13,7 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0f1e'/%3E%3Ctext x='16' y='23' font-family='serif' font-size='22' font-weight='bold' fill='%23f97316' text-anchor='middle'%3E%E2%82%BF%3C/text%3E%3C/svg%3E">
-<script src="js/theme.js?v=20260602"></script>
+<script src="js/theme.js?v=202606030001"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
 
@@ -68,7 +68,7 @@
   .theme-toggle:hover{background:var(--bg-card);border-color:var(--accent-blue)}
   h1{font-family:'Outfit',sans-serif;font-size:2.6rem;font-weight:700;letter-spacing:-2px;color:var(--text-heading);margin-bottom:6px}
   h1 span{background:linear-gradient(135deg,#ffbf63,#f7931a,#ef5d4f);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-  [data-theme="light"] h1 span{background:linear-gradient(135deg,#ca8a04,#ea580c,#dc2626);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  [data-theme="light"] h1 span{background:linear-gradient(135deg,#b8650b,#f7931a,#ef5d4f);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
   .subtitle{font-size:0.72rem;color:var(--text-dim);letter-spacing:3px;text-transform:uppercase}
   .live-dot{display:inline-block;width:6px;height:6px;background:#58c56f;border-radius:50%;margin-right:6px;animation:pulse 2s infinite}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
@@ -127,10 +127,10 @@
   .pine-pre::-webkit-scrollbar-track{background:transparent}
   .pine-pre::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
   .pine-pre .cm{color:var(--text-dimmer)}
-  .pine-pre .kw{color:#c084fc}
+  .pine-pre .kw{color:#c19a61}
   .pine-pre .fn{color:#f7931a}
-  .pine-pre .st{color:#86efac}
-  .pine-pre .nb{color:#fbbf24}
+  .pine-pre .st{color:#58c56f}
+  .pine-pre .nb{color:#ffbf63}
   @media(max-width:640px){
     header{padding-top:48px}
     .header-nav{position:relative;justify-content:center;margin-bottom:12px}
@@ -154,11 +154,11 @@
   [data-theme="light"]{
     --bg:#f8f2e6;--bg-card:#fff9ef;--bg-canvas:#fff3df;
     --border:#d6c7ad;--border-light:#eadcc8;--border-accent:#c7924a;
-    --text:#211b12;--text-dim:#6d6a5f;--text-dimmer:#837c70;
+    --text:#211b12;--text-dim:#6d6a5f;--text-dimmer:#837765;
     --text-bright:#211b12;--text-heading:#211b12;
     --accent-blue:#b8650b;--accent-purple:#8a6430;
     --header-line:linear-gradient(90deg,transparent,rgba(184,101,11,0.38),transparent);
-    --tooltip-bg:#fff9ef;--footer-text:#837c70;--meth-text:#5c574b;
+    --tooltip-bg:#fff9ef;--footer-text:#837765;--meth-text:#5c574b;
     --rc-bg:#fff3df;--rc-border:#d6c7ad;
     --btn-bg:#fff3df;--btn-text:#5c574b;--btn-border:#d6c7ad;--btn-hover:#efe2c6;--btn-hover-text:#211b12;
   }
@@ -570,7 +570,7 @@ async function main() {
   cards += '<div class="card" style="--glow:rgba(247,147,26,0.25)">' +
     '<div class="card-label">Weekly EMAs</div>' +
     '<div class="card-value" style="--val-color:#f7931a;font-size:1.1rem;line-height:1.6">' +
-    '<span style="color:#f59e0b">8W:</span> <span style="color:#fff">$' + lastW.ema8.toLocaleString(undefined, { maximumFractionDigits: 0 }) + '</span><br>' +
+    '<span style="color:#ffbf63">8W:</span> <span style="color:#fff">$' + lastW.ema8.toLocaleString(undefined, { maximumFractionDigits: 0 }) + '</span><br>' +
     '<span style="color:#f7931a">13W:</span> <span style="color:#fff">$' + lastW.ema13.toLocaleString(undefined, { maximumFractionDigits: 0 }) + '</span><br>' +
     '<span style="color:#ef5d4f">21W:</span> <span style="color:#fff">$' + lastW.ema21.toLocaleString(undefined, { maximumFractionDigits: 0 }) + '</span>' +
     '</div></div>';
@@ -583,9 +583,9 @@ async function main() {
       '<div class="card-value" id="unreal-value" style="--val-color:' + unrealColor + '">' + (unrealPct >= 0 ? '+' : '') + unrealPct.toFixed(1) + '%</div>' +
       '<div class="card-sub">Entry: $' + entryWeek.price.toLocaleString(undefined, { maximumFractionDigits: 0 }) + '</div></div>';
     window.__entryPrice = entryWeek.price;
-    cards += '<div class="card" style="--glow:#d5b56c">' +
+    cards += '<div class="card" style="--glow:#ffbf63">' +
       '<div class="card-label">Current Trade</div>' +
-      '<div class="card-value" style="--val-color:#d5b56c">#' + (trades.length + 1) + '</div>' +
+      '<div class="card-value" style="--val-color:#ffbf63">#' + (trades.length + 1) + '</div>' +
       '<div class="card-sub">' + trades.length + ' completed trades</div></div>';
   } else {
     if (trades.length > 0) {
@@ -596,9 +596,9 @@ async function main() {
         '<div class="card-value" style="--val-color:' + ltColor + '">' + (lt.returnPct >= 0 ? '+' : '') + lt.returnPct.toFixed(1) + '%</div>' +
         '<div class="card-sub">Exited ' + lt.exitDate + '</div></div>';
     }
-    cards += '<div class="card" style="--glow:#d5b56c">' +
+    cards += '<div class="card" style="--glow:#ffbf63">' +
       '<div class="card-label">Completed Trades</div>' +
-      '<div class="card-value" style="--val-color:#d5b56c">' + trades.length + '</div>' +
+      '<div class="card-value" style="--val-color:#ffbf63">' + trades.length + '</div>' +
       '<div class="card-sub">Since 2015</div></div>';
   }
   dash.innerHTML = cards;

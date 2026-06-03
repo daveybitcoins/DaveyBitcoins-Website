@@ -1056,9 +1056,9 @@
         if (stats) {
             function zoneColor(zone) {
                 if (zone.includes("Extreme Oversold")) return "var(--green)";
-                if (zone.includes("Oversold")) return "#38c775";
+                if (zone.includes("Oversold")) return "#58c56f";
                 if (zone.includes("Extreme Overbought")) return "var(--red)";
-                if (zone.includes("Overbought")) return "#f07f2e";
+                if (zone.includes("Overbought")) return "#f7931a";
                 return "var(--text-dim)";
             }
 
@@ -1071,11 +1071,11 @@
             }
 
             const compositeColor = stats.composite_score <= 10 ? "var(--green)"
-                : stats.composite_score <= 20 ? "#38c775"
+                : stats.composite_score <= 20 ? "#58c56f"
                 : stats.composite_score <= 40 ? "var(--yellow)"
                 : stats.composite_score <= 60 ? "var(--text-dim)"
                 : stats.composite_score <= 80 ? "var(--yellow)"
-                : stats.composite_score <= 90 ? "#f07f2e"
+                : stats.composite_score <= 90 ? "#f7931a"
                 : "var(--red)";
 
             const statsRows = stats.indicators.map(ind => `
@@ -1142,11 +1142,11 @@
                         <div class="stat-box" style="flex:3;text-align:left;padding:0.8rem 1rem">
                             <ul style="font-size:0.75rem;color:var(--text-dim);margin:0;padding:0 0 0 1rem;list-style:none;line-height:1.6">
                                 <li><strong style="color:var(--green)">0&ndash;10</strong> Extreme Oversold</li>
-                                <li><strong style="color:#38c775">10&ndash;20</strong> Oversold</li>
+                                <li><strong style="color:#58c56f">10&ndash;20</strong> Oversold</li>
                                 <li><strong style="color:var(--yellow)">20&ndash;40</strong> Weak</li>
                                 <li><strong style="color:var(--text-dim)">40&ndash;60</strong> Neutral</li>
                                 <li><strong style="color:var(--yellow)">60&ndash;80</strong> Healthy</li>
-                                <li><strong style="color:#f07f2e">80&ndash;90</strong> Overbought</li>
+                                <li><strong style="color:#f7931a">80&ndash;90</strong> Overbought</li>
                                 <li><strong style="color:var(--red)">90&ndash;100</strong> Extreme Overbought</li>
                             </ul>
                         </div>

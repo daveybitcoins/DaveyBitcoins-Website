@@ -47,7 +47,7 @@
 }
 
 [data-theme="light"] .portfolio-select {
-    background: linear-gradient(135deg, #fff, #f4f7fb);
+    background: linear-gradient(135deg, #fff, #fff3df);
     border-color: rgba(100, 171, 246, 0.4);
     color: #9fb4c7;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
@@ -482,7 +482,7 @@
 .freq-quarterly {
     background: rgba(247, 147, 26, 0.12);
     border-color: rgba(247, 147, 26, 0.32);
-    color: #81540e;
+    color: #b8650b;
 }
 
 .freq-semi-annual {

@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0f1e'/%3E%3Ctext x='16' y='23' font-family='serif' font-size='20' font-weight='bold' fill='%232563eb' text-anchor='middle'%3EQ%3C/text%3E%3C/svg%3E">
-<script src="js/theme.js?v=20260602"></script>
+<script src="js/theme.js?v=202606030001"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
 
@@ -122,7 +122,7 @@
   footer{text-align:center;margin-top:36px;padding-bottom:20px;font-size:0.58rem;color:var(--footer-text);letter-spacing:1.5px}
   .card-price{background:linear-gradient(140deg,var(--bg-card) 0%,rgba(20,19,15,0.95) 100%)}
   .card-price::after{content:'';position:absolute;inset:0;border-radius:14px;background:radial-gradient(ellipse at 50% 0%,rgba(247,147,26,0.08) 0%,transparent 65%);pointer-events:none}
-  [data-theme="light"] .card-price{background:linear-gradient(140deg,#fff 0%,#eef2f8 100%)}
+  [data-theme="light"] .card-price{background:linear-gradient(140deg,#fff9ef 0%,#fff3df 100%)}
   [data-theme="light"] .card-price::after{background:radial-gradient(ellipse at 50% 0%,rgba(178,122,37,0.08) 0%,transparent 65%)}
   .risk-lows-wrap{background:rgba(20,19,15,0.74);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:20px 24px;margin-bottom:36px;overflow-x:auto;transition:background 0.3s,border-color 0.3s}
   [data-theme="light"] .risk-lows-wrap{background:rgba(255,255,255,0.7);border-color:var(--border)}
@@ -135,8 +135,8 @@
   .risk-lows-table .rl-price{font-family:'Outfit',sans-serif;font-weight:600;color:var(--text-heading)}
   .risk-lows-table .rl-risk{font-family:'Outfit',sans-serif;font-weight:600}
   .risk-lows-table .rl-return{font-family:'Outfit',sans-serif;font-weight:600}
-  .info-btn{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);color:#818cf8;font-size:9px;font-weight:700;font-family:'Outfit',sans-serif;cursor:pointer;margin-left:6px;vertical-align:middle;transition:all 0.2s;line-height:1;position:relative}
-  .info-btn:hover{background:rgba(99,102,241,0.3);color:#a5b4fc}
+  .info-btn{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:rgba(247,147,26,0.15);border:1px solid rgba(247,147,26,0.3);color:#ffbf63;font-size:9px;font-weight:700;font-family:'Outfit',sans-serif;cursor:pointer;margin-left:6px;vertical-align:middle;transition:all 0.2s;line-height:1;position:relative}
+  .info-btn:hover{background:rgba(247,147,26,0.3);color:#f8f2e6}
   .info-popup{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;width:280px;font-size:0.7rem;font-weight:400;color:var(--text);line-height:1.6;box-shadow:0 8px 32px rgba(0,0,0,0.4);z-index:100;pointer-events:none}
   .info-popup::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--border)}
   .info-btn:hover .info-popup{display:block}
@@ -175,11 +175,11 @@
   [data-theme="light"]{
     --bg:#f8f2e6;--bg-card:#fff9ef;--bg-canvas:#fff3df;
     --border:#d6c7ad;--border-light:#eadcc8;--border-accent:#c7924a;
-    --text:#211b12;--text-dim:#6d6a5f;--text-dimmer:#837c70;
+    --text:#211b12;--text-dim:#6d6a5f;--text-dimmer:#837765;
     --text-bright:#211b12;--text-heading:#211b12;
     --accent-blue:#b8650b;--accent-purple:#8a6430;
     --header-line:linear-gradient(90deg,transparent,rgba(184,101,11,0.38),transparent);
-    --tooltip-bg:#fff9ef;--footer-text:#837c70;--meth-text:#5c574b;
+    --tooltip-bg:#fff9ef;--footer-text:#837765;--meth-text:#5c574b;
     --rc-bg:#fff3df;--rc-border:#d6c7ad;
     --btn-bg:#fff3df;--btn-text:#5c574b;--btn-border:#d6c7ad;--btn-hover:#efe2c6;--btn-hover-text:#211b12;
   }
@@ -237,7 +237,7 @@
       <div class="risk-bar-wrap"><div class="risk-bar-bg"></div><div class="risk-bar-needle" id="needle"></div></div>
       <div class="zone-labels"><span>Accumulate</span><span>Neutral</span><span>Caution</span></div></div>
     <div class="card" style="--glow:#58c56f"><div class="card-label">Fair Value</div><div class="card-value" id="vFair" style="--val-color:#58c56f">—</div><div class="card-sub" id="vGrowth"></div></div>
-    <div class="card" style="--glow:#d5b56c"><div class="card-label">Deviation</div><div class="card-value" id="vDev" style="--val-color:#d5b56c">—</div></div>
+    <div class="card" style="--glow:#ffbf63"><div class="card-label">Deviation</div><div class="card-value" id="vDev" style="--val-color:#ffbf63">—</div></div>
     <div class="card" style="--glow:#ef5d4f"><div class="card-label">VIX (Close)</div><div class="card-value" id="vVixLevel" style="--val-color:#ef5d4f">—</div><div class="card-sub" id="vVixImplied"></div></div>
   </div>
   <div class="risk-table-wrap">
@@ -376,7 +376,7 @@ function themeColors() {
     gridZero: light ? '#d6c7ad' : '#6c6558',
     axisText: light ? '#6d6a5f' : '#a59a88',
     regressionLine: light ? 'rgba(184,101,11,0.46)' : 'rgba(247,147,26,0.46)',
-    zoneLabels: light ? '#837c70' : '#a59a88',
+    zoneLabels: light ? '#837765' : '#a59a88',
     zoneA: light ? 'rgba(114,192,106,0.06)' : 'rgba(114,192,106,0.07)',
     zoneB: light ? 'rgba(132,204,22,0.03)' : 'rgba(132,204,22,0.035)',
     zoneC: light ? 'rgba(247,147,26,0.04)' : 'rgba(247,147,26,0.05)',
@@ -1138,8 +1138,8 @@ async function main() {
         '<div class="card" style="--glow:#f7931a"><div class="card-label">Total Invested</div>' +
         '<div class="card-value" style="font-size:1.5rem;--val-color:#f7931a">$' + r.totalInvested.toLocaleString(undefined,{maximumFractionDigits:0}) + '</div>' +
         '<div class="card-sub">Buying ' + r.buyCount + ' of ' + r.totalPeriods + ' periods</div></div>' +
-        '<div class="card" style="--glow:#d5b56c"><div class="card-label">Accumulated ' + ASSET + '</div>' +
-        '<div class="card-value" style="font-size:1.5rem;--val-color:#d5b56c">' + r.totalShares.toFixed(2) + ' <span style="font-size:0.7rem;color:var(--text-dim)">' + ASSET + '</span></div>' +
+        '<div class="card" style="--glow:#ffbf63"><div class="card-label">Accumulated ' + ASSET + '</div>' +
+        '<div class="card-value" style="font-size:1.5rem;--val-color:#ffbf63">' + r.totalShares.toFixed(2) + ' <span style="font-size:0.7rem;color:var(--text-dim)">' + ASSET + '</span></div>' +
         '<div class="card-sub">Avg: $' + r.avgPrice.toLocaleString(undefined,{maximumFractionDigits:2}) + ' · Last: $' + r.lastPrice.toLocaleString(undefined,{maximumFractionDigits:2}) + '</div></div>' +
         '<div class="card" style="--glow:' + gainColor + '"><div class="card-label">Current Portfolio Value</div>' +
         '<div class="card-value" style="font-size:1.5rem;--val-color:' + gainColor + '">$' + r.portfolioValue.toLocaleString(undefined,{maximumFractionDigits:0}) + '</div>' +

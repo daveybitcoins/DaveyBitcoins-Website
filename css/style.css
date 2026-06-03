@@ -202,7 +202,7 @@ header::after {
     font-size: 1.8rem;
     font-weight: 700;
     letter-spacing: -1px;
-    background: linear-gradient(135deg, #f8f9fb 0%, #64abf6 50%, #38c775 100%);
+    background: linear-gradient(135deg, #f8f9fb 0%, #64abf6 50%, #58c56f 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -344,63 +344,63 @@ header::after {
 .pill-spy {
     background: rgba(34, 197, 94, 0.1);
     border-color: rgba(34, 197, 94, 0.25);
-    color: #38c775;
+    color: #58c56f;
 }
 
 .pill-qqq {
     background: rgba(168, 85, 247, 0.1);
     border-color: rgba(168, 85, 247, 0.25);
-    color: #ac6af1;
+    color: #c19a61;
 }
 
 .pill-btc {
     background: rgba(249, 115, 22, 0.1);
     border-color: rgba(249, 115, 22, 0.25);
-    color: #f07f2e;
+    color: #f7931a;
 }
 
 .pill-vix-low {
     background: rgba(34, 197, 94, 0.1);
     border-color: rgba(34, 197, 94, 0.25);
-    color: #38c775;
+    color: #58c56f;
 }
 
 .pill-vix-mid {
     background: rgba(210, 153, 34, 0.1);
     border-color: rgba(210, 153, 34, 0.25);
-    color: #d09f34;
+    color: #ffbf63;
 }
 
 .pill-vix-high {
     background: rgba(249, 115, 22, 0.1);
     border-color: rgba(249, 115, 22, 0.25);
-    color: #f07f2e;
+    color: #f7931a;
 }
 
 .pill-vix-extreme {
     background: rgba(229, 83, 75, 0.12);
     border-color: rgba(229, 83, 75, 0.3);
-    color: #de5f58;
+    color: #ef5d4f;
 }
 
 .pill-bull {
     background: rgba(63, 185, 80, 0.12);
     border-color: rgba(63, 185, 80, 0.3);
-    color: #38c775;
+    color: #58c56f;
     margin-left: auto;
 }
 
 .pill-bear {
     background: rgba(229, 83, 75, 0.12);
     border-color: rgba(229, 83, 75, 0.3);
-    color: #de5f58;
+    color: #ef5d4f;
     margin-left: auto;
 }
 
 .pill-neutral {
     background: rgba(210, 153, 34, 0.1);
     border-color: rgba(210, 153, 34, 0.25);
-    color: #d09f34;
+    color: #ffbf63;
     margin-left: auto;
 }
 
@@ -852,7 +852,7 @@ tr:hover td { background: var(--bg-hover); }
 
 .signal-full-bull       { background: var(--green-dim); color: #fff; }
 .signal-bull-pullback   { background: var(--signal-bull-pb-bg); color: var(--green); border: 1px solid var(--signal-bull-pb-border); }
-.signal-bull-breakdown  { background: var(--signal-breakdown-bg); color: #81540e; border: 1px solid var(--signal-breakdown-border); }
+.signal-bull-breakdown  { background: var(--signal-breakdown-bg); color: #b8650b; border: 1px solid var(--signal-breakdown-border); }
 .signal-bullish-unstacked { background: var(--signal-unstacked-bull-bg); color: var(--signal-unstacked-bull-text); border: 1px solid var(--signal-unstacked-bull-border); }
 .signal-full-bear       { background: var(--red-dim); color: #fff; }
 .signal-bear-rally      { background: var(--signal-bear-rally-bg); color: var(--red); border: 1px solid var(--red-dim); }
@@ -869,8 +869,8 @@ tr:hover td { background: var(--bg-hover); }
 }
 
 .vol-low { background: var(--signal-bull-pb-bg); color: var(--green); border: 1px solid var(--green-dim); }
-.vol-high { background: var(--signal-breakdown-bg); color: #81540e; border: 1px solid var(--signal-breakdown-border); }
-.vol-normal { background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.25); }
+.vol-high { background: var(--signal-breakdown-bg); color: #b8650b; border: 1px solid var(--signal-breakdown-border); }
+.vol-normal { background: rgba(159, 180, 199, 0.15); color: #9fb4c7; border: 1px solid rgba(159, 180, 199, 0.25); }
 
 /* === COLOR UTILITIES === */
 .pos { color: var(--green); }
@@ -918,7 +918,7 @@ tr:hover td { background: var(--bg-hover); }
 
 .note-item.bull { border-left-color: var(--green); }
 .note-item.bear { border-left-color: var(--red); }
-.note-item.caution { border-left-color: #81540e; }
+.note-item.caution { border-left-color: #b8650b; }
 .note-item.alert { border-left-color: var(--blue); }
 
 /* === NEWS DRIVERS === */
@@ -1209,7 +1209,7 @@ header::after,
 [data-theme="light"] .holding-input,
 [data-theme="light"] .editable-cell,
 [data-theme="light"] .inline-edit {
-    background: #fffaf0;
+    background: #fff9ef;
 }
 
 .back-link:hover,
@@ -1251,7 +1251,7 @@ header::after,
 [data-theme="light"] .tab.active {
     background: #f4ead1;
     border-bottom-color: var(--blue);
-    color: #81540e;
+    color: #b8650b;
 }
 
 [data-theme="light"] .tab.active {
@@ -1302,7 +1302,7 @@ main {
 }
 
 .card h3 {
-    color: #81540e;
+    color: #b8650b;
     font-family: 'IBM Plex Mono', 'JetBrains Mono', 'SF Mono', monospace;
     font-size: 0.78rem;
     text-transform: uppercase;
@@ -1393,7 +1393,7 @@ tr:hover td {
 .pill-neutral {
     background: rgba(247, 147, 26, 0.1);
     border-color: rgba(247, 147, 26, 0.32);
-    color: #81540e;
+    color: #b8650b;
 }
 
 .pill-date,
@@ -1402,7 +1402,7 @@ tr:hover td {
 .vol-normal {
     background: rgba(247, 147, 26, 0.1);
     border-color: rgba(247, 147, 26, 0.28);
-    color: #81540e;
+    color: #b8650b;
 }
 
 .pill-spy,
