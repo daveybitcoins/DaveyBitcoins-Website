@@ -38,21 +38,21 @@ html { overflow-x: clip; }
 }
 
 :root, [data-theme="dark"] {
-    --bg: #262626;
-    --bg-card: #303030;
-    --bg-hover: #3a3a3a;
-    --border: #505050;
-    --text: #f0f0ea;
-    --text-dim: #b8b8b0;
-    --green: #72c06a;
-    --green-dim: #4b9e4f;
-    --red: #e66d60;
-    --red-dim: #c9564b;
-    --yellow: #d8bd7a;
-    --blue: #f0b34d;
-    --purple: #b8a36e;
-    --th-bg: #2b2b2b;
-    --th-text: #f1ead8;
+    --bg: #080806;
+    --bg-card: #14130f;
+    --bg-hover: #1f1c15;
+    --border: #3d3526;
+    --text: #f8f2e6;
+    --text-dim: #a59a88;
+    --green: #58c56f;
+    --green-dim: #3c9e53;
+    --red: #ef5d4f;
+    --red-dim: #c84a40;
+    --yellow: #ffbf63;
+    --blue: #f7931a;
+    --purple: #c19a61;
+    --th-bg: #14130f;
+    --th-text: #f8f2e6;
     --signal-bull-pb-bg: #0f2a1a;
     --signal-bull-pb-border: var(--green-dim);
     --signal-breakdown-bg: #2a1f0f;
@@ -67,27 +67,27 @@ html { overflow-x: clip; }
 }
 
 [data-theme="light"] {
-    --bg: #f6f8fa;
-    --bg-card: #ffffff;
-    --bg-hover: #f0f3f6;
-    --border: #d0d7de;
-    --text: #1f2328;
-    --text-dim: #656d76;
-    --green: #1a7f37;
-    --green-dim: #2da44e;
-    --red: #cf222e;
-    --red-dim: #d1242f;
-    --yellow: #9a6700;
-    --blue: #0969da;
-    --purple: #8250df;
-    --th-bg: #eaeef2;
-    --th-text: #1f2328;
+    --bg: #f8f2e6;
+    --bg-card: #fff9ef;
+    --bg-hover: #eee3d2;
+    --border: #d6c7ad;
+    --text: #211b12;
+    --text-dim: #6d6252;
+    --green: #267a38;
+    --green-dim: #1f6a31;
+    --red: #b83f35;
+    --red-dim: #9f342c;
+    --yellow: #9a650f;
+    --blue: #b8650b;
+    --purple: #8a6430;
+    --th-bg: #eadcc8;
+    --th-text: #211b12;
     --signal-bull-pb-bg: #dafbe1;
     --signal-bull-pb-border: #2da44e;
     --signal-breakdown-bg: #fff8c5;
     --signal-breakdown-border: #9a6700;
     --signal-unstacked-bull-bg: #dafbe1;
-    --signal-unstacked-bull-text: #1a7f37;
+    --signal-unstacked-bull-text: #267a38;
     --signal-unstacked-bull-border: #a7d8b0;
     --signal-bear-rally-bg: #ffebe9;
     --signal-unstacked-bear-bg: #ffebe9;
@@ -121,19 +121,19 @@ body {
 }
 .orb-1 {
     width: 700px; height: 700px;
-    background: radial-gradient(circle, #2563eb, transparent 65%);
+    background: radial-gradient(circle, #9fb4c7, transparent 65%);
     top: -10%; left: -10%;
 }
 .orb-2 {
     width: 600px; height: 600px;
-    background: radial-gradient(circle, #7c3aed, transparent 65%);
+    background: radial-gradient(circle, #c19a61, transparent 65%);
     top: 40%; right: -15%;
     animation-delay: -7s;
     animation-duration: 25s;
 }
 .orb-3 {
     width: 500px; height: 500px;
-    background: radial-gradient(circle, #f97316, transparent 65%);
+    background: radial-gradient(circle, #f7931a, transparent 65%);
     bottom: -10%; left: 30%;
     animation-delay: -14s;
     animation-duration: 22s;
@@ -209,7 +209,7 @@ header::after {
 }
 
 [data-theme="light"] .header-content h1 {
-    background: linear-gradient(135deg, #1f2328 0%, #0969da 50%, #1a7f37 100%);
+    background: linear-gradient(135deg, #211b12 0%, #b8650b 50%, #267a38 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -1051,58 +1051,60 @@ footer {
     .tab { padding: 0.6rem 0.75rem; font-size: 0.8rem; }
 }
 
-/* === TERMINAL MARKET DESK THEME === */
+/* === BITCOIN NOIR THEME === */
 :root,
 [data-theme="dark"] {
-    --bg: #262626;
-    --bg-card: #303030;
-    --bg-hover: #3a3a3a;
-    --border: #505050;
-    --text: #f0f0ea;
-    --text-dim: #b8b8b0;
-    --green: #72c06a;
-    --green-dim: #4b9e4f;
-    --red: #e66d60;
-    --red-dim: #c9564b;
-    --yellow: #d8bd7a;
-    --blue: #f0b34d;
-    --purple: #b8a36e;
-    --th-bg: #2b2b2b;
-    --th-text: #f1ead8;
-    --signal-bull-pb-bg: rgba(75, 158, 79, 0.12);
-    --signal-bull-pb-border: rgba(114, 192, 106, 0.35);
-    --signal-breakdown-bg: rgba(240, 179, 77, 0.12);
-    --signal-breakdown-border: rgba(240, 179, 77, 0.35);
-    --signal-unstacked-bull-bg: rgba(75, 158, 79, 0.1);
-    --signal-unstacked-bull-text: #72c06a;
-    --signal-unstacked-bull-border: rgba(114, 192, 106, 0.28);
-    --signal-bear-rally-bg: rgba(230, 109, 96, 0.11);
-    --signal-unstacked-bear-bg: rgba(230, 109, 96, 0.1);
-    --signal-unstacked-bear-text: #e66d60;
-    --signal-unstacked-bear-border: rgba(230, 109, 96, 0.28);
+    --bg: #080806;
+    --bg-card: #14130f;
+    --bg-hover: #1f1c15;
+    --border: #3d3526;
+    --text: #f8f2e6;
+    --text-dim: #a59a88;
+    --green: #58c56f;
+    --green-dim: #3c9e53;
+    --red: #ef5d4f;
+    --red-dim: #c84a40;
+    --yellow: #ffbf63;
+    --blue: #f7931a;
+    --purple: #c19a61;
+    --th-bg: #14130f;
+    --th-text: #f8f2e6;
+    --signal-bull-pb-bg: rgba(88, 197, 111, 0.12);
+    --signal-bull-pb-border: rgba(88, 197, 111, 0.35);
+    --signal-breakdown-bg: rgba(247, 147, 26, 0.12);
+    --signal-breakdown-border: rgba(247, 147, 26, 0.35);
+    --signal-unstacked-bull-bg: rgba(88, 197, 111, 0.1);
+    --signal-unstacked-bull-text: #58c56f;
+    --signal-unstacked-bull-border: rgba(88, 197, 111, 0.28);
+    --signal-bear-rally-bg: rgba(239, 93, 79, 0.11);
+    --signal-unstacked-bear-bg: rgba(239, 93, 79, 0.1);
+    --signal-unstacked-bear-text: #ef5d4f;
+    --signal-unstacked-bear-border: rgba(239, 93, 79, 0.28);
 }
 
 [data-theme="light"] {
-    --bg: #f3f0e7;
-    --bg-card: #fffaf0;
-    --bg-hover: #ebe4d7;
-    --border: #c9c0ad;
-    --text: #1f211b;
-    --text-dim: #6d6a5f;
+    --bg: #f8f2e6;
+    --bg-card: #fff9ef;
+    --bg-hover: #eee3d2;
+    --border: #d6c7ad;
+    --text: #211b12;
+    --text-dim: #6d6252;
     --green: #267a38;
     --green-dim: #1e6b31;
     --red: #b23b32;
     --red-dim: #a6342b;
     --yellow: #9a650f;
-    --blue: #9a650f;
-    --purple: #705b1f;
-    --th-bg: #e7dfcf;
-    --th-text: #25261f;
+    --blue: #b8650b;
+    --purple: #8a6430;
+    --th-bg: #eadcc8;
+    --th-text: #211b12;
 }
 
 body {
     background:
-        linear-gradient(180deg, #303030 0%, var(--bg) 58%, #222222 100%);
+        radial-gradient(circle at 12% -10%, rgba(247, 147, 26, 0.12), transparent 30rem),
+        radial-gradient(circle at 86% 8%, rgba(193, 154, 97, 0.08), transparent 26rem),
+        linear-gradient(180deg, #14130f 0%, var(--bg) 62%, #050504 100%);
     color: var(--text);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
     letter-spacing: 0;
@@ -1110,8 +1112,8 @@ body {
 
 [data-theme="light"] body {
     background:
-        radial-gradient(circle at 12% -12%, rgba(154, 101, 15, 0.13), transparent 32rem),
-        linear-gradient(180deg, #fbf7ec 0%, var(--bg) 100%);
+        radial-gradient(circle at 12% -12%, rgba(184, 101, 11, 0.14), transparent 32rem),
+        linear-gradient(180deg, #fff9ef 0%, var(--bg) 100%);
 }
 
 .bg-mesh {
@@ -1156,7 +1158,7 @@ header::after,
     width: 100%;
     height: 1px;
     margin-top: 0.85rem;
-    background: linear-gradient(90deg, transparent, rgba(240, 179, 77, 0.42), transparent);
+    background: linear-gradient(90deg, transparent, rgba(247, 147, 26, 0.46), transparent);
 }
 
 .header-content h1,
@@ -1219,7 +1221,7 @@ header::after,
 .holding-input:focus,
 .editable-cell:hover {
     border-color: var(--blue);
-    box-shadow: inset 3px 0 0 rgba(240, 179, 77, 0.65);
+    box-shadow: inset 3px 0 0 rgba(247, 147, 26, 0.65);
     transform: none;
 }
 
@@ -1365,7 +1367,7 @@ td {
 }
 
 tr:hover td {
-    background: rgba(240, 179, 77, 0.055);
+    background: rgba(247, 147, 26, 0.055);
 }
 
 .signal,
@@ -1389,8 +1391,8 @@ tr:hover td {
 }
 
 .pill-neutral {
-    background: rgba(240, 179, 77, 0.1);
-    border-color: rgba(240, 179, 77, 0.32);
+    background: rgba(247, 147, 26, 0.1);
+    border-color: rgba(247, 147, 26, 0.32);
     color: #81540e;
 }
 
@@ -1398,8 +1400,8 @@ tr:hover td {
 .pill-count,
 .pill-qqq,
 .vol-normal {
-    background: rgba(240, 179, 77, 0.1);
-    border-color: rgba(240, 179, 77, 0.28);
+    background: rgba(247, 147, 26, 0.1);
+    border-color: rgba(247, 147, 26, 0.28);
     color: #81540e;
 }
 
@@ -1420,7 +1422,7 @@ tr:hover td {
 .pill-vix-high {
     background: rgba(226, 132, 52, 0.11);
     border-color: rgba(226, 132, 52, 0.32);
-    color: #e28434;
+    color: #e46045;
 }
 
 .ticker-dropdown,

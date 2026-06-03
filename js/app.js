@@ -343,7 +343,7 @@
     }, 60000);
 
     function riskColor(r) {
-        const stops = [[0,[114,192,106]],[0.20,[114,192,106]],[0.40,[132,204,22]],[0.55,[240,179,77]],[0.70,[226,132,52]],[0.85,[230,109,96]],[1,[152,68,56]]];
+        const stops = [[0,[104,130,156]],[0.16,[80,155,118]],[0.32,[88,197,111]],[0.48,[255,191,99]],[0.64,[247,147,26]],[0.78,[228,96,69]],[0.90,[239,93,79]],[1,[122,32,25]]];
         let lo = stops[0], hi = stops[stops.length - 1];
         for (let i = 0; i < stops.length - 1; i++) {
             if (r >= stops[i][0] && r <= stops[i + 1][0]) { lo = stops[i]; hi = stops[i + 1]; break; }
@@ -357,7 +357,7 @@
         if (risk_combo == null) return "";
         const r = risk_combo;
         const color = riskColor(r);
-        const barGrad = "linear-gradient(90deg,#72c06a 0%,#72c06a 25%,#84cc16 42%,#f0b34d 62%,#e28434 76%,#e66d60 90%,#984438 100%)";
+        const barGrad = "linear-gradient(90deg,#68829c 0%,#509b76 18%,#58c56f 34%,#ffbf63 52%,#f7931a 70%,#e46045 86%,#7a2019 100%)";
         return `
             <div class="risk-bar-wrap" style="margin-top:0.5rem;padding:0.4rem 0.5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);">
                 <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;">
@@ -454,10 +454,10 @@
             const last = pts[n - 1];
             const risk = last.riskCombo;
             let zone, zone_color;
-            if (risk < 0.20) { zone = "Accumulate"; zone_color = "#72c06a"; }
-            else if (risk < 0.50) { zone = "Neutral"; zone_color = "#10b981"; }
-            else if (risk < 0.80) { zone = "Caution"; zone_color = "#eab308"; }
-            else { zone = "Euphoria"; zone_color = "#ef4444"; }
+            if (risk < 0.20) { zone = "Accumulate"; zone_color = "#58c56f"; }
+            else if (risk < 0.50) { zone = "Neutral"; zone_color = "#80b883"; }
+            else if (risk < 0.80) { zone = "Caution"; zone_color = "#f7931a"; }
+            else { zone = "Euphoria"; zone_color = "#ef5d4f"; }
 
             btcRiskData = { risk_combo: risk, zone, zone_color };
         } catch (e) {
@@ -517,10 +517,10 @@
             const risk = Math.max(0, Math.min(1, (last.residual - minRes) / resRange));
 
             let zone, zone_color;
-            if (risk < 0.25) { zone = "Accumulate"; zone_color = "#72c06a"; }
-            else if (risk < 0.50) { zone = "Neutral"; zone_color = "#10b981"; }
-            else if (risk < 0.75) { zone = "Caution"; zone_color = "#eab308"; }
-            else { zone = "Euphoria"; zone_color = "#ef4444"; }
+            if (risk < 0.25) { zone = "Accumulate"; zone_color = "#58c56f"; }
+            else if (risk < 0.50) { zone = "Neutral"; zone_color = "#80b883"; }
+            else if (risk < 0.75) { zone = "Caution"; zone_color = "#ffbf63"; }
+            else { zone = "Euphoria"; zone_color = "#ef5d4f"; }
 
             spyRiskData = { risk_combo: risk, zone, zone_color };
         } catch (e) {
@@ -580,10 +580,10 @@
             const risk = Math.max(0, Math.min(1, (last.residual - minRes) / resRange));
 
             let zone, zone_color;
-            if (risk < 0.25) { zone = "Accumulate"; zone_color = "#72c06a"; }
-            else if (risk < 0.50) { zone = "Neutral"; zone_color = "#10b981"; }
-            else if (risk < 0.75) { zone = "Caution"; zone_color = "#eab308"; }
-            else { zone = "Euphoria"; zone_color = "#ef4444"; }
+            if (risk < 0.25) { zone = "Accumulate"; zone_color = "#58c56f"; }
+            else if (risk < 0.50) { zone = "Neutral"; zone_color = "#80b883"; }
+            else if (risk < 0.75) { zone = "Caution"; zone_color = "#ffbf63"; }
+            else { zone = "Euphoria"; zone_color = "#ef5d4f"; }
 
             qqqRiskData = { risk_combo: risk, zone, zone_color };
         } catch (e) {
