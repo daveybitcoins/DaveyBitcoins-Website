@@ -265,14 +265,14 @@
     <h4>Forward P/E Price Projections</h4>
     <div class="pe-proj-sub">
       S&P 500 EPS growth:
-      <input type="number" id="epsGrowthInput" value="8" min="0" max="30" step="0.5" style="width:60px;text-align:center;padding:4px 6px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-weight:600;margin:0 4px">%
+      <input type="number" id="epsGrowthInput" value="18" min="0" max="30" step="0.5" style="width:60px;text-align:center;padding:4px 6px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-weight:600;margin:0 4px">%
       Y-o-Y · SPY ≈ SPX ÷ 10
     </div>
     <table class="pe-proj-table" id="peProjTable">
       <thead id="peProjHead"></thead>
       <tbody id="peProjBody"></tbody>
     </table>
-    <div style="text-align:center;font-size:0.65rem;color:var(--meth-text);margin-top:8px;letter-spacing:0.3px">Base EPS: $271 (2025 actual) · Current EPS Estimate 2026: $320 · Growth applied from 2025 forward · Last updated: Mar 2026 · Next recommended update: Jul 2026</div>
+    <div style="text-align:center;font-size:0.65rem;color:var(--meth-text);margin-top:8px;letter-spacing:0.3px">Base EPS: $271 (2025 actual) · Default growth: 18% FactSet CY2026 analyst consensus · Growth applied from 2025 forward · Last updated: Apr 2026 · Next recommended update: Jul 2026</div>
   </div>
   <div class="risk-lows-wrap">
     <h4>Notable Historic Market Events</h4>
@@ -579,7 +579,7 @@ async function main() {
     const baseEPS2025 = 271; // 2025 actual SPX EPS (FactSet CY2025: $271.23)
     const baseYear = 2025;
     const years = [2026, 2027, 2028, 2029, 2030, 2031];
-    const peMultiples = [15, 16, 17, 18, 19, 20, 21, 22];
+    const peMultiples = [16, 17, 18, 19, 20, 21, 22, 23, 24];
 
     // Project EPS for each year using growth from 2025 base
     const epsMap = {};
@@ -614,7 +614,7 @@ async function main() {
   }
 
   // Initial render + listen for changes
-  buildPEProjectionTable(8);
+  buildPEProjectionTable(18);
   document.getElementById('epsGrowthInput').addEventListener('input', function() {
     const val = parseFloat(this.value);
     if (!isNaN(val) && val >= 0 && val <= 30) buildPEProjectionTable(val);
