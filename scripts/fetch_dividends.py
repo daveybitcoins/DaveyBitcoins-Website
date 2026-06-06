@@ -44,6 +44,41 @@ MONTHLY_FALLBACK = {
 FREQ_WORKERS = 20
 
 
+def payments_per_year(frequency):
+    return {
+        "monthly": 12,
+        "quarterly": 4,
+        "semi-annual": 2,
+        "annual": 1,
+    }.get(frequency)
+
+
+def annualized_rate_from_payments(payments, frequency):
+    """Estimate forward annual rate for funds with incomplete payment history."""
+    expected = payments_per_year(frequency)
+    if not expected or not payments:
+        return None
+
+    recent_payments = sorted(payments, key=lambda p: p.get("ex_date") or "")[-expected:]
+    amounts = [
+        p.get("amount")
+        for p in recent_payments
+        if p.get("amount") is not None and p.get("amount") > 0
+    ]
+    if not amounts:
+        return None
+
+    if len(amounts) >= expected:
+        return round(sum(amounts), 4)
+
+    return round((sum(amounts) / len(amounts)) * expected, 4)
+
+
+def should_annualize_incomplete_history(payments, frequency):
+    expected = payments_per_year(frequency)
+    return bool(expected and payments and len(payments) < expected)
+
+
 def _fetch_yahoo_data(symbol):
     """Fetch dividend history and current price from Yahoo Finance."""
     import yfinance as yf
@@ -294,10 +329,10 @@ def main():
     payment_refreshes = 0
     rate_refreshes = 0
     for symbol, data in tickers.items():
-        if symbol in detected_freq:
-            data["frequency"] = detected_freq[symbol]
-        elif symbol in MONTHLY_FALLBACK:
+        if symbol in MONTHLY_FALLBACK:
             data["frequency"] = "monthly"
+        elif symbol in detected_freq:
+            data["frequency"] = detected_freq[symbol]
         else:
             data["frequency"] = "quarterly"
 
@@ -317,6 +352,13 @@ def main():
             if price:
                 data["dividend_yield"] = round((yahoo_rates[symbol] / price) * 100, 2)
             rate_refreshes += 1
+
+        annualized_rate = annualized_rate_from_payments(data.get("last_payments", []), data.get("frequency"))
+        if annualized_rate and should_annualize_incomplete_history(data.get("last_payments", []), data.get("frequency")):
+            data["dividend_rate"] = annualized_rate
+            price = data["close"] or yahoo_prices.get(symbol)
+            if price:
+                data["dividend_yield"] = round((annualized_rate / price) * 100, 2)
 
     if price_backfills:
         print(f"  Backfilled {price_backfills} missing prices from Yahoo Finance")
@@ -358,6 +400,18 @@ def main():
                     tickers[symbol]["dividend_yield"] = round((fb_rates[symbol] / price) * 100, 2)
             if symbol in fb_payments:
                 tickers[symbol]["last_payments"] = fb_payments[symbol]
+            annualized_rate = annualized_rate_from_payments(
+                tickers[symbol].get("last_payments", []),
+                tickers[symbol].get("frequency")
+            )
+            if annualized_rate and should_annualize_incomplete_history(
+                tickers[symbol].get("last_payments", []),
+                tickers[symbol].get("frequency")
+            ):
+                tickers[symbol]["dividend_rate"] = annualized_rate
+                price = tickers[symbol]["close"] or fb_prices.get(symbol)
+                if price:
+                    tickers[symbol]["dividend_yield"] = round((annualized_rate / price) * 100, 2)
 
     print(f"\n{len(tickers)} tickers with dividend data")
 

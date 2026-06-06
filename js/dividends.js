@@ -7,6 +7,12 @@
     const STORAGE_KEY = "dividend_holdings";
     const PORTFOLIOS_KEY = "dividend_portfolios";
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    const MONTHLY_FREQUENCY_OVERRIDES = {
+        JEPI: true, JEPQ: true, QQQI: true, SPYI: true, DIVO: true, NUSI: true,
+        QYLD: true, XYLD: true, RYLD: true, SDIV: true, SPHD: true,
+        BTCI: true, KSLV: true, MLPI: true, KGLD: true, QDVO: true, GPIX: true,
+        ROCQ: true, ROCY: true, SGOV: true, XBCI: true, AIPI: true,
+    };
 
     let dividendData = null;
     let portfolios = [];
@@ -408,9 +414,9 @@
         var holdings = getHoldings();
 
         holdings.forEach(function (h) {
-            var div = getDividendInfo(h.ticker);
-            if (div && div.dividend_rate) {
-                totalAnnual += h.shares * div.dividend_rate;
+            var annualRate = getAnnualDividendRate(h.ticker);
+            if (annualRate) {
+                totalAnnual += h.shares * annualRate;
             }
             var price = getLivePrice(h.ticker);
             if (price) totalValue += h.shares * price;
@@ -428,11 +434,53 @@
         return dividendData.tickers[ticker] || null;
     }
 
+    function getDividendFrequency(ticker, div) {
+        if (MONTHLY_FREQUENCY_OVERRIDES[String(ticker || "").toUpperCase()]) return "monthly";
+        return div && div.frequency ? div.frequency : null;
+    }
+
+    function paymentsPerYear(freq) {
+        if (freq === "monthly") return 12;
+        if (freq === "quarterly") return 4;
+        if (freq === "semi-annual") return 2;
+        if (freq === "annual") return 1;
+        return null;
+    }
+
+    function annualizedRateFromPayments(div, freq) {
+        if (!div || !div.last_payments || div.last_payments.length === 0) return null;
+        var expected = paymentsPerYear(freq);
+        if (!expected) return null;
+
+        var payments = div.last_payments
+            .slice()
+            .sort(function (a, b) { return String(a.ex_date).localeCompare(String(b.ex_date)); })
+            .slice(-expected)
+            .map(function (p) { return Number(p.amount); })
+            .filter(function (amount) { return Number.isFinite(amount) && amount > 0; });
+        if (payments.length === 0) return null;
+
+        var sum = payments.reduce(function (acc, amount) { return acc + amount; }, 0);
+        if (payments.length >= expected) return sum;
+        return (sum / payments.length) * expected;
+    }
+
+    function getAnnualDividendRate(ticker) {
+        var div = getDividendInfo(ticker);
+        if (!div) return null;
+        var freq = getDividendFrequency(ticker, div);
+        var annualized = annualizedRateFromPayments(div, freq);
+        var expected = paymentsPerYear(freq);
+        if (annualized && expected && div.last_payments && div.last_payments.length < expected) return annualized;
+        return div.dividend_rate || annualized || null;
+    }
+
     function getDividendYield(ticker) {
         var div = getDividendInfo(ticker);
         if (!div) return null;
         var price = getLivePrice(ticker);
-        if (price && div.dividend_rate) return (div.dividend_rate / price) * 100;
+        var annualRate = getAnnualDividendRate(ticker);
+        if (price && annualRate) return (annualRate / price) * 100;
         return div.dividend_yield || null;
     }
 
@@ -467,10 +515,11 @@
             var div = getDividendInfo(h.ticker);
             var price = getLivePrice(h.ticker);
             var value = price ? h.shares * price : null;
-            var annualDiv = (div && div.dividend_rate) ? h.shares * div.dividend_rate : null;
+            var annualRate = getAnnualDividendRate(h.ticker);
+            var annualDiv = annualRate ? h.shares * annualRate : null;
             var pctPortfolio = (value && totalValue > 0) ? (value / totalValue) * 100 : null;
             var yld = getDividendYield(h.ticker);
-            var freq = (div && div.frequency) ? div.frequency : null;
+            var freq = getDividendFrequency(h.ticker, div);
             var exDate = (div && div.ex_dividend_date) ? div.ex_dividend_date : null;
             var name = (div && div.name) ? div.name : h.ticker;
 
@@ -497,7 +546,7 @@
                 '<td class="num">' + (gainLoss ? gainLoss : "--") + '</td>' +
                 '<td class="num">' + (value ? fmtUSD(value) : "--") + '</td>' +
                 '<td class="num">' + (yld ? fmtPct(yld) : "--") + '</td>' +
-                '<td class="num">' + (div && div.dividend_rate ? fmtUSD(div.dividend_rate) : "--") + '</td>' +
+                '<td class="num">' + (annualRate ? fmtUSD(annualRate) : "--") + '</td>' +
                 '<td class="num pos">' + (annualDiv ? fmtUSD(annualDiv) : "--") + '</td>' +
                 '<td class="num pos">' + (annualDiv ? fmtUSD(annualDiv / 12) : "--") + '</td>' +
                 '<td style="text-align:center">' + freqBadge + '</td>' +
@@ -507,7 +556,7 @@
         });
 
         html += '</tbody></table></div>';
-        html += '<p class="dividend-disclaimer">Dividend payments are subject to change by the company or fund manager. Check their documentation for the most up-to-date distribution details.</p>';
+        html += '<p class="dividend-disclaimer">Dividend payments are subject to change by the company or fund manager. Div / Share may annualize recent payments for newer monthly funds with limited history.</p>';
         wrap.innerHTML = html;
 
         wrap.querySelectorAll(".btn-delete").forEach(function (btn) {
@@ -623,8 +672,8 @@
             var div = getDividendInfo(h.ticker);
             if (!div) return;
 
-            var rate = div.dividend_rate;
-            var freq = div.frequency;
+            var rate = getAnnualDividendRate(h.ticker);
+            var freq = getDividendFrequency(h.ticker, div);
             if (!rate || !freq) return;
 
             var perPayment;
