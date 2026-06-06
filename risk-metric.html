@@ -86,6 +86,11 @@
   .halving-progress-bar{height:100%;width:0;background:linear-gradient(90deg,#f7931a,#ffbf63);transition:width 0.6s cubic-bezier(0.16,1,0.3,1)}
   .halving-meta{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-size:0.5rem;color:var(--text-dimmer)}
   .halving-meta span:last-child{text-align:right}
+  .bear-card .card-value{font-size:2rem}
+  .bear-progress{height:5px;background:var(--border-light);margin-top:12px;position:relative;overflow:hidden}
+  .bear-progress-bar{height:100%;width:0;background:linear-gradient(90deg,#58c56f,#ffbf63,#ef5d4f);transition:width 0.6s cubic-bezier(0.16,1,0.3,1)}
+  .bear-meta{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-size:0.5rem;color:var(--text-dimmer)}
+  .bear-meta span:last-child{text-align:right}
   .risk-bar-wrap{margin-top:14px;position:relative;height:8px;border-radius:4px;overflow:visible}
   .risk-bar-bg{position:absolute;top:0;left:0;right:0;bottom:0;border-radius:4px;background:linear-gradient(90deg,#9fb4c7 0%,#ffbf63 15%,#58c56f 30%,#58c56f 45%,#ffbf63 60%,#f7931a 75%,#ef5d4f 90%,#7a2019 100%)}
   .risk-bar-needle{position:absolute;top:-5px;width:3px;height:18px;background:#fff;border-radius:2px;box-shadow:0 0 10px rgba(255,255,255,0.5);transform:translateX(-50%);transition:left 0.6s cubic-bezier(0.16,1,0.3,1)}
@@ -254,6 +259,13 @@
       <div class="halving-progress"><div class="halving-progress-bar" id="halvingProgressBar"></div></div>
       <div class="halving-meta"><span id="vHalvingBlocks">— blocks</span><span id="vHalvingProgress">—% epoch</span></div>
     </div>
+    <div class="card bear-card" style="--glow:rgba(239,93,79,0.24)">
+      <div class="card-label">Bear Market Progress</div>
+      <div class="card-value" id="vBearPct" style="--val-color:#ffbf63">—</div>
+      <div class="card-sub" id="vBearSub">Cycle timing estimate</div>
+      <div class="bear-progress"><div class="bear-progress-bar" id="bearProgressBar"></div></div>
+      <div class="bear-meta"><span id="vBearTarget">—</span><span id="vBearRange">—</span></div>
+    </div>
   </div>
   <div class="risk-table-wrap">
     <h4>Price at Each Risk Level (Combined)</h4>
@@ -319,6 +331,7 @@
     <p><span class="hl">Momentum Risk (Rolling Z-Score → CDF):</span> 4-year rolling z-score mapped through Gaussian CDF. Cycle-sensitive, adapts to declining volatility.</p>
     <p><span class="hl">Combined:</span> Geometric mean √(S × M) of both. Pulls toward the lower signal — if either frame says low risk, that's more informative. Backtested across all deciles with strongly monotonic expected returns (above power-law trend growth).</p>
     <p><span class="hl">Halving Countdown:</span> Uses the current Bitcoin block height when available, targets the next 210,000-block subsidy epoch, and estimates the date at 10 minutes per block. If the height API is unavailable, it falls back to a clock-based estimate from block 840,000.</p>
+    <p><span class="hl">Bear Market Progress:</span> Starts from the latest all-time high, compares elapsed days with the average duration of completed Bitcoin bear markets, and estimates a downside range from the model's 0.00 risk floor on the average-duration target date to the lowest close since the current cycle high.</p>
     <p><span class="hl">Updates:</span> On page load, fetches current BTC price from CoinGecko free API and appends it to the historical dataset. Refresh page for latest reading.</p>
   </div>
   <footer>
@@ -540,6 +553,117 @@ async function refreshHalvingCountdown() {
   barEl.style.width = epochProgress + '%';
 }
 
+// ====== BEAR MARKET PROGRESS ======
+const COMPLETED_BEAR_CYCLES = [
+  { peak: '2011-06-08', bottom: '2011-11-18' },
+  { peak: '2013-11-30', bottom: '2015-01-14' },
+  { peak: '2017-12-17', bottom: '2018-12-15' },
+  { peak: '2021-11-10', bottom: '2022-11-21' }
+];
+
+function compactUsd(value) {
+  if (!Number.isFinite(value)) return '—';
+  if (value >= 1e6) return '$' + (value / 1e6).toFixed(2) + 'M';
+  if (value >= 1e3) return '$' + Math.round(value / 1e3) + 'K';
+  if (value >= 1) return '$' + value.toFixed(0);
+  return '$' + value.toFixed(4);
+}
+
+function dateMs(dateStr) {
+  return Date.parse(dateStr + 'T00:00:00Z');
+}
+
+function addDays(dateStr, days) {
+  return dateMs(dateStr) + days * 864e5;
+}
+
+function nearestPoint(pts, dateStr) {
+  let best = pts[0];
+  let bestDelta = Math.abs(dateMs(best.date) - dateMs(dateStr));
+  for (const p of pts) {
+    const delta = Math.abs(dateMs(p.date) - dateMs(dateStr));
+    if (delta < bestDelta) { best = p; bestDelta = delta; }
+  }
+  return best;
+}
+
+function currentRollingResidualStats(pts) {
+  const start = Math.max(0, pts.length - WINDOW);
+  const count = pts.length - start;
+  let sum = 0, sumSq = 0;
+  for (let i = start; i < pts.length; i++) {
+    sum += pts[i].residual;
+    sumSq += pts[i].residual * pts[i].residual;
+  }
+  const mean = sum / count;
+  const vari = Math.max(0.0001, sumSq / count - mean * mean);
+  return { mean, std: Math.sqrt(vari) };
+}
+
+function priceAtRiskForDate(targetMs, slope, intercept, rollMean, rollStd, risk) {
+  const days = (targetMs - GENESIS) / 864e5;
+  const logDays = Math.log10(days);
+  const regLogPrice = slope * logDays + intercept;
+  const envMax = Math.max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * logDays);
+  const envRange = envMax - ENV_LOWER;
+  let lo = ENV_LOWER, hi = envMax;
+  for (let it = 0; it < 80; it++) {
+    const mid = (lo + hi) / 2;
+    const structural = (mid - ENV_LOWER) / envRange;
+    const momentum = normCdf((mid - rollMean) / rollStd);
+    if (Math.sqrt(structural * momentum) < risk) lo = mid; else hi = mid;
+  }
+  return Math.pow(10, ((lo + hi) / 2) + regLogPrice);
+}
+
+function renderBearMarketProgress(pts, slope, intercept) {
+  const pctEl = document.getElementById('vBearPct');
+  const subEl = document.getElementById('vBearSub');
+  const targetEl = document.getElementById('vBearTarget');
+  const rangeEl = document.getElementById('vBearRange');
+  const barEl = document.getElementById('bearProgressBar');
+  if (!pctEl || !subEl || !targetEl || !rangeEl || !barEl || pts.length === 0) return;
+
+  const completedCycles = COMPLETED_BEAR_CYCLES.map(cycle => {
+    const peak = nearestPoint(pts, cycle.peak);
+    const bottom = nearestPoint(pts, cycle.bottom);
+    return {
+      days: Math.round((dateMs(bottom.date) - dateMs(peak.date)) / 864e5),
+      drawdown: bottom.price / peak.price - 1
+    };
+  }).filter(cycle => cycle.days > 0 && Number.isFinite(cycle.drawdown));
+
+  const avgDays = Math.round(completedCycles.reduce((sum, c) => sum + c.days, 0) / completedCycles.length);
+  let athIdx = 0;
+  for (let i = 1; i < pts.length; i++) {
+    if (pts[i].price >= pts[athIdx].price) athIdx = i;
+  }
+
+  const peak = pts[athIdx];
+  const last = pts[pts.length - 1];
+  const elapsedDays = Math.max(0, Math.round((dateMs(last.date) - dateMs(peak.date)) / 864e5));
+  const progressPct = avgDays > 0 ? (elapsedDays / avgDays) * 100 : 0;
+  const drawdownPct = (last.price / peak.price - 1) * 100;
+  const targetMs = addDays(peak.date, avgDays);
+  const roll = currentRollingResidualStats(pts);
+  const riskFloorPrice = priceAtRiskForDate(targetMs, slope, intercept, roll.mean, roll.std, 0);
+  let lowestRecentClose = last.price;
+  for (let i = athIdx; i < pts.length; i++) {
+    if (pts[i].price < lowestRecentClose) lowestRecentClose = pts[i].price;
+  }
+  const priceLow = Math.min(riskFloorPrice, lowestRecentClose);
+  const priceHigh = Math.max(riskFloorPrice, lowestRecentClose);
+  const status = athIdx === pts.length - 1 ? 'At cycle high' : drawdownPct <= -20 ? 'Active bear' : 'Cycle watch';
+  const targetPrefix = progressPct > 115 ? 'Est. bottom was ' : 'Est. bottom ';
+
+  pctEl.textContent = Math.round(progressPct) + '%';
+  pctEl.style.setProperty('--val-color', riskColor(Math.min(1, progressPct / 100)));
+  subEl.textContent = status + ' · ATH ' + formatHalvingDate(dateMs(peak.date)) + ' · ' + drawdownPct.toFixed(1) + '%';
+  targetEl.textContent = targetPrefix + formatHalvingDate(targetMs);
+  rangeEl.textContent = compactUsd(priceLow) + '–' + compactUsd(priceHigh);
+  barEl.style.width = Math.max(0, Math.min(100, progressPct)) + '%';
+}
+
 // ====== MAIN ======
 async function main() {
   let rawData = await loadCSV();
@@ -565,6 +689,7 @@ async function main() {
   const devPct = ((last.price/last.regPrice-1)*100).toFixed(1);
   document.getElementById('vDev').textContent = (devPct>0?'+':'') + devPct + '%';
   document.getElementById('needle').style.left = (last.riskCombo*100)+'%';
+  renderBearMarketProgress(pts, slope, intercept);
 
   // Risk-price table
   {
