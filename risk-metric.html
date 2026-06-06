@@ -388,13 +388,22 @@ function buildDataset(rawData) {
   }).filter(p => p.days > 0 && p.price > 0);
 
   const n = pts.length;
-  let sx=0,sy=0,sxy=0,sxx=0;
-  pts.forEach(p => { sx+=p.logDays; sy+=p.logPrice; sxy+=p.logDays*p.logPrice; sxx+=p.logDays*p.logDays; });
-  const slope = (n*sxy - sx*sy) / (n*sxx - sx*sx);
-  const intercept = (sy - slope*sx) / n;
+  function fitRegression(endExclusive) {
+    let sx=0,sy=0,sxy=0,sxx=0;
+    for (let i=0; i<endExclusive; i++) {
+      const p = pts[i];
+      sx+=p.logDays; sy+=p.logPrice; sxy+=p.logDays*p.logPrice; sxx+=p.logDays*p.logDays;
+    }
+    const count = endExclusive;
+    const slope = (count*sxy - sx*sy) / (count*sxx - sx*sx);
+    const intercept = (sy - slope*sx) / count;
+    return { slope, intercept };
+  }
+  const { slope, intercept } = fitRegression(n);
 
-  pts.forEach(p => {
-    p.regLogPrice = slope * p.logDays + intercept;
+  pts.forEach((p, i) => {
+    const asOf = i >= 365 ? fitRegression(i + 1) : { slope, intercept };
+    p.regLogPrice = asOf.slope * p.logDays + asOf.intercept;
     p.regPrice = Math.pow(10, p.regLogPrice);
     p.residual = p.logPrice - p.regLogPrice;
     const envMax = Math.max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * p.logDays);
@@ -402,19 +411,28 @@ function buildDataset(rawData) {
     p.riskMM = Math.max(0, Math.min(1, (p.residual - ENV_LOWER) / envRange));
   });
 
-  // Rolling Z-score
+  // Prior-window rolling Z-score. The current point is compared with the
+  // previous window, so historical risk readings do not use the current close
+  // to set their own momentum baseline.
   const residuals = pts.map(p => p.residual);
   let rSum=0, rSumSq=0;
   for (let i=0; i<n; i++) {
+    const cnt = Math.min(i, WINDOW);
+    if (cnt >= 180) {
+      const mean = rSum/cnt;
+      const vari = Math.max(0.0001, rSumSq/cnt - mean*mean);
+      const std = Math.sqrt(vari);
+      const z = (residuals[i]-mean)/std;
+      pts[i].riskZS = normCdf(z);
+      pts[i].rollMean = mean;
+      pts[i].rollStd = std;
+    } else {
+      pts[i].riskZS = 0.5;
+      pts[i].rollMean = 0;
+      pts[i].rollStd = 0.1;
+    }
     rSum += residuals[i]; rSumSq += residuals[i]*residuals[i];
-    if (i >= WINDOW) { rSum -= residuals[i-WINDOW]; rSumSq -= residuals[i-WINDOW]*residuals[i-WINDOW]; }
-    const cnt = Math.min(i+1, WINDOW);
-    const mean = rSum/cnt;
-    const vari = Math.max(0.0001, rSumSq/cnt - mean*mean);
-    const std = Math.sqrt(vari);
-    const z = (residuals[i]-mean)/std;
-    pts[i].riskZS = normCdf(z);
-    pts[i].rollStd = std;
+    if (i >= WINDOW - 1) { rSum -= residuals[i-WINDOW+1]; rSumSq -= residuals[i-WINDOW+1]*residuals[i-WINDOW+1]; }
   }
 
   pts.forEach(p => {
@@ -587,19 +605,6 @@ function nearestPoint(pts, dateStr) {
   return best;
 }
 
-function currentRollingResidualStats(pts) {
-  const start = Math.max(0, pts.length - WINDOW);
-  const count = pts.length - start;
-  let sum = 0, sumSq = 0;
-  for (let i = start; i < pts.length; i++) {
-    sum += pts[i].residual;
-    sumSq += pts[i].residual * pts[i].residual;
-  }
-  const mean = sum / count;
-  const vari = Math.max(0.0001, sumSq / count - mean * mean);
-  return { mean, std: Math.sqrt(vari) };
-}
-
 function priceAtRiskForDate(targetMs, slope, intercept, rollMean, rollStd, risk) {
   const days = (targetMs - GENESIS) / 864e5;
   const logDays = Math.log10(days);
@@ -645,8 +650,7 @@ function renderBearMarketProgress(pts, slope, intercept) {
   const progressPct = avgDays > 0 ? (elapsedDays / avgDays) * 100 : 0;
   const drawdownPct = (last.price / peak.price - 1) * 100;
   const targetMs = addDays(peak.date, avgDays);
-  const roll = currentRollingResidualStats(pts);
-  const riskFloorPrice = priceAtRiskForDate(targetMs, slope, intercept, roll.mean, roll.std, 0);
+  const riskFloorPrice = priceAtRiskForDate(targetMs, slope, intercept, last.rollMean, last.rollStd, 0);
   let lowestRecentClose = last.price;
   for (let i = athIdx; i < pts.length; i++) {
     if (pts[i].price < lowestRecentClose) lowestRecentClose = pts[i].price;
@@ -696,9 +700,7 @@ async function main() {
     const envMax = Math.max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * last.logDays);
     const envRange = envMax - ENV_LOWER;
     const lastReg = last.regLogPrice;
-    const residuals = pts.map(p=>p.residual);
-    let rSum=0; for(let i=Math.max(0,n-WINDOW);i<n;i++) rSum+=residuals[i];
-    const rollMean = rSum/Math.min(n,WINDOW);
+    const rollMean = last.rollMean;
     const rollStd = last.rollStd;
     const tbl = document.getElementById('riskTable');
     const riskLevels=[0.01];
@@ -780,7 +782,7 @@ async function main() {
       "2020-03": { label: "COVID-19 crash", lowPrice: 4860.35, info: "Global pandemic liquidity crisis. Bitcoin crashed 50% in 2 days to $3,800 as all assets were sold. Fed stimulus ignited the bull run to $69K." },
       "2022-11": { label: "FTX collapse / bear bottom", lowPrice: 15599.05, info: "FTX exchange and Alameda Research collapsed, $8B in customer funds lost. Contagion spread across crypto. Bitcoin fell to $15,500." },
       "2022-12": { label: "FTX collapse / bear bottom", lowPrice: 16256.25, info: "Post-FTX capitulation bottom. Genesis/DCG concerns lingered but selling exhausted. Set the floor for the 2023-24 recovery and ETF approvals." },
-      "2026-02": { label: "Macro correction — in progress", lowPrice: 78200, info: "Confluence of macro headwinds: escalating US-China trade war and tariff uncertainty, equity valuations near all-time-high multiples, rising unemployment and early signs of AI-driven job displacement, tightening financial conditions, and fading post-ETF euphoria. Bitcoin corrected sharply alongside risk assets as investors de-risked." }
+      "2026-06": { label: "2026 bear market bottom - in progress", lowPrice: 61540, info: "Potential bottoming setup still in progress: BTC is down roughly 50% from the 2025 cycle high, combined risk is back in the low-risk zone, and selling has accelerated into the model's estimated bottom window. Pressure appears tied to risk-asset de-risking, tariff/trade uncertainty, stretched equity valuations, labor-market worries, AI disruption concerns, and fading post-ETF momentum." }
     };
 
     function getEventMeta(dateStr) {
@@ -848,12 +850,18 @@ async function main() {
         var col = ret >= 0 ? '#58c56f' : '#ef5d4f';
         return '<td class="rl-return" style="color:' + col + '">' + (ret >= 0 ? '+' : '') + Math.round(ret) + '%</td>';
       }
+      function riskLowDisplay(point) {
+        if (point.riskCombo < 0.01) {
+          return '&lt;0.01<span class="info-btn">i<span class="info-popup">Price fell below the model lower structural boundary. Displayed as a floor-break low instead of literal zero risk.</span></span>';
+        }
+        return point.riskCombo.toFixed(3);
+      }
       const infoHtml = meta && meta.info ? '<span class="info-btn">i<span class="info-popup">' + meta.info + '</span></span>' : '';
       const eventLabel = meta ? meta.label : '—';
       tr.innerHTML = '<td>' + low.date + '</td>' +
         '<td class="rl-event">' + eventLabel + infoHtml + '</td>' +
         '<td class="rl-price">' + pStr + '</td>' +
-        '<td class="rl-risk" style="color:' + riskColor(low.riskCombo) + '">' + low.riskCombo.toFixed(3) + '</td>' +
+        '<td class="rl-risk" style="color:' + riskColor(Math.max(low.riskCombo, 0.01)) + '">' + riskLowDisplay(low) + '</td>' +
         fwdCell(low._idx, 1) + fwdCell(low._idx, 2) + fwdCell(low._idx, 3);
       tbody.appendChild(tr);
     });
