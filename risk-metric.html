@@ -165,6 +165,7 @@
   .risk-lows-table .rl-event{color:var(--text-bright);font-weight:500}
   .risk-lows-table .rl-price{font-family:'Outfit',sans-serif;font-weight:600;color:var(--text-heading)}
   .risk-lows-table .rl-risk{font-family:'Outfit',sans-serif;font-weight:600}
+  .risk-lows-table .rl-risk-sub{font-size:0.58rem;font-family:'JetBrains Mono',monospace;font-weight:500;color:var(--text-dimmer);margin-top:2px;text-transform:uppercase;letter-spacing:0.8px}
   .risk-lows-table .rl-return{font-family:'Outfit',sans-serif;font-weight:600}
   .info-btn{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:rgba(247,147,26,0.15);border:1px solid rgba(247,147,26,0.3);color:#ffbf63;font-size:9px;font-weight:700;font-family:'Outfit',sans-serif;cursor:pointer;margin-left:6px;vertical-align:middle;transition:all 0.2s;line-height:1;position:relative}
   .info-btn:hover{background:rgba(247,147,26,0.3);color:#f8f2e6}
@@ -284,7 +285,7 @@
     <h4>Historical Risk Lows — Accumulation Opportunities</h4>
     <table class="risk-lows-table" id="riskLowsTable">
       <thead>
-        <tr><th>Date</th><th>Event</th><th>BTC Close</th><th>Combined Risk</th><th>1Y Return</th><th>2Y Return</th><th>3Y Return</th></tr>
+        <tr><th>Date</th><th>Event</th><th>BTC Close</th><th>Risk Level</th><th>1Y Return</th><th>2Y Return</th><th>3Y Return</th></tr>
       </thead>
       <tbody id="riskLowsBody"></tbody>
     </table>
@@ -326,10 +327,10 @@
   <div class="update-status" id="updateStatus" style="display:none"></div>
   <div class="methodology">
     <h3>Methodology (Combined Risk)</h3>
-    <p><span class="hl">Power-Law Regression:</span> <code>log₁₀(price)</code> vs <code>log₁₀(days since Jan 3 2009)</code>. The residual measures deviation from the long-run trend.</p>
+    <p><span class="hl">Power-Law Regression:</span> <code>log₁₀(price)</code> vs <code>log₁₀(days since Jan 3 2009)</code>. The smooth chart line uses the fixed full-history curve. Historical risk uses an as-of regression at each date so past risk readings are not calibrated with future prices.</p>
     <p><span class="hl">Structural Risk (Decaying Envelope):</span> Normalizes the residual against a time-decaying upper envelope fitted from cycle peaks. The max deviation capacity shrinks as Bitcoin matures, producing more realistic risk boundaries.</p>
     <p><span class="hl">Momentum Risk (Rolling Z-Score → CDF):</span> 4-year rolling z-score mapped through Gaussian CDF. Cycle-sensitive, adapts to declining volatility.</p>
-    <p><span class="hl">Combined:</span> Geometric mean √(S × M) of both. Pulls toward the lower signal — if either frame says low risk, that's more informative. Backtested across all deciles with strongly monotonic expected returns (above power-law trend growth).</p>
+    <p><span class="hl">Combined:</span> Geometric mean √(S × M) of both. Pulls toward the lower signal — if either frame says low risk, that's more informative. Historical low tables use a calibrated floor-break score when structural risk falls below the lower model boundary, so deep-cycle lows are not displayed as literal zero risk.</p>
     <p><span class="hl">Halving Countdown:</span> Uses the current Bitcoin block height when available, targets the next 210,000-block subsidy epoch, and estimates the date at 10 minutes per block. If the height API is unavailable, it falls back to a clock-based estimate from block 840,000.</p>
     <p><span class="hl">Bear Market Progress:</span> Starts from the latest all-time high, compares elapsed days with the average duration of completed Bitcoin bear markets, and estimates a downside range from the model's 0.00 risk floor on the average-duration target date to the lowest close since the current cycle high.</p>
     <p><span class="hl">Updates:</span> On page load, fetches current BTC price from CoinGecko free API and appends it to the historical dataset. Refresh page for latest reading.</p>
@@ -379,6 +380,7 @@ const ENV_UPPER_A = 4.6;
 const ENV_UPPER_B = -1.10;
 const ENV_LOWER = -0.45;
 const ENV_MIN_MAX = 0.05;
+const STRUCTURAL_FLOOR_BREAK_RISK = 0.01;
 
 function buildDataset(rawData) {
   const pts = rawData.map(([ds, p]) => {
@@ -403,6 +405,8 @@ function buildDataset(rawData) {
 
   pts.forEach((p, i) => {
     const asOf = i >= 365 ? fitRegression(i + 1) : { slope, intercept };
+    p.trendLogPrice = slope * p.logDays + intercept;
+    p.trendPrice = Math.pow(10, p.trendLogPrice);
     p.regLogPrice = asOf.slope * p.logDays + asOf.intercept;
     p.regPrice = Math.pow(10, p.regLogPrice);
     p.residual = p.logPrice - p.regLogPrice;
@@ -689,8 +693,8 @@ async function main() {
   hd.innerHTML = '<span style="width:6px;height:6px;background:#58c56f;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> as of ' + last.date + (isLive ? ' · live via ' + isLive.source : ' · historical fallback');
   document.getElementById('vRisk').textContent = last.riskCombo.toFixed(3);
   document.getElementById('vRisk').style.setProperty('--val-color', riskColor(last.riskCombo));
-  document.getElementById('vFair').textContent = '$' + last.regPrice.toLocaleString(undefined,{maximumFractionDigits:0});
-  const devPct = ((last.price/last.regPrice-1)*100).toFixed(1);
+  document.getElementById('vFair').textContent = '$' + last.trendPrice.toLocaleString(undefined,{maximumFractionDigits:0});
+  const devPct = ((last.price/last.trendPrice-1)*100).toFixed(1);
   document.getElementById('vDev').textContent = (devPct>0?'+':'') + devPct + '%';
   document.getElementById('needle').style.left = (last.riskCombo*100)+'%';
   renderBearMarketProgress(pts, slope, intercept);
@@ -730,7 +734,7 @@ async function main() {
   // ====== FAIR VALUE PROJECTIONS (5 years, 6-month increments) ======
   {
     const projBody = document.getElementById('projBody');
-    const todayFV = last.regPrice;
+    const todayFV = last.trendPrice;
     const todayPrice = last.price;
     const moNames = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec'];
     const curDate = new Date(last.date + 'T00:00:00Z');
@@ -832,11 +836,38 @@ async function main() {
       return lows.map(function(l) { return Object.assign({}, data[l._idx], { _idx: l._idx }); });
     }
 
-    const lows = findRiskLows(pts);
+    function findLatest52WeekClosingLow(data) {
+      if (!data.length) return null;
+      const lastMs = dateMs(data[data.length - 1].date);
+      const windowStartMs = lastMs - 364 * 864e5;
+      let minIdx = -1;
+      for (let i = data.length - 1; i >= 0; i--) {
+        if (dateMs(data[i].date) < windowStartMs) break;
+        if (minIdx < 0 || data[i].price < data[minIdx].price) minIdx = i;
+      }
+      if (minIdx < 0) return null;
+      return Object.assign({}, data[minIdx], {
+        _idx: minIdx,
+        _latest52WeekLow: true,
+        _windowStartMs: windowStartMs
+      });
+    }
+
+    let lows = findRiskLows(pts);
+    const latest52WeekLow = findLatest52WeekClosingLow(pts);
+    if (latest52WeekLow) {
+      lows = lows.filter(low => dateMs(low.date) < latest52WeekLow._windowStartMs);
+      lows.push(latest52WeekLow);
+      lows.sort((a, b) => a._idx - b._idx);
+    }
+
     const tbody = document.getElementById('riskLowsBody');
     lows.forEach(low => {
       const tr = document.createElement('tr');
-      const meta = getEventMeta(low.date);
+      const meta = low._latest52WeekLow ? {
+        label: '52-week closing low - in progress',
+        info: 'Latest row is anchored to the lowest BTC daily close over the trailing 52 weeks, rather than the lowest model-risk reading. This keeps the current-cycle event tied to the actual recent closing-price low as new daily data arrives.'
+      } : getEventMeta(low.date);
       const price = low.price;
       const pStr = price >= 1e6 ? '$' + (price / 1e6).toFixed(1) + 'M' :
                    price >= 1000 ? '$' + price.toLocaleString(undefined, { maximumFractionDigits: 0 }) :
@@ -850,18 +881,27 @@ async function main() {
         var col = ret >= 0 ? '#58c56f' : '#ef5d4f';
         return '<td class="rl-return" style="color:' + col + '">' + (ret >= 0 ? '+' : '') + Math.round(ret) + '%</td>';
       }
+      function calibratedLowRisk(point) {
+        const structural = point.riskMM <= 0 ? STRUCTURAL_FLOOR_BREAK_RISK : point.riskMM;
+        return Math.sqrt(structural * point.riskZS);
+      }
+      function riskBand(score) {
+        if (score < 0.05) return 'Extreme low';
+        if (score < 0.15) return 'Very low';
+        if (score < 0.30) return 'Low';
+        if (score < 0.50) return 'Neutral';
+        return 'Elevated';
+      }
       function riskLowDisplay(point) {
-        if (point.riskCombo < 0.01) {
-          return '&lt;0.01<span class="info-btn">i<span class="info-popup">Price fell below the model lower structural boundary. Displayed as a floor-break low instead of literal zero risk.</span></span>';
-        }
-        return point.riskCombo.toFixed(3);
+        const score = calibratedLowRisk(point);
+        return '<div>' + score.toFixed(3) + '</div><div class="rl-risk-sub">' + riskBand(score) + '</div>';
       }
       const infoHtml = meta && meta.info ? '<span class="info-btn">i<span class="info-popup">' + meta.info + '</span></span>' : '';
       const eventLabel = meta ? meta.label : '—';
       tr.innerHTML = '<td>' + low.date + '</td>' +
         '<td class="rl-event">' + eventLabel + infoHtml + '</td>' +
         '<td class="rl-price">' + pStr + '</td>' +
-        '<td class="rl-risk" style="color:' + riskColor(Math.max(low.riskCombo, 0.01)) + '">' + riskLowDisplay(low) + '</td>' +
+        '<td class="rl-risk" style="color:' + riskColor(calibratedLowRisk(low)) + '">' + riskLowDisplay(low) + '</td>' +
         fwdCell(low._idx, 1) + fwdCell(low._idx, 2) + fwdCell(low._idx, 3);
       tbody.appendChild(tr);
     });
@@ -962,7 +1002,7 @@ async function main() {
     // Regression
     ctx.strokeStyle=tc.regressionLine;ctx.lineWidth=1.5;ctx.setLineDash([8,5]);
     ctx.beginPath();
-    for(let i=s;i<=e;i+=S){const x=xOf(i),y=yOf(pts[i].regPrice);i===s?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+    for(let i=s;i<=e;i+=S){const x=xOf(i),y=yOf(pts[i].trendPrice);i===s?ctx.moveTo(x,y):ctx.lineTo(x,y);}
     ctx.stroke();ctx.setLineDash([]);
 
     // Price line
@@ -1074,7 +1114,7 @@ async function main() {
     for(let d=0;d<10;d++) buckets.push([]);
     for(let i=WINDOW;i<n-FWD;i++){
       const decile=Math.min(9,Math.floor(pts[i].riskCombo*10));
-      const fairGrowth=pts[i+FWD].regPrice/pts[i].regPrice;
+      const fairGrowth=pts[i+FWD].trendPrice/pts[i].trendPrice;
       const ret=(pts[i+FWD].price/pts[i].price/fairGrowth-1)*100;
       buckets[decile].push(ret);
     }
@@ -1304,7 +1344,7 @@ async function main() {
     for(var d=0;d<10;d++) meds.push([]);
     for(var i=WINDOW;i<n-FWD;i++){
       var decile=Math.min(9,Math.floor(pts[i].riskCombo*10));
-      var fairGrowth=pts[i+FWD].regPrice/pts[i].regPrice;
+      var fairGrowth=pts[i+FWD].trendPrice/pts[i].trendPrice;
       var ret=(pts[i+FWD].price/pts[i].price/fairGrowth-1)*100;
       meds[decile].push(ret);
     }
