@@ -86,6 +86,11 @@
   .halving-progress-bar{height:100%;width:0;background:linear-gradient(90deg,#f7931a,#ffbf63);transition:width 0.6s cubic-bezier(0.16,1,0.3,1)}
   .halving-meta{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-size:0.5rem;color:var(--text-dimmer)}
   .halving-meta span:last-child{text-align:right}
+  .difficulty-card .card-value{font-size:2rem}
+  .difficulty-progress{height:5px;background:var(--border-light);margin-top:12px;position:relative;overflow:hidden}
+  .difficulty-progress-bar{height:100%;width:0;background:linear-gradient(90deg,#6aa9ff,#f7931a);transition:width 0.6s cubic-bezier(0.16,1,0.3,1)}
+  .difficulty-meta{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-size:0.5rem;color:var(--text-dimmer)}
+  .difficulty-meta span:last-child{text-align:right}
   .bear-card .card-value{font-size:2rem}
   .bear-progress{height:5px;background:var(--border-light);margin-top:12px;position:relative;overflow:hidden}
   .bear-progress-bar{height:100%;width:0;background:linear-gradient(90deg,#58c56f,#ffbf63,#ef5d4f);transition:width 0.6s cubic-bezier(0.16,1,0.3,1)}
@@ -259,6 +264,13 @@
       <div class="card-sub" id="vHalvingSub">Fetching block height...</div>
       <div class="halving-progress"><div class="halving-progress-bar" id="halvingProgressBar"></div></div>
       <div class="halving-meta"><span id="vHalvingBlocks">— blocks</span><span id="vHalvingProgress">—% epoch</span></div>
+    </div>
+    <div class="card difficulty-card" style="--glow:rgba(106,169,255,0.24)">
+      <div class="card-label">Mining Difficulty</div>
+      <div class="card-value" id="vDifficulty" style="--val-color:#6aa9ff">—</div>
+      <div class="card-sub" id="vDifficultySub">Fetching adjustment...</div>
+      <div class="difficulty-progress"><div class="difficulty-progress-bar" id="difficultyProgressBar"></div></div>
+      <div class="difficulty-meta"><span id="vDifficultyBlocks">— blocks</span><span id="vDifficultyAth">ATH —</span></div>
     </div>
     <div class="card bear-card" style="--glow:rgba(239,93,79,0.24)">
       <div class="card-label">Bear Market Progress</div>
@@ -575,6 +587,94 @@ async function refreshHalvingCountdown() {
   barEl.style.width = epochProgress + '%';
 }
 
+// ====== BITCOIN DIFFICULTY ADJUSTMENT ======
+function formatDifficulty(value) {
+  if (!Number.isFinite(value) || value <= 0) return '—';
+  if (value >= 1e15) return (value / 1e15).toFixed(2) + 'Q';
+  if (value >= 1e12) return (value / 1e12).toFixed(2) + 'T';
+  if (value >= 1e9) return (value / 1e9).toFixed(2) + 'B';
+  return Math.round(value).toLocaleString();
+}
+
+function formatSignedPct(value) {
+  if (!Number.isFinite(value)) return '—';
+  return (value >= 0 ? '+' : '') + value.toFixed(2) + '%';
+}
+
+async function fetchCurrentDifficulty() {
+  try {
+    const resp = await fetch('https://mempool.space/api/v1/blocks');
+    if (!resp.ok) throw new Error('API ' + resp.status);
+    const blocks = await resp.json();
+    const difficulty = Array.isArray(blocks) && blocks[0] ? Number(blocks[0].difficulty) : null;
+    if (Number.isFinite(difficulty) && difficulty > 0) return difficulty;
+  } catch {}
+  return null;
+}
+
+async function fetchDifficultyAdjustment() {
+  try {
+    const resp = await fetch('https://mempool.space/api/v1/difficulty-adjustment');
+    if (!resp.ok) throw new Error('API ' + resp.status);
+    const data = await resp.json();
+    if (data && Number.isFinite(data.progressPercent)) return data;
+  } catch {}
+  return null;
+}
+
+async function fetchDifficultyAth() {
+  try {
+    const resp = await fetch('https://mempool.space/api/v1/mining/difficulty-adjustments/all');
+    if (!resp.ok) throw new Error('API ' + resp.status);
+    const rows = await resp.json();
+    if (!Array.isArray(rows)) return null;
+    let ath = null;
+    rows.forEach(row => {
+      const difficulty = Array.isArray(row) ? Number(row[2]) : Number(row && row.difficulty);
+      if (Number.isFinite(difficulty) && difficulty > 0 && (ath == null || difficulty > ath)) ath = difficulty;
+    });
+    return ath;
+  } catch {}
+  return null;
+}
+
+async function refreshDifficultyAdjustment() {
+  const [difficulty, adjustment, athDifficulty] = await Promise.all([
+    fetchCurrentDifficulty(),
+    fetchDifficultyAdjustment(),
+    fetchDifficultyAth()
+  ]);
+
+  const valueEl = document.getElementById('vDifficulty');
+  const subEl = document.getElementById('vDifficultySub');
+  const blocksEl = document.getElementById('vDifficultyBlocks');
+  const athEl = document.getElementById('vDifficultyAth');
+  const barEl = document.getElementById('difficultyProgressBar');
+  if (!valueEl || !subEl || !blocksEl || !athEl || !barEl) return;
+
+  valueEl.textContent = difficulty ? formatDifficulty(difficulty) : '—';
+  athEl.textContent = athDifficulty ? 'ATH ' + formatDifficulty(athDifficulty) : 'ATH —';
+
+  if (!adjustment) {
+    subEl.textContent = difficulty ? 'Adjustment estimate unavailable' : 'Difficulty data unavailable';
+    blocksEl.textContent = '— blocks';
+    barEl.style.width = '0%';
+    return;
+  }
+
+  const progress = Math.max(0, Math.min(100, adjustment.progressPercent || 0));
+  const retargetMs = Number.isFinite(adjustment.estimatedRetargetDate)
+    ? adjustment.estimatedRetargetDate
+    : Date.now() + (Number(adjustment.remainingTime) || 0);
+  const change = Number(adjustment.difficultyChange);
+  const changeText = Number.isFinite(change) ? formatSignedPct(change) : '—';
+  const remainingBlocks = Number.isFinite(adjustment.remainingBlocks) ? adjustment.remainingBlocks : null;
+
+  subEl.textContent = 'Next Change Est. ' + formatHalvingDate(retargetMs) + ' · ' + changeText;
+  blocksEl.textContent = remainingBlocks == null ? '— blocks' : remainingBlocks.toLocaleString() + ' blocks';
+  barEl.style.width = progress + '%';
+}
+
 // ====== BEAR MARKET PROGRESS ======
 const COMPLETED_BEAR_CYCLES = [
   { peak: '2011-06-08', bottom: '2011-11-18' },
@@ -679,6 +779,7 @@ async function main() {
   // Fetch live price
   const live = await fetchLivePrice(rawData);
   refreshHalvingCountdown();
+  refreshDifficultyAdjustment();
 
   const { pts, slope, intercept } = buildDataset(rawData);
   const SAMPLE = Math.max(1, Math.floor(pts.length / 2000));
@@ -1661,6 +1762,7 @@ async function main() {
 main();
 
 setInterval(refreshHalvingCountdown, 6 * 60 * 60 * 1000);
+setInterval(refreshDifficultyAdjustment, 6 * 60 * 60 * 1000);
 
 // Auto-refresh BTC price every 60 seconds
 setInterval(async function () {
