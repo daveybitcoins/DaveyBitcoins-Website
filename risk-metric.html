@@ -309,7 +309,7 @@
   </div>
   <div class="chart-panel">
     <div class="chart-header">
-      <div class="chart-label" id="returnsLabel">Median 1-Year Expected Return by Risk Decile (Above Power-Law Trend)</div>
+      <div class="chart-label" id="returnsLabel">Median Historical 1-Year Forward Return by Risk Decile (Above Power-Law Trend)</div>
       <div class="chart-note" id="returnsNote"></div>
     </div>
     <canvas id="returnsCanvas" width="1380" height="360"></canvas>
@@ -1083,7 +1083,7 @@ async function main() {
   }
 
   // ====== FORWARD RETURNS BAR CHART ======
-  let activeFwd = (function(){ var p = new URLSearchParams(window.location.search).get('fwd'); return (p === '730') ? 730 : (p === '1460') ? 1460 : 365; })();
+  let activeFwd = (function(){ var p = new URLSearchParams(window.location.search).get('fwd'); return (p === '730') ? 730 : (p === '1095') ? 1095 : (p === '1460') ? 1460 : 365; })();
   function renderReturnsChart(fwdDays) {
     const tc = themeColors();
     fwdDays=fwdDays||activeFwd;
@@ -1094,7 +1094,7 @@ async function main() {
     var qs = params.toString();
     history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
     const labels={365:'1-Year',730:'2-Year',1095:'3-Year',1460:'4-Year'};
-    document.getElementById('returnsLabel').textContent='Median '+labels[fwdDays]+' Expected Return by Risk Decile (Above Power-Law Trend)';
+    document.getElementById('returnsLabel').textContent='Median Historical '+labels[fwdDays]+' Forward Return by Risk Decile (Above Power-Law Trend)';
     // Update button active states
     document.querySelectorAll('#fwdButtons button').forEach(b=>{
       if(parseInt(b.dataset.fwd)===fwdDays) b.classList.add('active');
@@ -1171,6 +1171,8 @@ async function main() {
       ctx.fillStyle=riskColor(midRisk);ctx.font='bold 11px JetBrains Mono';
       const lo=(d/10).toFixed(1), hi=((d+1)/10).toFixed(1);
       ctx.fillText(lo+'–'+hi,x+barW/2,H-P.b+18);
+      ctx.fillStyle=tc.axisText;ctx.font='9px JetBrains Mono';
+      ctx.fillText('n=' + counts[d],x+barW/2,H-P.b+34);
     }
   }
 
