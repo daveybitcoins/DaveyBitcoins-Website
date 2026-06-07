@@ -865,7 +865,7 @@ async function main() {
     lows.forEach(low => {
       const tr = document.createElement('tr');
       const meta = low._latest52WeekLow ? {
-        label: '52-week closing low - in progress',
+        label: '2026 Bear Market Low - in progress',
         info: 'Latest row is anchored to the lowest BTC daily close over the trailing 52 weeks, rather than the lowest model-risk reading. This keeps the current-cycle event tied to the actual recent closing-price low as new daily data arrives.'
       } : getEventMeta(low.date);
       const price = low.price;
