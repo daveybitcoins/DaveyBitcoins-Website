@@ -345,7 +345,7 @@
     <p><span class="hl">Combined:</span> Geometric mean √(S × M) of both. Pulls toward the lower signal — if either frame says low risk, that's more informative. Historical low tables use a calibrated floor-break score when structural risk falls below the lower model boundary, so deep-cycle lows are not displayed as literal zero risk.</p>
     <p><span class="hl">Halving Countdown:</span> Uses the current Bitcoin block height when available, targets the next 210,000-block subsidy epoch, and estimates the date at 10 minutes per block. If the height API is unavailable, it falls back to a clock-based estimate from block 840,000.</p>
     <p><span class="hl">Bear Market Progress:</span> Starts from the latest all-time high, compares elapsed days with the average duration of completed Bitcoin bear markets, and estimates a downside range from the model's 0.00 risk floor on the average-duration target date to the lowest close since the current cycle high.</p>
-    <p><span class="hl">Updates:</span> On page load, fetches current BTC price from CoinGecko free API and appends it to the historical dataset. Refresh page for latest reading.</p>
+    <p><span class="hl">Updates:</span> The source price dataset is refreshed daily by automation. On page load, the page also fetches the current BTC price from live quote APIs and appends it to the in-memory dataset, so every dashboard card, chart, table, and projection is recalculated from the latest available reading. Tabs left open reload after a new UTC day begins.</p>
   </div>
   <footer>
     Not financial advice
@@ -1763,6 +1763,15 @@ main();
 
 setInterval(refreshHalvingCountdown, 6 * 60 * 60 * 1000);
 setInterval(refreshDifficultyAdjustment, 6 * 60 * 60 * 1000);
+
+// Reinitialize the full model once per UTC date change so open tabs refresh
+// every card, chart, table, and projection from the newest daily dataset.
+const PAGE_LOAD_UTC_DATE = new Date().toISOString().slice(0, 10);
+setInterval(function () {
+  if (new Date().toISOString().slice(0, 10) !== PAGE_LOAD_UTC_DATE) {
+    window.location.reload();
+  }
+}, 5 * 60 * 1000);
 
 // Auto-refresh BTC price every 60 seconds
 setInterval(async function () {

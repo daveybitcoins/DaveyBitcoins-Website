@@ -2,8 +2,8 @@ name: Update price data
 
 on:
   schedule:
-    - cron: '0 15 * * 1-5'   # 11:00 AM ET weekdays
-    - cron: '0 21 * * 1-5'   # 5:00 PM ET weekdays
+    - cron: '0 15 * * *'   # 11:00 AM ET daily
+    - cron: '0 21 * * *'   # 5:00 PM ET daily
   workflow_dispatch:
 
 concurrency:
