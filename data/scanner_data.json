@@ -72,10 +72,10 @@
       "chg_1w": 3.2,
       "chg_1m": -21.08,
       "crossover_alert": null,
-      "risk_combo": 0.08,
+      "risk_combo": 0.125,
       "risk_mm": 0.134,
-      "risk_zs": 0.048,
-      "fair_value": 136939.37,
+      "risk_zs": 0.116,
+      "fair_value": 136934.78,
       "dev_pct": -53.6,
       "zone": "Accumulate",
       "zone_color": "#2563eb"

@@ -392,6 +392,9 @@
             const BTC_GENESIS = new Date('2009-01-03T00:00:00Z').getTime();
             const WINDOW = 1460;
             const ENV_UPPER_A = 4.6, ENV_UPPER_B = -1.10, ENV_LOWER = -0.45, ENV_MIN_MAX = 0.05;
+            const STRUCTURAL_SOFT_FLOOR_SCALE = 0.15;
+            const STRUCTURAL_SOFT_FLOOR_MAX = 0.02;
+            const STRUCTURAL_SOFT_FLOOR_MIN = 0.005;
 
             // Load historical CSV
             const resp = await fetch('data.csv?v=' + Date.now());
@@ -423,30 +426,51 @@
             const n = pts.length;
             if (n < WINDOW) return;
 
-            let sx = 0, sy = 0, sxy = 0, sxx = 0;
-            pts.forEach(p => { sx += p.logDays; sy += p.logPrice; sxy += p.logDays * p.logPrice; sxx += p.logDays * p.logDays; });
-            const slope = (n * sxy - sx * sy) / (n * sxx - sx * sx);
-            const intercept = (sy - slope * sx) / n;
+            function fitRegression(endExclusive) {
+                let sx = 0, sy = 0, sxy = 0, sxx = 0;
+                for (let i = 0; i < endExclusive; i++) {
+                    const p = pts[i];
+                    sx += p.logDays; sy += p.logPrice; sxy += p.logDays * p.logPrice; sxx += p.logDays * p.logDays;
+                }
+                const slope = (endExclusive * sxy - sx * sy) / (endExclusive * sxx - sx * sx);
+                const intercept = (sy - slope * sx) / endExclusive;
+                return { slope, intercept };
+            }
+            const fullFit = fitRegression(n);
 
-            pts.forEach(p => {
-                p.regLogPrice = slope * p.logDays + intercept;
+            pts.forEach((p, i) => {
+                const asOf = i >= 365 ? fitRegression(i + 1) : fullFit;
+                p.regLogPrice = asOf.slope * p.logDays + asOf.intercept;
                 p.residual = p.logPrice - p.regLogPrice;
                 const envMax = Math.max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * p.logDays);
                 const envRange = envMax - ENV_LOWER;
-                p.riskMM = Math.max(0, Math.min(1, (p.residual - ENV_LOWER) / envRange));
+                const structuralRaw = (p.residual - ENV_LOWER) / envRange;
+                if (structuralRaw < 0) {
+                    const floorDepth = ENV_LOWER - p.residual;
+                    p.riskMM = Math.max(
+                        STRUCTURAL_SOFT_FLOOR_MIN,
+                        STRUCTURAL_SOFT_FLOOR_MAX * Math.exp(-floorDepth / STRUCTURAL_SOFT_FLOOR_SCALE)
+                    );
+                } else {
+                    p.riskMM = Math.min(1, structuralRaw);
+                }
             });
 
             const residuals = pts.map(p => p.residual);
             let rSum = 0, rSumSq = 0;
             for (let i = 0; i < n; i++) {
+                const cnt = Math.min(i, WINDOW);
+                if (cnt >= 180) {
+                    const mean = rSum / cnt;
+                    const vari = Math.max(0.0001, rSumSq / cnt - mean * mean);
+                    const std = Math.sqrt(vari);
+                    const z = (residuals[i] - mean) / std;
+                    pts[i].riskZS = normCdf(z);
+                } else {
+                    pts[i].riskZS = 0.5;
+                }
                 rSum += residuals[i]; rSumSq += residuals[i] * residuals[i];
-                if (i >= WINDOW) { rSum -= residuals[i - WINDOW]; rSumSq -= residuals[i - WINDOW] * residuals[i - WINDOW]; }
-                const cnt = Math.min(i + 1, WINDOW);
-                const mean = rSum / cnt;
-                const vari = Math.max(0.0001, rSumSq / cnt - mean * mean);
-                const std = Math.sqrt(vari);
-                const z = (residuals[i] - mean) / std;
-                pts[i].riskZS = normCdf(z);
+                if (i >= WINDOW - 1) { rSum -= residuals[i - WINDOW + 1]; rSumSq -= residuals[i - WINDOW + 1] * residuals[i - WINDOW + 1]; }
             }
 
             pts.forEach(p => { p.riskCombo = Math.sqrt(p.riskMM * p.riskZS); });

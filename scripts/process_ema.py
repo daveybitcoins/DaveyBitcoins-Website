@@ -789,6 +789,9 @@ ENV_UPPER_A = 4.6
 ENV_UPPER_B = -1.10
 ENV_LOWER = -0.45
 ENV_MIN_MAX = 0.05
+STRUCTURAL_SOFT_FLOOR_SCALE = 0.15
+STRUCTURAL_SOFT_FLOOR_MAX = 0.02
+STRUCTURAL_SOFT_FLOOR_MIN = 0.005
 
 
 def _norm_cdf(z):
@@ -823,41 +826,57 @@ def _calc_btc_risk(daily):
 
     n = len(pts)
 
-    # Linear regression on log-log scale
-    sx = sy = sxy = sxx = 0
-    for p in pts:
-        sx += p["log_days"]
-        sy += p["log_price"]
-        sxy += p["log_days"] * p["log_price"]
-        sxx += p["log_days"] * p["log_days"]
-    slope = (n * sxy - sx * sy) / (n * sxx - sx * sx)
-    intercept = (sy - slope * sx) / n
+    def fit_regression(end_exclusive):
+        sx = sy = sxy = sxx = 0
+        for p in pts[:end_exclusive]:
+            sx += p["log_days"]
+            sy += p["log_price"]
+            sxy += p["log_days"] * p["log_price"]
+            sxx += p["log_days"] * p["log_days"]
+        count = end_exclusive
+        slope = (count * sxy - sx * sy) / (count * sxx - sx * sx)
+        intercept = (sy - slope * sx) / count
+        return slope, intercept
+
+    slope, intercept = fit_regression(n)
 
     # Calculate residuals and structural risk (decaying envelope)
-    for p in pts:
-        p["reg_log_price"] = slope * p["log_days"] + intercept
+    for i, p in enumerate(pts):
+        asof_slope, asof_intercept = fit_regression(i + 1) if i >= 365 else (slope, intercept)
+        p["reg_log_price"] = asof_slope * p["log_days"] + asof_intercept
         p["reg_price"] = 10 ** p["reg_log_price"]
         p["residual"] = p["log_price"] - p["reg_log_price"]
         env_max = max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * p["log_days"])
         env_range = env_max - ENV_LOWER
-        p["risk_mm"] = max(0, min(1, (p["residual"] - ENV_LOWER) / env_range))
+        structural_raw = (p["residual"] - ENV_LOWER) / env_range
+        if structural_raw < 0:
+            floor_depth = ENV_LOWER - p["residual"]
+            p["risk_mm"] = max(
+                STRUCTURAL_SOFT_FLOOR_MIN,
+                STRUCTURAL_SOFT_FLOOR_MAX * math.exp(-floor_depth / STRUCTURAL_SOFT_FLOOR_SCALE),
+            )
+        else:
+            p["risk_mm"] = min(1, structural_raw)
 
-    # Momentum risk (rolling z-score → Gaussian CDF)
+    # Momentum risk: compare each point to the prior rolling window.
     residuals = [p["residual"] for p in pts]
     r_sum = 0.0
     r_sum_sq = 0.0
     for i in range(n):
+        cnt = min(i, RISK_WINDOW)
+        if cnt >= 180:
+            mean = r_sum / cnt
+            vari = max(0.0001, r_sum_sq / cnt - mean * mean)
+            std = math.sqrt(vari)
+            z = (residuals[i] - mean) / std
+            pts[i]["risk_zs"] = _norm_cdf(z)
+        else:
+            pts[i]["risk_zs"] = 0.5
         r_sum += residuals[i]
         r_sum_sq += residuals[i] * residuals[i]
-        if i >= RISK_WINDOW:
-            r_sum -= residuals[i - RISK_WINDOW]
-            r_sum_sq -= residuals[i - RISK_WINDOW] * residuals[i - RISK_WINDOW]
-        cnt = min(i + 1, RISK_WINDOW)
-        mean = r_sum / cnt
-        vari = max(0.0001, r_sum_sq / cnt - mean * mean)
-        std = math.sqrt(vari)
-        z = (residuals[i] - mean) / std
-        pts[i]["risk_zs"] = _norm_cdf(z)
+        if i >= RISK_WINDOW - 1:
+            r_sum -= residuals[i - RISK_WINDOW + 1]
+            r_sum_sq -= residuals[i - RISK_WINDOW + 1] * residuals[i - RISK_WINDOW + 1]
 
     # Combined risk (geometric mean)
     for p in pts:

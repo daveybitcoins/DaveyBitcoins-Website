@@ -392,6 +392,9 @@ const ENV_UPPER_A = 4.6;
 const ENV_UPPER_B = -1.10;
 const ENV_LOWER = -0.45;
 const ENV_MIN_MAX = 0.05;
+const STRUCTURAL_SOFT_FLOOR_SCALE = 0.15;
+const STRUCTURAL_SOFT_FLOOR_MAX = 0.02;
+const STRUCTURAL_SOFT_FLOOR_MIN = 0.005;
 const STRUCTURAL_FLOOR_BREAK_RISK = 0.01;
 
 function buildDataset(rawData) {
@@ -424,7 +427,16 @@ function buildDataset(rawData) {
     p.residual = p.logPrice - p.regLogPrice;
     const envMax = Math.max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * p.logDays);
     const envRange = envMax - ENV_LOWER;
-    p.riskMM = Math.max(0, Math.min(1, (p.residual - ENV_LOWER) / envRange));
+    const structuralRaw = (p.residual - ENV_LOWER) / envRange;
+    if (structuralRaw < 0) {
+      const floorDepth = ENV_LOWER - p.residual;
+      p.riskMM = Math.max(
+        STRUCTURAL_SOFT_FLOOR_MIN,
+        STRUCTURAL_SOFT_FLOOR_MAX * Math.exp(-floorDepth / STRUCTURAL_SOFT_FLOOR_SCALE)
+      );
+    } else {
+      p.riskMM = Math.min(1, structuralRaw);
+    }
   });
 
   // Prior-window rolling Z-score. The current point is compared with the
