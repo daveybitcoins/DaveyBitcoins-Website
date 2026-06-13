@@ -472,15 +472,40 @@
         return null;
     }
 
+    function sortedDividendPayments(div) {
+        if (!div || !div.last_payments || div.last_payments.length === 0) return [];
+        return div.last_payments
+            .slice()
+            .sort(function (a, b) { return String(a.ex_date).localeCompare(String(b.ex_date)); });
+    }
+
+    function currentFrequencyPayments(div, freq) {
+        var payments = sortedDividendPayments(div);
+        if (payments.length === 0) return [];
+        if (freq !== "weekly") {
+            var expected = paymentsPerYear(freq);
+            return expected ? payments.slice(-expected) : payments;
+        }
+
+        var weeklyRun = [payments[payments.length - 1]];
+        for (var i = payments.length - 2; i >= 0; i--) {
+            var prev = new Date(payments[i].ex_date + "T00:00:00");
+            var current = new Date(weeklyRun[weeklyRun.length - 1].ex_date + "T00:00:00");
+            var gapDays = Math.round((current - prev) / 86400000);
+            if (gapDays < 4 || gapDays > 14) break;
+            weeklyRun.push(payments[i]);
+            if (weeklyRun.length >= 8) break;
+        }
+
+        if (weeklyRun.length >= 2) return weeklyRun.reverse();
+        return payments.slice(-4);
+    }
+
     function annualizedRateFromPayments(div, freq) {
-        if (!div || !div.last_payments || div.last_payments.length === 0) return null;
         var expected = paymentsPerYear(freq);
         if (!expected) return null;
 
-        var payments = div.last_payments
-            .slice()
-            .sort(function (a, b) { return String(a.ex_date).localeCompare(String(b.ex_date)); })
-            .slice(-expected)
+        var payments = currentFrequencyPayments(div, freq)
             .map(function (p) { return Number(p.amount); })
             .filter(function (amount) { return Number.isFinite(amount) && amount > 0; });
         if (payments.length === 0) return null;
@@ -498,6 +523,21 @@
         var expected = paymentsPerYear(freq);
         if (annualized && expected && div.last_payments && div.last_payments.length < expected) return annualized;
         return div.dividend_rate || annualized || null;
+    }
+
+    function getDividendPerPayment(ticker) {
+        var div = getDividendInfo(ticker);
+        if (!div) return null;
+        var freq = getDividendFrequency(ticker, div);
+        var payments = currentFrequencyPayments(div, freq)
+            .map(function (p) { return Number(p.amount); })
+            .filter(function (amount) { return Number.isFinite(amount) && amount > 0; });
+        if (payments.length > 0) return payments[payments.length - 1];
+
+        var annualRate = getAnnualDividendRate(ticker);
+        var expected = paymentsPerYear(freq);
+        if (annualRate && expected) return annualRate / expected;
+        return null;
     }
 
     function getDividendYield(ticker) {
@@ -532,7 +572,7 @@
 
         var html = '<div class="table-wrap"><table id="holdings-table"><thead><tr>' +
             '<th>Ticker</th><th>Name</th><th>Shares</th><th>Cost Basis / Share</th><th>Cost Basis / Total</th><th>Price</th><th>% Gain</th><th>Current Value</th>' +
-            '<th>Yield</th><th>Div / Share (Yr)</th><th>Annual Div</th><th>Monthly Div</th><th>Frequency</th>' +
+            '<th>Yield</th><th>Div / Share</th><th>Annual Div</th><th>Monthly Div</th><th>Frequency</th>' +
             '<th>% of Portfolio</th><th></th>' +
             '</tr></thead><tbody>';
 
@@ -541,6 +581,7 @@
             var price = getLivePrice(h.ticker);
             var value = price ? h.shares * price : null;
             var annualRate = getAnnualDividendRate(h.ticker);
+            var perPayment = getDividendPerPayment(h.ticker);
             var annualDiv = annualRate ? h.shares * annualRate : null;
             var pctPortfolio = (value && totalValue > 0) ? (value / totalValue) * 100 : null;
             var yld = getDividendYield(h.ticker);
@@ -571,7 +612,7 @@
                 '<td class="num">' + (gainLoss ? gainLoss : "--") + '</td>' +
                 '<td class="num">' + (value ? fmtUSD(value) : "--") + '</td>' +
                 '<td class="num">' + (yld ? fmtPct(yld) : "--") + '</td>' +
-                '<td class="num">' + (annualRate ? fmtUSD(annualRate) : "--") + '</td>' +
+                '<td class="num">' + (perPayment ? fmtUSD(perPayment) : "--") + '</td>' +
                 '<td class="num pos">' + (annualDiv ? fmtUSD(annualDiv) : "--") + '</td>' +
                 '<td class="num pos">' + (annualDiv ? fmtUSD(annualDiv / 12) : "--") + '</td>' +
                 '<td style="text-align:center">' + freqBadge + '</td>' +

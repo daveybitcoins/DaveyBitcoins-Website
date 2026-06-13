@@ -80,16 +80,46 @@ def payments_per_year(frequency):
     }.get(frequency)
 
 
+def current_frequency_payments(payments, frequency):
+    if not payments:
+        return []
+
+    recent_payments = sorted(payments, key=lambda p: p.get("ex_date") or "")
+
+    if frequency != "weekly":
+        expected = payments_per_year(frequency)
+        return recent_payments[-expected:] if expected else recent_payments
+
+    weekly_run = [recent_payments[-1]]
+    for payment in reversed(recent_payments[:-1]):
+        try:
+            prev = datetime.strptime(payment.get("ex_date"), "%Y-%m-%d")
+            current = datetime.strptime(weekly_run[-1].get("ex_date"), "%Y-%m-%d")
+        except Exception:
+            break
+
+        gap_days = (current - prev).days
+        if gap_days < 4 or gap_days > 14:
+            break
+        weekly_run.append(payment)
+        if len(weekly_run) >= 8:
+            break
+
+    if len(weekly_run) >= 2:
+        return list(reversed(weekly_run))
+
+    return recent_payments[-4:]
+
+
 def annualized_rate_from_payments(payments, frequency):
     """Estimate forward annual rate for funds with incomplete payment history."""
     expected = payments_per_year(frequency)
     if not expected or not payments:
         return None
 
-    recent_payments = sorted(payments, key=lambda p: p.get("ex_date") or "")[-expected:]
     amounts = [
         p.get("amount")
-        for p in recent_payments
+        for p in current_frequency_payments(payments, frequency)
         if p.get("amount") is not None and p.get("amount") > 0
     ]
     if not amounts:
