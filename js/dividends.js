@@ -13,6 +13,28 @@
         BTCI: true, KSLV: true, MLPI: true, KGLD: true, QDVO: true, GPIX: true,
         ROCQ: true, ROCY: true, SGOV: true, XBCI: true, AIPI: true,
     };
+    const WEEKLY_FREQUENCY_OVERRIDES = {
+        CHPY: true, ABNY: true, DISO: true, MSFO: true, TSMY: true, MSST: true,
+        FEAT: true, AIYY: true, DRAY: true, MSTY: true, WNTR: true, NVIT: true,
+        FIVY: true, AMDY: true, FBY: true, NFLY: true, XOMO: true, TEST: true,
+        GPTY: true, AMZY: true, FIAT: true, NVDY: true, XYZY: true,
+        LFGY: true, APLY: true, GDXY: true, OARK: true, YBIT: true,
+        MINY: true, BABO: true, GMEY: true, PLTY: true, YQQQ: true,
+        QDTY: true, BRKC: true, GOOY: true, PYPY: true,
+        RDTY: true, CONY: true, HIYY: true, RBLY: true,
+        SDTY: true, CRCO: true, HOOY: true, RDYY: true,
+        SLTY: true, CRSH: true, JPO: true, SMCY: true,
+        ULTY: true, CVNY: true, MARO: true, SNOY: true,
+        YMAG: true, DIPS: true, MRNY: true, TSLY: true, YMAX: true,
+        AAPW: true, AMDW: true, AMZW: true, ARMW: true, AVGW: true, BABW: true,
+        BRKW: true, COIW: true, COSW: true, GDXW: true, GLDW: true, GOOW: true,
+        HOOW: true, METW: true, MSFW: true, MSTW: true, NFLW: true, NVDW: true,
+        PLTW: true, TOPW: true, TSLW: true, TSYW: true, UBEW: true, UNHW: true,
+        MAGY: true, QDTE: true, RDTE: true, TPAY: true, WEEK: true, XDTE: true,
+        XPAY: true, YBTC: true, YETH: true,
+        FEPI: true, AIPI: true, CEPI: true, NVII: true, TSII: true, WMTI: true, MSII: true,
+        COII: true, HOII: true, PLTI: true, CWII: true, LLII: true, GIF: true,
+    };
 
     let dividendData = null;
     let portfolios = [];
@@ -435,11 +457,14 @@
     }
 
     function getDividendFrequency(ticker, div) {
-        if (MONTHLY_FREQUENCY_OVERRIDES[String(ticker || "").toUpperCase()]) return "monthly";
+        var symbol = String(ticker || "").toUpperCase();
+        if (WEEKLY_FREQUENCY_OVERRIDES[symbol]) return "weekly";
+        if (MONTHLY_FREQUENCY_OVERRIDES[symbol]) return "monthly";
         return div && div.frequency ? div.frequency : null;
     }
 
     function paymentsPerYear(freq) {
+        if (freq === "weekly") return 52;
         if (freq === "monthly") return 12;
         if (freq === "quarterly") return 4;
         if (freq === "semi-annual") return 2;
@@ -556,7 +581,7 @@
         });
 
         html += '</tbody></table></div>';
-        html += '<p class="dividend-disclaimer">Dividend payments are subject to change by the company or fund manager. Div / Share may annualize recent payments for newer monthly funds with limited history.</p>';
+        html += '<p class="dividend-disclaimer">Dividend payments are subject to change by the company or fund manager. Div / Share may annualize recent payments for newer weekly/monthly funds with limited history.</p>';
         wrap.innerHTML = html;
 
         wrap.querySelectorAll(".btn-delete").forEach(function (btn) {
@@ -677,7 +702,8 @@
             if (!rate || !freq) return;
 
             var perPayment;
-            if (freq === "monthly") perPayment = rate / 12;
+            if (freq === "weekly") perPayment = rate / 52;
+            else if (freq === "monthly") perPayment = rate / 12;
             else if (freq === "quarterly") perPayment = rate / 4;
             else if (freq === "semi-annual") perPayment = rate / 2;
             else perPayment = rate;
@@ -704,12 +730,6 @@
                 });
                 var avgDay = Math.round(daySum / payments.length);
 
-                var monthsPerPayment;
-                if (freq === "monthly") monthsPerPayment = 1;
-                else if (freq === "quarterly") monthsPerPayment = 3;
-                else if (freq === "semi-annual") monthsPerPayment = 6;
-                else monthsPerPayment = 12;
-
                 var lastP = payments[payments.length - 1];
                 var lastPDate = new Date(lastP.ex_date + "T00:00:00");
                 var lastPMonth = lastPDate.getFullYear() * 12 + lastPDate.getMonth();
@@ -718,30 +738,50 @@
                 payments.forEach(function (p) { knownDates[p.ex_date] = true; });
 
                 for (var p = 1; p <= 24; p++) {
-                    var projMonth = lastPMonth + p * monthsPerPayment;
-                    var projYear = Math.floor(projMonth / 12);
-                    var projM = projMonth % 12;
-                    var daysInMonth = new Date(projYear, projM + 1, 0).getDate();
-                    var day = Math.min(avgDay, daysInMonth);
-                    var projDate = new Date(projYear, projM, day);
+                    var projDate;
+                    if (freq === "weekly") {
+                        projDate = new Date(lastPDate);
+                        projDate.setDate(lastPDate.getDate() + (p * 7));
+                    } else {
+                        var monthsPerPayment;
+                        if (freq === "monthly") monthsPerPayment = 1;
+                        else if (freq === "quarterly") monthsPerPayment = 3;
+                        else if (freq === "semi-annual") monthsPerPayment = 6;
+                        else monthsPerPayment = 12;
+
+                        var projMonth = lastPMonth + p * monthsPerPayment;
+                        var projYear = Math.floor(projMonth / 12);
+                        var projM = projMonth % 12;
+                        var daysInMonth = new Date(projYear, projM + 1, 0).getDate();
+                        var day = Math.min(avgDay, daysInMonth);
+                        projDate = new Date(projYear, projM, day);
+                    }
                     var projStr = projDate.toISOString().slice(0, 10);
                     if (!knownDates[projStr] && projDate.getFullYear() === year) {
                         addEvent(projStr, h.ticker, income, "est");
                     }
                 }
             } else {
-                var monthsPerPayment;
-                if (freq === "monthly") monthsPerPayment = 1;
-                else if (freq === "quarterly") monthsPerPayment = 3;
-                else if (freq === "semi-annual") monthsPerPayment = 6;
-                else monthsPerPayment = 12;
+                if (freq === "weekly") {
+                    for (var weekDate = new Date(year, 0, 3); weekDate.getFullYear() === year; weekDate.setDate(weekDate.getDate() + 7)) {
+                        var weekStr = weekDate.toISOString().slice(0, 10);
+                        if (weekStr === div.ex_dividend_date) continue;
+                        addEvent(weekStr, h.ticker, income, "est");
+                    }
+                } else {
+                    var monthsPerPayment;
+                    if (freq === "monthly") monthsPerPayment = 1;
+                    else if (freq === "quarterly") monthsPerPayment = 3;
+                    else if (freq === "semi-annual") monthsPerPayment = 6;
+                    else monthsPerPayment = 12;
 
-                for (var m = 0; m < 12; m += monthsPerPayment) {
-                    var mid = 15;
-                    var projDate = new Date(year, m, mid);
-                    var pStr = projDate.toISOString().slice(0, 10);
-                    if (pStr === div.ex_dividend_date) continue;
-                    addEvent(pStr, h.ticker, income, "est");
+                    for (var m = 0; m < 12; m += monthsPerPayment) {
+                        var mid = 15;
+                        var projDate = new Date(year, m, mid);
+                        var pStr = projDate.toISOString().slice(0, 10);
+                        if (pStr === div.ex_dividend_date) continue;
+                        addEvent(pStr, h.ticker, income, "est");
+                    }
                 }
             }
         });

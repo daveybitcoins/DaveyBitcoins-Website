@@ -41,11 +41,38 @@ MONTHLY_FALLBACK = {
     "QDVO", "GPIX", "ROCQ", "ROCY", "SGOV", "XBCI", "AIPI",
 }
 
+WEEKLY_FALLBACK = {
+    # YieldMax weekly payer groups
+    "CHPY", "ABNY", "DISO", "MSFO", "TSMY", "MSST",
+    "FEAT", "AIYY", "DRAY", "MSTY", "WNTR", "NVIT",
+    "FIVY", "AMDY", "FBY", "NFLY", "XOMO", "TEST",
+    "GPTY", "AMZY", "FIAT", "NVDY", "XYZY",
+    "LFGY", "APLY", "GDXY", "OARK", "YBIT",
+    "MINY", "BABO", "GMEY", "PLTY", "YQQQ",
+    "QDTY", "BRKC", "GOOY", "PYPY",
+    "RDTY", "CONY", "HIYY", "RBLY",
+    "SDTY", "CRCO", "HOOY", "RDYY",
+    "SLTY", "CRSH", "JPO", "SMCY",
+    "ULTY", "CVNY", "MARO", "SNOY",
+    "YMAG", "DIPS", "MRNY", "TSLY", "YMAX",
+
+    # Roundhill WeeklyPay and weekly income ETFs
+    "AAPW", "AMDW", "AMZW", "ARMW", "AVGW", "BABW", "BRKW", "COIW",
+    "COSW", "GDXW", "GLDW", "GOOW", "HOOW", "METW", "MSFW", "MSTW",
+    "NFLW", "NVDW", "PLTW", "TOPW", "TSLW", "TSYW", "UBEW", "UNHW",
+    "MAGY", "QDTE", "RDTE", "TPAY", "WEEK", "XDTE", "XPAY", "YBTC", "YETH",
+
+    # REX weekly income funds
+    "FEPI", "AIPI", "CEPI", "NVII", "TSII", "WMTI", "MSII", "COII",
+    "HOII", "PLTI", "CWII", "LLII", "GIF", "ULTI",
+}
+
 FREQ_WORKERS = 20
 
 
 def payments_per_year(frequency):
     return {
+        "weekly": 52,
         "monthly": 12,
         "quarterly": 4,
         "semi-annual": 2,
@@ -97,7 +124,9 @@ def _fetch_yahoo_data(symbol):
             recent = divs[divs.index >= str(cutoff.date())]
             count = len(recent)
 
-            if count >= 18:
+            if count >= 40:
+                freq = "weekly"
+            elif count >= 18:
                 freq = "monthly"
             elif count >= 6:
                 freq = "quarterly"
@@ -147,10 +176,11 @@ def enrich_from_yahoo(symbols):
             if done % 500 == 0:
                 print(f"  {done}/{len(symbols)} checked...")
 
+    weekly = sum(1 for f in frequencies.values() if f == "weekly")
     monthly = sum(1 for f in frequencies.values() if f == "monthly")
     quarterly = sum(1 for f in frequencies.values() if f == "quarterly")
-    other = len(frequencies) - monthly - quarterly
-    print(f"  Frequencies: {monthly} monthly, {quarterly} quarterly, {other} other "
+    other = len(frequencies) - weekly - monthly - quarterly
+    print(f"  Frequencies: {weekly} weekly, {monthly} monthly, {quarterly} quarterly, {other} other "
           f"({len(symbols) - len(frequencies)} unknown)")
     print(f"  Prices: {len(prices)} fetched from Yahoo")
     print(f"  Dividend payment histories: {len(payments)} fetched from Yahoo")
@@ -329,7 +359,9 @@ def main():
     payment_refreshes = 0
     rate_refreshes = 0
     for symbol, data in tickers.items():
-        if symbol in MONTHLY_FALLBACK:
+        if symbol in WEEKLY_FALLBACK:
+            data["frequency"] = "weekly"
+        elif symbol in MONTHLY_FALLBACK:
             data["frequency"] = "monthly"
         elif symbol in detected_freq:
             data["frequency"] = detected_freq[symbol]
@@ -375,14 +407,30 @@ def main():
                 "name": fb["name"],
                 "sector": fb.get("sector", ""),
                 "close": None,
-                "dividend_yield": fb["dividend_yield"],
-                "dividend_rate": fb["dividend_rate"],
+                "dividend_yield": fb.get("dividend_yield"),
+                "dividend_rate": fb.get("dividend_rate"),
                 "payout_ratio": None,
                 "frequency": fb["frequency"],
                 "ex_dividend_date": None,
                 "last_payments": [],
             }
             added_fallbacks.append(symbol)
+
+    for symbol in sorted(WEEKLY_FALLBACK):
+        if symbol not in tickers:
+            tickers[symbol] = {
+                "name": symbol,
+                "sector": "",
+                "close": None,
+                "dividend_yield": None,
+                "dividend_rate": None,
+                "payout_ratio": None,
+                "frequency": "weekly",
+                "ex_dividend_date": None,
+                "last_payments": [],
+            }
+            added_fallbacks.append(symbol)
+
     if added_fallbacks:
         print(f"\n  Added {len(added_fallbacks)} fallback tickers: {', '.join(added_fallbacks)}")
         _, fb_prices, fb_rates, fb_payments = enrich_from_yahoo(added_fallbacks)
