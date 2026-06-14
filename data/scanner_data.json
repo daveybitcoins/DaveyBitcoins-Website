@@ -1,8 +1,8 @@
 {
   "meta": {
-    "date": "2026-06-13",
+    "date": "2026-06-14",
     "total_stocks": 300,
-    "generated_at": "2026-06-13T22:00:59.169433",
+    "generated_at": "2026-06-14T16:20:46.576932",
     "index_etfs": [
       "SPY",
       "QQQ",
@@ -57,26 +57,26 @@
     {
       "symbol": "BTC",
       "name": "Bitcoin",
-      "price": 64481.0,
-      "ema8": 70694.03,
-      "ema13": 72464.64,
-      "ema21": 75473.01,
+      "price": 64067.0,
+      "ema8": 70602.03,
+      "ema13": 72405.49,
+      "ema21": 75435.37,
       "signal": "Full Bear",
-      "price_vs_8w": -8.79,
-      "price_vs_13w": -11.02,
-      "price_vs_21w": -14.56,
-      "ema8_vs_13": -2.44,
-      "ema13_vs_21": -3.99,
-      "spread_score": -6.43,
-      "chg_1d": 1.46,
-      "chg_1w": 5.84,
-      "chg_1m": -18.66,
+      "price_vs_8w": -9.26,
+      "price_vs_13w": -11.52,
+      "price_vs_21w": -15.07,
+      "ema8_vs_13": -2.49,
+      "ema13_vs_21": -4.02,
+      "spread_score": -6.51,
+      "chg_1d": 0.83,
+      "chg_1w": 5.27,
+      "chg_1m": -20.96,
       "crossover_alert": null,
-      "risk_combo": 0.133,
-      "risk_mm": 0.142,
-      "risk_zs": 0.124,
-      "fair_value": 137017.37,
-      "dev_pct": -52.9,
+      "risk_combo": 0.129,
+      "risk_mm": 0.138,
+      "risk_zs": 0.12,
+      "fair_value": 137094.06,
+      "dev_pct": -53.3,
       "zone": "Accumulate",
       "zone_color": "#2563eb"
     }
@@ -129,7 +129,7 @@
         "signal": "Full Bear",
         "count": 60,
         "pct": 0.2,
-        "avg_vs_21w": -8.45
+        "avg_vs_21w": -8.46
       },
       {
         "signal": "Bull Breakdown",
@@ -7652,37 +7652,6 @@
       "rank": 241
     },
     {
-      "symbol": "STRC",
-      "name": "Strategy Inc - Variable Rate Series A Perpetual Stretch Preferred Stock",
-      "price": 94.8,
-      "mkt_cap_b": 43.4,
-      "ema8": 97.36,
-      "ema13": 98.06,
-      "ema21": 98.41,
-      "sector": "Technology services",
-      "analyst": "",
-      "chg_1d": -1.75,
-      "chg_1w": -0.36,
-      "chg_1m": -5.2,
-      "chg_ytd": -4.4,
-      "rel_vol": 0.68,
-      "signal": "Full Bear",
-      "price_vs_8w": -2.63,
-      "price_vs_13w": -3.32,
-      "price_vs_21w": -3.67,
-      "ema8_vs_13": -0.71,
-      "ema13_vs_21": -0.36,
-      "spread_score": -1.07,
-      "pe_ttm": null,
-      "fwd_pe": 1.0,
-      "peg": null,
-      "sma5": 96.026,
-      "sma20": 97.45750000000007,
-      "sma50": 98.83439999999995,
-      "sma200": 98.70434999999999,
-      "rank": 242
-    },
-    {
       "symbol": "MA",
       "name": "Mastercard Incorporated",
       "price": 489.98,
@@ -7711,7 +7680,7 @@
       "sma20": 491.77350000000024,
       "sma50": 499.40559999999937,
       "sma200": 536.7845000000001,
-      "rank": 243
+      "rank": 242
     },
     {
       "symbol": "SPOT",
@@ -7742,7 +7711,7 @@
       "sma20": 489.0680000000005,
       "sma50": 480.40240000000017,
       "sma200": 560.5289999999999,
-      "rank": 244
+      "rank": 243
     },
     {
       "symbol": "MCK",
@@ -7773,7 +7742,7 @@
       "sma20": 762.6134999999998,
       "sma50": 797.6440000000006,
       "sma200": 822.4293499999991,
-      "rank": 245
+      "rank": 244
     },
     {
       "symbol": "CRH",
@@ -7804,7 +7773,7 @@
       "sma20": 103.9605,
       "sma50": 109.92160000000001,
       "sma200": 115.51619999999991,
-      "rank": 246
+      "rank": 245
     },
     {
       "symbol": "MCD",
@@ -7835,7 +7804,7 @@
       "sma20": 279.7090000000002,
       "sma50": 288.94119999999964,
       "sma200": 305.8728499999998,
-      "rank": 247
+      "rank": 246
     },
     {
       "symbol": "TMUS",
@@ -7866,6 +7835,37 @@
       "sma20": 186.5389999999999,
       "sma50": 190.95399999999987,
       "sma200": 208.4367500000002,
+      "rank": 247
+    },
+    {
+      "symbol": "STRD",
+      "name": "Strategy Inc - 10.00% Series A Perpetual Stride Preferred Stock",
+      "price": 71.5,
+      "mkt_cap_b": 43.4,
+      "ema8": 72.6,
+      "ema13": 73.63,
+      "ema21": 74.72,
+      "sector": "Technology services",
+      "analyst": "",
+      "chg_1d": 0.58,
+      "chg_1w": 4.38,
+      "chg_1m": -7.14,
+      "chg_ytd": -6.6,
+      "rel_vol": 1.48,
+      "signal": "Full Bear",
+      "price_vs_8w": -1.52,
+      "price_vs_13w": -2.89,
+      "price_vs_21w": -4.31,
+      "ema8_vs_13": -1.39,
+      "ema13_vs_21": -1.46,
+      "spread_score": -2.85,
+      "pe_ttm": null,
+      "fwd_pe": 0.7,
+      "peg": null,
+      "sma5": 69.50999999999999,
+      "sma20": 71.5287500000001,
+      "sma50": 74.42890200000006,
+      "sma200": 76.35102550000002,
       "rank": 248
     },
     {
@@ -16160,37 +16160,6 @@
       "rank": 254
     },
     {
-      "symbol": "STRC",
-      "name": "Strategy Inc - Variable Rate Series A Perpetual Stretch Preferred Stock",
-      "price": 94.8,
-      "mkt_cap_b": 43.4,
-      "ema8": 97.36,
-      "ema13": 98.06,
-      "ema21": 98.41,
-      "sector": "Technology services",
-      "analyst": "",
-      "chg_1d": -1.75,
-      "chg_1w": -0.36,
-      "chg_1m": -5.2,
-      "chg_ytd": -4.4,
-      "rel_vol": 0.68,
-      "signal": "Full Bear",
-      "price_vs_8w": -2.63,
-      "price_vs_13w": -3.32,
-      "price_vs_21w": -3.67,
-      "ema8_vs_13": -0.71,
-      "ema13_vs_21": -0.36,
-      "spread_score": -1.07,
-      "pe_ttm": null,
-      "fwd_pe": 1.0,
-      "peg": null,
-      "sma5": 96.026,
-      "sma20": 97.45750000000007,
-      "sma50": 98.83439999999995,
-      "sma200": 98.70434999999999,
-      "rank": 242
-    },
-    {
       "symbol": "NOW",
       "name": "ServiceNow, Inc.",
       "price": 102.15,
@@ -16377,6 +16346,37 @@
       "rank": 240
     },
     {
+      "symbol": "STRD",
+      "name": "Strategy Inc - 10.00% Series A Perpetual Stride Preferred Stock",
+      "price": 71.5,
+      "mkt_cap_b": 43.4,
+      "ema8": 72.6,
+      "ema13": 73.63,
+      "ema21": 74.72,
+      "sector": "Technology services",
+      "analyst": "",
+      "chg_1d": 0.58,
+      "chg_1w": 4.38,
+      "chg_1m": -7.14,
+      "chg_ytd": -6.6,
+      "rel_vol": 1.48,
+      "signal": "Full Bear",
+      "price_vs_8w": -1.52,
+      "price_vs_13w": -2.89,
+      "price_vs_21w": -4.31,
+      "ema8_vs_13": -1.39,
+      "ema13_vs_21": -1.46,
+      "spread_score": -2.85,
+      "pe_ttm": null,
+      "fwd_pe": 0.7,
+      "peg": null,
+      "sma5": 69.50999999999999,
+      "sma20": 71.5287500000001,
+      "sma50": 74.42890200000006,
+      "sma200": 76.35102550000002,
+      "rank": 248
+    },
+    {
       "symbol": "COF",
       "name": "Capital One Financial Corporation",
       "price": 184.73,
@@ -16436,7 +16436,7 @@
       "sma20": 103.9605,
       "sma50": 109.92160000000001,
       "sma200": 115.51619999999991,
-      "rank": 246
+      "rank": 245
     },
     {
       "symbol": "MA",
@@ -16467,7 +16467,7 @@
       "sma20": 491.77350000000024,
       "sma50": 499.40559999999937,
       "sma200": 536.7845000000001,
-      "rank": 243
+      "rank": 242
     },
     {
       "symbol": "BKNG",
@@ -16684,7 +16684,7 @@
       "sma20": 489.0680000000005,
       "sma50": 480.40240000000017,
       "sma200": 560.5289999999999,
-      "rank": 244
+      "rank": 243
     },
     {
       "symbol": "BLK",
@@ -16746,7 +16746,7 @@
       "sma20": 279.7090000000002,
       "sma50": 288.94119999999964,
       "sma200": 305.8728499999998,
-      "rank": 247
+      "rank": 246
     },
     {
       "symbol": "NKE",
@@ -16901,7 +16901,7 @@
       "sma20": 762.6134999999998,
       "sma50": 797.6440000000006,
       "sma200": 822.4293499999991,
-      "rank": 245
+      "rank": 244
     },
     {
       "symbol": "TMUS",
@@ -16932,7 +16932,7 @@
       "sma20": 186.5389999999999,
       "sma50": 190.95399999999987,
       "sma200": 208.4367500000002,
-      "rank": 248
+      "rank": 247
     },
     {
       "symbol": "KKR",
@@ -18248,7 +18248,7 @@
       "sma20": 762.6134999999998,
       "sma50": 797.6440000000006,
       "sma200": 822.4293499999991,
-      "rank": 245,
+      "rank": 244,
       "pct_from_50": -1.7,
       "pct_from_200": -4.7,
       "implied_growth": 49.5
@@ -19853,7 +19853,7 @@
       "sma20": 103.9605,
       "sma50": 109.92160000000001,
       "sma200": 115.51619999999991,
-      "rank": 246,
+      "rank": 245,
       "pct_from_50": -3.1,
       "pct_from_200": -7.8,
       "implied_growth": 14.2
@@ -19921,7 +19921,7 @@
       "sma20": 491.77350000000024,
       "sma50": 499.40559999999937,
       "sma200": 536.7845000000001,
-      "rank": 243,
+      "rank": 242,
       "pct_from_50": -1.9,
       "pct_from_200": -8.7,
       "implied_growth": 21.2
@@ -23866,8 +23866,8 @@
       "bull_pct": 50.0,
       "bear_pct": 43.8,
       "net_score": 6.2,
-      "avg_vs_21w": 3.66,
-      "avg_vs_8w": 0.2
+      "avg_vs_21w": 3.64,
+      "avg_vs_8w": 0.23
     },
     {
       "sector": "Distribution services",
@@ -26007,40 +26007,6 @@
       "alert": "8W just above 13W (0.36%) \u2014 bearish cross risk"
     },
     {
-      "symbol": "STRC",
-      "name": "Strategy Inc - Variable Rate Series A Perpetual Stretch Preferred Stock",
-      "price": 94.8,
-      "mkt_cap_b": 43.4,
-      "ema8": 97.36,
-      "ema13": 98.06,
-      "ema21": 98.41,
-      "sector": "Technology services",
-      "analyst": "",
-      "chg_1d": -1.75,
-      "chg_1w": -0.36,
-      "chg_1m": -5.2,
-      "chg_ytd": -4.4,
-      "rel_vol": 0.68,
-      "signal": "Full Bear",
-      "price_vs_8w": -2.63,
-      "price_vs_13w": -3.32,
-      "price_vs_21w": -3.67,
-      "ema8_vs_13": -0.71,
-      "ema13_vs_21": -0.36,
-      "spread_score": -1.07,
-      "pe_ttm": null,
-      "fwd_pe": 1.0,
-      "peg": null,
-      "sma5": 96.026,
-      "sma20": 97.45750000000007,
-      "sma50": 98.83439999999995,
-      "sma200": 98.70434999999999,
-      "rank": 242,
-      "gap_8_13": 0.71,
-      "gap_13_21": 0.36,
-      "alert": "8W just below 13W (0.71%) \u2014 bullish cross potential; 13W just below 21W (0.36%) \u2014 bullish cross potential"
-    },
-    {
       "symbol": "JPM",
       "name": "JP Morgan Chase & Co.",
       "price": 320.72,
@@ -27433,7 +27399,7 @@
       "sma20": 489.0680000000005,
       "sma50": 480.40240000000017,
       "sma200": 560.5289999999999,
-      "rank": 244,
+      "rank": 243,
       "gap_8_13": 0.77,
       "gap_13_21": 2.65,
       "alert": "8W just below 13W (0.77%) \u2014 bullish cross potential"
@@ -28049,7 +28015,7 @@
       "sma20": 491.77350000000024,
       "sma50": 499.40559999999937,
       "sma200": 536.7845000000001,
-      "rank": 243,
+      "rank": 242,
       "gap_8_13": 0.97,
       "gap_13_21": 1.67,
       "alert": "8W just below 13W (0.97%) \u2014 bullish cross potential"
@@ -28124,7 +28090,7 @@
     }
   ],
   "breadth_context": {
-    "above_5d": 76.3,
+    "above_5d": 76.7,
     "above_20d": 65.7,
     "above_50d": 60.0,
     "above_200d": 67.9,
@@ -28134,8 +28100,8 @@
         {
           "field": "above_5d",
           "label": "% > 5D MA",
-          "current": 76.3,
-          "percentile": 82.4,
+          "current": 76.7,
+          "percentile": 82.8,
           "zone": "Overbought",
           "hist_min": 0.2,
           "hist_max": 99.2,
@@ -28196,45 +28162,45 @@
           "data_points": 4865
         }
       ],
-      "composite_score": 62.3,
+      "composite_score": 62.4,
       "composite_zone": "Healthy",
       "history_days": 4865,
       "forward_returns": [
         {
           "field": "above_5d",
           "label": "% > 5D MA",
-          "current": 76.3,
+          "current": 76.7,
           "direction": "overbought",
           "zone": "Overbought",
-          "threshold": 76.3,
+          "threshold": 76.7,
           "horizons": [
             {
               "days": 5,
-              "occurrences": 411,
-              "avg_change": -31.9,
-              "median_change": -28.6,
-              "pct_revert": 92.0
+              "occurrences": 401,
+              "avg_change": -32.4,
+              "median_change": -29.1,
+              "pct_revert": 93.0
             },
             {
               "days": 10,
-              "occurrences": 411,
-              "avg_change": -29.8,
+              "occurrences": 401,
+              "avg_change": -29.9,
               "median_change": -27.0,
               "pct_revert": 89.0
             },
             {
               "days": 20,
-              "occurrences": 410,
+              "occurrences": 400,
               "avg_change": -29.2,
               "median_change": -25.8,
               "pct_revert": 90.0
             },
             {
               "days": 60,
-              "occurrences": 411,
-              "avg_change": -30.7,
-              "median_change": -29.2,
-              "pct_revert": 90.0
+              "occurrences": 401,
+              "avg_change": -30.9,
+              "median_change": -29.4,
+              "pct_revert": 91.0
             }
           ]
         }
