@@ -2,7 +2,7 @@
   "meta": {
     "date": "2026-06-19",
     "total_stocks": 300,
-    "generated_at": "2026-06-19T20:38:20.180775",
+    "generated_at": "2026-06-19T22:02:35.393673",
     "index_etfs": [
       "SPY",
       "QQQ",
@@ -57,25 +57,25 @@
     {
       "symbol": "BTC",
       "name": "Bitcoin",
-      "price": 63003.0,
-      "ema8": 68967.04,
-      "ema13": 71100.31,
-      "ema21": 74330.82,
+      "price": 63033.0,
+      "ema8": 68973.71,
+      "ema13": 71104.6,
+      "ema21": 74333.55,
       "signal": "Full Bear",
-      "price_vs_8w": -8.65,
-      "price_vs_13w": -11.39,
-      "price_vs_21w": -15.24,
+      "price_vs_8w": -8.61,
+      "price_vs_13w": -11.35,
+      "price_vs_21w": -15.2,
       "ema8_vs_13": -3.0,
-      "ema13_vs_21": -4.35,
-      "spread_score": -7.35,
-      "chg_1d": -2.2,
-      "chg_1w": -0.86,
-      "chg_1m": -17.97,
+      "ema13_vs_21": -4.34,
+      "spread_score": -7.34,
+      "chg_1d": -2.16,
+      "chg_1w": -0.82,
+      "chg_1m": -17.94,
       "crossover_alert": null,
-      "risk_combo": 0.118,
-      "risk_mm": 0.128,
+      "risk_combo": 0.119,
+      "risk_mm": 0.129,
       "risk_zs": 0.109,
-      "fair_value": 137486.4,
+      "fair_value": 137486.43,
       "dev_pct": -54.2,
       "zone": "Accumulate",
       "zone_color": "#2563eb"
@@ -27606,7 +27606,7 @@
   },
   "vix_context": {
     "level": 16.78,
-    "change": 2.32
+    "change": -9.0
   },
   "ai_summary": {
     "market_overview": {
