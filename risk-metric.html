@@ -159,6 +159,10 @@
   .proj-table .pj-date{color:var(--text-bright);font-weight:500}
   .proj-table .pj-price{font-family:'Outfit',sans-serif;font-weight:600;color:var(--text-heading)}
   .proj-table .pj-growth{font-family:'Outfit',sans-serif;font-weight:600}
+  .market-cap-meta{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin:-2px 0 14px;font-size:0.64rem;color:var(--text-dim)}
+  .market-cap-meta span{color:var(--text-heading);font-weight:600}
+  .market-cap-scroll{max-height:520px;overflow:auto;border-top:1px solid var(--border-light);border-bottom:1px solid var(--border-light)}
+  .market-cap-scroll .proj-table th{position:sticky;top:0;background:var(--bg-card);z-index:1}
   @media(max-width:600px){.proj-table th,.proj-table td{padding:6px 8px;font-size:0.65rem}}
   .risk-lows-wrap{background:rgba(20,19,15,0.74);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:20px 24px;margin-bottom:36px;overflow-x:auto;transition:background 0.3s,border-color 0.3s}
   [data-theme="light"] .risk-lows-wrap{background:rgba(255,255,255,0.7);border-color:var(--border)}
@@ -283,6 +287,21 @@
   <div class="risk-table-wrap">
     <h4>Price at Each Risk Level (Combined)</h4>
     <div class="risk-table" id="riskTable"></div>
+  </div>
+  <div class="proj-table-wrap">
+    <h4>BTC Price at Market Caps</h4>
+    <div class="market-cap-meta">
+      <div>Current Supply: <span id="currentSupply">—</span></div>
+      <div>Block Height: <span id="currentSupplyHeight">—</span></div>
+    </div>
+    <div class="market-cap-scroll">
+      <table class="proj-table" id="marketCapTable">
+        <thead>
+          <tr><th>Market Cap</th><th>BTC Price</th><th>Move from Today</th></tr>
+        </thead>
+        <tbody id="marketCapBody"></tbody>
+      </table>
+    </div>
   </div>
   <div class="proj-table-wrap">
     <h4>Fair Value Price Projections (Power-Law Regression)</h4>
@@ -557,6 +576,19 @@ function fallbackBlockHeight(nowMs) {
   ));
 }
 
+function bitcoinSupplyAtHeight(height) {
+  let remainingBlocks = Math.max(0, Math.floor(height) + 1);
+  let reward = 50;
+  let supply = 0;
+  while (remainingBlocks > 0 && reward > 0) {
+    const blocks = Math.min(remainingBlocks, HALVING_INTERVAL);
+    supply += blocks * reward;
+    remainingBlocks -= blocks;
+    reward /= 2;
+  }
+  return Math.min(21000000, supply);
+}
+
 async function fetchBlockHeight() {
   const endpoints = [
     'https://blockstream.info/api/blocks/tip/height',
@@ -703,6 +735,41 @@ function compactUsd(value) {
   return '$' + value.toFixed(4);
 }
 
+function formatMarketCap(value) {
+  if (!Number.isFinite(value)) return '—';
+  function trimDecimal(text) {
+    return text.indexOf('.') >= 0 ? text.replace(/\.?0+$/, '') : text;
+  }
+  if (value >= 1e12) return '$' + trimDecimal((value / 1e12).toFixed(value % 1e12 === 0 ? 0 : 3)) + 'T';
+  if (value >= 1e9) return '$' + trimDecimal((value / 1e9).toFixed(value % 1e9 === 0 ? 0 : 1)) + 'B';
+  if (value >= 1e6) return '$' + trimDecimal((value / 1e6).toFixed(value % 1e6 === 0 ? 0 : 1)) + 'M';
+  return '$' + Math.round(value).toLocaleString();
+}
+
+function renderMarketCapTable(supply, height, currentPrice) {
+  const supplyEl = document.getElementById('currentSupply');
+  const heightEl = document.getElementById('currentSupplyHeight');
+  const body = document.getElementById('marketCapBody');
+  if (!supplyEl || !heightEl || !body || !Number.isFinite(supply) || supply <= 0) return;
+
+  supplyEl.textContent = supply.toLocaleString(undefined, { maximumFractionDigits: 3 }) + ' BTC';
+  heightEl.textContent = Number.isFinite(height) ? Math.floor(height).toLocaleString() : 'estimated';
+  body.innerHTML = '';
+
+  const fragment = document.createDocumentFragment();
+  for (let marketCap = 500000000000; marketCap <= 10000000000000; marketCap += 500000000000) {
+    const price = marketCap / supply;
+    const movePct = Number.isFinite(currentPrice) && currentPrice > 0 ? ((price / currentPrice - 1) * 100) : null;
+    const moveColor = movePct == null ? 'var(--text-dimmer)' : movePct >= 0 ? '#58c56f' : '#ef5d4f';
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td class="pj-date">' + formatMarketCap(marketCap) + '</td>' +
+      '<td class="pj-price">$' + price.toLocaleString(undefined, { maximumFractionDigits: price >= 1000 ? 0 : 2 }) + '</td>' +
+      '<td class="pj-growth" style="color:' + moveColor + '">' + (movePct == null ? '—' : (movePct >= 0 ? '+' : '') + movePct.toFixed(1) + '%') + '</td>';
+    fragment.appendChild(tr);
+  }
+  body.appendChild(fragment);
+}
+
 function dateMs(dateStr) {
   return Date.parse(dateStr + 'T00:00:00Z');
 }
@@ -790,6 +857,7 @@ async function main() {
 
   // Fetch live price
   const live = await fetchLivePrice(rawData);
+  const supplyHeightPromise = fetchBlockHeight();
   refreshHalvingCountdown();
   refreshDifficultyAdjustment();
 
@@ -811,6 +879,13 @@ async function main() {
   document.getElementById('vDev').textContent = (devPct>0?'+':'') + devPct + '%';
   document.getElementById('needle').style.left = (last.riskCombo*100)+'%';
   renderBearMarketProgress(pts, slope, intercept);
+  const fallbackSupplyHeight = fallbackBlockHeight(Date.now());
+  renderMarketCapTable(bitcoinSupplyAtHeight(fallbackSupplyHeight), fallbackSupplyHeight, last.price);
+  supplyHeightPromise.then(function(height) {
+    if (Number.isFinite(height) && height > 0) {
+      renderMarketCapTable(bitcoinSupplyAtHeight(height), height, last.price);
+    }
+  });
 
   // Risk-price table
   {
