@@ -11,6 +11,9 @@ import json
 import math
 import os
 import sys
+import time
+import urllib.parse
+import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 
@@ -18,6 +21,9 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(SCRIPT_DIR)
 DATA_DIR = os.path.join(ROOT_DIR, "data")
 OUTPUT_FILE = os.path.join(DATA_DIR, "dividend_data.json")
+MASSIVE_API_KEY = os.environ.get("MASSIVE_API_KEY") or os.environ.get("POLYGON_API_KEY")
+MASSIVE_BASE_URL = "https://api.massive.com/stocks/v1/dividends"
+MASSIVE_MAX_PAGES = int(os.environ.get("MASSIVE_MAX_PAGES", "20"))
 
 TV_FIELDS = [
     "name",
@@ -37,8 +43,8 @@ MONTHLY_FALLBACK = {
     "PFLT", "PSEC", "OXLC", "PNNT", "GLAD", "TPVG", "ARCC", "HTGC",
     "HRZN", "OXSQ", "SLRC", "GBDC", "BXSL", "OBDC", "CSWC", "FDUS",
     "MFIC", "CCAP", "TRIN", "ADIT", "LTC", "EPR", "SLG", "LAND",
-    "GOOD", "ADC", "BTCI", "KSLV", "MLPI", "KGLD",
-    "QDVO", "GPIX", "ROCQ", "ROCY", "SGOV", "XBCI", "AIPI",
+    "GOOD", "ADC", "BTCI", "KSLV", "MLPI", "KGLD", "STRC",
+    "QDVO", "GPIX", "ROCQ", "ROCY", "SGOV", "XBCI", "AIPI", "BITA",
 }
 
 WEEKLY_FALLBACK = {
@@ -134,6 +140,106 @@ def annualized_rate_from_payments(payments, frequency):
 def should_annualize_incomplete_history(payments, frequency):
     expected = payments_per_year(frequency)
     return bool(expected and payments and len(payments) < expected)
+
+
+def frequency_from_massive(value):
+    return {
+        52: "weekly",
+        12: "monthly",
+        4: "quarterly",
+        2: "semi-annual",
+        1: "annual",
+    }.get(value)
+
+
+def fetch_massive_dividends(symbols):
+    """Fetch recent dividend events from Massive/Polygon when an API key is configured."""
+    if not MASSIVE_API_KEY:
+        print("\nMassive API key not set; skipping Massive dividend enrichment")
+        return {}, {}, {}
+
+    wanted = set(symbols)
+    since = (datetime.now() - timedelta(days=730)).strftime("%Y-%m-%d")
+    params = {
+        "ex_dividend_date.gte": since,
+        "limit": "5000",
+        "sort": "ex_dividend_date.desc",
+        "apiKey": MASSIVE_API_KEY,
+    }
+    url = MASSIVE_BASE_URL + "?" + urllib.parse.urlencode(params)
+    payments = {}
+    rates = {}
+    frequencies = {}
+    records_seen = 0
+    pages = 0
+
+    print(f"\nEnriching data via Massive dividends API since {since}...")
+    while url and pages < MASSIVE_MAX_PAGES:
+        pages += 1
+        try:
+            req = urllib.request.Request(url, headers={"Accept": "application/json"})
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                payload = json.load(resp)
+        except Exception as exc:
+            print(f"  Warning: Massive dividend fetch failed on page {pages}: {exc}")
+            break
+
+        results = payload.get("results") or []
+        records_seen += len(results)
+        for item in results:
+            symbol = (item.get("ticker") or "").upper()
+            if symbol not in wanted:
+                continue
+
+            ex_date = item.get("ex_dividend_date")
+            amount = item.get("cash_amount")
+            if not ex_date or amount is None:
+                continue
+
+            try:
+                amount = round(float(amount), 4)
+            except (TypeError, ValueError):
+                continue
+            if amount <= 0:
+                continue
+
+            payment = {"ex_date": ex_date, "amount": amount}
+            if item.get("pay_date"):
+                payment["pay_date"] = item["pay_date"]
+            if item.get("record_date"):
+                payment["record_date"] = item["record_date"]
+            if item.get("declaration_date"):
+                payment["declaration_date"] = item["declaration_date"]
+
+            payments.setdefault(symbol, []).append(payment)
+
+            freq = frequency_from_massive(item.get("frequency"))
+            if freq:
+                frequencies[symbol] = freq
+
+        next_url = payload.get("next_url")
+        if next_url:
+            separator = "&" if "?" in next_url else "?"
+            url = next_url if "apiKey=" in next_url else next_url + separator + urllib.parse.urlencode({"apiKey": MASSIVE_API_KEY})
+            time.sleep(0.15)
+        else:
+            url = None
+
+    for symbol, rows in payments.items():
+        rows.sort(key=lambda p: p.get("ex_date") or "")
+        deduped = {}
+        for row in rows:
+            deduped[row["ex_date"]] = row
+        payments[symbol] = list(deduped.values())[-12:]
+
+        one_year_ago = (datetime.now() - timedelta(days=365)).strftime("%Y-%m-%d")
+        one_year_payments = [p for p in payments[symbol] if p.get("ex_date", "") >= one_year_ago]
+        if one_year_payments:
+            rates[symbol] = round(sum(p["amount"] for p in one_year_payments), 4)
+
+    print(f"  Massive pages: {pages}, records scanned: {records_seen}")
+    print(f"  Massive payment histories matched: {len(payments)}")
+    return frequencies, rates, payments
 
 
 def _fetch_yahoo_data(symbol):
@@ -253,6 +359,20 @@ FALLBACK_TICKERS = {
         "sector": "Miscellaneous",
         "dividend_yield": 10.36,
         "dividend_rate": 3.30,
+        "frequency": "monthly",
+    },
+    "STRC": {
+        "name": "Strategy Inc. Variable Rate Series A Perpetual Stretch Preferred Stock",
+        "sector": "Finance",
+        "dividend_yield": None,
+        "dividend_rate": None,
+        "frequency": "monthly",
+    },
+    "BITA": {
+        "name": "iShares Bitcoin Premium Income ETF",
+        "sector": "Digital Assets",
+        "dividend_yield": None,
+        "dividend_rate": None,
         "frequency": "monthly",
     },
 }
@@ -491,9 +611,37 @@ def main():
                 if price:
                     tickers[symbol]["dividend_yield"] = round((annualized_rate / price) * 100, 2)
 
+    massive_freq, massive_rates, massive_payments = fetch_massive_dividends(list(tickers.keys()))
+    massive_payment_refreshes = 0
+    massive_rate_refreshes = 0
+    for symbol, data in tickers.items():
+        if symbol in massive_freq:
+            data["frequency"] = massive_freq[symbol]
+        if symbol in massive_payments:
+            data["last_payments"] = massive_payments[symbol]
+            massive_payment_refreshes += 1
+        if symbol in massive_rates and massive_rates[symbol] > 0:
+            data["dividend_rate"] = massive_rates[symbol]
+            price = data.get("close")
+            if price:
+                data["dividend_yield"] = round((massive_rates[symbol] / price) * 100, 2)
+            massive_rate_refreshes += 1
+
+        annualized_rate = annualized_rate_from_payments(data.get("last_payments", []), data.get("frequency"))
+        if annualized_rate and should_annualize_incomplete_history(data.get("last_payments", []), data.get("frequency")):
+            data["dividend_rate"] = annualized_rate
+            price = data.get("close")
+            if price:
+                data["dividend_yield"] = round((annualized_rate / price) * 100, 2)
+
+    if massive_payment_refreshes:
+        print(f"  Refreshed {massive_payment_refreshes} dividend histories from Massive")
+    if massive_rate_refreshes:
+        print(f"  Refreshed {massive_rate_refreshes} trailing dividend rates from Massive")
+
     print(f"\n{len(tickers)} tickers with dividend data")
 
-    for check in ["QQQI", "SCHD", "JEPI", "O", "SPY", "AAPL", "T"]:
+    for check in ["QQQI", "SCHD", "JEPI", "O", "SPY", "AAPL", "T", "BITA"]:
         status = "FOUND" if check in tickers else "MISSING"
         print(f"  {check}: {status}")
 

@@ -108,10 +108,53 @@ async function handleFinnhubBatchProxy(request, env) {
   });
 }
 
-// ====== YAHOO FINANCE DIVIDEND HISTORY PROXY ======
+// ====== DIVIDEND HISTORY PROXY ======
 let yahooCrumb = null;
 let yahooCookie = null;
 let crumbExpiry = 0;
+
+function normalizeMassiveDividend(item) {
+  const exDate = item?.ex_dividend_date;
+  const amount = Number(item?.cash_amount);
+  if (!exDate || !Number.isFinite(amount) || amount <= 0) return null;
+
+  const payment = {
+    ex_date: exDate,
+    amount: Math.round(amount * 10000) / 10000,
+  };
+  if (item.pay_date) payment.pay_date = item.pay_date;
+  if (item.record_date) payment.record_date = item.record_date;
+  if (item.declaration_date) payment.declaration_date = item.declaration_date;
+  return payment;
+}
+
+async function fetchMassiveDividendHistory(symbol, env) {
+  if (!env.MASSIVE_API_KEY) return null;
+
+  const now = new Date();
+  const oneYearAgo = new Date(now.getTime() - 365 * 86400000).toISOString().slice(0, 10);
+  const params = new URLSearchParams({
+    ticker: symbol,
+    'ex_dividend_date.gte': oneYearAgo,
+    limit: '100',
+    sort: 'ex_dividend_date.asc',
+    apiKey: env.MASSIVE_API_KEY,
+  });
+  const massiveUrl = `https://api.massive.com/stocks/v1/dividends?${params.toString()}`;
+  const resp = await fetch(massiveUrl, { headers: { 'Accept': 'application/json' } });
+  if (!resp.ok) throw new Error(`Massive dividends failed: ${resp.status}`);
+
+  const data = await resp.json();
+  const deduped = {};
+  for (const item of data?.results || []) {
+    const payment = normalizeMassiveDividend(item);
+    if (payment) deduped[payment.ex_date] = payment;
+  }
+
+  return Object.values(deduped)
+    .sort((a, b) => a.ex_date.localeCompare(b.ex_date))
+    .slice(-12);
+}
 
 async function getYahooCrumb() {
   if (yahooCrumb && Date.now() < crumbExpiry) return;
@@ -135,7 +178,41 @@ async function getYahooCrumb() {
   crumbExpiry = Date.now() + 25 * 60 * 1000; // cache 25 min
 }
 
-async function handleDividendHistoryProxy(request) {
+async function fetchYahooDividendHistory(symbol) {
+  await getYahooCrumb();
+  // Fetch last 12 months of dividend events
+  const now = Math.floor(Date.now() / 1000);
+  const oneYearAgo = now - 365 * 86400;
+  const yahooUrl = `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?period1=${oneYearAgo}&period2=${now}&interval=1mo&events=div&crumb=${encodeURIComponent(yahooCrumb)}`;
+
+  let resp = await fetch(yahooUrl, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+      'Cookie': yahooCookie,
+    },
+  });
+
+  if (resp.status === 401) {
+    yahooCrumb = null;
+    crumbExpiry = 0;
+    await getYahooCrumb();
+    resp = await fetch(
+      `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?period1=${oneYearAgo}&period2=${now}&interval=1mo&events=div&crumb=${encodeURIComponent(yahooCrumb)}`,
+      { headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', 'Cookie': yahooCookie } }
+    );
+  }
+
+  const data = await resp.json();
+  const events = data?.chart?.result?.[0]?.events?.dividends || {};
+  return Object.values(events)
+    .map(e => ({
+      ex_date: new Date(e.date * 1000).toISOString().slice(0, 10),
+      amount: Math.round(e.amount * 10000) / 10000,
+    }))
+    .sort((a, b) => a.ex_date.localeCompare(b.ex_date));
+}
+
+async function handleDividendHistoryProxy(request, env) {
   const url = new URL(request.url);
   const parts = url.pathname.split('/');
   const symbol = normalizeSymbol(parts[3]);
@@ -144,39 +221,14 @@ async function handleDividendHistoryProxy(request) {
   }
 
   try {
-    await getYahooCrumb();
-    // Fetch last 12 months of dividend events
-    const now = Math.floor(Date.now() / 1000);
-    const oneYearAgo = now - 365 * 86400;
-    const yahooUrl = `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?period1=${oneYearAgo}&period2=${now}&interval=1mo&events=div&crumb=${encodeURIComponent(yahooCrumb)}`;
-
-    let resp = await fetch(yahooUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
-        'Cookie': yahooCookie,
-      },
-    });
-
-    if (resp.status === 401) {
-      yahooCrumb = null;
-      crumbExpiry = 0;
-      await getYahooCrumb();
-      resp = await fetch(
-        `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?period1=${oneYearAgo}&period2=${now}&interval=1mo&events=div&crumb=${encodeURIComponent(yahooCrumb)}`,
-        { headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', 'Cookie': yahooCookie } }
-      );
+    let source = 'massive';
+    let payments = await fetchMassiveDividendHistory(symbol, env);
+    if (!payments || payments.length === 0) {
+      source = 'yahoo';
+      payments = await fetchYahooDividendHistory(symbol);
     }
 
-    const data = await resp.json();
-    const events = data?.chart?.result?.[0]?.events?.dividends || {};
-    const payments = Object.values(events)
-      .map(e => ({
-        ex_date: new Date(e.date * 1000).toISOString().slice(0, 10),
-        amount: Math.round(e.amount * 10000) / 10000,
-      }))
-      .sort((a, b) => a.ex_date.localeCompare(b.ex_date));
-
-    return jsonResponse(request, { symbol, payments }, {
+    return jsonResponse(request, { symbol, payments, source }, {
       headers: {
         'Cache-Control': 'public, max-age=3600',
       },
@@ -224,9 +276,9 @@ export default {
       return handleFinnhubBatchProxy(request, env);
     }
 
-    // Yahoo Finance dividend history: /api/dividends/AAPL
+    // Dividend history: /api/dividends/AAPL
     if (url.pathname.startsWith('/api/dividends/')) {
-      return handleDividendHistoryProxy(request);
+      return handleDividendHistoryProxy(request, env);
     }
 
     // Health check

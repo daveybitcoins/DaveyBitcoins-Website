@@ -2,7 +2,7 @@
   "meta": {
     "date": "2026-06-29",
     "generated_at": "2026-06-29T14:03:01.766182",
-    "total_tickers": 5428
+    "total_tickers": 5429
   },
   "tickers": {
     "GMEX": {
@@ -213686,6 +213686,25 @@
       "frequency": "weekly",
       "ex_dividend_date": null,
       "last_payments": []
+    },
+    "BITA": {
+      "name": "iShares Bitcoin Premium Income ETF",
+      "sector": "Digital Assets",
+      "close": null,
+      "dividend_yield": null,
+      "dividend_rate": 6.2448,
+      "payout_ratio": null,
+      "frequency": "monthly",
+      "ex_dividend_date": "2026-07-02",
+      "last_payments": [
+        {
+          "ex_date": "2026-07-02",
+          "amount": 0.5204,
+          "pay_date": "2026-07-08",
+          "record_date": "2026-07-02",
+          "declaration_date": "2026-07-01"
+        }
+      ]
     }
   }
 }

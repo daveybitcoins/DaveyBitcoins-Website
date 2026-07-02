@@ -29,6 +29,8 @@ jobs:
         run: pip install -r requirements-actions.txt
 
       - name: Fetch dividend data
+        env:
+          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
         run: python scripts/fetch_dividends.py
 
       - name: Validate generated dividend data
