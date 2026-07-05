@@ -251,6 +251,15 @@
         return `<span class="vol-badge vol-normal">${escapeHtml(volQuality)}</span>`;
     }
 
+    const SPECIAL_SECTOR_FILTERS = {
+        MAG7: ["AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "GOOG", "META", "TSLA"]
+    };
+
+    function matchesSpecialSectorFilter(row, filterName) {
+        const symbols = SPECIAL_SECTOR_FILTERS[filterName];
+        return !!(symbols && row.symbol && symbols.includes(row.symbol.toUpperCase()));
+    }
+
     function pctCell(val) {
         return `<td class="num ${colorClass(val)}">${fmtPct(val)}</td>`;
     }
@@ -670,7 +679,10 @@
         html += '<div class="ticker-dropdown" id="dropdown-' + tabId + '"></div>';
         html += '</div>';
         filterHeaders.forEach((h) => {
-            const values = [...new Set(data.map((d) => d[h.key]))].filter(Boolean).sort();
+            let values = [...new Set(data.map((d) => d[h.key]))].filter(Boolean).sort();
+            if (h.key === "sector") {
+                values = Object.keys(SPECIAL_SECTOR_FILTERS).concat(values);
+            }
             if (values.length > 1) {
                 const id = 'ms-' + tabId + '-' + h.key;
                 html += '<div class="multi-select" id="' + id + '" data-tab-id="' + tabId + '" data-key="' + h.key + '">';
@@ -711,9 +723,20 @@
 
         Object.entries(state.filters).forEach(([key, val]) => {
             if (Array.isArray(val) && val.length > 0) {
-                filtered = filtered.filter((d) => val.includes(d[key]));
+                if (key === "sector") {
+                    filtered = filtered.filter((d) =>
+                        val.includes(d[key]) ||
+                        val.some((filterName) => matchesSpecialSectorFilter(d, filterName))
+                    );
+                } else {
+                    filtered = filtered.filter((d) => val.includes(d[key]));
+                }
             } else if (val && !Array.isArray(val)) {
-                filtered = filtered.filter((d) => d[key] === val);
+                if (key === "sector") {
+                    filtered = filtered.filter((d) => d[key] === val || matchesSpecialSectorFilter(d, val));
+                } else {
+                    filtered = filtered.filter((d) => d[key] === val);
+                }
             }
         });
 
