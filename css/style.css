@@ -681,6 +681,12 @@ main {
     border-color: var(--blue);
 }
 
+.special-filter-btn.active {
+    border-color: var(--blue);
+    color: var(--blue);
+    background: rgba(88, 166, 255, 0.12);
+}
+
 .multi-select-badge {
     background: var(--blue);
     color: #fff;

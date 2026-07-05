@@ -678,6 +678,11 @@
         html += '<input type="text" class="search-input" placeholder="Search ticker or name\u2026" data-tab-id="' + tabId + '">';
         html += '<div class="ticker-dropdown" id="dropdown-' + tabId + '"></div>';
         html += '</div>';
+        if (filterHeaders.some((h) => h.key === "sector")) {
+            Object.keys(SPECIAL_SECTOR_FILTERS).forEach((filterName) => {
+                html += '<button type="button" class="multi-select-btn special-filter-btn" data-tab-id="' + tabId + '" data-key="sector" data-value="' + escapeHtml(filterName) + '">' + escapeHtml(filterName) + '</button>';
+            });
+        }
         filterHeaders.forEach((h) => {
             let values = [...new Set(data.map((d) => d[h.key]))].filter(Boolean).sort();
             if (h.key === "sector") {
@@ -751,7 +756,39 @@
                 ? filtered.length + " of " + data.length
                 : "";
         }
+        syncSpecialFilterButtons(tabId);
         syncURL();
+    }
+
+    function syncMultiSelectControl(tabId, key) {
+        const selected = filterState[tabId] && Array.isArray(filterState[tabId].filters[key])
+            ? filterState[tabId].filters[key]
+            : [];
+        const ms = document.querySelector('.multi-select[data-tab-id="' + tabId + '"][data-key="' + key + '"]');
+        if (!ms) return;
+        ms.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+            cb.checked = selected.includes(cb.value);
+        });
+        const badge = ms.querySelector(".multi-select-badge");
+        if (badge) {
+            if (selected.length > 0) {
+                badge.textContent = selected.length;
+                badge.style.display = '';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    }
+
+    function syncSpecialFilterButtons(tabId) {
+        const state = filterState[tabId];
+        if (!state) return;
+        document.querySelectorAll('.special-filter-btn[data-tab-id="' + tabId + '"]').forEach((btn) => {
+            const selected = state.filters[btn.dataset.key];
+            const isActive = Array.isArray(selected) && selected.includes(btn.dataset.value);
+            btn.classList.toggle("active", isActive);
+            btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+        });
     }
 
     function renderChips(tabId) {
@@ -862,6 +899,20 @@
                 if (searchInput.value.trim()) showDropdown(tabId, searchInput.value);
             });
         }
+        document.querySelectorAll('.special-filter-btn[data-tab-id="' + tabId + '"]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const key = btn.dataset.key;
+                const value = btn.dataset.value;
+                const filters = filterState[tabId].filters;
+                const selected = Array.isArray(filters[key]) ? filters[key].slice() : [];
+                const idx = selected.indexOf(value);
+                if (idx >= 0) selected.splice(idx, 1);
+                else selected.push(value);
+                filters[key] = selected;
+                syncMultiSelectControl(tabId, key);
+                applyFilters(tabId);
+            });
+        });
         // Multi-select dropdowns
         document.querySelectorAll('.multi-select[data-tab-id="' + tabId + '"]').forEach((ms) => {
             const key = ms.dataset.key;
