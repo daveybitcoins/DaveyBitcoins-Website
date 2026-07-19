@@ -340,14 +340,6 @@
   </div>
   <div class="chart-panel">
     <div class="chart-header">
-      <div class="chart-label" id="returnsLabel">Median Historical 1-Year Forward Return by Risk Decile (Above Power-Law Trend)</div>
-      <div class="chart-note" id="returnsNote"></div>
-    </div>
-    <canvas id="returnsCanvas" width="1380" height="360"></canvas>
-    <div style="display:flex;justify-content:center;gap:8px;margin-top:12px" id="fwdButtons"></div>
-  </div>
-  <div class="chart-panel">
-    <div class="chart-header">
       <div class="chart-label">BTC Year-To-Date ROI — Midterm Election Years</div>
       <div class="chart-note"></div>
     </div>
@@ -1270,100 +1262,6 @@ async function main() {
     ctx.fillText('ACCUMULATE',W-P.r-4,yOf(0.10));
   }
 
-  // ====== FORWARD RETURNS BAR CHART ======
-  let activeFwd = (function(){ var p = new URLSearchParams(window.location.search).get('fwd'); return (p === '730') ? 730 : (p === '1095') ? 1095 : (p === '1460') ? 1460 : 365; })();
-  function renderReturnsChart(fwdDays) {
-    const tc = themeColors();
-    fwdDays=fwdDays||activeFwd;
-    activeFwd=fwdDays;
-    // Sync fwd param to URL
-    var params = new URLSearchParams(window.location.search);
-    if (fwdDays === 365) params.delete('fwd'); else params.set('fwd', fwdDays);
-    var qs = params.toString();
-    history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
-    const labels={365:'1-Year',730:'2-Year',1095:'3-Year',1460:'4-Year'};
-    document.getElementById('returnsLabel').textContent='Median Historical '+labels[fwdDays]+' Forward Return by Risk Decile (Above Power-Law Trend)';
-    // Update button active states
-    document.querySelectorAll('#fwdButtons button').forEach(b=>{
-      if(parseInt(b.dataset.fwd)===fwdDays) b.classList.add('active');
-      else b.classList.remove('active');
-    });
-
-    const cv=document.getElementById('returnsCanvas'), ctx=cv.getContext('2d');
-    const W=cv.width, H=cv.height;
-    const P={t:28,r:40,b:52,l:80};
-    const cw=W-P.l-P.r, ch=H-P.t-P.b;
-
-    ctx.fillStyle=tc.canvasBg; ctx.fillRect(0,0,W,H);
-
-    // Compute forward returns per decile (start after rolling window fills)
-    const FWD=fwdDays;
-    const buckets=[];
-    for(let d=0;d<10;d++) buckets.push([]);
-    for(let i=WINDOW;i<n-FWD;i++){
-      const decile=Math.min(9,Math.floor(pts[i].riskCombo*10));
-      const fairGrowth=pts[i+FWD].trendPrice/pts[i].trendPrice;
-      const ret=(pts[i+FWD].price/pts[i].price/fairGrowth-1)*100;
-      buckets[decile].push(ret);
-    }
-    const medians=buckets.map(b=>{
-      if(!b.length) return 0;
-      b.sort((a,c)=>a-c);
-      const m=Math.floor(b.length/2);
-      return b.length%2?b[m]:(b[m-1]+b[m])/2;
-    });
-    const counts=buckets.map(b=>b.length);
-
-    // Y scale (shared across 1Y/2Y/4Y for consistent comparison)
-    const maxY=sharedFwdMaxY;
-    const yOf=v=>P.t+ch/2-((v/maxY)*(ch/2));
-
-    // Grid lines
-    ctx.textAlign='right';ctx.font='10px JetBrains Mono';
-    const gridVals=[-100,-50,0,50,100,150,200,300,400,500].filter(v=>Math.abs(v)<=maxY*1.1);
-    gridVals.forEach(v=>{
-      const y=yOf(v);
-      if(y<P.t-5||y>H-P.b+5) return;
-      ctx.strokeStyle=v===0?tc.gridZero:tc.gridLine;ctx.lineWidth=v===0?1.5:1;
-      ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke();
-      ctx.fillStyle=tc.axisText;ctx.fillText(v>0?'+'+v+'%':v+'%',P.l-8,y+3);
-    });
-
-    // Bars
-    const barW=cw/10*0.7;
-    const gap=cw/10*0.15;
-    for(let d=0;d<10;d++){
-      const x=P.l+d*(cw/10)+gap;
-      const median=medians[d];
-      const y0=yOf(0);
-      const y1=yOf(median);
-      const midRisk=(d+0.5)/10;
-      ctx.fillStyle=riskColor(midRisk,0.85);
-      ctx.beginPath();
-      const r=4;
-      const barTop=Math.min(y0,y1);
-      const barH=Math.abs(y1-y0);
-      // Rounded rect
-      ctx.moveTo(x+r,barTop);ctx.lineTo(x+barW-r,barTop);ctx.quadraticCurveTo(x+barW,barTop,x+barW,barTop+r);
-      ctx.lineTo(x+barW,barTop+barH-r);ctx.quadraticCurveTo(x+barW,barTop+barH,x+barW-r,barTop+barH);
-      ctx.lineTo(x+r,barTop+barH);ctx.quadraticCurveTo(x,barTop+barH,x,barTop+barH-r);
-      ctx.lineTo(x,barTop+r);ctx.quadraticCurveTo(x,barTop,x+r,barTop);
-      ctx.fill();
-
-      // Value label on bar
-      ctx.fillStyle=tc.barValueText;ctx.font='bold 11px JetBrains Mono';ctx.textAlign='center';
-      const labelY=median>=0?y1-8:y1+14;
-      ctx.fillText((median>=0?'+':'')+Math.round(median)+'%',x+barW/2,labelY);
-
-      // Decile label — color-coded and bold
-      ctx.fillStyle=riskColor(midRisk);ctx.font='bold 11px JetBrains Mono';
-      const lo=(d/10).toFixed(1), hi=((d+1)/10).toFixed(1);
-      ctx.fillText(lo+'–'+hi,x+barW/2,H-P.b+18);
-      ctx.fillStyle=tc.axisText;ctx.font='9px JetBrains Mono';
-      ctx.fillText('n=' + counts[d],x+barW/2,H-P.b+34);
-    }
-  }
-
   // ====== RENDER ALL ======
   function renderAll() {
     renderPriceChart();
@@ -1526,26 +1424,6 @@ async function main() {
     const legendBar = document.getElementById('legendBar');
     legendBar.parentNode.insertBefore(bar, legendBar.nextSibling);
   }
-
-  // Precompute shared Y-scale across all forward-return horizons
-  var sharedFwdMaxY = 75;
-  [365,730,1095,1460].forEach(function(FWD){
-    var meds=[];
-    for(var d=0;d<10;d++) meds.push([]);
-    for(var i=WINDOW;i<n-FWD;i++){
-      var decile=Math.min(9,Math.floor(pts[i].riskCombo*10));
-      var fairGrowth=pts[i+FWD].trendPrice/pts[i].trendPrice;
-      var ret=(pts[i+FWD].price/pts[i].price/fairGrowth-1)*100;
-      meds[decile].push(ret);
-    }
-    meds.forEach(function(b){
-      if(!b.length) return;
-      b.sort(function(a,c){return a-c;});
-      var m=Math.floor(b.length/2);
-      var med=b.length%2?b[m]:(b[m-1]+b[m])/2;
-      sharedFwdMaxY=Math.max(sharedFwdMaxY,Math.abs(med));
-    });
-  });
 
   // ====== MIDTERM YTD ROI CHART ======
   const MIDTERM_YEARS = [2014, 2018, 2022, 2026];
@@ -1798,18 +1676,6 @@ async function main() {
 
   // ====== INIT ======
   renderAll();
-  // Forward returns toggle buttons
-  {
-    const bar=document.getElementById('fwdButtons');
-    [[365,'1Y'],[730,'2Y'],[1095,'3Y'],[1460,'4Y']].forEach(([days,label])=>{
-      const b=document.createElement('button');
-      b.textContent=label;b.dataset.fwd=days;
-      b.className='zoom-btn';
-      b.addEventListener('click',()=>renderReturnsChart(days));
-      bar.appendChild(b);
-    });
-  }
-  renderReturnsChart(activeFwd);
   renderMidtermChart();
   attachZoomPan('priceCanvas', 'priceTip');
   attachZoomPan('riskCanvas', 'riskTip');
@@ -1840,7 +1706,6 @@ async function main() {
     if (!window.DaveyTheme) return;
     window.DaveyTheme.init({ onChange: function() {
       renderAll();
-      renderReturnsChart();
       renderMidtermChart();
     }});
   })();
