@@ -30,7 +30,8 @@ const checks = [
     path: '/risk-metric.html',
     name: 'BTC risk metric',
     assert: async (page) => {
-      await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length >= 10, null, { timeout: 10000 });
+      // Allow for live-quote fallbacks plus the full-history regression on cold CI runners.
+      await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length >= 10, null, { timeout: 20000 });
       await expectText(page, 'Bitcoin Risk Metric');
       await expectText(page, 'Combined Risk');
       await expectText(page, 'Price at Each Risk Level');
