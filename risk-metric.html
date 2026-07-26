@@ -911,7 +911,7 @@ async function main() {
     }
   }
 
-  // ====== FAIR VALUE PROJECTIONS (5 years, 6-month increments) ======
+  // ====== FAIR VALUE PROJECTIONS (semiannual through 2030, annual through 2040) ======
   {
     const projBody = document.getElementById('projBody');
     const todayFV = last.trendPrice;
@@ -919,15 +919,17 @@ async function main() {
     const moNames = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec'];
     const curDate = new Date(last.date + 'T00:00:00Z');
     const curYear = curDate.getUTCFullYear();
-    const curMonth = curDate.getUTCMonth();
     const targets = [];
-    // Build list of June (month 5) and Dec (month 11) targets for 5 years
-    for (let y = curYear; y <= curYear + 5; y++) {
+    // Keep the existing June/December cadence through 2030.
+    for (let y = curYear; y <= 2030; y++) {
       targets.push(new Date(Date.UTC(y, 5, 1)));  // June
       targets.push(new Date(Date.UTC(y, 11, 1))); // Dec
     }
-    // Only include future dates, cap at 10
-    const futureDates = targets.filter(d => d.getTime() > curDate.getTime()).slice(0, 10);
+    // After 2030, show one long-range update each December through 2040.
+    for (let y = Math.max(curYear, 2031); y <= 2040; y++) {
+      targets.push(new Date(Date.UTC(y, 11, 1)));
+    }
+    const futureDates = targets.filter(d => d.getTime() > curDate.getTime());
     for (const fd of futureDates) {
       const futureMs = fd.getTime();
       const futureDays = (futureMs - GENESIS) / 864e5;

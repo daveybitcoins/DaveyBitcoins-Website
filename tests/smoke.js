@@ -26,6 +26,28 @@ const checks = [
       await expectText(page, 'dividend stocks');
     },
   },
+  {
+    path: '/risk-metric.html',
+    name: 'BTC risk metric',
+    assert: async (page) => {
+      await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length >= 10, null, { timeout: 10000 });
+      await expectText(page, 'Bitcoin Risk Metric');
+      await expectText(page, 'Combined Risk');
+      await expectText(page, 'Price at Each Risk Level');
+      const projectionDates = await page.locator('#projBody .pj-date').allTextContents();
+      if (!projectionDates.includes('June 2030') || !projectionDates.includes('Dec 2030')) {
+        throw new Error('expected semiannual fair-value projections through 2030');
+      }
+      if (projectionDates.includes('June 2031')) {
+        throw new Error('expected annual December-only projections after 2030');
+      }
+      for (let year = 2031; year <= 2040; year++) {
+        if (!projectionDates.includes(`Dec ${year}`)) {
+          throw new Error(`missing annual fair-value projection for Dec ${year}`);
+        }
+      }
+    },
+  },
 ];
 
 function startServer() {
