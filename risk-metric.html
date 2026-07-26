@@ -397,6 +397,16 @@ async function loadCSV() {
   return rows.map(r => { const [d,p] = r.split(','); return [d, parseFloat(p)]; });
 }
 
+async function fetchWithTimeout(url, options, timeoutMs) {
+  const controller = new AbortController();
+  const timer = setTimeout(function() { controller.abort(); }, timeoutMs || 3500);
+  try {
+    return await fetch(url, Object.assign({}, options || {}, { signal: controller.signal }));
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 const GENESIS = new Date('2009-01-03T00:00:00Z').getTime();
 const WINDOW = 1460;
 const ENV_UPPER_A = 4.6;
@@ -502,31 +512,37 @@ function riskColor(r, a) {
 async function fetchCurrentBtcPrice() {
   const providers = [
     async function coingecko() {
-    const resp = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_last_updated_at=true');
-    if (!resp.ok) throw new Error('API ' + resp.status);
-    const data = await resp.json();
-      return { price: data.bitcoin.usd, updatedAt: new Date(data.bitcoin.last_updated_at * 1000), source: 'CoinGecko' };
-    },
-    async function binance() {
-      const resp = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
+      const resp = await fetchWithTimeout('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_last_updated_at=true');
       if (!resp.ok) throw new Error('API ' + resp.status);
       const data = await resp.json();
-      return { price: parseFloat(data.price), updatedAt: new Date(), source: 'Binance' };
+      return { price: data.bitcoin.usd, updatedAt: new Date(data.bitcoin.last_updated_at * 1000), source: 'CoinGecko' };
     },
     async function coinbase() {
-      const resp = await fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot');
+      const resp = await fetchWithTimeout('https://api.coinbase.com/v2/prices/BTC-USD/spot');
       if (!resp.ok) throw new Error('API ' + resp.status);
       const data = await resp.json();
       return { price: parseFloat(data.data.amount), updatedAt: new Date(), source: 'Coinbase' };
     }
   ];
-  for (const provider of providers) {
-    try {
-      const result = await provider();
-      if (Number.isFinite(result.price) && result.price > 0) return result;
-    } catch(e) {}
-  }
-  return null;
+  return await new Promise(function(resolve) {
+    let settled = false;
+    let pending = providers.length;
+    const timer = setTimeout(function() { finish(null); }, 3800);
+    function finish(result) {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve(result);
+    }
+    providers.forEach(function(provider) {
+      provider().then(function(result) {
+        if (Number.isFinite(result.price) && result.price > 0) finish(result);
+      }).catch(function() {}).finally(function() {
+        pending -= 1;
+        if (pending === 0) finish(null);
+      });
+    });
+  });
 }
 
 async function fetchLivePrice(rawData) {
