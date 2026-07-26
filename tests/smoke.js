@@ -38,18 +38,13 @@ const checks = [
       await expectText(page, 'Bitcoin Power-Law Regression Trend');
       await expectText(page, 'Long-run centerline, not a short-term price target');
       const projectionHeaders = await page.locator('#projTable th').allTextContents();
-      for (const header of ['Regression Trend', 'Typical Range (±1σ)', 'Trend Growth', 'Gap to Trend']) {
+      for (const header of ['Regression Trend', 'Trend Growth', 'Gap to Trend']) {
         if (!projectionHeaders.includes(header)) throw new Error(`missing projection header: ${header}`);
       }
-      const bandFactor = await page.locator('#projBandFactor').textContent();
-      if (!/^\d+\.\d{2}×–\d+\.\d{2}×$/.test(bandFactor || '')) {
-        throw new Error(`invalid projection dispersion factor: ${bandFactor}`);
+      if (projectionHeaders.includes('Typical Range (±1σ)')) {
+        throw new Error('unexpected historical dispersion column');
       }
       const projectionDates = await page.locator('#projBody .pj-date').allTextContents();
-      const projectionRanges = await page.locator('#projBody .pj-range').allTextContents();
-      if (projectionRanges.length !== projectionDates.length || projectionRanges.some((range) => !range.includes(' – '))) {
-        throw new Error('expected a historical dispersion range for every projection');
-      }
       if (!projectionDates.includes('June 2030') || !projectionDates.includes('Dec 2030')) {
         throw new Error('expected semiannual fair-value projections through 2030');
       }

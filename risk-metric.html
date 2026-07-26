@@ -155,13 +155,12 @@
   .proj-method-note{max-width:940px;margin:-2px auto 16px;text-align:center;font-size:0.66rem;line-height:1.6;color:var(--text-dim)}
   .proj-method-note strong{color:var(--text-heading);font-weight:600}
   .proj-table{width:100%;border-collapse:collapse}
-  #projTable{min-width:980px}
+  #projTable{min-width:820px}
   .proj-table th{font-size:0.55rem;color:var(--text-dimmer);text-transform:uppercase;letter-spacing:1.5px;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
   .proj-table td{font-size:0.75rem;padding:10px 12px;border-bottom:1px solid var(--border-light);color:var(--text)}
   .proj-table tr:last-child td{border-bottom:none}
   .proj-table .pj-date{color:var(--text-bright);font-weight:500}
   .proj-table .pj-price{font-family:'Outfit',sans-serif;font-weight:600;color:var(--text-heading)}
-  .proj-table .pj-range{font-family:'IBM Plex Mono','JetBrains Mono',monospace;color:var(--text-dim);white-space:nowrap}
   .proj-table .pj-growth{font-family:'Outfit',sans-serif;font-weight:600}
   .market-cap-meta{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin:-2px 0 14px;font-size:0.64rem;color:var(--text-dim)}
   .market-cap-meta span{color:var(--text-heading);font-weight:600}
@@ -312,12 +311,11 @@
     <p class="proj-method-note" id="projMethodNote">
       <strong>Long-run centerline, not a short-term price target.</strong>
       Values assume Bitcoin eventually moves back toward its historical curve.
-      The ±1σ range shows typical historical dispersion (<span id="projBandFactor">calculating…</span> of trend), not a confidence interval.
       “Gap to Trend” compares each future trend value with today’s BTC price; it is not a forecast return.
     </p>
     <table class="proj-table" id="projTable">
       <thead>
-        <tr><th>Date</th><th>Days Since Genesis</th><th>Regression Trend</th><th>Typical Range (±1σ)</th><th>Trend Growth</th><th>Gap to Trend</th></tr>
+        <tr><th>Date</th><th>Days Since Genesis</th><th>Regression Trend</th><th>Trend Growth</th><th>Gap to Trend</th></tr>
       </thead>
       <tbody id="projBody"></tbody>
     </table>
@@ -942,13 +940,6 @@ async function main() {
     const projBody = document.getElementById('projBody');
     const todayFV = last.trendPrice;
     const todayPrice = last.price;
-    const trendSigma = Math.sqrt(pts.reduce((sum, p) => {
-      const trendResidual = p.logPrice - p.trendLogPrice;
-      return sum + trendResidual * trendResidual;
-    }, 0) / pts.length);
-    const bandFactor = Math.pow(10, trendSigma);
-    document.getElementById('projBandFactor').textContent =
-      (1 / bandFactor).toFixed(2) + '×–' + bandFactor.toFixed(2) + '×';
     const moNames = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec'];
     const curDate = new Date(last.date + 'T00:00:00Z');
     const curYear = curDate.getUTCFullYear();
@@ -979,14 +970,11 @@ async function main() {
       const roiPct = ((futureFV / todayPrice - 1) * 100).toFixed(1);
       const roiColor = roiPct >= 0 ? '#58c56f' : '#ef5d4f';
       const pStr = formatProjectionPrice(futureFV);
-      const rangeStr = formatProjectionPrice(futureFV / bandFactor) + ' – ' +
-                       formatProjectionPrice(futureFV * bandFactor);
       const dateLabel = moNames[fd.getUTCMonth()] + ' ' + fd.getUTCFullYear();
       const tr = document.createElement('tr');
       tr.innerHTML = '<td class="pj-date">' + dateLabel + '</td>' +
         '<td>' + Math.round(futureDays).toLocaleString() + '</td>' +
         '<td class="pj-price">' + pStr + '</td>' +
-        '<td class="pj-range">' + rangeStr + '</td>' +
         '<td class="pj-growth" style="color:' + growthColor + '">' + (growthPct >= 0 ? '+' : '') + growthPct + '%</td>' +
         '<td class="pj-growth" style="color:' + roiColor + '">' + (roiPct >= 0 ? '+' : '') + roiPct + '%</td>';
       projBody.appendChild(tr);
