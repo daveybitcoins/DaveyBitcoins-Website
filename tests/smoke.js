@@ -78,6 +78,9 @@ const checks = [
     name: 'SPY risk metric',
     assert: async (page) => {
       await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length >= 10, null, { timeout: 20000 });
+      await expectText(page, 'Regression-Implied Price Scenarios');
+      await expectText(page, 'Valuation-Aware Downside Scenarios');
+      await expectText(page, 'not a guaranteed market floor');
       await expectText(page, 'Forward P/E Price Projections');
       await expectText(page, 'FactSet Jul 24, 2026');
       await expectText(page, 'Next review: Oct 2026');
@@ -85,6 +88,16 @@ const checks = [
       await expectText(page, 'is the nearest whole-number scenario');
       await expectText(page, 'Nearest current');
       await expectText(page, 'CY2026 consensus EPS: $345');
+      const riskCardText = (await page.locator('#riskTable').innerText()).toLowerCase();
+      if (riskCardText.includes('p/e')) throw new Error('regression risk cards should not show static-EPS P/E values');
+      const stressRows = await page.locator('#valuationStressBody tr').allTextContents();
+      if (stressRows.length !== 4) throw new Error(`expected 4 valuation-aware stress rows, got ${stressRows.length}`);
+      if (!stressRows.some((row) => row.includes('No EPS decline') && row.includes('$373') && row.includes('15×') && row.includes('$560'))) {
+        throw new Error('missing no-decline 15x valuation scenario');
+      }
+      if (!stressRows.some((row) => row.includes('Severe recession') && row.includes('-35%') && row.includes('$243') && row.includes('$364'))) {
+        throw new Error('missing severe-recession valuation scenario');
+      }
       const growthInput = page.locator('#epsGrowthInput');
       if (await growthInput.inputValue() !== '8') throw new Error('expected 8% default post-2027 EPS growth');
       const projectionRows = await page.locator('#peProjBody tr').allTextContents();

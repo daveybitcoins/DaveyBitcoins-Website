@@ -264,8 +264,21 @@
     <div class="card" style="--glow:#ef5d4f"><div class="card-label">VIX (Close)</div><div class="card-value" id="vVixLevel" style="--val-color:#ef5d4f">—</div><div class="card-sub" id="vVixImplied"></div></div>
   </div>
   <div class="risk-table-wrap">
-    <h4>Price at Each Risk Level</h4>
+    <h4>Regression-Implied Price Scenarios</h4>
     <div class="risk-table" id="riskTable"></div>
+  </div>
+  <div class="pe-proj-wrap valuation-stress-wrap">
+    <h4>Valuation-Aware Downside Scenarios</h4>
+    <div class="pe-current-context">15× forward P/E scenario floor · Earnings estimates decline with the severity of the downturn</div>
+    <table class="pe-proj-table" id="valuationStressTable">
+      <thead>
+        <tr><th>Scenario</th><th>EPS Change</th><th>Forward EPS</th><th>P/E Assumption</th><th>Implied SPY</th><th>Vs. Current</th></tr>
+      </thead>
+      <tbody id="valuationStressBody"></tbody>
+    </table>
+    <div style="text-align:center;font-size:0.65rem;color:var(--meth-text);margin-top:8px;letter-spacing:0.3px;line-height:1.6">
+      Uses the July 2026 forward EPS anchor of $373.08. The 15× multiple is a valuation scenario—not a guaranteed market floor.
+    </div>
   </div>
   <div class="pe-proj-wrap">
     <h4>Forward P/E Price Projections</h4>
@@ -405,6 +418,8 @@
     <h3>Methodology</h3>
     <p><span class="hl">Log-Linear Regression:</span> <code>log₁₀(price)</code> vs <code>days since Jan 4 1960</code> (modern S&P 500 era, scaled to SPY prices). Models exponential growth. The residual measures deviation from the long-run trend.</p>
     <p><span class="hl">Structural Risk (Min/Max):</span> Normalizes the residual against all-time extremes (0 = maximum undervaluation, 1 = maximum overvaluation). High when SPY is far above the regression trend line.</p>
+    <p><span class="hl">Regression-Implied Prices:</span> Translate each structural risk score back through the historical regression residual range. They are statistical scenarios, not price targets, and do not model changes in earnings.</p>
+    <p><span class="hl">Valuation-Aware Downside:</span> Applies an assumed 15× forward P/E to the current $373.08 forward EPS anchor after explicit earnings shocks of 0%, −10%, −20%, and −35%. The valuation multiple is a scenario assumption, not a guaranteed floor.</p>
     <p><span class="hl">VIX Chart:</span> Shown for reference as a fear/greed gauge. Not currently factored into the risk calculation.</p>
   </div>
   <footer>
@@ -586,10 +601,39 @@ async function main() {
       const pctMove = ((price / last.price - 1) * 100).toFixed(1);
       const pctStr = pctMove >= 0 ? '+'+pctMove+'%' : pctMove+'%';
       const pctColor = pctMove >= 0 ? '#58c56f' : '#ef5d4f';
-      var cellPE = (price * 10 / fwd12mEPS).toFixed(1);
-      cell.innerHTML='<div class="rc-risk" style="color:'+riskColor(r)+'">'+r.toFixed(2)+'</div><div class="rc-price">'+pStr+'</div><div style="font-size:0.62rem;margin-top:2px;color:'+pctColor+';letter-spacing:0.3px">'+pctStr+'</div><div style="font-size:0.58rem;margin-top:3px;color:#ffbf63;letter-spacing:0.5px">P/E '+cellPE+'×</div>';
+      cell.innerHTML='<div class="rc-risk" style="color:'+riskColor(r)+'">'+r.toFixed(2)+'</div><div class="rc-price">'+pStr+'</div><div style="font-size:0.62rem;margin-top:2px;color:'+pctColor+';letter-spacing:0.3px">'+pctStr+'</div>';
       tbl.appendChild(cell);
     }
+  }
+
+  // Valuation-aware downside scenarios. Unlike the regression-price cards,
+  // these explicitly adjust earnings before applying the assumed P/E floor.
+  {
+    const valuationFloor = 15;
+    const stressScenarios = [
+      { label: 'No EPS decline', shock: 0 },
+      { label: 'Mild recession', shock: -0.10 },
+      { label: 'Recession', shock: -0.20 },
+      { label: 'Severe recession', shock: -0.35 }
+    ];
+    const tbody = document.getElementById('valuationStressBody');
+    stressScenarios.forEach(scenario => {
+      const stressedEPS = fwd12mEPS * (1 + scenario.shock);
+      const impliedSPY = stressedEPS * valuationFloor / 10;
+      const movePct = (impliedSPY / last.price - 1) * 100;
+      const moveColor = movePct >= 0 ? '#58c56f' : '#ef5d4f';
+      const shockText = scenario.shock === 0 ? '0%' : (scenario.shock * 100).toFixed(0) + '%';
+      const moveText = (movePct >= 0 ? '+' : '') + movePct.toFixed(1) + '%';
+      const row = document.createElement('tr');
+      row.innerHTML =
+        '<td>' + scenario.label + '</td>' +
+        '<td>' + shockText + '</td>' +
+        '<td>$' + stressedEPS.toFixed(0) + '</td>' +
+        '<td>' + valuationFloor + '×</td>' +
+        '<td>$' + Math.round(impliedSPY).toLocaleString() + '</td>' +
+        '<td style="color:' + moveColor + '">' + moveText + '</td>';
+      tbody.appendChild(row);
+    });
   }
 
   // Forward P/E Price Projection Table (interactive)
