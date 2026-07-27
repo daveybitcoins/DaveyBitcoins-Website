@@ -96,6 +96,20 @@
   .bear-progress-bar{height:100%;width:0;background:linear-gradient(90deg,#58c56f,#ffbf63,#ef5d4f);transition:width 0.6s cubic-bezier(0.16,1,0.3,1)}
   .bear-meta{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-size:0.5rem;color:var(--text-dimmer)}
   .bear-meta span:last-child{text-align:right}
+  .moving-averages-card{margin-bottom:24px;text-align:left;--glow:rgba(247,147,26,0.2)}
+  .moving-averages-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:16px}
+  .moving-averages-head .card-label{margin-bottom:0}
+  .moving-averages-head .card-sub{margin-top:0;text-align:right}
+  .moving-averages-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+  .moving-average-item{background:color-mix(in srgb,var(--bg) 66%,transparent);border:1px solid var(--border-light);padding:14px 12px;text-align:center}
+  .moving-average-period{font-size:0.62rem;color:var(--accent-blue);font-weight:600;letter-spacing:1px;margin-bottom:7px}
+  .moving-average-value{font-family:'IBM Plex Mono','JetBrains Mono',monospace;font-size:1rem;color:var(--text-heading);font-weight:600}
+  @media(max-width:900px){.moving-averages-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  @media(max-width:520px){
+    .moving-averages-head{align-items:flex-start;flex-direction:column;gap:5px}
+    .moving-averages-head .card-sub{text-align:left}
+    .moving-averages-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
   .risk-bar-wrap{margin-top:14px;position:relative;height:8px;border-radius:4px;overflow:visible}
   .risk-bar-bg{position:absolute;top:0;left:0;right:0;bottom:0;border-radius:4px;background:linear-gradient(90deg,#9fb4c7 0%,#ffbf63 15%,#58c56f 30%,#58c56f 45%,#ffbf63 60%,#f7931a 75%,#ef5d4f 90%,#7a2019 100%)}
   .risk-bar-needle{position:absolute;top:-5px;width:3px;height:18px;background:#fff;border-radius:2px;box-shadow:0 0 10px rgba(255,255,255,0.5);transform:translateX(-50%);transition:left 0.6s cubic-bezier(0.16,1,0.3,1)}
@@ -290,6 +304,20 @@
       <div class="bear-meta"><span id="vBearTarget">—</span><span id="vBearRange">—</span></div>
     </div>
   </div>
+  <div class="card moving-averages-card" id="movingAveragesCard">
+    <div class="moving-averages-head">
+      <div class="card-label">Major Weekly Moving Averages</div>
+      <div class="card-sub" id="movingAveragesAsOf">Weekly closes · latest week-to-date included</div>
+    </div>
+    <div class="moving-averages-grid">
+      <div class="moving-average-item"><div class="moving-average-period">300W</div><div class="moving-average-value" id="vMa300W">—</div></div>
+      <div class="moving-average-item"><div class="moving-average-period">200W</div><div class="moving-average-value" id="vMa200W">—</div></div>
+      <div class="moving-average-item"><div class="moving-average-period">50W</div><div class="moving-average-value" id="vMa50W">—</div></div>
+      <div class="moving-average-item"><div class="moving-average-period">21W</div><div class="moving-average-value" id="vMa21W">—</div></div>
+      <div class="moving-average-item"><div class="moving-average-period">13W</div><div class="moving-average-value" id="vMa13W">—</div></div>
+      <div class="moving-average-item"><div class="moving-average-period">8W</div><div class="moving-average-value" id="vMa8W">—</div></div>
+    </div>
+  </div>
   <div class="risk-table-wrap">
     <h4>Price at Each Risk Level (Combined)</h4>
     <div class="risk-table" id="riskTable"></div>
@@ -415,6 +443,51 @@ async function loadCSV() {
   const text = await resp.text();
   const rows = text.trim().split('\n').slice(1); // skip header
   return rows.map(r => { const [d,p] = r.split(','); return [d, parseFloat(p)]; });
+}
+
+function calculateWeeklyMovingAverages(rawData) {
+  const weeklyCloses = [];
+  let activeWeek = null;
+  let activeClose = null;
+  rawData.forEach(([date, price]) => {
+    if (!Number.isFinite(price) || price <= 0) return;
+    const d = new Date(date + 'T00:00:00Z');
+    const daysFromMonday = (d.getUTCDay() + 6) % 7;
+    d.setUTCDate(d.getUTCDate() - daysFromMonday);
+    const week = d.toISOString().slice(0, 10);
+    if (activeWeek !== null && week !== activeWeek) weeklyCloses.push(activeClose);
+    activeWeek = week;
+    activeClose = { date, price };
+  });
+  if (activeClose) weeklyCloses.push(activeClose);
+
+  const values = {};
+  [300, 200, 50, 21, 13, 8].forEach(period => {
+    const sample = weeklyCloses.slice(-period);
+    values[period] = sample.length === period
+      ? sample.reduce((sum, point) => sum + point.price, 0) / period
+      : null;
+  });
+  return { values, weeklyCloses };
+}
+
+function renderWeeklyMovingAverages(rawData) {
+  const { values, weeklyCloses } = calculateWeeklyMovingAverages(rawData);
+  [300, 200, 50, 21, 13, 8].forEach(period => {
+    const el = document.getElementById('vMa' + period + 'W');
+    const value = values[period];
+    if (!el) return;
+    el.textContent = Number.isFinite(value)
+      ? '$' + value.toLocaleString(undefined, { maximumFractionDigits: 0 })
+      : '—';
+    if (Number.isFinite(value)) el.dataset.value = value.toFixed(2);
+  });
+  const card = document.getElementById('movingAveragesCard');
+  const latest = weeklyCloses[weeklyCloses.length - 1];
+  if (card) {
+    card.dataset.weeklyObservations = String(weeklyCloses.length);
+    card.dataset.latestWeeklyClose = latest ? latest.date : '';
+  }
 }
 
 async function fetchWithTimeout(url, options, timeoutMs) {
@@ -952,6 +1025,7 @@ async function main() {
   const devPct = ((last.price/last.trendPrice-1)*100).toFixed(1);
   document.getElementById('vDev').textContent = (devPct>0?'+':'') + devPct + '%';
   document.getElementById('needle').style.left = (last.riskCombo*100)+'%';
+  renderWeeklyMovingAverages(rawData);
   renderBearMarketProgress(pts, slope, intercept);
   const fallbackSupplyHeight = fallbackBlockHeight(Date.now());
   renderMarketCapTable(bitcoinSupplyAtHeight(fallbackSupplyHeight), fallbackSupplyHeight, last.price);

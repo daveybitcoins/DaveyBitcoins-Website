@@ -34,6 +34,19 @@ const checks = [
       await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length >= 10, null, { timeout: 20000 });
       await expectText(page, 'Bitcoin Risk Metric');
       await expectText(page, 'Combined Risk');
+      await expectText(page, 'Major Weekly Moving Averages');
+      const movingAveragePeriods = await page.locator('#movingAveragesCard .moving-average-period').allTextContents();
+      if (movingAveragePeriods.join(',') !== '300W,200W,50W,21W,13W,8W') {
+        throw new Error(`unexpected BTC moving-average periods: ${movingAveragePeriods.join(',')}`);
+      }
+      const movingAverageValues = await page.locator('#movingAveragesCard .moving-average-value').evaluateAll(
+        (elements) => elements.map((element) => Number(element.dataset.value))
+      );
+      if (movingAverageValues.length !== 6 || movingAverageValues.some((value) => !Number.isFinite(value) || value <= 0)) {
+        throw new Error(`invalid BTC moving-average values: ${movingAverageValues.join(',')}`);
+      }
+      const weeklyObservations = Number(await page.locator('#movingAveragesCard').getAttribute('data-weekly-observations'));
+      if (weeklyObservations < 300) throw new Error(`insufficient BTC weekly history: ${weeklyObservations}`);
       await expectText(page, 'Price at Each Risk Level');
       await expectText(page, 'Bitcoin Market-Cap-Adjusted Power-Law Fair Value');
       await expectText(page, 'Long-run scenario, not a short-term price target');
