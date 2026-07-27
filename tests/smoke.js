@@ -73,6 +73,29 @@ const checks = [
       }
     },
   },
+  {
+    path: '/spy-risk-metric.html',
+    name: 'SPY risk metric',
+    assert: async (page) => {
+      await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length >= 10, null, { timeout: 20000 });
+      await expectText(page, 'Forward P/E Price Projections');
+      await expectText(page, 'FactSet Jul 24, 2026');
+      await expectText(page, 'Next review: Oct 2026');
+      await expectText(page, 'Forward 12M P/E');
+      const growthInput = page.locator('#epsGrowthInput');
+      if (await growthInput.inputValue() !== '8') throw new Error('expected 8% default post-2027 EPS growth');
+      const projectionRows = await page.locator('#peProjBody tr').allTextContents();
+      if (!projectionRows.some((row) => row.includes('2026') && row.includes('Consensus EPS $345'))) {
+        throw new Error('missing July 2026 consensus EPS');
+      }
+      if (!projectionRows.some((row) => row.includes('2027') && row.includes('Consensus EPS $398'))) {
+        throw new Error('missing July 2027 consensus EPS');
+      }
+      if (!projectionRows.some((row) => row.includes('2028') && row.includes('Scenario EPS $430'))) {
+        throw new Error('missing post-2027 scenario EPS');
+      }
+    },
+  },
 ];
 
 function startServer() {
