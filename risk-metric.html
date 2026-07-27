@@ -154,6 +154,9 @@
   .proj-table-wrap h4{font-family:'Outfit',sans-serif;font-size:0.65rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;text-align:center}
   .proj-method-note{max-width:940px;margin:-2px auto 16px;text-align:center;font-size:0.66rem;line-height:1.6;color:var(--text-dim)}
   .proj-method-note strong{color:var(--text-heading);font-weight:600}
+  .proj-formula{display:block;margin:10px 0 8px;padding:10px 12px;border-left:2px solid var(--accent-blue);background:color-mix(in srgb,var(--bg) 82%,transparent);color:var(--text-heading);font-family:'IBM Plex Mono','JetBrains Mono',monospace;font-size:0.68rem;line-height:1.7;overflow-x:auto}
+  .proj-method-note a{color:var(--accent-blue);text-decoration:none}
+  .proj-method-note a:hover{text-decoration:underline}
   .proj-table{width:100%;border-collapse:collapse}
   #projTable{min-width:820px}
   .proj-table th{font-size:0.55rem;color:var(--text-dimmer);text-transform:uppercase;letter-spacing:1.5px;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
@@ -312,9 +315,15 @@
       <strong>Long-run scenario, not a short-term price target.</strong>
       The path begins with Bitcoin’s historical power-law regression, then progressively slows its
       excess growth as the modeled market cap approaches $20T. At $20T, half of the growth above a
-      10% long-run nominal rate is damped; the path continues converging toward 10% as the asset grows.
-      The calculation assumes 20.8M BTC. “Gap to Fair Value” compares each future value with today’s
-      BTC price; it is not a forecast return.
+      6% long-run nominal rate is damped; the path continues converging toward 6% as the asset grows.
+      The calculation assumes 20.8M BTC.
+      <code class="proj-formula">g<sub>effective</sub> = g<sub>6%</sub> + (g<sub>power-law</sub> − g<sub>6%</sub>) × 1 / [1 + (M / $20T)²]</code>
+      Here, <strong>M</strong> is the modeled fair-value market cap. The 6% mature-asset rate is
+      informed by gold: free-floating gold compounded about 8% from 1971–2023, while the
+      <a href="https://www.gold.org/goldhub/research/golds-long-term-expected-returns/building-block-approach" target="_blank" rel="noopener">World Gold Council’s long-term model</a>
+      estimates 5.2% annually for 2025–2040. Bitcoin retains more of its historical power-law growth
+      while its market cap is smaller, then moves toward a gold-like mature growth rate.
+      “Gap to Fair Value” compares each future value with today’s BTC price; it is not a forecast return.
     </p>
     <table class="proj-table" id="projTable">
       <thead>
@@ -430,7 +439,7 @@ const STRUCTURAL_SOFT_FLOOR_MIN = 0.005;
 const STRUCTURAL_FLOOR_BREAK_RISK = 0.01;
 const FAIR_VALUE_DAMPENING_MARKET_CAP = 20e12;
 const FAIR_VALUE_PROJECTION_SUPPLY = 20.8e6;
-const FAIR_VALUE_LONG_RUN_GROWTH = 0.10;
+const FAIR_VALUE_LONG_RUN_GROWTH = 0.06;
 const FAIR_VALUE_DAMPENING_POWER = 2;
 const FAIR_VALUE_DAYS_PER_YEAR = 365.2425;
 const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);

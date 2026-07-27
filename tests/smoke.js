@@ -37,7 +37,9 @@ const checks = [
       await expectText(page, 'Price at Each Risk Level');
       await expectText(page, 'Bitcoin Market-Cap-Damped Power-Law Fair Value');
       await expectText(page, 'Long-run scenario, not a short-term price target');
-      await expectText(page, 'half of the growth above a 10% long-run nominal rate is damped');
+      await expectText(page, 'half of the growth above a 6% long-run nominal rate is damped');
+      await expectText(page, 'World Gold Council’s long-term model');
+      await expectText(page, 'gpower-law');
       const projectionHeaders = await page.locator('#projTable th').allTextContents();
       for (const header of ['Damped Fair Value', 'Fair Value Growth', 'Gap to Fair Value']) {
         if (!projectionHeaders.includes(header)) throw new Error(`missing projection header: ${header}`);
