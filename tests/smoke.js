@@ -78,7 +78,11 @@ const checks = [
     name: 'SPY risk metric',
     assert: async (page) => {
       await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length >= 10, null, { timeout: 20000 });
-      await expectText(page, 'Regression-Implied Price Scenarios');
+      await expectText(page, 'Composite-Risk Price Scenarios');
+      await expectText(page, 'Composite Risk · 200W / 200D Trend Percentiles');
+      await expectText(page, '65% 200W + 35% 200D');
+      await expectText(page, '200-Week Trend');
+      await expectText(page, 'shaded = ≥10% drawdown windows');
       await expectText(page, 'Valuation-Aware Downside Scenarios');
       await expectText(page, 'not a guaranteed market floor');
       await expectText(page, 'Forward P/E Price Projections');
@@ -91,7 +95,29 @@ const checks = [
       const removedReturnsPanel = await page.locator('#returnsCanvas').count();
       if (removedReturnsPanel !== 0) throw new Error('forward-return-by-risk-decile panel should be removed');
       const riskCardText = (await page.locator('#riskTable').innerText()).toLowerCase();
-      if (riskCardText.includes('p/e')) throw new Error('regression risk cards should not show static-EPS P/E values');
+      if (riskCardText.includes('p/e')) throw new Error('composite risk cards should not show static-EPS P/E values');
+      if (await page.locator('#riskTable').getAttribute('data-model') !== '200w65-200d35-trailing20y') {
+        throw new Error('risk scenarios are not using the moving-average composite');
+      }
+      const compositeRisk = Number(await page.locator('#vRisk').innerText());
+      const risk200W = Number(await page.locator('#vRisk').getAttribute('data-risk200w'));
+      const risk200D = Number(await page.locator('#vRisk').getAttribute('data-risk200d'));
+      if (compositeRisk < 0.65 || compositeRisk > 0.85) throw new Error(`unexpected composite risk ${compositeRisk}`);
+      if (risk200W < 0.80 || risk200W > 0.98) throw new Error(`unexpected 200W risk ${risk200W}`);
+      if (risk200D < 0.35 || risk200D > 0.65) throw new Error(`unexpected 200D risk ${risk200D}`);
+      if (Math.abs(compositeRisk - (0.65 * risk200W + 0.35 * risk200D)) > 0.003) {
+        throw new Error('composite risk does not match its 65/35 components');
+      }
+      const riskStart = await page.locator('#riskCanvas').getAttribute('data-comparison-start');
+      const vixStart = await page.locator('#vixCanvas').getAttribute('data-comparison-start');
+      if (!riskStart?.startsWith('1990') || riskStart !== vixStart) {
+        throw new Error(`risk/VIX comparison ranges are not aligned: ${riskStart} vs ${vixStart}`);
+      }
+      const riskDrawdownBands = Number(await page.locator('#riskCanvas').getAttribute('data-drawdown-bands'));
+      const vixDrawdownBands = Number(await page.locator('#vixCanvas').getAttribute('data-drawdown-bands'));
+      if (riskDrawdownBands < 5 || riskDrawdownBands !== vixDrawdownBands) {
+        throw new Error(`risk/VIX drawdown bands are not aligned: ${riskDrawdownBands} vs ${vixDrawdownBands}`);
+      }
       const stressRows = await page.locator('#valuationStressBody tr').allTextContents();
       if (stressRows.length !== 4) throw new Error(`expected 4 valuation-aware stress rows, got ${stressRows.length}`);
       if (!stressRows.some((row) => row.includes('No EPS decline') && row.includes('$373') && row.includes('15×') && row.includes('$560'))) {
