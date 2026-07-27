@@ -256,7 +256,7 @@
       <div class="card-value" id="vPrice" style="font-size:2.4rem;letter-spacing:-2px;font-weight:700;color:var(--text-heading)">—</div>
       <div id="vFwdPE" style="margin-top:6px;font-size:0.62rem;font-family:'JetBrains Mono',monospace;color:#ffbf63;letter-spacing:1px"></div>
     </div>
-    <div class="card" style="--glow:#f7931a"><div class="card-label">200W Risk</div><div class="card-value" id="vRisk" style="--val-color:#f7931a">—</div>
+    <div class="card" style="--glow:#f7931a"><div class="card-label">Market Cycle Risk</div><div class="card-value" id="vRisk" style="--val-color:#f7931a">—</div>
       <div class="risk-bar-wrap"><div class="risk-bar-bg"></div><div class="risk-bar-needle" id="needle"></div></div>
       <div class="zone-labels"><span>Accumulate</span><span>Neutral</span><span>Caution</span></div></div>
     <div class="card" style="--glow:#58c56f"><div class="card-label">200-Week Trend</div><div class="card-value" id="vFair" style="--val-color:#58c56f">—</div><div class="card-sub" id="vGrowth"></div></div>
@@ -264,10 +264,10 @@
     <div class="card" style="--glow:#ef5d4f"><div class="card-label">VIX (Close)</div><div class="card-value" id="vVixLevel" style="--val-color:#ef5d4f">—</div><div class="card-sub" id="vVixImplied"></div></div>
   </div>
   <div class="risk-table-wrap">
-    <h4>200W Risk Price Scenarios</h4>
+    <h4>Risk Price Scenarios</h4>
     <div class="risk-table" id="riskTable"></div>
     <div style="text-align:center;font-size:0.65rem;color:var(--meth-text);margin-top:10px;letter-spacing:0.3px;line-height:1.6">
-      Prices solve for each 200W risk percentile using the current moving average and its trailing 20-year weekly deviation distribution. Statistical scenarios—not price targets.
+      Prices solve for each market-cycle risk decile using the current long-term trend and trailing 20-year weekly deviation distribution. Statistical scenarios—not price targets.
     </div>
   </div>
   <div class="pe-proj-wrap valuation-stress-wrap">
@@ -414,7 +414,7 @@
     <p><span class="hl">200-Week Risk:</span> Calculates <code>ln(price ÷ 200W MA)</code> from weekly closes, then ranks that deviation against its trailing 20-year weekly history. The latest incomplete week uses the current week-to-date close.</p>
     <p><span class="hl">Weekly Updates:</span> Historical readings change only at each weekly close and are carried across intervening daily chart observations. This keeps the oscillator focused on long-term market-cycle risk rather than short-term noise.</p>
     <p><span class="hl">Percentile Normalization:</span> Every historical reading uses only information available on that date, avoiding all-time min/max anchors and look-ahead. A risk of 0.88 means the market is farther above its 200W trend than approximately 88% of weekly observations in the trailing 20 years.</p>
-    <p><span class="hl">200W Risk Prices:</span> Solve for the price associated with each percentile using the current 200W average and current trailing weekly deviation distribution. They are statistical scenarios, not price targets.</p>
+    <p><span class="hl">Risk Prices:</span> Solve for the price associated with each percentile using the current 200W average and current trailing weekly deviation distribution. They are statistical scenarios, not price targets.</p>
     <p><span class="hl">Risk / VIX Alignment:</span> Both lower charts begin with reliable VIX history in 1990 and use the same horizontal date range. Shared shaded bands mark periods when SPY was at least 10% below its prior peak; brief recoveries of roughly one quarter are merged to keep each correction visually coherent.</p>
     <p><span class="hl">Valuation-Aware Downside:</span> Applies an assumed 15× forward P/E to the current $373.08 forward EPS anchor after explicit earnings shocks of 0%, −10%, −20%, and −35%. The valuation multiple is a scenario assumption, not a guaranteed floor.</p>
     <p><span class="hl">VIX Chart:</span> Shown for reference as a fear/greed gauge. Not currently factored into the risk calculation.</p>
@@ -672,7 +672,7 @@ async function main() {
     };
     const tbl = document.getElementById('riskTable');
     tbl.dataset.model = '200w-trailing20y-weekly';
-    const riskLevels = [0.05,0.10,0.15,0.20,0.25,0.30,0.35,0.40,0.45,0.50,0.55,0.60,0.65,0.70,0.75,0.80,0.85,0.90,0.95,0.99];
+    const riskLevels = [0.10,0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.00];
     riskLevels.forEach(r => {
       const price = priceAtRisk(r);
       const cell = document.createElement('div');

@@ -77,8 +77,13 @@ const checks = [
     path: '/spy-risk-metric.html',
     name: 'SPY risk metric',
     assert: async (page) => {
-      await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length >= 10, null, { timeout: 20000 });
-      await expectText(page, '200W Risk Price Scenarios');
+      await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length === 10, null, { timeout: 20000 });
+      await expectText(page, 'Risk Price Scenarios');
+      await expectText(page, 'Market Cycle Risk');
+      const riskLevels = await page.locator('#riskTable .rc-risk').allTextContents();
+      if (riskLevels.join(',') !== '0.10,0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.00') {
+        throw new Error(`unexpected SPY risk scenario intervals: ${riskLevels.join(',')}`);
+      }
       await expectText(page, 'Risk · 200-Week Trend-Deviation Percentile');
       await expectText(page, 'Weekly risk only');
       await expectText(page, '200-Week Trend');
@@ -160,8 +165,13 @@ const checks = [
     path: '/qqq-risk-metric.html',
     name: 'QQQ risk metric',
     assert: async (page) => {
-      await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length === 20, null, { timeout: 20000 });
-      await expectText(page, '200W Risk Price Scenarios');
+      await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length === 10, null, { timeout: 20000 });
+      await expectText(page, 'Risk Price Scenarios');
+      await expectText(page, 'Market Cycle Risk');
+      const riskLevels = await page.locator('#riskTable .rc-risk').allTextContents();
+      if (riskLevels.join(',') !== '0.10,0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.00') {
+        throw new Error(`unexpected QQQ risk scenario intervals: ${riskLevels.join(',')}`);
+      }
       await expectText(page, 'Risk · 200-Week Trend-Deviation Percentile');
       await expectText(page, 'Weekly risk only');
       await expectText(page, '200-Week Trend');
