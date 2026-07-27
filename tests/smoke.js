@@ -82,6 +82,8 @@ const checks = [
       await expectText(page, 'FactSet Jul 24, 2026');
       await expectText(page, 'Next review: Oct 2026');
       await expectText(page, 'Forward 12M P/E');
+      await expectText(page, 'is the nearest whole-number scenario');
+      await expectText(page, 'Nearest current');
       const growthInput = page.locator('#epsGrowthInput');
       if (await growthInput.inputValue() !== '8') throw new Error('expected 8% default post-2027 EPS growth');
       const projectionRows = await page.locator('#peProjBody tr').allTextContents();
@@ -93,6 +95,19 @@ const checks = [
       }
       if (!projectionRows.some((row) => row.includes('2028') && row.includes('Scenario EPS $430'))) {
         throw new Error('missing post-2027 scenario EPS');
+      }
+      await page.locator('.pe-growth-preset[data-growth="12"]').click();
+      if (await growthInput.inputValue() !== '12') throw new Error('expected 12% growth preset to update the input');
+      let updatedRows = await page.locator('#peProjBody tr').allTextContents();
+      if (!updatedRows.some((row) => row.includes('2028') && row.includes('Scenario EPS $446 (+12.0%)'))) {
+        throw new Error('expected 12% preset to update scenario EPS');
+      }
+      await growthInput.fill('27');
+      if (await growthInput.inputValue() !== '20') throw new Error('expected growth input to clamp at 20%');
+      await expectText(page, 'Limited to 0–20%');
+      updatedRows = await page.locator('#peProjBody tr').allTextContents();
+      if (!updatedRows.some((row) => row.includes('2028') && row.includes('Scenario EPS $478 (+20.0%)'))) {
+        throw new Error('expected clamped input to update scenario EPS consistently');
       }
     },
   },

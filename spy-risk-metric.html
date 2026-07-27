@@ -146,7 +146,12 @@
   .pe-proj-wrap{background:rgba(20,19,15,0.74);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:20px 24px;margin-bottom:36px;overflow-x:auto;transition:background 0.3s,border-color 0.3s}
   [data-theme="light"] .pe-proj-wrap{background:rgba(255,255,255,0.7);border-color:var(--border)}
   .pe-proj-wrap h4{font-family:'Outfit',sans-serif;font-size:0.65rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;text-align:center}
-  .pe-proj-sub{font-size:0.58rem;color:var(--text-dimmer);text-align:center;margin-bottom:14px;letter-spacing:0.5px}
+  .pe-current-context{font:0.65rem 'JetBrains Mono',monospace;color:#ffbf63;text-align:center;margin:7px 0 10px;letter-spacing:0.4px}
+  .pe-proj-sub{font-size:0.58rem;color:var(--text-dimmer);text-align:center;margin-bottom:7px;letter-spacing:0.5px}
+  .pe-growth-presets{display:flex;justify-content:center;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:14px}
+  .pe-growth-preset{font:0.58rem 'JetBrains Mono',monospace;color:var(--text-dim);background:var(--bg);border:1px solid var(--border);padding:4px 8px;cursor:pointer}
+  .pe-growth-preset:hover,.pe-growth-preset.active{color:#f7931a;border-color:rgba(247,147,26,0.65);background:rgba(247,147,26,0.1)}
+  .pe-growth-status{display:inline-block;min-width:104px;margin-left:7px;color:#ef5d4f;text-align:left}
   .pe-proj-table{width:100%;border-collapse:collapse}
   .pe-proj-table th{font-size:0.55rem;color:var(--text-dimmer);text-transform:uppercase;letter-spacing:1.5px;padding:8px 12px;text-align:center;border-bottom:1px solid var(--border)}
   .pe-proj-table th:first-child{text-align:left}
@@ -155,6 +160,7 @@
   .pe-proj-table tr:last-child td{border-bottom:none}
   .pe-proj-table .pe-highlight{background:rgba(247,147,26,0.13);font-weight:600;color:#f7931a;border-left:2px solid rgba(247,147,26,0.4);border-right:2px solid rgba(247,147,26,0.4)}
   .pe-proj-table thead .pe-highlight{background:rgba(247,147,26,0.18);color:#f7931a;border-bottom:2px solid #f7931a}
+  .pe-current-label{display:block;font-size:0.43rem;line-height:1.2;margin-top:3px;letter-spacing:0.5px}
   .pe-proj-table .pe-eps{font-size:0.6rem;color:var(--text-dim);font-weight:400}
   @media(max-width:600px){.pe-proj-table th,.pe-proj-table td{padding:6px 6px;font-size:0.62rem}}
 
@@ -263,10 +269,19 @@
   </div>
   <div class="pe-proj-wrap">
     <h4>Forward P/E Price Projections</h4>
+    <div class="pe-current-context" id="peCurrentContext"></div>
     <div class="pe-proj-sub">
       Post-2027 EPS growth:
-      <input type="number" id="epsGrowthInput" value="8" min="0" max="20" step="0.5" style="width:60px;text-align:center;padding:4px 6px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-weight:600;margin:0 4px">%
+      <input type="number" id="epsGrowthInput" value="8" min="0" max="20" step="0.5" aria-label="Post-2027 EPS growth percentage" style="width:60px;text-align:center;padding:4px 6px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-weight:600;margin:0 4px">%
       Y-o-Y scenario · SPY ≈ SPX ÷ 10
+      <span class="pe-growth-status" id="epsGrowthStatus" aria-live="polite"></span>
+    </div>
+    <div class="pe-growth-presets" aria-label="Post-2027 EPS growth presets">
+      <button type="button" class="pe-growth-preset" data-growth="4">4%</button>
+      <button type="button" class="pe-growth-preset" data-growth="6">6%</button>
+      <button type="button" class="pe-growth-preset active" data-growth="8">8% default</button>
+      <button type="button" class="pe-growth-preset" data-growth="10">10%</button>
+      <button type="button" class="pe-growth-preset" data-growth="12">12%</button>
     </div>
     <table class="pe-proj-table" id="peProjTable">
       <thead id="peProjHead"></thead>
@@ -592,9 +607,14 @@ async function main() {
 
     // Build header (highlight the column matching current rounded P/E)
     const thead = document.getElementById('peProjHead');
-    const currentPE = Math.round(spxEstimate / fwd12mEPS);
+    const exactCurrentPE = spxEstimate / fwd12mEPS;
+    const currentPE = Math.round(exactCurrentPE);
+    document.getElementById('peCurrentContext').textContent = 'Current forward P/E: ' + exactCurrentPE.toFixed(1) + '× · ' + currentPE + '× is the nearest whole-number scenario';
     let hRow = '<tr><th>Year</th>';
-    peMultiples.forEach(pe => { hRow += '<th' + (pe === currentPE ? ' class="pe-highlight"' : '') + '>' + pe + '×</th>'; });
+    peMultiples.forEach(pe => {
+      const currentLabel = pe === currentPE ? '<span class="pe-current-label">Nearest current</span>' : '';
+      hRow += '<th' + (pe === currentPE ? ' class="pe-highlight"' : '') + '>' + pe + '×' + currentLabel + '</th>';
+    });
     hRow += '</tr>';
     thead.innerHTML = hRow;
 
@@ -606,7 +626,8 @@ async function main() {
     allYears.forEach(y => {
       const eps = epsMap[y];
       const estimateType = y <= 2027 ? 'Consensus' : 'Scenario';
-      let row = '<tr><td>' + y + ' <span class="pe-eps">' + estimateType + ' EPS $' + eps.toFixed(0) + '</span></td>';
+      const growthLabel = y === 2026 ? '27.3%' : y === 2027 ? '15.3%' : growthPct.toFixed(1) + '%';
+      let row = '<tr><td>' + y + ' <span class="pe-eps">' + estimateType + ' EPS $' + eps.toFixed(0) + ' (+' + growthLabel + ')</span></td>';
       peMultiples.forEach(pe => {
         const spxPrice = eps * pe;
         const spyPrice = spxPrice / 10;
@@ -619,11 +640,35 @@ async function main() {
     });
   }
 
-  // Initial render + listen for changes
+  // Initial render + bounded input and preset controls
+  const growthInput = document.getElementById('epsGrowthInput');
+  const growthStatus = document.getElementById('epsGrowthStatus');
+  const growthPresets = Array.from(document.querySelectorAll('.pe-growth-preset'));
+  function setScenarioGrowth(rawValue) {
+    const parsed = Number.parseFloat(rawValue);
+    if (!Number.isFinite(parsed)) {
+      growthStatus.textContent = 'Enter 0–20%';
+      return;
+    }
+    const clamped = Math.min(20, Math.max(0, parsed));
+    growthInput.value = clamped;
+    growthStatus.textContent = clamped === parsed ? '' : 'Limited to 0–20%';
+    growthPresets.forEach(button => {
+      const active = Number(button.dataset.growth) === clamped;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+    buildPEProjectionTable(clamped);
+  }
+
   buildPEProjectionTable(8);
-  document.getElementById('epsGrowthInput').addEventListener('input', function() {
-    const val = parseFloat(this.value);
-    if (!isNaN(val) && val >= 0 && val <= 20) buildPEProjectionTable(val);
+  growthInput.addEventListener('input', function() {
+    setScenarioGrowth(this.value);
+  });
+  growthPresets.forEach(button => {
+    button.addEventListener('click', function() {
+      setScenarioGrowth(this.dataset.growth);
+    });
   });
 
   // Historical Market Bottoms
