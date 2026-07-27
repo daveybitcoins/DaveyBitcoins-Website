@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SPY Risk Metric</title>
 <meta property="og:title" content="SPY Risk Metric — DaveyBitcoins">
-<meta property="og:description" content="Log-linear regression risk metric for SPY. Interactive charts, VIX zones, and forward returns by risk decile.">
+<meta property="og:description" content="Log-linear regression risk metric for SPY with interactive price, structural-risk, VIX, and valuation scenario charts.">
 <meta property="og:url" content="https://daveybitcoins.com/spy-risk-metric.html">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -338,14 +338,6 @@
     </div>
     <canvas id="vixCanvas" width="1380" height="280"></canvas>
     <div class="tooltip" id="vixTip"><div class="tt-date"></div><div>VIX: <span class="tt-risk"></span></div></div>
-  </div>
-  <div class="chart-panel">
-    <div class="chart-header">
-      <div class="chart-label" id="returnsLabel">Median 1-Year Forward Return by Risk Decile</div>
-      <div class="chart-note" id="returnsNote"></div>
-    </div>
-    <canvas id="returnsCanvas" width="1380" height="360"></canvas>
-    <div style="display:flex;justify-content:center;gap:8px;margin-top:12px" id="fwdButtons"></div>
   </div>
   <div class="chart-panel" id="dcaSection">
     <div class="chart-header">
@@ -978,64 +970,6 @@ async function main() {
     ctx.fillText('LOW FEAR',W-P.r-4,yOf(7.5));
   }
 
-  // Forward returns bar chart
-  const WARMUP = 500; // skip early data where VIX lookback isn't full
-  let activeFwd = (function(){ var p = new URLSearchParams(window.location.search).get('fwd'); return (p === '730') ? 730 : 365; })();
-  function renderReturnsChart(fwdDays) {
-    const tc = themeColors();
-    fwdDays=fwdDays||activeFwd; activeFwd=fwdDays;
-    var params = new URLSearchParams(window.location.search);
-    if (fwdDays === 365) params.delete('fwd'); else params.set('fwd', fwdDays);
-    var qs = params.toString();
-    history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
-    const labels={365:'1-Year',730:'2-Year'};
-    document.getElementById('returnsLabel').textContent='Median '+labels[fwdDays]+' Forward Return by Risk Decile';
-    document.querySelectorAll('#fwdButtons button').forEach(b=>{
-      if(parseInt(b.dataset.fwd)===fwdDays) b.classList.add('active'); else b.classList.remove('active');
-    });
-    const cv=document.getElementById('returnsCanvas'), ctx=cv.getContext('2d');
-    const W=cv.width, H=cv.height;
-    const P={t:28,r:40,b:52,l:80};
-    const cw=W-P.l-P.r, ch=H-P.t-P.b;
-    ctx.fillStyle=tc.canvasBg; ctx.fillRect(0,0,W,H);
-    const FWD=fwdDays;
-    const buckets=[];for(let d=0;d<10;d++) buckets.push([]);
-    for(let i=WARMUP;i<n-FWD;i++){
-      const decile=Math.min(9,Math.floor(pts[i].riskCombo*10));
-      const ret=(pts[i+FWD].price/pts[i].price-1)*100;
-      buckets[decile].push(ret);
-    }
-    const medians=buckets.map(b=>{
-      if(!b.length) return 0; b.sort((a,c)=>a-c);
-      const m=Math.floor(b.length/2); return b.length%2?b[m]:(b[m-1]+b[m])/2;
-    });
-    const maxY=Math.max(...medians.map(Math.abs),50);
-    const yOf=v=>P.t+ch/2-((v/maxY)*(ch/2));
-    ctx.textAlign='right';ctx.font='10px JetBrains Mono';
-    const gridVals=[-100,-50,0,50,100,150,200,300,400,500].filter(v=>Math.abs(v)<=maxY*1.1);
-    gridVals.forEach(v=>{
-      const y=yOf(v);if(y<P.t-5||y>H-P.b+5) return;
-      ctx.strokeStyle=v===0?tc.gridZero:tc.gridLine;ctx.lineWidth=v===0?1.5:1;
-      ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke();
-      ctx.fillStyle=tc.axisText;ctx.fillText(v>0?'+'+v+'%':v+'%',P.l-8,y+3);
-    });
-    const barW=cw/10*0.7, gap=cw/10*0.15;
-    for(let d=0;d<10;d++){
-      const x=P.l+d*(cw/10)+gap;const median=medians[d];const y0=yOf(0);const y1=yOf(median);
-      const midRisk=(d+0.5)/10;ctx.fillStyle=riskColor(midRisk,0.85);
-      ctx.beginPath();const r=4;const barTop=Math.min(y0,y1);const barH=Math.abs(y1-y0);
-      ctx.moveTo(x+r,barTop);ctx.lineTo(x+barW-r,barTop);ctx.quadraticCurveTo(x+barW,barTop,x+barW,barTop+r);
-      ctx.lineTo(x+barW,barTop+barH-r);ctx.quadraticCurveTo(x+barW,barTop+barH,x+barW-r,barTop+barH);
-      ctx.lineTo(x+r,barTop+barH);ctx.quadraticCurveTo(x,barTop+barH,x,barTop+barH-r);
-      ctx.lineTo(x,barTop+r);ctx.quadraticCurveTo(x,barTop,x+r,barTop);ctx.fill();
-      ctx.fillStyle=tc.barValueText;ctx.font='bold 11px JetBrains Mono';ctx.textAlign='center';
-      const labelY=median>=0?y1-8:y1+14;
-      ctx.fillText((median>=0?'+':'')+Math.round(median)+'%',x+barW/2,labelY);
-      ctx.fillStyle=riskColor(midRisk);ctx.font='bold 11px JetBrains Mono';
-      ctx.fillText((d/10).toFixed(1)+'–'+((d+1)/10).toFixed(1),x+barW/2,H-P.b+18);
-    }
-  }
-
   let vixEffectiveStart = 0; // track VIX chart's adjusted start index
 
   function renderAll() { renderPriceChart(); renderRiskChart(); renderVixChart(); syncURL(); }
@@ -1134,14 +1068,6 @@ async function main() {
 
   // Init
   renderAll();
-  {
-    const bar=document.getElementById('fwdButtons');
-    [[365,'1Y'],[730,'2Y']].forEach(([days,label])=>{
-      const b=document.createElement('button');b.textContent=label;b.dataset.fwd=days;b.className='zoom-btn';
-      b.addEventListener('click',()=>renderReturnsChart(days));bar.appendChild(b);
-    });
-  }
-  renderReturnsChart(activeFwd);
   attachZoomPan('priceCanvas', 'priceTip');
   attachZoomPan('riskCanvas', 'riskTip');
   attachZoomPan('vixCanvas', 'vixTip');
@@ -1671,7 +1597,7 @@ async function main() {
   (function(){
     if (!window.DaveyTheme) return;
     window.DaveyTheme.init({ onChange: function() {
-      renderAll();renderReturnsChart();if(window._dcaRerender)window._dcaRerender();
+      renderAll();if(window._dcaRerender)window._dcaRerender();
     }});
   })();
 }

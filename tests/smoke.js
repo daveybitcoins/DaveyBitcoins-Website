@@ -88,6 +88,8 @@ const checks = [
       await expectText(page, 'is the nearest whole-number scenario');
       await expectText(page, 'Nearest current');
       await expectText(page, 'CY2026 consensus EPS: $345');
+      const removedReturnsPanel = await page.locator('#returnsCanvas').count();
+      if (removedReturnsPanel !== 0) throw new Error('forward-return-by-risk-decile panel should be removed');
       const riskCardText = (await page.locator('#riskTable').innerText()).toLowerCase();
       if (riskCardText.includes('p/e')) throw new Error('regression risk cards should not show static-EPS P/E values');
       const stressRows = await page.locator('#valuationStressBody tr').allTextContents();
