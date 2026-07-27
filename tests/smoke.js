@@ -156,6 +156,48 @@ const checks = [
       }
     },
   },
+  {
+    path: '/qqq-risk-metric.html',
+    name: 'QQQ risk metric',
+    assert: async (page) => {
+      await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length === 20, null, { timeout: 20000 });
+      await expectText(page, '200W Risk Price Scenarios');
+      await expectText(page, 'Risk · 200-Week Trend-Deviation Percentile');
+      await expectText(page, 'Weekly risk only');
+      await expectText(page, '200-Week Trend');
+      await expectText(page, 'shaded = ≥10% drawdown windows');
+      if (await page.locator('#returnsCanvas').count() !== 0) {
+        throw new Error('forward-return-by-risk-decile panel should be removed');
+      }
+      if (await page.locator('#riskTable').getAttribute('data-model') !== '200w-trailing20y-weekly') {
+        throw new Error('QQQ risk scenarios are not using the weekly 200W model');
+      }
+      const currentRisk = Number(await page.locator('#vRisk').innerText());
+      const risk200W = Number(await page.locator('#vRisk').getAttribute('data-risk200w'));
+      if (!Number.isFinite(currentRisk) || currentRisk < 0 || currentRisk > 1) {
+        throw new Error(`invalid QQQ 200W risk ${currentRisk}`);
+      }
+      if (Math.abs(currentRisk - risk200W) > 0.002) {
+        throw new Error('QQQ headline risk does not match the 200W percentile');
+      }
+      if (await page.locator('#vRisk').getAttribute('data-risk200d') !== null) {
+        throw new Error('QQQ 200D risk should not be present');
+      }
+      if (await page.locator('#riskCanvas').getAttribute('data-model') !== '200W trailing-20-year weekly percentile') {
+        throw new Error('QQQ risk oscillator is not using the weekly-only model');
+      }
+      const riskStart = await page.locator('#riskCanvas').getAttribute('data-comparison-start');
+      const vixStart = await page.locator('#vixCanvas').getAttribute('data-comparison-start');
+      if (!riskStart?.startsWith('2003') || riskStart !== vixStart) {
+        throw new Error(`QQQ risk/VIX comparison ranges are not aligned: ${riskStart} vs ${vixStart}`);
+      }
+      const riskDrawdownBands = Number(await page.locator('#riskCanvas').getAttribute('data-drawdown-bands'));
+      const vixDrawdownBands = Number(await page.locator('#vixCanvas').getAttribute('data-drawdown-bands'));
+      if (riskDrawdownBands < 5 || riskDrawdownBands !== vixDrawdownBands) {
+        throw new Error(`QQQ risk/VIX drawdown bands are not aligned: ${riskDrawdownBands} vs ${vixDrawdownBands}`);
+      }
+    },
+  },
 ];
 
 function startServer() {

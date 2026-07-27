@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QQQ Risk Metric</title>
 <meta property="og:title" content="QQQ Risk Metric — DaveyBitcoins">
-<meta property="og:description" content="Log-linear regression risk metric for QQQ (Nasdaq-100). Interactive charts, VIX zones, and forward returns by risk decile.">
+<meta property="og:description" content="QQQ market-cycle risk from its 200-week trend-deviation percentile, aligned with VIX and Nasdaq-100 drawdowns.">
 <meta property="og:url" content="https://daveybitcoins.com/qqq-risk-metric.html">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -225,7 +225,7 @@
       </button>
     </div>
     <h1>&#128200; <span>QQQ Risk Metric</span></h1>
-    <div class="subtitle"><span class="live-dot"></span>Structural Risk · Log-Linear Regression</div>
+    <div class="subtitle"><span class="live-dot"></span>Risk · 200-Week Trend-Deviation Percentile</div>
     <div id="headerDate" style="margin-top:10px;font-size:0.65rem;letter-spacing:1px;color:var(--text-dim);display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border:1px solid rgba(247,147,26,0.24);border-radius:4px;background:rgba(247,147,26,0.07);font-family:'JetBrains Mono',monospace;"></div>
   </header>
   <div class="dashboard">
@@ -233,16 +233,19 @@
       <div class="card-label">QQQ / USD</div>
       <div class="card-value" id="vPrice" style="font-size:2.4rem;letter-spacing:-2px;font-weight:700;color:var(--text-heading)">—</div>
     </div>
-    <div class="card" style="--glow:#f7931a"><div class="card-label">Structural Risk</div><div class="card-value" id="vRisk" style="--val-color:#f7931a">—</div>
+    <div class="card" style="--glow:#f7931a"><div class="card-label">200W Risk</div><div class="card-value" id="vRisk" style="--val-color:#f7931a">—</div>
       <div class="risk-bar-wrap"><div class="risk-bar-bg"></div><div class="risk-bar-needle" id="needle"></div></div>
       <div class="zone-labels"><span>Accumulate</span><span>Neutral</span><span>Caution</span></div></div>
-    <div class="card" style="--glow:#58c56f"><div class="card-label">Fair Value</div><div class="card-value" id="vFair" style="--val-color:#58c56f">—</div><div class="card-sub" id="vGrowth"></div></div>
-    <div class="card" style="--glow:#ffbf63"><div class="card-label">Deviation</div><div class="card-value" id="vDev" style="--val-color:#ffbf63">—</div></div>
+    <div class="card" style="--glow:#58c56f"><div class="card-label">200-Week Trend</div><div class="card-value" id="vFair" style="--val-color:#58c56f">—</div><div class="card-sub" id="vGrowth"></div></div>
+    <div class="card" style="--glow:#ffbf63"><div class="card-label">Vs. 200W MA</div><div class="card-value" id="vDev" style="--val-color:#ffbf63">—</div></div>
     <div class="card" style="--glow:#ef5d4f"><div class="card-label">VIX (Close)</div><div class="card-value" id="vVixLevel" style="--val-color:#ef5d4f">—</div><div class="card-sub" id="vVixImplied"></div></div>
   </div>
   <div class="risk-table-wrap">
-    <h4>Price at Each Risk Level</h4>
+    <h4>200W Risk Price Scenarios</h4>
     <div class="risk-table" id="riskTable"></div>
+    <div style="text-align:center;font-size:0.65rem;color:var(--meth-text);margin-top:10px;letter-spacing:0.3px;line-height:1.6">
+      Prices solve for each 200W risk percentile using the current moving average and its trailing 20-year weekly deviation distribution. Statistical scenarios—not price targets.
+    </div>
   </div>
   <div class="risk-lows-wrap">
     <h4>Notable Historic Market Events</h4>
@@ -256,7 +259,7 @@
   <div class="chart-panel">
     <div class="chart-header">
       <div class="chart-label">QQQ — Price Colored by Risk (Log Scale)</div>
-      <div class="chart-note"></div>
+      <div class="chart-note">200-Week Moving Average</div>
     </div>
     <canvas id="priceCanvas" width="1380" height="540"></canvas>
     <div class="tooltip" id="priceTip"><div class="tt-date"></div><div class="tt-price"></div><div>Risk: <span class="tt-risk"></span></div></div>
@@ -264,8 +267,8 @@
   </div>
   <div class="chart-panel">
     <div class="chart-header">
-      <div class="chart-label">Risk Oscillator (0 – 1)</div>
-      <div class="chart-note">Structural Risk (Min/Max Normalized)</div>
+      <div class="chart-label">200W Risk Oscillator (0 – 1)</div>
+      <div class="chart-note">Weekly risk only · 200W history aligned with VIX · shaded = ≥10% drawdown windows</div>
     </div>
     <canvas id="riskCanvas" width="1380" height="340"></canvas>
     <div class="tooltip" id="riskTip"><div class="tt-date"></div><div>Risk: <span class="tt-risk"></span></div></div>
@@ -273,18 +276,10 @@
   <div class="chart-panel">
     <div class="chart-header">
       <div class="chart-label">VIX — Fear Index</div>
-      <div class="chart-note">Chart based on VIX daily closes</div>
+      <div class="chart-note">Same aligned time axis · shaded = ≥10% QQQ drawdown windows</div>
     </div>
     <canvas id="vixCanvas" width="1380" height="280"></canvas>
     <div class="tooltip" id="vixTip"><div class="tt-date"></div><div>VIX: <span class="tt-risk"></span></div></div>
-  </div>
-  <div class="chart-panel">
-    <div class="chart-header">
-      <div class="chart-label" id="returnsLabel">Median 1-Year Forward Return by Risk Decile</div>
-      <div class="chart-note" id="returnsNote"></div>
-    </div>
-    <canvas id="returnsCanvas" width="1380" height="360"></canvas>
-    <div style="display:flex;justify-content:center;gap:8px;margin-top:12px" id="fwdButtons"></div>
   </div>
   <div class="chart-panel" id="dcaSection">
     <div class="chart-header">
@@ -355,8 +350,11 @@
   </div>
   <div class="methodology">
     <h3>Methodology</h3>
-    <p><span class="hl">Log-Linear Regression:</span> <code>log₁₀(price)</code> vs <code>days since Mar 10 1999</code> (QQQ inception, tracking the Nasdaq-100). Models exponential growth. The residual measures deviation from the long-run trend.</p>
-    <p><span class="hl">Structural Risk (Min/Max):</span> Normalizes the residual against all-time extremes (0 = maximum undervaluation, 1 = maximum overvaluation). High when QQQ is far above the regression trend line.</p>
+    <p><span class="hl">200-Week Risk:</span> Calculates <code>ln(price ÷ 200W MA)</code> from weekly closes, then ranks that deviation against its trailing 20-year weekly history. The latest incomplete week uses the current week-to-date close.</p>
+    <p><span class="hl">Weekly Updates:</span> Historical readings change only at each weekly close and are carried across intervening daily chart observations. This keeps the oscillator focused on long-term market-cycle risk rather than short-term noise.</p>
+    <p><span class="hl">Percentile Normalization:</span> Every historical reading uses only information available on that date, avoiding all-time min/max anchors and look-ahead. A risk of 0.88 means QQQ is farther above its 200W trend than approximately 88% of weekly observations in the trailing 20 years.</p>
+    <p><span class="hl">200W Risk Prices:</span> Solve for the price associated with each percentile using the current 200W average and current trailing weekly deviation distribution. They are statistical scenarios, not price targets.</p>
+    <p><span class="hl">Risk / VIX Alignment:</span> Both lower charts begin when QQQ has a valid 200W reading and VIX data, then use the same horizontal date range. Shared shaded bands mark periods when QQQ was at least 10% below its prior peak; brief recoveries of roughly one quarter are merged to keep each correction visually coherent.</p>
     <p><span class="hl">VIX Chart:</span> Shown for reference as a fear/greed gauge. Not currently factored into the risk calculation.</p>
   </div>
   <footer>
@@ -375,7 +373,7 @@ function themeColors() {
     gridLineMinor: light ? '#f2ecdf' : '#34332f',
     gridZero: light ? '#d6c7ad' : '#6c6558',
     axisText: light ? '#6d6a5f' : '#a59a88',
-    regressionLine: light ? 'rgba(184,101,11,0.46)' : 'rgba(247,147,26,0.46)',
+    trendLine: light ? 'rgba(184,101,11,0.52)' : 'rgba(247,147,26,0.52)',
     zoneLabels: light ? '#837765' : '#a59a88',
     zoneA: light ? 'rgba(114,192,106,0.06)' : 'rgba(114,192,106,0.07)',
     zoneB: light ? 'rgba(132,204,22,0.03)' : 'rgba(132,204,22,0.035)',
@@ -396,43 +394,98 @@ async function loadCSV(url) {
   return rows.map(r => { const [d,p] = r.split(','); return [d, parseFloat(p)]; }).filter(r => !isNaN(r[1]));
 }
 
-const GENESIS = new Date('1999-03-10T00:00:00Z').getTime(); // QQQ inception
+function upperBound(values, target) {
+  let lo = 0, hi = values.length;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (values[mid] <= target) lo = mid + 1; else hi = mid;
+  }
+  return lo;
+}
+
+function assignTrailingPercentiles(pts, valueKey, outputKey) {
+  const valid = pts.filter(p => Number.isFinite(p[valueKey]));
+  const coordinates = Array.from(new Set(valid.map(p => p[valueKey]))).sort((a,b) => a-b);
+  const bit = new Int32Array(coordinates.length + 1);
+  const add = (idx, delta) => {
+    for (let i = idx + 1; i < bit.length; i += i & -i) bit[i] += delta;
+  };
+  const sum = idx => {
+    let total = 0;
+    for (let i = idx; i > 0; i -= i & -i) total += bit[i];
+    return total;
+  };
+  const windowMs = 20 * 365.25 * 864e5;
+  let left = 0;
+  valid.forEach((p, i) => {
+    const cutoff = p.ms - windowMs;
+    while (left < i && valid[left].ms < cutoff) {
+      add(upperBound(coordinates, valid[left][valueKey]) - 1, -1);
+      left++;
+    }
+    add(upperBound(coordinates, p[valueKey]) - 1, 1);
+    const count = i - left + 1;
+    p[outputKey] = sum(upperBound(coordinates, p[valueKey])) / count;
+  });
+}
 
 function buildDataset(rawQQQ, vixMap) {
-  const pts = rawQQQ.map(([ds, p]) => {
-    const ms = new Date(ds + 'T00:00:00Z').getTime();
-    const days = (ms - GENESIS) / 864e5;
-    return { date: ds, price: p, days, logPrice: Math.log10(p), vix: vixMap[ds] || null };
-  }).filter(p => p.days > 0 && p.price > 0);
+  const pts = rawQQQ.map(([ds, price]) => ({
+    date: ds,
+    price,
+    ms: new Date(ds + 'T00:00:00Z').getTime(),
+    vix: vixMap[ds] || null
+  })).filter(p => p.price > 0);
 
-  const n = pts.length;
-
-  // LOG-LINEAR regression: log10(price) = slope * days + intercept
-  let sx=0,sy=0,sxy=0,sxx=0;
-  pts.forEach(p => { sx+=p.days; sy+=p.logPrice; sxy+=p.days*p.logPrice; sxx+=p.days*p.days; });
-  const slope = (n*sxy - sx*sy) / (n*sxx - sx*sx);
-  const intercept = (sy - slope*sx) / n;
-
-  let minRes=Infinity, maxRes=-Infinity;
+  const weekly = [];
+  const weekKey = p => {
+    const d = new Date(p.ms);
+    const daysFromMonday = (d.getUTCDay() + 6) % 7;
+    d.setUTCDate(d.getUTCDate() - daysFromMonday);
+    return d.toISOString().slice(0,10);
+  };
+  let activeWeek = null;
+  let activeWeeklyClose = null;
   pts.forEach(p => {
-    p.regLogPrice = slope * p.days + intercept;
-    p.regPrice = Math.pow(10, p.regLogPrice);
-    p.residual = p.logPrice - p.regLogPrice;
-    if (p.residual < minRes) minRes = p.residual;
-    if (p.residual > maxRes) maxRes = p.residual;
+    const key = weekKey(p);
+    if (activeWeek !== null && key !== activeWeek) weekly.push(activeWeeklyClose);
+    activeWeek = key;
+    activeWeeklyClose = { date: p.date, ms: p.ms, price: p.price };
+  });
+  if (activeWeeklyClose) weekly.push(activeWeeklyClose);
+
+  let weeklySum = 0;
+  weekly.forEach((p, i) => {
+    weeklySum += p.price;
+    if (i >= 200) weeklySum -= weekly[i - 200].price;
+    if (i >= 199) {
+      p.ma200W = weeklySum / 200;
+      p.dev200W = Math.log(p.price / p.ma200W);
+    }
+  });
+  assignTrailingPercentiles(weekly, 'dev200W', 'risk200W');
+
+  let weeklyIdx = 0;
+  let latestWeekly = null;
+  pts.forEach(p => {
+    while (weeklyIdx < weekly.length && weekly[weeklyIdx].ms <= p.ms) latestWeekly = weekly[weeklyIdx++];
+    if (latestWeekly && Number.isFinite(latestWeekly.risk200W)) {
+      p.ma200W = latestWeekly.ma200W;
+      p.dev200W = latestWeekly.dev200W;
+      p.risk200W = latestWeekly.risk200W;
+      p.riskCombo = latestWeekly.risk200W;
+    } else {
+      p.riskCombo = 0.5;
+    }
   });
 
-  const resRange = maxRes - minRes;
+  let peak = 0;
   pts.forEach(p => {
-    p.riskMM = Math.max(0, Math.min(1, (p.residual - minRes) / resRange));
+    peak = Math.max(peak, p.price);
+    p.drawdown = p.price / peak - 1;
   });
 
-  // Risk = structural only (riskMM)
-  pts.forEach(p => {
-    p.riskCombo = p.riskMM;
-  });
-
-  return { pts, slope, intercept, minRes, maxRes };
+  return { pts, weekly };
 }
 
 function riskColor(r, a) {
@@ -492,7 +545,7 @@ async function main() {
     vixMap[lastQqqDate] = lastVixDate[1];
   }
 
-  const { pts, slope, intercept, minRes, maxRes } = buildDataset(rawQQQ, vixMap);
+  const { pts, weekly } = buildDataset(rawQQQ, vixMap);
   const n = pts.length;
   const last = pts[n-1];
 
@@ -500,10 +553,14 @@ async function main() {
   document.getElementById('vPrice').textContent = '$' + last.price.toLocaleString(undefined,{maximumFractionDigits:2});
   const hd = document.getElementById('headerDate');
   hd.innerHTML = '<span style="width:6px;height:6px;background:#58c56f;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> as of ' + last.date + (live ? ' · live' : '');
-  document.getElementById('vRisk').textContent = last.riskCombo.toFixed(3);
-  document.getElementById('vRisk').style.setProperty('--val-color', riskColor(last.riskCombo));
-  document.getElementById('vFair').textContent = '$' + last.regPrice.toLocaleString(undefined,{maximumFractionDigits:2});
-  const devPct = ((last.price/last.regPrice-1)*100).toFixed(1);
+  const riskValue = document.getElementById('vRisk');
+  riskValue.textContent = last.riskCombo.toFixed(3);
+  riskValue.dataset.risk200w = last.risk200W.toFixed(3);
+  riskValue.dataset.model = '200W trailing-20-year weekly percentile';
+  riskValue.style.setProperty('--val-color', riskColor(last.riskCombo));
+  document.getElementById('vFair').textContent = '$' + last.ma200W.toLocaleString(undefined,{maximumFractionDigits:2});
+  document.getElementById('vGrowth').textContent = 'Trailing 20Y weekly percentile';
+  const devPct = ((last.price/last.ma200W-1)*100).toFixed(1);
   document.getElementById('vDev').textContent = (devPct>0?'+':'') + devPct + '%';
   document.getElementById('needle').style.left = (last.riskCombo*100)+'%';
   // VIX card with implied daily move (Rule of 16)
@@ -517,14 +574,28 @@ async function main() {
     document.getElementById('vVixImplied').innerHTML = '<div style="color:var(--text-dim);font-size:0.6rem;letter-spacing:1px;margin-bottom:2px">IMPLIED MOVE</div><span style="font-family:JetBrains Mono,monospace;color:var(--text-heading);font-weight:400;font-size:0.75rem">&#177;' + impliedPct + '%</span> <span style="color:var(--text-dim);font-size:0.6rem">/</span> <span style="font-family:JetBrains Mono,monospace;color:var(--text-heading);font-weight:400;font-size:0.75rem">&#177;$' + impliedPts + '</span>';
   }
 
-  // Risk-price table
+  // 200W risk-price table. Invert the current trailing weekly empirical
+  // distribution rather than interpolating between all-time extremes.
   {
-    const resRange = maxRes - minRes;
-    const lastReg = last.regLogPrice;
+    const cutoff = last.ms - 20 * 365.25 * 864e5;
+    const recentWeekly = weekly.filter(p => p.ms >= cutoff);
+    const deviations200W = recentWeekly.map(p => p.dev200W).filter(Number.isFinite).sort((a,b) => a-b);
+    const percentile = (values, value) => upperBound(values, value) / values.length;
+    const riskAtPrice = price => percentile(deviations200W, Math.log(price / last.ma200W));
+    const priceAtRisk = target => {
+      let lo = last.ma200W * 0.15;
+      let hi = last.ma200W * 4;
+      for (let i = 0; i < 64; i++) {
+        const mid = Math.sqrt(lo * hi);
+        if (riskAtPrice(mid) < target) lo = mid; else hi = mid;
+      }
+      return Math.sqrt(lo * hi);
+    };
     const tbl = document.getElementById('riskTable');
-    for(let r=0.10; r<=1.001; r+=0.10){
-      const neededRes = r * resRange + minRes;
-      const price = Math.pow(10, neededRes + lastReg);
+    tbl.dataset.model = '200w-trailing20y-weekly';
+    const riskLevels = [0.05,0.10,0.15,0.20,0.25,0.30,0.35,0.40,0.45,0.50,0.55,0.60,0.65,0.70,0.75,0.80,0.85,0.90,0.95,0.99];
+    riskLevels.forEach(r => {
+      const price = priceAtRisk(r);
       const cell = document.createElement('div');
       cell.className = 'risk-cell';
       const pStr = price >= 1e4 ? '$'+Math.round(price).toLocaleString() : '$'+price.toFixed(2);
@@ -533,7 +604,7 @@ async function main() {
       const pctColor = pctMove >= 0 ? '#58c56f' : '#ef5d4f';
       cell.innerHTML='<div class="rc-risk" style="color:'+riskColor(r)+'">'+r.toFixed(2)+'</div><div class="rc-price">'+pStr+'</div><div style="font-size:0.62rem;margin-top:2px;color:'+pctColor+';letter-spacing:0.3px">'+pctStr+'</div>';
       tbl.appendChild(cell);
-    }
+    });
   }
 
   // Historical Market Bottoms
@@ -578,7 +649,9 @@ async function main() {
       tr.innerHTML = '<td>' + low.date + '</td>' +
         '<td class="rl-event">' + b.event + infoHtml + '</td>' +
         '<td class="rl-price">' + pStr + '</td>' +
-        '<td class="rl-risk" style="color:' + riskColor(low.riskCombo) + '">' + low.riskCombo.toFixed(3) + '</td>' +
+        (Number.isFinite(low.risk200W)
+          ? '<td class="rl-risk" style="color:' + riskColor(low.riskCombo) + '">' + low.riskCombo.toFixed(3) + '</td>'
+          : '<td class="rl-risk" style="color:var(--text-dimmer)">—</td>') +
         '<td>' + vixVal + '</td>' +
         fwdCell(idx, 1) + fwdCell(idx, 2) + fwdCell(idx, 3);
       tbody.appendChild(tr);
@@ -586,6 +659,7 @@ async function main() {
   }
 
   // Zoom/pan state
+  const comparisonStartIdx = Math.max(0, pts.findIndex(p => Number.isFinite(p.risk200W) && p.vix != null));
   const view = { startIdx: 0, endIdx: n-1 };
   (function restoreFromURL() {
     const params = new URLSearchParams(window.location.search);
@@ -606,6 +680,43 @@ async function main() {
 
   function getVisibleRange() { return { s: Math.max(0, Math.floor(view.startIdx)), e: Math.min(n-1, Math.ceil(view.endIdx)) }; }
   function visibleSample() { const { s, e } = getVisibleRange(); return Math.max(1, Math.floor((e - s) / 1500)); }
+  function getComparisonRange() {
+    const { s, e } = getVisibleRange();
+    return { s: Math.max(s, comparisonStartIdx), e };
+  }
+  function sampleForRange(s, e) { return Math.max(1, Math.floor((e - s) / 1500)); }
+  function shadeDrawdowns(ctx, xOf, top, bottom, s, e) {
+    const rawBands = [];
+    let start = null, worst = 0;
+    for (let i = s; i <= e; i++) {
+      if (pts[i].drawdown <= -0.10) {
+        if (start == null) start = i;
+        worst = Math.min(worst, pts[i].drawdown);
+      } else if (start != null) {
+        rawBands.push({ start, end: i, worst });
+        start = null; worst = 0;
+      }
+    }
+    if (start != null) rawBands.push({ start, end: e, worst });
+
+    const merged = [];
+    rawBands.forEach(band => {
+      const prior = merged[merged.length - 1];
+      if (prior && band.start - prior.end <= 63) {
+        prior.end = band.end;
+        prior.worst = Math.min(prior.worst, band.worst);
+      } else {
+        merged.push({ ...band });
+      }
+    });
+    merged.forEach(band => {
+      const color = band.worst <= -0.20 ? 'rgba(239,93,79,0.12)' : 'rgba(247,147,26,0.075)';
+      const left = xOf(band.start), right = xOf(Math.max(band.start + 1, band.end));
+      ctx.fillStyle = color;
+      ctx.fillRect(left, top, Math.max(1, right - left), bottom - top);
+    });
+    return merged.length;
+  }
 
   // Price chart
   function renderPriceChart() {
@@ -652,10 +763,16 @@ async function main() {
         }
       }
     }
-    // Regression line
-    ctx.strokeStyle=tc.regressionLine;ctx.lineWidth=1.5;ctx.setLineDash([8,5]);
+    // 200-week moving-average trend
+    ctx.strokeStyle=tc.trendLine;ctx.lineWidth=1.5;ctx.setLineDash([8,5]);
     ctx.beginPath();
-    for(let i=s;i<=e;i+=S){const x=xOf(i),y=yOf(pts[i].regPrice);i===s?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+    let trendStarted = false;
+    for(let i=s;i<=e;i+=S){
+      if (!Number.isFinite(pts[i].ma200W)) continue;
+      const x=xOf(i),y=yOf(pts[i].ma200W);
+      trendStarted ? ctx.lineTo(x,y) : ctx.moveTo(x,y);
+      trendStarted = true;
+    }
     ctx.stroke();ctx.setLineDash([]);
     // Price line colored by risk
     for(let i=s+S;i<=e;i+=S){
@@ -672,15 +789,20 @@ async function main() {
     const W=cv.width, H=cv.height;
     const P={t:16,r:76,b:48,l:80};
     const cw=W-P.l-P.r, ch=H-P.t-P.b;
-    const { s, e } = getVisibleRange();
-    const S = visibleSample();
+    const { s, e } = getComparisonRange();
+    const S = sampleForRange(s, e);
     ctx.fillStyle=tc.canvasBg; ctx.fillRect(0,0,W,H);
+    if (s >= e) return;
     const xOf=i=>P.l+((i-s)/(e-s))*cw;
     const yOf=r=>P.t+ch*(1-r);
     // Zone fills
     [[0,0.20,tc.zoneA],[0.20,0.50,tc.zoneB],[0.50,0.80,tc.zoneC],[0.80,1,tc.zoneD]].forEach(([lo,hi,c])=>{
       ctx.fillStyle=c;ctx.fillRect(P.l,yOf(hi),cw,yOf(lo)-yOf(hi));
     });
+    const riskDrawdownBands = shadeDrawdowns(ctx, xOf, P.t, H-P.b, s, e);
+    cv.dataset.comparisonStart = pts[s].date;
+    cv.dataset.drawdownBands = String(riskDrawdownBands);
+    cv.dataset.model = '200W trailing-20-year weekly percentile';
     [0.20,0.50,0.80].forEach(v=>{
       ctx.strokeStyle=tc.zoneDash;ctx.lineWidth=1;ctx.setLineDash([4,4]);
       ctx.beginPath();ctx.moveTo(P.l,yOf(v));ctx.lineTo(W-P.r,yOf(v));ctx.stroke();ctx.setLineDash([]);
@@ -734,12 +856,9 @@ async function main() {
     const W=cv.width, H=cv.height;
     const P={t:16,r:60,b:48,l:80};
     const cw=W-P.l-P.r, ch=H-P.t-P.b;
-    let { s, e } = getVisibleRange();
-    // Skip to first date with VIX data
-    while (s < e && pts[s].vix == null) s++;
+    let { s, e } = getComparisonRange();
     if (s >= e) { ctx.fillStyle=themeColors().canvasBg; ctx.fillRect(0,0,W,H); return; }
-    vixEffectiveStart = s;
-    const S = visibleSample();
+    const S = sampleForRange(s, e);
     ctx.fillStyle=tc.canvasBg; ctx.fillRect(0,0,W,H);
     const xOf=i=>P.l+((i-s)/(e-s))*cw;
     // Find visible VIX range
@@ -753,6 +872,9 @@ async function main() {
       const y1=yOf(Math.min(hi,maxVix)),y2=yOf(lo);
       if(y2>y1){ctx.fillStyle=c;ctx.fillRect(P.l,y1,cw,y2-y1);}
     });
+    const vixDrawdownBands = shadeDrawdowns(ctx, xOf, P.t, H-P.b, s, e);
+    cv.dataset.comparisonStart = pts[s].date;
+    cv.dataset.drawdownBands = String(vixDrawdownBands);
     // Grid
     ctx.textAlign='right';ctx.font='10px JetBrains Mono';
     for(let v=0;v<=maxVix;v+=10){
@@ -795,66 +917,6 @@ async function main() {
     ctx.fillText('LOW FEAR',W-P.r-4,yOf(7.5));
   }
 
-  // Forward returns bar chart
-  const WARMUP = 500; // skip early data where VIX lookback isn't full
-  let activeFwd = (function(){ var p = new URLSearchParams(window.location.search).get('fwd'); return (p === '730') ? 730 : 365; })();
-  function renderReturnsChart(fwdDays) {
-    const tc = themeColors();
-    fwdDays=fwdDays||activeFwd; activeFwd=fwdDays;
-    var params = new URLSearchParams(window.location.search);
-    if (fwdDays === 365) params.delete('fwd'); else params.set('fwd', fwdDays);
-    var qs = params.toString();
-    history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
-    const labels={365:'1-Year',730:'2-Year'};
-    document.getElementById('returnsLabel').textContent='Median '+labels[fwdDays]+' Forward Return by Risk Decile';
-    document.querySelectorAll('#fwdButtons button').forEach(b=>{
-      if(parseInt(b.dataset.fwd)===fwdDays) b.classList.add('active'); else b.classList.remove('active');
-    });
-    const cv=document.getElementById('returnsCanvas'), ctx=cv.getContext('2d');
-    const W=cv.width, H=cv.height;
-    const P={t:28,r:40,b:52,l:80};
-    const cw=W-P.l-P.r, ch=H-P.t-P.b;
-    ctx.fillStyle=tc.canvasBg; ctx.fillRect(0,0,W,H);
-    const FWD=fwdDays;
-    const buckets=[];for(let d=0;d<10;d++) buckets.push([]);
-    for(let i=WARMUP;i<n-FWD;i++){
-      const decile=Math.min(9,Math.floor(pts[i].riskCombo*10));
-      const ret=(pts[i+FWD].price/pts[i].price-1)*100;
-      buckets[decile].push(ret);
-    }
-    const medians=buckets.map(b=>{
-      if(!b.length) return 0; b.sort((a,c)=>a-c);
-      const m=Math.floor(b.length/2); return b.length%2?b[m]:(b[m-1]+b[m])/2;
-    });
-    const maxY=Math.max(...medians.map(Math.abs),50);
-    const yOf=v=>P.t+ch/2-((v/maxY)*(ch/2));
-    ctx.textAlign='right';ctx.font='10px JetBrains Mono';
-    const gridVals=[-100,-50,0,50,100,150,200,300,400,500].filter(v=>Math.abs(v)<=maxY*1.1);
-    gridVals.forEach(v=>{
-      const y=yOf(v);if(y<P.t-5||y>H-P.b+5) return;
-      ctx.strokeStyle=v===0?tc.gridZero:tc.gridLine;ctx.lineWidth=v===0?1.5:1;
-      ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke();
-      ctx.fillStyle=tc.axisText;ctx.fillText(v>0?'+'+v+'%':v+'%',P.l-8,y+3);
-    });
-    const barW=cw/10*0.7, gap=cw/10*0.15;
-    for(let d=0;d<10;d++){
-      const x=P.l+d*(cw/10)+gap;const median=medians[d];const y0=yOf(0);const y1=yOf(median);
-      const midRisk=(d+0.5)/10;ctx.fillStyle=riskColor(midRisk,0.85);
-      ctx.beginPath();const r=4;const barTop=Math.min(y0,y1);const barH=Math.abs(y1-y0);
-      ctx.moveTo(x+r,barTop);ctx.lineTo(x+barW-r,barTop);ctx.quadraticCurveTo(x+barW,barTop,x+barW,barTop+r);
-      ctx.lineTo(x+barW,barTop+barH-r);ctx.quadraticCurveTo(x+barW,barTop+barH,x+barW-r,barTop+barH);
-      ctx.lineTo(x+r,barTop+barH);ctx.quadraticCurveTo(x,barTop+barH,x,barTop+barH-r);
-      ctx.lineTo(x,barTop+r);ctx.quadraticCurveTo(x,barTop,x+r,barTop);ctx.fill();
-      ctx.fillStyle=tc.barValueText;ctx.font='bold 11px JetBrains Mono';ctx.textAlign='center';
-      const labelY=median>=0?y1-8:y1+14;
-      ctx.fillText((median>=0?'+':'')+Math.round(median)+'%',x+barW/2,labelY);
-      ctx.fillStyle=riskColor(midRisk);ctx.font='bold 11px JetBrains Mono';
-      ctx.fillText((d/10).toFixed(1)+'–'+((d+1)/10).toFixed(1),x+barW/2,H-P.b+18);
-    }
-  }
-
-  let vixEffectiveStart = 0; // track VIX chart's adjusted start index
-
   function renderAll() { renderPriceChart(); renderRiskChart(); renderVixChart(); syncURL(); }
 
   // Zoom/pan
@@ -871,8 +933,7 @@ async function main() {
     function mouseIdxFromEvent(e) {
       const rect = cv.getBoundingClientRect();const scaleX = W / rect.width;
       const mx = (e.clientX - rect.left) * scaleX;
-      let { s, e: end } = getVisibleRange();
-      if (canvasId === 'vixCanvas') s = Math.max(s, vixEffectiveStart);
+      let { s, e: end } = (canvasId === 'riskCanvas' || canvasId === 'vixCanvas') ? getComparisonRange() : getVisibleRange();
       return Math.round(s + (mx - P.l) / cw * (end - s));
     }
     function canvasXToPercent(canvasX) { return Math.max(0, Math.min(100, (canvasX / W) * 100)); }
@@ -921,7 +982,7 @@ async function main() {
       tip.querySelector('.tt-date').textContent = p.date;
       if (tip.querySelector('.tt-price')) tip.querySelector('.tt-price').textContent = '$' + p.price.toLocaleString(undefined,{maximumFractionDigits:2});
       const riskEl = tip.querySelector('.tt-risk');
-      if (tipId === 'riskTip') riskEl.textContent = 'C:'+p.riskCombo.toFixed(3)+' S:'+p.riskMM.toFixed(3)+' V:'+(p.riskVIX!=null?p.riskVIX.toFixed(3):'—');
+      if (tipId === 'riskTip') riskEl.textContent = p.riskCombo.toFixed(3);
       else if (tipId === 'vixTip') riskEl.textContent = (p.vix != null ? p.vix.toFixed(2) : '—');
       else riskEl.textContent = p.riskCombo.toFixed(3);
       riskEl.style.color = tipId === 'vixTip' ? (p.vix != null ? vixColor(p.vix) : '') : riskColor(p.riskCombo);
@@ -951,14 +1012,6 @@ async function main() {
 
   // Init
   renderAll();
-  {
-    const bar=document.getElementById('fwdButtons');
-    [[365,'1Y'],[730,'2Y']].forEach(([days,label])=>{
-      const b=document.createElement('button');b.textContent=label;b.dataset.fwd=days;b.className='zoom-btn';
-      b.addEventListener('click',()=>renderReturnsChart(days));bar.appendChild(b);
-    });
-  }
-  renderReturnsChart(activeFwd);
   attachZoomPan('priceCanvas', 'priceTip');
   attachZoomPan('riskCanvas', 'riskTip');
   attachZoomPan('vixCanvas', 'vixTip');
@@ -1447,7 +1500,7 @@ async function main() {
   (function(){
     if (!window.DaveyTheme) return;
     window.DaveyTheme.init({ onChange: function() {
-      renderAll();renderReturnsChart();if(window._dcaRerender)window._dcaRerender();
+      renderAll();if(window._dcaRerender)window._dcaRerender();
     }});
   })();
 }
