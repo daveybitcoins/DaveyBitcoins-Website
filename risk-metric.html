@@ -335,10 +335,10 @@
   <div class="chart-panel">
     <div class="chart-header">
       <div class="chart-label">BTC/USD — Price Colored by Risk (Log Scale)</div>
-      <div class="chart-note"></div>
+      <div class="chart-note">Historical risk · damped fair value through 2040 in All view</div>
     </div>
     <canvas id="priceCanvas" width="1380" height="540"></canvas>
-    <div class="tooltip" id="priceTip"><div class="tt-date"></div><div class="tt-price"></div><div>Risk: <span class="tt-risk"></span></div></div>
+    <div class="tooltip" id="priceTip"><div class="tt-date"></div><div class="tt-price"></div><div><span class="tt-risk-label">Risk:</span> <span class="tt-risk"></span></div></div>
     <div class="legend-bar" id="legendBar"></div>
   </div>
   <div class="chart-panel">
@@ -428,6 +428,45 @@ const STRUCTURAL_SOFT_FLOOR_SCALE = 0.15;
 const STRUCTURAL_SOFT_FLOOR_MAX = 0.02;
 const STRUCTURAL_SOFT_FLOOR_MIN = 0.005;
 const STRUCTURAL_FLOOR_BREAK_RISK = 0.01;
+const FAIR_VALUE_DAMPENING_MARKET_CAP = 20e12;
+const FAIR_VALUE_PROJECTION_SUPPLY = 20.8e6;
+const FAIR_VALUE_LONG_RUN_GROWTH = 0.10;
+const FAIR_VALUE_DAMPENING_POWER = 2;
+const FAIR_VALUE_DAYS_PER_YEAR = 365.2425;
+const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);
+
+function buildDampedFairValuePath(startMs, startValue, slope, endMs) {
+  const path = [{ ms: startMs, value: startValue }];
+  let projectionMs = startMs;
+  let dampedValue = startValue;
+  while (projectionMs < endMs) {
+    const stepDays = Math.min(1, (endMs - projectionMs) / 864e5);
+    const modelDays = (projectionMs - GENESIS) / 864e5;
+    const nextModelDays = modelDays + stepDays;
+    const rawPowerLawLogGrowth = slope * Math.log(nextModelDays / modelDays);
+    const longRunLogGrowth = Math.log1p(FAIR_VALUE_LONG_RUN_GROWTH) *
+      stepDays / FAIR_VALUE_DAYS_PER_YEAR;
+    const modeledMarketCap = dampedValue * FAIR_VALUE_PROJECTION_SUPPLY;
+    const dampingShare = 1 / (1 + Math.pow(
+      modeledMarketCap / FAIR_VALUE_DAMPENING_MARKET_CAP,
+      FAIR_VALUE_DAMPENING_POWER
+    ));
+    const dampedLogGrowth = longRunLogGrowth +
+      (rawPowerLawLogGrowth - longRunLogGrowth) * dampingShare;
+    dampedValue *= Math.exp(dampedLogGrowth);
+    projectionMs += stepDays * 864e5;
+    path.push({ ms: projectionMs, value: dampedValue });
+  }
+  return path;
+}
+
+function dampedFairValueAt(path, targetMs) {
+  const index = Math.max(0, Math.min(
+    path.length - 1,
+    Math.round((targetMs - path[0].ms) / 864e5)
+  ));
+  return path[index].value;
+}
 
 function buildDataset(rawData) {
   const pts = rawData.map(([ds, p]) => {
@@ -885,6 +924,13 @@ async function main() {
   const n = pts.length;
   const last = pts[n-1];
   const isLive = live;
+  const lastDateMs = dateMs(last.date);
+  const dampedFairValuePath = buildDampedFairValuePath(
+    lastDateMs,
+    last.trendPrice,
+    slope,
+    FAIR_VALUE_PROJECTION_END_MS
+  );
 
   // Dashboard
   document.getElementById('vPrice').textContent = '$' + last.price.toLocaleString(undefined,{maximumFractionDigits:0});
@@ -943,37 +989,14 @@ async function main() {
     const projBody = document.getElementById('projBody');
     const todayFV = last.trendPrice;
     const todayPrice = last.price;
-    const DAMPENING_MARKET_CAP = 20e12;
-    const PROJECTION_SUPPLY = 20.8e6;
-    const LONG_RUN_NOMINAL_GROWTH = 0.10;
-    const DAMPENING_POWER = 2;
-    const DAYS_PER_YEAR = 365.2425;
     const moNames = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec'];
     const curDate = new Date(last.date + 'T00:00:00Z');
     const curYear = curDate.getUTCFullYear();
     const targets = [];
-    let projectionMs = curDate.getTime();
-    let dampedFV = todayFV;
     function formatProjectionPrice(value) {
       return value >= 1e6 ? '$' + (value / 1e6).toFixed(2) + 'M' :
              value >= 1e3 ? '$' + Math.round(value).toLocaleString() :
              '$' + value.toFixed(2);
-    }
-    function advanceDampedFairValue(targetMs) {
-      while (projectionMs < targetMs) {
-        const stepDays = Math.min(1, (targetMs - projectionMs) / 864e5);
-        const modelDays = (projectionMs - GENESIS) / 864e5;
-        const nextModelDays = modelDays + stepDays;
-        const rawPowerLawLogGrowth = slope * Math.log(nextModelDays / modelDays);
-        const longRunLogGrowth = Math.log1p(LONG_RUN_NOMINAL_GROWTH) * stepDays / DAYS_PER_YEAR;
-        const modeledMarketCap = dampedFV * PROJECTION_SUPPLY;
-        const dampingShare = 1 / (1 + Math.pow(modeledMarketCap / DAMPENING_MARKET_CAP, DAMPENING_POWER));
-        const dampedLogGrowth = longRunLogGrowth +
-          (rawPowerLawLogGrowth - longRunLogGrowth) * dampingShare;
-        dampedFV *= Math.exp(dampedLogGrowth);
-        projectionMs += stepDays * 864e5;
-      }
-      return dampedFV;
     }
     // Keep the existing June/December cadence through 2030.
     for (let y = curYear; y <= 2030; y++) {
@@ -988,7 +1011,7 @@ async function main() {
     for (const fd of futureDates) {
       const futureMs = fd.getTime();
       const futureDays = (futureMs - GENESIS) / 864e5;
-      const futureFV = advanceDampedFairValue(futureMs);
+      const futureFV = dampedFairValueAt(dampedFairValuePath, futureMs);
       const growthPct = ((futureFV / todayFV - 1) * 100).toFixed(1);
       const growthColor = growthPct >= 0 ? '#58c56f' : '#ef5d4f';
       const roiPct = ((futureFV / todayPrice - 1) * 100).toFixed(1);
@@ -1194,14 +1217,24 @@ async function main() {
     const cw=W-P.l-P.r, ch=H-P.t-P.b;
     const { s, e } = getVisibleRange();
     const S = visibleSample();
+    const fullProjectionView = s === 0 && e === n - 1;
+    const chartStartMs = dateMs(pts[s].date);
+    const chartEndMs = fullProjectionView ? FAIR_VALUE_PROJECTION_END_MS : dateMs(pts[e].date);
 
     ctx.fillStyle=tc.canvasBg; ctx.fillRect(0,0,W,H);
 
-    const xOf=i=>P.l+((i-s)/(e-s))*cw;
+    const xOfTime=ms=>P.l+((ms-chartStartMs)/(chartEndMs-chartStartMs))*cw;
+    const xOf=i=>fullProjectionView ? xOfTime(dateMs(pts[i].date)) : P.l+((i-s)/(e-s))*cw;
     const visPrices = pts.slice(s,e+1).map(p=>p.price);
+    if(fullProjectionView) {
+      for(let i=0;i<dampedFairValuePath.length;i+=30) visPrices.push(dampedFairValuePath[i].value);
+      visPrices.push(dampedFairValuePath[dampedFairValuePath.length-1].value);
+    }
     const minE=Math.floor(Math.log10(Math.min(...visPrices)));
     const maxE=Math.ceil(Math.log10(Math.max(...visPrices)));
     const yOf=p=>{const lp=Math.log10(p);return P.t+ch-((lp-minE)/(maxE-minE))*ch;};
+    cv.dataset.projectionEnd = fullProjectionView ? '2040-12-01' : '';
+    cv.dataset.projectionPoints = fullProjectionView ? String(dampedFairValuePath.length) : '0';
 
     // Price grid
     ctx.textAlign='right'; ctx.font='10px JetBrains Mono';
@@ -1217,17 +1250,26 @@ async function main() {
 
     // Year grid
     const seenYr=new Set(); ctx.textAlign='center';
-    for(let i=s;i<=e;i+=S){
-      const yr=+pts[i].date.slice(0,4);
-      const mo=+pts[i].date.slice(5,7);
-      const showMonth = (e-s) < 1500;
-      const key = showMonth ? pts[i].date.slice(0,7) : ''+yr;
-      if(!seenYr.has(key)){
-        if(showMonth ? mo%3===1 : true) {
-          seenYr.add(key);const x=xOf(i);
-          ctx.strokeStyle=tc.gridLine;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,H-P.b);ctx.stroke();
-          ctx.fillStyle=tc.axisText;ctx.font='10px JetBrains Mono';
-          ctx.fillText(showMonth?pts[i].date.slice(0,7):yr,x,H-P.b+18);
+    if(fullProjectionView) {
+      for(let yr=new Date(chartStartMs).getUTCFullYear()+1;yr<=2040;yr++){
+        if(yr%2!==0) continue;
+        const x=xOfTime(Date.UTC(yr,0,1));
+        ctx.strokeStyle=tc.gridLine;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,H-P.b);ctx.stroke();
+        ctx.fillStyle=tc.axisText;ctx.font='10px JetBrains Mono';ctx.fillText(yr,x,H-P.b+18);
+      }
+    } else {
+      for(let i=s;i<=e;i+=S){
+        const yr=+pts[i].date.slice(0,4);
+        const mo=+pts[i].date.slice(5,7);
+        const showMonth = (e-s) < 1500;
+        const key = showMonth ? pts[i].date.slice(0,7) : ''+yr;
+        if(!seenYr.has(key)){
+          if(showMonth ? mo%3===1 : true) {
+            seenYr.add(key);const x=xOf(i);
+            ctx.strokeStyle=tc.gridLine;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,H-P.b);ctx.stroke();
+            ctx.fillStyle=tc.axisText;ctx.font='10px JetBrains Mono';
+            ctx.fillText(showMonth?pts[i].date.slice(0,7):yr,x,H-P.b+18);
+          }
         }
       }
     }
@@ -1237,6 +1279,26 @@ async function main() {
     ctx.beginPath();
     for(let i=s;i<=e;i+=S){const x=xOf(i),y=yOf(pts[i].trendPrice);i===s?ctx.moveTo(x,y):ctx.lineTo(x,y);}
     ctx.stroke();ctx.setLineDash([]);
+
+    // Market-cap-damped fair value projection
+    if(fullProjectionView) {
+      const forecastX=xOfTime(lastDateMs);
+      ctx.fillStyle=tc.zoneA;ctx.fillRect(forecastX,P.t,W-P.r-forecastX,ch);
+      ctx.strokeStyle=tc.gridZero;ctx.lineWidth=1;ctx.setLineDash([3,4]);
+      ctx.beginPath();ctx.moveTo(forecastX,P.t);ctx.lineTo(forecastX,H-P.b);ctx.stroke();
+      ctx.strokeStyle='#58c56f';ctx.lineWidth=2.4;ctx.setLineDash([10,5]);
+      ctx.beginPath();
+      for(let i=0;i<dampedFairValuePath.length;i+=14){
+        const point=dampedFairValuePath[i];
+        const x=xOfTime(point.ms), y=yOf(point.value);
+        i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      }
+      const finalPoint=dampedFairValuePath[dampedFairValuePath.length-1];
+      ctx.lineTo(xOfTime(finalPoint.ms),yOf(finalPoint.value));
+      ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='#58c56f';ctx.font='10px JetBrains Mono';ctx.textAlign='right';
+      ctx.fillText('DAMPED FAIR VALUE',W-P.r-6,yOf(finalPoint.value)-8);
+    }
 
     // Price line
     for(let i=s+S;i<=e;i+=S){
@@ -1329,6 +1391,29 @@ async function main() {
     const P = { l:80, r: canvasId === 'priceCanvas' ? 60 : 76 };
     const cw = W - P.l - P.r;
     let brushing = false, brushStartX = 0;
+    function fullPriceProjectionView() {
+      const { s, e } = getVisibleRange();
+      return canvasId === 'priceCanvas' && s === 0 && e === n - 1;
+    }
+    function historicalIndexForMs(ms) {
+      if(ms <= dateMs(pts[0].date)) return 0;
+      if(ms >= lastDateMs) return n - 1;
+      let lo=0, hi=n-1;
+      while(lo<hi){
+        const mid=Math.floor((lo+hi)/2);
+        if(dateMs(pts[mid].date)<ms) lo=mid+1; else hi=mid;
+      }
+      return lo;
+    }
+    function indexFromCanvasX(canvasX) {
+      if(fullPriceProjectionView()) {
+        const ratio=Math.max(0,Math.min(1,(canvasX-P.l)/cw));
+        const ms=dateMs(pts[0].date)+ratio*(FAIR_VALUE_PROJECTION_END_MS-dateMs(pts[0].date));
+        return historicalIndexForMs(ms);
+      }
+      const { s, e: end } = getVisibleRange();
+      return Math.round(s + (canvasX - P.l) / cw * (end - s));
+    }
 
     // Create brush overlay div inside the chart-panel
     const panel = cv.closest('.chart-panel');
@@ -1340,8 +1425,7 @@ async function main() {
       const rect = cv.getBoundingClientRect();
       const scaleX = W / rect.width;
       const mx = (e.clientX - rect.left) * scaleX;
-      const { s, e: end } = getVisibleRange();
-      return Math.round(s + (mx - P.l) / cw * (end - s));
+      return indexFromCanvasX(mx);
     }
 
     // Convert canvas X coordinate to a CSS percentage of the canvas element
@@ -1412,8 +1496,8 @@ async function main() {
       if (right - left < 20) return;
       const { s, e: end } = getVisibleRange();
       const range = end - s;
-      const newS = s + ((left - P.l) / cw) * range;
-      const newE = s + ((right - P.l) / cw) * range;
+      const newS = fullPriceProjectionView() ? indexFromCanvasX(left) : s + ((left - P.l) / cw) * range;
+      const newE = fullPriceProjectionView() ? indexFromCanvasX(right) : s + ((right - P.l) / cw) * range;
       if (newE - newS < 60) return;
       view.startIdx = Math.max(0, newS);
       view.endIdx = Math.min(n-1, newE);
@@ -1426,9 +1510,32 @@ async function main() {
     const tip = document.getElementById(tipId);
     cv.addEventListener('mousemove', e => {
       if (brushing) { tip.style.display='none'; return; }
+      const rect = cv.getBoundingClientRect();
+      const scaleX = W / rect.width;
+      const canvasX = (e.clientX - rect.left) * scaleX;
+      const riskLabel = tip.querySelector('.tt-risk-label');
+      if(fullPriceProjectionView()) {
+        const ratio=Math.max(0,Math.min(1,(canvasX-P.l)/cw));
+        const hoverMs=dateMs(pts[0].date)+ratio*(FAIR_VALUE_PROJECTION_END_MS-dateMs(pts[0].date));
+        if(hoverMs>lastDateMs) {
+          const value=dampedFairValueAt(dampedFairValuePath,hoverMs);
+          tip.querySelector('.tt-date').textContent=new Date(hoverMs).toISOString().slice(0,10);
+          tip.querySelector('.tt-price').textContent='$'+value.toLocaleString(undefined,{maximumFractionDigits:0});
+          riskLabel.textContent='Path:';
+          const riskEl=tip.querySelector('.tt-risk');
+          riskEl.textContent='Damped fair value';
+          riskEl.style.color='#58c56f';
+          tip.style.display='block';
+          const tipX=e.clientX-rect.left+16, tipY=e.clientY-rect.top-40;
+          tip.style.left=(tipX+tip.offsetWidth>rect.width?tipX-tip.offsetWidth-32:tipX)+'px';
+          tip.style.top=tipY+'px';
+          return;
+        }
+      }
       const idx = mouseIdxFromEvent(e);
       if (idx < 0 || idx >= n) { tip.style.display='none'; return; }
       const p = pts[idx];
+      if(riskLabel) riskLabel.textContent='Risk:';
       tip.querySelector('.tt-date').textContent = p.date;
       if (tip.querySelector('.tt-price')) {
         tip.querySelector('.tt-price').textContent = '$' + p.price.toLocaleString(undefined,{maximumFractionDigits:2});
@@ -1441,7 +1548,6 @@ async function main() {
       }
       riskEl.style.color = riskColor(p.riskCombo);
       tip.style.display = 'block';
-      const rect = cv.getBoundingClientRect();
       const tipX = e.clientX - rect.left + 16;
       const tipY = e.clientY - rect.top - 40;
       tip.style.left = (tipX + tip.offsetWidth > rect.width ? tipX - tip.offsetWidth - 32 : tipX) + 'px';

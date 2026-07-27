@@ -63,6 +63,12 @@ const checks = [
       if (dec2040Value < 1.5e6 || dec2040Value > 3e6) {
         throw new Error(`expected damped Dec 2040 fair value, got ${dec2040FairValue}`);
       }
+      await expectText(page, 'damped fair value through 2040 in All view');
+      const projectionEnd = await page.locator('#priceCanvas').getAttribute('data-projection-end');
+      const projectionPoints = Number(await page.locator('#priceCanvas').getAttribute('data-projection-points'));
+      if (projectionEnd !== '2040-12-01' || projectionPoints < 5000) {
+        throw new Error(`expected price chart projection through 2040, got ${projectionEnd} with ${projectionPoints} points`);
+      }
     },
   },
 ];
