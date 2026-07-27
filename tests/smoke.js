@@ -78,9 +78,9 @@ const checks = [
     name: 'SPY risk metric',
     assert: async (page) => {
       await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length >= 10, null, { timeout: 20000 });
-      await expectText(page, 'Composite-Risk Price Scenarios');
-      await expectText(page, 'Composite Risk · 200W / 200D Trend Percentiles');
-      await expectText(page, '65% 200W + 35% 200D');
+      await expectText(page, '200W Risk Price Scenarios');
+      await expectText(page, 'Risk · 200-Week Trend-Deviation Percentile');
+      await expectText(page, 'Weekly risk only');
       await expectText(page, '200-Week Trend');
       await expectText(page, 'shaded = ≥10% drawdown windows');
       await expectText(page, 'Valuation-Aware Downside Scenarios');
@@ -95,18 +95,21 @@ const checks = [
       const removedReturnsPanel = await page.locator('#returnsCanvas').count();
       if (removedReturnsPanel !== 0) throw new Error('forward-return-by-risk-decile panel should be removed');
       const riskCardText = (await page.locator('#riskTable').innerText()).toLowerCase();
-      if (riskCardText.includes('p/e')) throw new Error('composite risk cards should not show static-EPS P/E values');
-      if (await page.locator('#riskTable').getAttribute('data-model') !== '200w65-200d35-trailing20y') {
-        throw new Error('risk scenarios are not using the moving-average composite');
+      if (riskCardText.includes('p/e')) throw new Error('200W risk cards should not show static-EPS P/E values');
+      if (await page.locator('#riskTable').getAttribute('data-model') !== '200w-trailing20y-weekly') {
+        throw new Error('risk scenarios are not using the weekly 200W model');
       }
-      const compositeRisk = Number(await page.locator('#vRisk').innerText());
+      const currentRisk = Number(await page.locator('#vRisk').innerText());
       const risk200W = Number(await page.locator('#vRisk').getAttribute('data-risk200w'));
-      const risk200D = Number(await page.locator('#vRisk').getAttribute('data-risk200d'));
-      if (compositeRisk < 0.65 || compositeRisk > 0.85) throw new Error(`unexpected composite risk ${compositeRisk}`);
+      const risk200D = await page.locator('#vRisk').getAttribute('data-risk200d');
+      if (currentRisk < 0.80 || currentRisk > 0.98) throw new Error(`unexpected 200W risk ${currentRisk}`);
       if (risk200W < 0.80 || risk200W > 0.98) throw new Error(`unexpected 200W risk ${risk200W}`);
-      if (risk200D < 0.35 || risk200D > 0.65) throw new Error(`unexpected 200D risk ${risk200D}`);
-      if (Math.abs(compositeRisk - (0.65 * risk200W + 0.35 * risk200D)) > 0.003) {
-        throw new Error('composite risk does not match its 65/35 components');
+      if (risk200D !== null) throw new Error('200D risk should not be present');
+      if (Math.abs(currentRisk - risk200W) > 0.002) {
+        throw new Error('headline risk does not match the 200W percentile');
+      }
+      if (await page.locator('#riskCanvas').getAttribute('data-model') !== '200W trailing-20-year weekly percentile') {
+        throw new Error('risk oscillator is not using the weekly-only model');
       }
       const riskStart = await page.locator('#riskCanvas').getAttribute('data-comparison-start');
       const vixStart = await page.locator('#vixCanvas').getAttribute('data-comparison-start');

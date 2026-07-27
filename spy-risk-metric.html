@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SPY Risk Metric</title>
 <meta property="og:title" content="SPY Risk Metric — DaveyBitcoins">
-<meta property="og:description" content="SPY composite risk metric using 200-week and 200-day trend-deviation percentiles, aligned with VIX and market drawdowns.">
+<meta property="og:description" content="SPY risk metric using the trailing percentile of price deviation from its 200-week moving average, aligned with VIX and market drawdowns.">
 <meta property="og:url" content="https://daveybitcoins.com/spy-risk-metric.html">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -247,7 +247,7 @@
       </button>
     </div>
     <h1>&#128200; <span>SPY Risk Metric</span></h1>
-    <div class="subtitle"><span class="live-dot"></span>Composite Risk · 200W / 200D Trend Percentiles</div>
+    <div class="subtitle"><span class="live-dot"></span>Risk · 200-Week Trend-Deviation Percentile</div>
     <div id="headerDate" style="margin-top:10px;font-size:0.65rem;letter-spacing:1px;color:var(--text-dim);display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border:1px solid rgba(247,147,26,0.24);border-radius:4px;background:rgba(247,147,26,0.07);font-family:'JetBrains Mono',monospace;"></div>
   </header>
   <div class="dashboard">
@@ -256,7 +256,7 @@
       <div class="card-value" id="vPrice" style="font-size:2.4rem;letter-spacing:-2px;font-weight:700;color:var(--text-heading)">—</div>
       <div id="vFwdPE" style="margin-top:6px;font-size:0.62rem;font-family:'JetBrains Mono',monospace;color:#ffbf63;letter-spacing:1px"></div>
     </div>
-    <div class="card" style="--glow:#f7931a"><div class="card-label">Composite Risk</div><div class="card-value" id="vRisk" style="--val-color:#f7931a">—</div>
+    <div class="card" style="--glow:#f7931a"><div class="card-label">200W Risk</div><div class="card-value" id="vRisk" style="--val-color:#f7931a">—</div>
       <div class="risk-bar-wrap"><div class="risk-bar-bg"></div><div class="risk-bar-needle" id="needle"></div></div>
       <div class="zone-labels"><span>Accumulate</span><span>Neutral</span><span>Caution</span></div></div>
     <div class="card" style="--glow:#58c56f"><div class="card-label">200-Week Trend</div><div class="card-value" id="vFair" style="--val-color:#58c56f">—</div><div class="card-sub" id="vGrowth"></div></div>
@@ -264,10 +264,10 @@
     <div class="card" style="--glow:#ef5d4f"><div class="card-label">VIX (Close)</div><div class="card-value" id="vVixLevel" style="--val-color:#ef5d4f">—</div><div class="card-sub" id="vVixImplied"></div></div>
   </div>
   <div class="risk-table-wrap">
-    <h4>Composite-Risk Price Scenarios</h4>
+    <h4>200W Risk Price Scenarios</h4>
     <div class="risk-table" id="riskTable"></div>
     <div style="text-align:center;font-size:0.65rem;color:var(--meth-text);margin-top:10px;letter-spacing:0.3px;line-height:1.6">
-      Prices solve for each 65% 200W / 35% 200D risk level using current moving averages and trailing 20-year deviation distributions. Statistical scenarios—not price targets.
+      Prices solve for each 200W risk percentile using the current moving average and its trailing 20-year weekly deviation distribution. Statistical scenarios—not price targets.
     </div>
   </div>
   <div class="pe-proj-wrap valuation-stress-wrap">
@@ -328,8 +328,8 @@
   </div>
   <div class="chart-panel">
     <div class="chart-header">
-      <div class="chart-label">Composite Risk Oscillator (0 – 1)</div>
-      <div class="chart-note">65% 200W + 35% 200D · dotted = 200D · shaded = ≥10% drawdown windows</div>
+      <div class="chart-label">200W Risk Oscillator (0 – 1)</div>
+      <div class="chart-note">Weekly risk only · 1990+ aligned with VIX · shaded = ≥10% drawdown windows</div>
     </div>
     <canvas id="riskCanvas" width="1380" height="340"></canvas>
     <div class="tooltip" id="riskTip"><div class="tt-date"></div><div>Risk: <span class="tt-risk"></span></div></div>
@@ -411,10 +411,10 @@
   </div>
   <div class="methodology">
     <h3>Methodology</h3>
-    <p><span class="hl">200-Week Component (65%):</span> Calculates <code>ln(price ÷ 200W MA)</code> using 199 completed weekly closes plus the current week-to-date close, then ranks that deviation against its trailing 20-year history.</p>
-    <p><span class="hl">200-Day Component (35%):</span> Calculates <code>ln(price ÷ 200D MA)</code> and ranks it against its trailing 20-year history. This faster component responds more quickly to corrections and recoveries.</p>
-    <p><span class="hl">Composite Risk:</span> <code>0.65 × 200W percentile + 0.35 × 200D percentile</code>. Percentile normalization is causal: every historical reading uses only information available on that date, avoiding all-time min/max anchors and look-ahead.</p>
-    <p><span class="hl">Composite-Risk Prices:</span> Solve for the price associated with each composite percentile using the current 200W/200D averages and current trailing distributions. They are statistical scenarios, not price targets.</p>
+    <p><span class="hl">200-Week Risk:</span> Calculates <code>ln(price ÷ 200W MA)</code> from weekly closes, then ranks that deviation against its trailing 20-year weekly history. The latest incomplete week uses the current week-to-date close.</p>
+    <p><span class="hl">Weekly Updates:</span> Historical readings change only at each weekly close and are carried across intervening daily chart observations. This keeps the oscillator focused on long-term market-cycle risk rather than short-term noise.</p>
+    <p><span class="hl">Percentile Normalization:</span> Every historical reading uses only information available on that date, avoiding all-time min/max anchors and look-ahead. A risk of 0.88 means the market is farther above its 200W trend than approximately 88% of weekly observations in the trailing 20 years.</p>
+    <p><span class="hl">200W Risk Prices:</span> Solve for the price associated with each percentile using the current 200W average and current trailing weekly deviation distribution. They are statistical scenarios, not price targets.</p>
     <p><span class="hl">Risk / VIX Alignment:</span> Both lower charts begin with reliable VIX history in 1990 and use the same horizontal date range. Shared shaded bands mark periods when SPY was at least 10% below its prior peak; brief recoveries of roughly one quarter are merged to keep each correction visually coherent.</p>
     <p><span class="hl">Valuation-Aware Downside:</span> Applies an assumed 15× forward P/E to the current $373.08 forward EPS anchor after explicit earnings shocks of 0%, −10%, −20%, and −35%. The valuation multiple is a scenario assumption, not a guaranteed floor.</p>
     <p><span class="hl">VIX Chart:</span> Shown for reference as a fear/greed gauge. Not currently factored into the risk calculation.</p>
@@ -499,64 +499,65 @@ function buildDataset(rawSPY, vixMap) {
     vix: vixMap[ds] || null
   })).filter(p => p.price > 0);
 
-  // 200 trading-day moving average.
-  let sum200D = 0;
-  pts.forEach((p, i) => {
-    sum200D += p.price;
-    if (i >= 200) sum200D -= pts[i - 200].price;
-    if (i >= 199) {
-      p.ma200D = sum200D / 200;
-      p.dev200D = Math.log(p.price / p.ma200D);
-    }
-  });
-
-  // 200-week moving average without look-ahead: 199 completed weekly closes
-  // plus the current day's week-to-date close.
-  const completedWeeks = [];
-  let completedWeekSum = 0;
-  let currentWeek = null;
-  let currentWeekLast = null;
+  // Build one causal weekly close per market week. The final record is the
+  // current week-to-date close when the week is still in progress.
+  const weekly = [];
   const weekKey = p => {
     const d = new Date(p.ms);
     const daysFromMonday = (d.getUTCDay() + 6) % 7;
     d.setUTCDate(d.getUTCDate() - daysFromMonday);
     return d.toISOString().slice(0,10);
   };
+  let activeWeek = null;
+  let activeWeeklyClose = null;
   pts.forEach(p => {
     const key = weekKey(p);
-    if (currentWeek !== null && key !== currentWeek) {
-      completedWeeks.push(currentWeekLast);
-      completedWeekSum += currentWeekLast;
-      if (completedWeeks.length > 199) completedWeekSum -= completedWeeks.shift();
+    if (activeWeek !== null && key !== activeWeek) {
+      weekly.push(activeWeeklyClose);
     }
-    currentWeek = key;
-    currentWeekLast = p.price;
-    if (completedWeeks.length === 199) {
-      p.ma200W = (completedWeekSum + p.price) / 200;
+    activeWeek = key;
+    activeWeeklyClose = { date: p.date, ms: p.ms, price: p.price };
+  });
+  if (activeWeeklyClose) weekly.push(activeWeeklyClose);
+
+  // 200-week moving average and causal trailing percentile, both calculated
+  // strictly from weekly observations.
+  let weeklySum = 0;
+  weekly.forEach((p, i) => {
+    weeklySum += p.price;
+    if (i >= 200) weeklySum -= weekly[i - 200].price;
+    if (i >= 199) {
+      p.ma200W = weeklySum / 200;
       p.dev200W = Math.log(p.price / p.ma200W);
     }
   });
+  assignTrailingPercentiles(weekly, 'dev200W', 'risk200W');
 
-  // Causal trailing percentiles: each historical score sees only its own past.
-  assignTrailingPercentiles(pts, 'dev200W', 'risk200W');
-  assignTrailingPercentiles(pts, 'dev200D', 'risk200D');
-
-  let peak = 0;
+  // Carry the last completed weekly reading across daily observations. The
+  // current week updates on the latest available week-to-date close.
+  let weeklyIdx = 0;
+  let latestWeekly = null;
   pts.forEach(p => {
-    peak = Math.max(peak, p.price);
-    p.drawdown = p.price / peak - 1;
-    if (Number.isFinite(p.risk200W) && Number.isFinite(p.risk200D)) {
-      p.riskCombo = 0.65 * p.risk200W + 0.35 * p.risk200D;
-    } else if (Number.isFinite(p.risk200W)) {
-      p.riskCombo = p.risk200W;
-    } else if (Number.isFinite(p.risk200D)) {
-      p.riskCombo = p.risk200D;
+    while (weeklyIdx < weekly.length && weekly[weeklyIdx].ms <= p.ms) {
+      latestWeekly = weekly[weeklyIdx++];
+    }
+    if (latestWeekly && Number.isFinite(latestWeekly.risk200W)) {
+      p.ma200W = latestWeekly.ma200W;
+      p.dev200W = latestWeekly.dev200W;
+      p.risk200W = latestWeekly.risk200W;
+      p.riskCombo = latestWeekly.risk200W;
     } else {
       p.riskCombo = 0.5;
     }
   });
 
-  return { pts };
+  let peak = 0;
+  pts.forEach(p => {
+    peak = Math.max(peak, p.price);
+    p.drawdown = p.price / peak - 1;
+  });
+
+  return { pts, weekly };
 }
 
 function riskColor(r, a) {
@@ -616,7 +617,7 @@ async function main() {
     vixMap[lastSpyDate] = lastVixDate[1];
   }
 
-  const { pts } = buildDataset(rawSPY, vixMap);
+  const { pts, weekly } = buildDataset(rawSPY, vixMap);
   const n = pts.length;
   const last = pts[n-1];
 
@@ -634,11 +635,10 @@ async function main() {
   const riskValue = document.getElementById('vRisk');
   riskValue.textContent = last.riskCombo.toFixed(3);
   riskValue.dataset.risk200w = last.risk200W.toFixed(3);
-  riskValue.dataset.risk200d = last.risk200D.toFixed(3);
-  riskValue.dataset.model = '65% 200W + 35% 200D';
+  riskValue.dataset.model = '200W trailing-20-year weekly percentile';
   riskValue.style.setProperty('--val-color', riskColor(last.riskCombo));
   document.getElementById('vFair').textContent = '$' + last.ma200W.toLocaleString(undefined,{maximumFractionDigits:2});
-  document.getElementById('vGrowth').textContent = '200W ' + last.risk200W.toFixed(2) + ' · 200D ' + last.risk200D.toFixed(2);
+  document.getElementById('vGrowth').textContent = 'Trailing 20Y weekly percentile';
   const devPct = ((last.price/last.ma200W-1)*100).toFixed(1);
   document.getElementById('vDev').textContent = (devPct>0?'+':'') + devPct + '%';
   document.getElementById('needle').style.left = (last.riskCombo*100)+'%';
@@ -653,20 +653,17 @@ async function main() {
     document.getElementById('vVixImplied').innerHTML = '<div style="color:var(--text-dim);font-size:0.6rem;letter-spacing:1px;margin-bottom:2px">IMPLIED MOVE</div><span style="font-family:JetBrains Mono,monospace;color:var(--text-heading);font-weight:400;font-size:0.75rem">&#177;' + impliedPct + '%</span> <span style="color:var(--text-dim);font-size:0.6rem">/</span> <span style="font-family:JetBrains Mono,monospace;color:var(--text-heading);font-weight:400;font-size:0.75rem">&#177;$' + impliedPts + '</span>';
   }
 
-  // Composite-risk price table. Invert the current trailing empirical
-  // distributions rather than interpolating between all-time extremes.
+  // 200W risk-price table. Invert the current trailing weekly empirical
+  // distribution rather than interpolating between all-time extremes.
   {
     const cutoff = last.ms - 20 * 365.25 * 864e5;
-    const recent = pts.filter(p => p.ms >= cutoff);
-    const deviations200W = recent.map(p => p.dev200W).filter(Number.isFinite).sort((a,b) => a-b);
-    const deviations200D = recent.map(p => p.dev200D).filter(Number.isFinite).sort((a,b) => a-b);
+    const recentWeekly = weekly.filter(p => p.ms >= cutoff);
+    const deviations200W = recentWeekly.map(p => p.dev200W).filter(Number.isFinite).sort((a,b) => a-b);
     const percentile = (values, value) => upperBound(values, value) / values.length;
-    const riskAtPrice = price =>
-      0.65 * percentile(deviations200W, Math.log(price / last.ma200W)) +
-      0.35 * percentile(deviations200D, Math.log(price / last.ma200D));
+    const riskAtPrice = price => percentile(deviations200W, Math.log(price / last.ma200W));
     const priceAtRisk = target => {
-      let lo = Math.min(last.ma200W, last.ma200D) * 0.15;
-      let hi = Math.max(last.ma200W, last.ma200D) * 4;
+      let lo = last.ma200W * 0.15;
+      let hi = last.ma200W * 4;
       for (let i = 0; i < 64; i++) {
         const mid = Math.sqrt(lo * hi);
         if (riskAtPrice(mid) < target) lo = mid; else hi = mid;
@@ -674,7 +671,7 @@ async function main() {
       return Math.sqrt(lo * hi);
     };
     const tbl = document.getElementById('riskTable');
-    tbl.dataset.model = '200w65-200d35-trailing20y';
+    tbl.dataset.model = '200w-trailing20y-weekly';
     const riskLevels = [0.05,0.10,0.15,0.20,0.25,0.30,0.35,0.40,0.45,0.50,0.55,0.60,0.65,0.70,0.75,0.80,0.85,0.90,0.95,0.99];
     riskLevels.forEach(r => {
       const price = priceAtRisk(r);
@@ -689,7 +686,7 @@ async function main() {
     });
   }
 
-  // Valuation-aware downside scenarios. Unlike the composite-risk cards,
+  // Valuation-aware downside scenarios. Unlike the 200W risk cards,
   // these explicitly adjust earnings before applying the assumed P/E floor.
   {
     const valuationFloor = 15;
@@ -995,7 +992,7 @@ async function main() {
     const riskDrawdownBands = shadeDrawdowns(ctx, xOf, P.t, H-P.b, s, e);
     cv.dataset.comparisonStart = pts[s].date;
     cv.dataset.drawdownBands = String(riskDrawdownBands);
-    cv.dataset.model = '65% 200W + 35% 200D trailing-20-year percentiles';
+    cv.dataset.model = '200W trailing-20-year weekly percentile';
     [0.20,0.50,0.80].forEach(v=>{
       ctx.strokeStyle=tc.zoneDash;ctx.lineWidth=1;ctx.setLineDash([4,4]);
       ctx.beginPath();ctx.moveTo(P.l,yOf(v));ctx.lineTo(W-P.r,yOf(v));ctx.stroke();ctx.setLineDash([]);
@@ -1034,14 +1031,6 @@ async function main() {
       ctx.strokeStyle=riskColor(pts[i].riskCombo,0.90);ctx.lineWidth=1.8;
       ctx.beginPath();ctx.moveTo(xOf(prev),yOf(pts[prev].riskCombo));ctx.lineTo(xOf(i),yOf(pts[i].riskCombo));ctx.stroke();
     }
-    // Faster 200-day component helps viewers connect corrections with VIX spikes.
-    ctx.strokeStyle=tc.axisText;ctx.globalAlpha=0.58;ctx.lineWidth=1;ctx.setLineDash([5,4]);
-    ctx.beginPath();
-    for(let i=s;i<=e;i+=S) {
-      const y = yOf(pts[i].risk200D);
-      i === s ? ctx.moveTo(xOf(i),y) : ctx.lineTo(xOf(i),y);
-    }
-    ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
     // Zone labels
     ctx.fillStyle=tc.zoneLabels;ctx.font='9px JetBrains Mono';ctx.textAlign='right';
     ctx.fillText('EUPHORIA',W-P.r-4,yOf(0.90));
@@ -1183,7 +1172,7 @@ async function main() {
       tip.querySelector('.tt-date').textContent = p.date;
       if (tip.querySelector('.tt-price')) tip.querySelector('.tt-price').textContent = '$' + p.price.toLocaleString(undefined,{maximumFractionDigits:2});
       const riskEl = tip.querySelector('.tt-risk');
-      if (tipId === 'riskTip') riskEl.textContent = 'C:'+p.riskCombo.toFixed(3)+' W:'+p.risk200W.toFixed(3)+' D:'+p.risk200D.toFixed(3);
+      if (tipId === 'riskTip') riskEl.textContent = p.riskCombo.toFixed(3);
       else if (tipId === 'vixTip') riskEl.textContent = (p.vix != null ? p.vix.toFixed(2) : '—');
       else riskEl.textContent = p.riskCombo.toFixed(3);
       riskEl.style.color = tipId === 'vixTip' ? (p.vix != null ? vixColor(p.vix) : '') : riskColor(p.riskCombo);
