@@ -35,10 +35,11 @@ const checks = [
       await expectText(page, 'Bitcoin Risk Metric');
       await expectText(page, 'Combined Risk');
       await expectText(page, 'Price at Each Risk Level');
-      await expectText(page, 'Bitcoin Power-Law Regression Trend');
-      await expectText(page, 'Long-run centerline, not a short-term price target');
+      await expectText(page, 'Bitcoin Market-Cap-Damped Power-Law Fair Value');
+      await expectText(page, 'Long-run scenario, not a short-term price target');
+      await expectText(page, 'half of the growth above a 10% long-run nominal rate is damped');
       const projectionHeaders = await page.locator('#projTable th').allTextContents();
-      for (const header of ['Regression Trend', 'Trend Growth', 'Gap to Trend']) {
+      for (const header of ['Damped Fair Value', 'Fair Value Growth', 'Gap to Fair Value']) {
         if (!projectionHeaders.includes(header)) throw new Error(`missing projection header: ${header}`);
       }
       if (projectionHeaders.includes('Typical Range (±1σ)')) {
@@ -55,6 +56,12 @@ const checks = [
         if (!projectionDates.includes(`Dec ${year}`)) {
           throw new Error(`missing annual fair-value projection for Dec ${year}`);
         }
+      }
+      const dec2040Row = page.locator('#projBody tr', { hasText: 'Dec 2040' });
+      const dec2040FairValue = await dec2040Row.locator('.pj-price').innerText();
+      const dec2040Value = Number(dec2040FairValue.replace(/[$,M]/g, '')) * (dec2040FairValue.includes('M') ? 1e6 : 1);
+      if (dec2040Value < 1.5e6 || dec2040Value > 3e6) {
+        throw new Error(`expected damped Dec 2040 fair value, got ${dec2040FairValue}`);
       }
     },
   },

@@ -307,15 +307,18 @@
     </div>
   </div>
   <div class="proj-table-wrap">
-    <h4>Bitcoin Power-Law Regression Trend</h4>
+    <h4>Bitcoin Market-Cap-Damped Power-Law Fair Value</h4>
     <p class="proj-method-note" id="projMethodNote">
-      <strong>Long-run centerline, not a short-term price target.</strong>
-      Values assume Bitcoin eventually moves back toward its historical curve.
-      “Gap to Trend” compares each future trend value with today’s BTC price; it is not a forecast return.
+      <strong>Long-run scenario, not a short-term price target.</strong>
+      The path begins with Bitcoin’s historical power-law regression, then progressively slows its
+      excess growth as the modeled market cap approaches $20T. At $20T, half of the growth above a
+      10% long-run nominal rate is damped; the path continues converging toward 10% as the asset grows.
+      The calculation assumes 20.8M BTC. “Gap to Fair Value” compares each future value with today’s
+      BTC price; it is not a forecast return.
     </p>
     <table class="proj-table" id="projTable">
       <thead>
-        <tr><th>Date</th><th>Days Since Genesis</th><th>Regression Trend</th><th>Trend Growth</th><th>Gap to Trend</th></tr>
+        <tr><th>Date</th><th>Days Since Genesis</th><th>Damped Fair Value</th><th>Fair Value Growth</th><th>Gap to Fair Value</th></tr>
       </thead>
       <tbody id="projBody"></tbody>
     </table>
@@ -935,19 +938,42 @@ async function main() {
     }
   }
 
-  // ====== FAIR VALUE PROJECTIONS (semiannual through 2030, annual through 2040) ======
+  // ====== MARKET-CAP-DAMPED FAIR VALUE (semiannual through 2030, annual through 2040) ======
   {
     const projBody = document.getElementById('projBody');
     const todayFV = last.trendPrice;
     const todayPrice = last.price;
+    const DAMPENING_MARKET_CAP = 20e12;
+    const PROJECTION_SUPPLY = 20.8e6;
+    const LONG_RUN_NOMINAL_GROWTH = 0.10;
+    const DAMPENING_POWER = 2;
+    const DAYS_PER_YEAR = 365.2425;
     const moNames = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec'];
     const curDate = new Date(last.date + 'T00:00:00Z');
     const curYear = curDate.getUTCFullYear();
     const targets = [];
+    let projectionMs = curDate.getTime();
+    let dampedFV = todayFV;
     function formatProjectionPrice(value) {
       return value >= 1e6 ? '$' + (value / 1e6).toFixed(2) + 'M' :
              value >= 1e3 ? '$' + Math.round(value).toLocaleString() :
              '$' + value.toFixed(2);
+    }
+    function advanceDampedFairValue(targetMs) {
+      while (projectionMs < targetMs) {
+        const stepDays = Math.min(1, (targetMs - projectionMs) / 864e5);
+        const modelDays = (projectionMs - GENESIS) / 864e5;
+        const nextModelDays = modelDays + stepDays;
+        const rawPowerLawLogGrowth = slope * Math.log(nextModelDays / modelDays);
+        const longRunLogGrowth = Math.log1p(LONG_RUN_NOMINAL_GROWTH) * stepDays / DAYS_PER_YEAR;
+        const modeledMarketCap = dampedFV * PROJECTION_SUPPLY;
+        const dampingShare = 1 / (1 + Math.pow(modeledMarketCap / DAMPENING_MARKET_CAP, DAMPENING_POWER));
+        const dampedLogGrowth = longRunLogGrowth +
+          (rawPowerLawLogGrowth - longRunLogGrowth) * dampingShare;
+        dampedFV *= Math.exp(dampedLogGrowth);
+        projectionMs += stepDays * 864e5;
+      }
+      return dampedFV;
     }
     // Keep the existing June/December cadence through 2030.
     for (let y = curYear; y <= 2030; y++) {
@@ -962,9 +988,7 @@ async function main() {
     for (const fd of futureDates) {
       const futureMs = fd.getTime();
       const futureDays = (futureMs - GENESIS) / 864e5;
-      const futureLogDays = Math.log10(futureDays);
-      const futureRegLog = slope * futureLogDays + intercept;
-      const futureFV = Math.pow(10, futureRegLog);
+      const futureFV = advanceDampedFairValue(futureMs);
       const growthPct = ((futureFV / todayFV - 1) * 100).toFixed(1);
       const growthColor = growthPct >= 0 ? '#58c56f' : '#ef5d4f';
       const roiPct = ((futureFV / todayPrice - 1) * 100).toFixed(1);
