@@ -595,12 +595,12 @@ async function main() {
   // Forward P/E Price Projection Table (interactive)
   function buildPEProjectionTable(growthPct) {
     const scenarioGrowth = growthPct / 100;
-    const years = [2026, 2027, 2028, 2029, 2030, 2031];
+    const years = [2027, 2028, 2029, 2030, 2031];
     const peMultiples = [16, 17, 18, 19, 20, 21, 22, 23, 24];
 
-    // Latest analyst consensus is used only where FactSet publishes a current
-    // calendar-year growth estimate. Later years use the adjustable scenario.
-    const epsMap = { 2026: 345.28, 2027: 398.11 };
+    // The current-year consensus is shown in the valuation summary. The table
+    // begins with the next calendar-year consensus, then adjustable scenarios.
+    const epsMap = { 2027: 398.11 };
     for (let y = 2028; y <= 2031; y++) {
       epsMap[y] = epsMap[y - 1] * (1 + scenarioGrowth);
     }
@@ -609,7 +609,7 @@ async function main() {
     const thead = document.getElementById('peProjHead');
     const exactCurrentPE = spxEstimate / fwd12mEPS;
     const currentPE = Math.round(exactCurrentPE);
-    document.getElementById('peCurrentContext').textContent = 'Current forward P/E: ' + exactCurrentPE.toFixed(1) + '× · ' + currentPE + '× is the nearest whole-number scenario';
+    document.getElementById('peCurrentContext').textContent = 'Current valuation: ' + exactCurrentPE.toFixed(1) + '× forward P/E · CY2026 consensus EPS: $345 · ' + currentPE + '× is the nearest whole-number scenario';
     let hRow = '<tr><th>Year</th>';
     peMultiples.forEach(pe => {
       const currentLabel = pe === currentPE ? '<span class="pe-current-label">Nearest current</span>' : '';
@@ -625,8 +625,8 @@ async function main() {
 
     allYears.forEach(y => {
       const eps = epsMap[y];
-      const estimateType = y <= 2027 ? 'Consensus' : 'Scenario';
-      const growthLabel = y === 2026 ? '27.3%' : y === 2027 ? '15.3%' : growthPct.toFixed(1) + '%';
+      const estimateType = y === 2027 ? 'Consensus' : 'Scenario';
+      const growthLabel = y === 2027 ? '15.3%' : growthPct.toFixed(1) + '%';
       let row = '<tr><td>' + y + ' <span class="pe-eps">' + estimateType + ' EPS $' + eps.toFixed(0) + ' (+' + growthLabel + ')</span></td>';
       peMultiples.forEach(pe => {
         const spxPrice = eps * pe;

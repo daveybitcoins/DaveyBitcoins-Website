@@ -84,11 +84,12 @@ const checks = [
       await expectText(page, 'Forward 12M P/E');
       await expectText(page, 'is the nearest whole-number scenario');
       await expectText(page, 'Nearest current');
+      await expectText(page, 'CY2026 consensus EPS: $345');
       const growthInput = page.locator('#epsGrowthInput');
       if (await growthInput.inputValue() !== '8') throw new Error('expected 8% default post-2027 EPS growth');
       const projectionRows = await page.locator('#peProjBody tr').allTextContents();
-      if (!projectionRows.some((row) => row.includes('2026') && row.includes('Consensus EPS $345'))) {
-        throw new Error('missing July 2026 consensus EPS');
+      if (projectionRows.some((row) => row.includes('2026'))) {
+        throw new Error('current year should be summarized above, not listed as a projection row');
       }
       if (!projectionRows.some((row) => row.includes('2027') && row.includes('Consensus EPS $398'))) {
         throw new Error('missing July 2027 consensus EPS');
