@@ -310,12 +310,12 @@
     </div>
   </div>
   <div class="proj-table-wrap">
-    <h4>Bitcoin Market-Cap-Damped Power-Law Fair Value</h4>
+    <h4>Bitcoin Market-Cap-Adjusted Power-Law Fair Value</h4>
     <p class="proj-method-note" id="projMethodNote">
       <strong>Long-run scenario, not a short-term price target.</strong>
       The path begins with Bitcoin’s historical power-law regression, then progressively slows its
-      excess growth as the modeled market cap approaches $20T. At $20T, half of the growth above a
-      6% long-run nominal rate is damped; the path continues converging toward 6% as the asset grows.
+      excess growth as the modeled market cap approaches $20T. At $20T, the power-law growth above a
+      6% long-run nominal rate is reduced by half; the path continues converging toward 6% as the asset grows.
       The calculation assumes 20.8M BTC.
       <code class="proj-formula">g<sub>effective</sub> = g<sub>6%</sub> + (g<sub>power-law</sub> − g<sub>6%</sub>) × 1 / [1 + (M / $20T)²]</code>
       Here, <strong>M</strong> is the modeled fair-value market cap. The 6% mature-asset rate is
@@ -327,7 +327,7 @@
     </p>
     <table class="proj-table" id="projTable">
       <thead>
-        <tr><th>Date</th><th>Days Since Genesis</th><th>Damped Fair Value</th><th>Fair Value Growth</th><th>Gap to Fair Value</th></tr>
+        <tr><th>Date</th><th>Days Since Genesis</th><th>Adjusted Fair Value</th><th>Fair Value Growth</th><th>Gap to Fair Value</th></tr>
       </thead>
       <tbody id="projBody"></tbody>
     </table>
@@ -344,7 +344,7 @@
   <div class="chart-panel">
     <div class="chart-header">
       <div class="chart-label">BTC/USD — Price Colored by Risk (Log Scale)</div>
-      <div class="chart-note">Historical risk · damped fair value through 2040 in All view</div>
+      <div class="chart-note">Historical risk · market-cap-adjusted fair value through 2040 in All view</div>
     </div>
     <canvas id="priceCanvas" width="1380" height="540"></canvas>
     <div class="tooltip" id="priceTip"><div class="tt-date"></div><div class="tt-price"></div><div><span class="tt-risk-label">Risk:</span> <span class="tt-risk"></span></div></div>
@@ -1306,7 +1306,7 @@ async function main() {
       ctx.lineTo(xOfTime(finalPoint.ms),yOf(finalPoint.value));
       ctx.stroke();ctx.setLineDash([]);
       ctx.fillStyle='#58c56f';ctx.font='10px JetBrains Mono';ctx.textAlign='right';
-      ctx.fillText('DAMPED FAIR VALUE',W-P.r-6,yOf(finalPoint.value)-8);
+      ctx.fillText('ADJUSTED FAIR VALUE',W-P.r-6,yOf(finalPoint.value)-8);
     }
 
     // Price line
@@ -1532,7 +1532,7 @@ async function main() {
           tip.querySelector('.tt-price').textContent='$'+value.toLocaleString(undefined,{maximumFractionDigits:0});
           riskLabel.textContent='Path:';
           const riskEl=tip.querySelector('.tt-risk');
-          riskEl.textContent='Damped fair value';
+          riskEl.textContent='Adjusted fair value';
           riskEl.style.color='#58c56f';
           tip.style.display='block';
           const tipX=e.clientX-rect.left+16, tipY=e.clientY-rect.top-40;

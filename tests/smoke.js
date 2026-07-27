@@ -35,13 +35,13 @@ const checks = [
       await expectText(page, 'Bitcoin Risk Metric');
       await expectText(page, 'Combined Risk');
       await expectText(page, 'Price at Each Risk Level');
-      await expectText(page, 'Bitcoin Market-Cap-Damped Power-Law Fair Value');
+      await expectText(page, 'Bitcoin Market-Cap-Adjusted Power-Law Fair Value');
       await expectText(page, 'Long-run scenario, not a short-term price target');
-      await expectText(page, 'half of the growth above a 6% long-run nominal rate is damped');
+      await expectText(page, 'power-law growth above a 6% long-run nominal rate is reduced by half');
       await expectText(page, 'World Gold Council’s long-term model');
       await expectText(page, 'gpower-law');
       const projectionHeaders = await page.locator('#projTable th').allTextContents();
-      for (const header of ['Damped Fair Value', 'Fair Value Growth', 'Gap to Fair Value']) {
+      for (const header of ['Adjusted Fair Value', 'Fair Value Growth', 'Gap to Fair Value']) {
         if (!projectionHeaders.includes(header)) throw new Error(`missing projection header: ${header}`);
       }
       if (projectionHeaders.includes('Typical Range (±1σ)')) {
@@ -63,9 +63,9 @@ const checks = [
       const dec2040FairValue = await dec2040Row.locator('.pj-price').innerText();
       const dec2040Value = Number(dec2040FairValue.replace(/[$,M]/g, '')) * (dec2040FairValue.includes('M') ? 1e6 : 1);
       if (dec2040Value < 1.5e6 || dec2040Value > 3e6) {
-        throw new Error(`expected damped Dec 2040 fair value, got ${dec2040FairValue}`);
+        throw new Error(`expected adjusted Dec 2040 fair value, got ${dec2040FairValue}`);
       }
-      await expectText(page, 'damped fair value through 2040 in All view');
+      await expectText(page, 'market-cap-adjusted fair value through 2040 in All view');
       const projectionEnd = await page.locator('#priceCanvas').getAttribute('data-projection-end');
       const projectionPoints = Number(await page.locator('#priceCanvas').getAttribute('data-projection-points'));
       if (projectionEnd !== '2040-12-01' || projectionPoints < 5000) {
