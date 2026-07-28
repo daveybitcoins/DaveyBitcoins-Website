@@ -362,13 +362,22 @@
         return `rgb(${c[0]},${c[1]},${c[2]})`;
     }
 
+    function classifyRisk(risk) {
+        // Shared risk zones used by the BTC, SPY, and QQQ metric charts.
+        if (risk < 0.20) return { zone: "Accumulate", zone_color: "#58c56f" };
+        if (risk < 0.50) return { zone: "Neutral", zone_color: "#80b883" };
+        if (risk < 0.80) return { zone: "Caution", zone_color: "#f7931a" };
+        return { zone: "Euphoria", zone_color: "#ef5d4f" };
+    }
+
     function renderRiskBar(risk_combo, zone, zone_color, href, label, riskLabel) {
         if (risk_combo == null) return "";
         const r = risk_combo;
         const color = riskColor(r);
         const barGrad = "linear-gradient(90deg,#68829c 0%,#509b76 18%,#58c56f 34%,#ffbf63 52%,#f7931a 70%,#e46045 86%,#7a2019 100%)";
+        const model = riskLabel === "200W Risk" ? "200w-trailing20y-weekly" : "combined-structural-momentum";
         return `
-            <div class="risk-bar-wrap" style="margin-top:0.5rem;padding:0.4rem 0.5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);">
+            <div class="risk-bar-wrap" data-risk-asset="${label}" data-risk-model="${model}" data-risk-value="${r.toFixed(6)}" style="margin-top:0.5rem;padding:0.4rem 0.5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);">
                 <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;">
                     <span style="color:var(--text-dim);">${riskLabel}</span>
                     <strong style="color:${color};font-family:'JetBrains Mono',monospace;font-size:0.85rem;">${r.toFixed(3)}</strong>
@@ -377,7 +386,10 @@
                     <div style="position:absolute;top:-2px;left:${r*100}%;width:2px;height:10px;background:#fff;border-radius:1px;transform:translateX(-1px);box-shadow:0 0 3px rgba(0,0,0,0.5);"></div>
                 </div>
                 <div style="text-align:center;font-size:0.7rem;font-weight:600;color:${zone_color || color};letter-spacing:0.05em;">${(zone || "").toUpperCase()}</div>
-                <a href="${href}" style="display:block;text-align:center;margin-top:0.3rem;font-size:0.65rem;color:var(--accent);text-decoration:none;opacity:0.8;">View Full ${label} Metrics \u2192</a>
+                <div style="display:flex;justify-content:space-between;margin-top:0.25rem;font-size:0.56rem;color:var(--text-dim);opacity:0.75;">
+                    <span>0.20</span><span>0.50</span><span>0.80</span>
+                </div>
+                <a href="${href}" style="display:block;text-align:center;margin-top:0.3rem;font-size:0.65rem;color:var(--accent);text-decoration:none;opacity:0.8;">View Full ${label} Metric \u2192</a>
             </div>`;
     }
 
@@ -486,76 +498,123 @@
 
             const last = pts[n - 1];
             const risk = last.riskCombo;
-            let zone, zone_color;
-            if (risk < 0.20) { zone = "Accumulate"; zone_color = "#58c56f"; }
-            else if (risk < 0.50) { zone = "Neutral"; zone_color = "#80b883"; }
-            else if (risk < 0.80) { zone = "Caution"; zone_color = "#f7931a"; }
-            else { zone = "Euphoria"; zone_color = "#ef5d4f"; }
-
-            btcRiskData = { risk_combo: risk, zone, zone_color };
+            btcRiskData = Object.assign({ risk_combo: risk }, classifyRisk(risk));
         } catch (e) {
             console.warn('BTC risk computation failed:', e);
         }
     }
 
-    // SPY structural risk — computed client-side from data_spy.csv
+    // SPY / QQQ 200-week risk — computed from weekly closes and ranked against
+    // the trailing 20-year history, matching their dedicated metric pages.
     let spyRiskData = null;
-    // QQQ structural risk — computed client-side from data_qqq.csv
     let qqqRiskData = null;
+
+    function upperBound(values, target) {
+        let lo = 0, hi = values.length;
+        while (lo < hi) {
+            const mid = (lo + hi) >> 1;
+            if (values[mid] <= target) lo = mid + 1;
+            else hi = mid;
+        }
+        return lo;
+    }
+
+    function assignTrailingPercentiles(points, valueKey, outputKey) {
+        const valid = points.filter(p => Number.isFinite(p[valueKey]));
+        const coordinates = Array.from(new Set(valid.map(p => p[valueKey]))).sort((a, b) => a - b);
+        const bit = new Int32Array(coordinates.length + 1);
+        const add = (idx, delta) => {
+            for (let i = idx + 1; i < bit.length; i += i & -i) bit[i] += delta;
+        };
+        const sum = idx => {
+            let total = 0;
+            for (let i = idx; i > 0; i -= i & -i) total += bit[i];
+            return total;
+        };
+        const windowMs = 20 * 365.25 * 864e5;
+        let left = 0;
+        valid.forEach((point, i) => {
+            const cutoff = point.ms - windowMs;
+            while (left < i && valid[left].ms < cutoff) {
+                add(upperBound(coordinates, valid[left][valueKey]) - 1, -1);
+                left++;
+            }
+            add(upperBound(coordinates, point[valueKey]) - 1, 1);
+            point[outputKey] = sum(upperBound(coordinates, point[valueKey])) / (i - left + 1);
+        });
+    }
+
+    function calculate200WeekRisk(raw) {
+        const points = raw.map(([date, price]) => ({
+            date,
+            price,
+            ms: new Date(date + 'T00:00:00Z').getTime()
+        })).filter(p => p.price > 0);
+
+        const weekly = [];
+        const weekKey = point => {
+            const date = new Date(point.ms);
+            const daysFromMonday = (date.getUTCDay() + 6) % 7;
+            date.setUTCDate(date.getUTCDate() - daysFromMonday);
+            return date.toISOString().slice(0, 10);
+        };
+        let activeWeek = null;
+        let activeWeeklyClose = null;
+        points.forEach(point => {
+            const key = weekKey(point);
+            if (activeWeek !== null && key !== activeWeek) weekly.push(activeWeeklyClose);
+            activeWeek = key;
+            activeWeeklyClose = { date: point.date, ms: point.ms, price: point.price };
+        });
+        if (activeWeeklyClose) weekly.push(activeWeeklyClose);
+
+        let weeklySum = 0;
+        weekly.forEach((point, i) => {
+            weeklySum += point.price;
+            if (i >= 200) weeklySum -= weekly[i - 200].price;
+            if (i >= 199) {
+                point.ma200W = weeklySum / 200;
+                point.dev200W = Math.log(point.price / point.ma200W);
+            }
+        });
+        assignTrailingPercentiles(weekly, 'dev200W', 'risk200W');
+        const last = weekly[weekly.length - 1];
+        return last && Number.isFinite(last.risk200W) ? last.risk200W : null;
+    }
+
+    async function computeEquityRisk(symbol, csvUrl) {
+        const resp = await fetch(csvUrl + '?v=' + Date.now());
+        const text = await resp.text();
+        const rows = text.trim().split('\n').slice(1);
+        const raw = rows.map(row => {
+            const [date, price] = row.split(',');
+            return [date, parseFloat(price)];
+        }).filter(row => !isNaN(row[1]));
+
+        try {
+            const liveResp = await fetch(WORKER_URL + '/api/quote?symbol=' + symbol);
+            if (liveResp.ok) {
+                const quote = await liveResp.json();
+                if (quote.c && quote.c > 0) {
+                    const quoteDate = quote.t
+                        ? new Date(quote.t * 1000).toISOString().slice(0, 10)
+                        : new Date().toISOString().slice(0, 10);
+                    const lastDate = raw[raw.length - 1][0];
+                    if (quoteDate === lastDate) raw[raw.length - 1][1] = quote.c;
+                    else if (quoteDate > lastDate) raw.push([quoteDate, quote.c]);
+                }
+            }
+        } catch (e) {
+            console.warn(symbol + ' live quote failed:', e);
+        }
+
+        const risk = calculate200WeekRisk(raw);
+        return risk == null ? null : Object.assign({ risk_combo: risk }, classifyRisk(risk));
+    }
 
     async function computeSpyRisk() {
         try {
-            const resp = await fetch('data_spy.csv?v=' + Date.now());
-            const text = await resp.text();
-            const rows = text.trim().split('\n').slice(1);
-            const raw = rows.map(r => { const [d,p] = r.split(','); return [d, parseFloat(p)]; }).filter(r => !isNaN(r[1]));
-            if (raw.length < 252) return;
-
-            try {
-                const liveResp = await fetch(WORKER_URL + '/api/quote?symbol=SPY');
-                if (liveResp.ok) {
-                    const ld = await liveResp.json();
-                    if (ld.c && ld.c > 0) {
-                        const today = new Date().toISOString().slice(0, 10);
-                        const lastDate = raw[raw.length - 1][0];
-                        if (today === lastDate) raw[raw.length - 1][1] = ld.c;
-                        else if (today > lastDate) raw.push([today, ld.c]);
-                    }
-                }
-            } catch (e) { console.warn('SPY live quote failed:', e); }
-
-            const GENESIS = new Date('1960-01-04T00:00:00Z').getTime();
-            const pts = raw.map(([ds, p]) => {
-                const ms = new Date(ds + 'T00:00:00Z').getTime();
-                const days = (ms - GENESIS) / 864e5;
-                return { days, logPrice: Math.log10(p), price: p };
-            }).filter(p => p.days > 0 && p.price > 0);
-
-            const n = pts.length;
-            let sx=0,sy=0,sxy=0,sxx=0;
-            pts.forEach(p => { sx+=p.days; sy+=p.logPrice; sxy+=p.days*p.logPrice; sxx+=p.days*p.days; });
-            const slope = (n*sxy - sx*sy) / (n*sxx - sx*sx);
-            const intercept = (sy - slope*sx) / n;
-
-            let minRes=Infinity, maxRes=-Infinity;
-            pts.forEach(p => {
-                p.regLogPrice = slope * p.days + intercept;
-                p.residual = p.logPrice - p.regLogPrice;
-                if (p.residual < minRes) minRes = p.residual;
-                if (p.residual > maxRes) maxRes = p.residual;
-            });
-
-            const resRange = maxRes - minRes;
-            const last = pts[pts.length - 1];
-            const risk = Math.max(0, Math.min(1, (last.residual - minRes) / resRange));
-
-            let zone, zone_color;
-            if (risk < 0.25) { zone = "Accumulate"; zone_color = "#58c56f"; }
-            else if (risk < 0.50) { zone = "Neutral"; zone_color = "#80b883"; }
-            else if (risk < 0.75) { zone = "Caution"; zone_color = "#ffbf63"; }
-            else { zone = "Euphoria"; zone_color = "#ef5d4f"; }
-
-            spyRiskData = { risk_combo: risk, zone, zone_color };
+            spyRiskData = await computeEquityRisk('SPY', 'data_spy.csv');
         } catch (e) {
             console.warn('SPY risk computation failed:', e);
         }
@@ -563,62 +622,12 @@
 
     function renderSpyRisk() {
         if (!spyRiskData) return "";
-        return renderRiskBar(spyRiskData.risk_combo, spyRiskData.zone, spyRiskData.zone_color, "spy-risk-metric.html", "SPY", "Structural Risk");
+        return renderRiskBar(spyRiskData.risk_combo, spyRiskData.zone, spyRiskData.zone_color, "spy-risk-metric.html", "SPY", "200W Risk");
     }
 
     async function computeQqqRisk() {
         try {
-            const resp = await fetch('data_qqq.csv?v=' + Date.now());
-            const text = await resp.text();
-            const rows = text.trim().split('\n').slice(1);
-            const raw = rows.map(r => { const [d,p] = r.split(','); return [d, parseFloat(p)]; }).filter(r => !isNaN(r[1]));
-            if (raw.length < 252) return;
-
-            try {
-                const liveResp = await fetch(WORKER_URL + '/api/quote?symbol=QQQ');
-                if (liveResp.ok) {
-                    const ld = await liveResp.json();
-                    if (ld.c && ld.c > 0) {
-                        const today = new Date().toISOString().slice(0, 10);
-                        const lastDate = raw[raw.length - 1][0];
-                        if (today === lastDate) raw[raw.length - 1][1] = ld.c;
-                        else if (today > lastDate) raw.push([today, ld.c]);
-                    }
-                }
-            } catch (e) { console.warn('QQQ live quote failed:', e); }
-
-            const GENESIS = new Date('1999-03-10T00:00:00Z').getTime();
-            const pts = raw.map(([ds, p]) => {
-                const ms = new Date(ds + 'T00:00:00Z').getTime();
-                const days = (ms - GENESIS) / 864e5;
-                return { days, logPrice: Math.log10(p), price: p };
-            }).filter(p => p.days > 0 && p.price > 0);
-
-            const n = pts.length;
-            let sx=0,sy=0,sxy=0,sxx=0;
-            pts.forEach(p => { sx+=p.days; sy+=p.logPrice; sxy+=p.days*p.logPrice; sxx+=p.days*p.days; });
-            const slope = (n*sxy - sx*sy) / (n*sxx - sx*sx);
-            const intercept = (sy - slope*sx) / n;
-
-            let minRes=Infinity, maxRes=-Infinity;
-            pts.forEach(p => {
-                p.regLogPrice = slope * p.days + intercept;
-                p.residual = p.logPrice - p.regLogPrice;
-                if (p.residual < minRes) minRes = p.residual;
-                if (p.residual > maxRes) maxRes = p.residual;
-            });
-
-            const resRange = maxRes - minRes;
-            const last = pts[pts.length - 1];
-            const risk = Math.max(0, Math.min(1, (last.residual - minRes) / resRange));
-
-            let zone, zone_color;
-            if (risk < 0.25) { zone = "Accumulate"; zone_color = "#58c56f"; }
-            else if (risk < 0.50) { zone = "Neutral"; zone_color = "#80b883"; }
-            else if (risk < 0.75) { zone = "Caution"; zone_color = "#ffbf63"; }
-            else { zone = "Euphoria"; zone_color = "#ef5d4f"; }
-
-            qqqRiskData = { risk_combo: risk, zone, zone_color };
+            qqqRiskData = await computeEquityRisk('QQQ', 'data_qqq.csv');
         } catch (e) {
             console.warn('QQQ risk computation failed:', e);
         }
@@ -626,7 +635,7 @@
 
     function renderQqqRisk() {
         if (!qqqRiskData) return "";
-        return renderRiskBar(qqqRiskData.risk_combo, qqqRiskData.zone, qqqRiskData.zone_color, "qqq-risk-metric.html", "QQQ", "Structural Risk");
+        return renderRiskBar(qqqRiskData.risk_combo, qqqRiskData.zone, qqqRiskData.zone_color, "qqq-risk-metric.html", "QQQ", "200W Risk");
     }
 
     function renderIndexCard() {

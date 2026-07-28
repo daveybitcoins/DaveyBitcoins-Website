@@ -14,6 +14,16 @@ const checks = [
       if (rows < 100) throw new Error(`expected at least 100 scanner rows, got ${rows}`);
       await expectText(page, 'Weekly EMA Strategy Scanner');
       await expectText(page, 'Dashboard');
+      for (const symbol of ['SPY', 'QQQ']) {
+        const gauge = page.locator(`.risk-bar-wrap[data-risk-asset="${symbol}"]`);
+        if (await gauge.getAttribute('data-risk-model') !== '200w-trailing20y-weekly') {
+          throw new Error(`${symbol} scanner gauge is not using the weekly 200W model`);
+        }
+        const value = Number(await gauge.getAttribute('data-risk-value'));
+        if (!Number.isFinite(value) || value < 0 || value > 1) {
+          throw new Error(`invalid ${symbol} scanner risk ${value}`);
+        }
+      }
     },
   },
   {
