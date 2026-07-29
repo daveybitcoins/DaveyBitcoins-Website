@@ -137,6 +137,7 @@
   border: 1px solid var(--spy-border);
   border-radius: 3px;
   background: color-mix(in srgb, var(--spy-card) 95%, transparent);
+  text-align: center;
 }
 
 .spy-page .card::before {
