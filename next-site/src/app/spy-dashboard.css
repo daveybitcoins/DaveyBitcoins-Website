@@ -315,7 +315,7 @@
   padding: 0.72rem 0.8rem;
   border-bottom: 1px solid var(--spy-border-soft);
   font-size: 0.66rem;
-  text-align: right;
+  text-align: center;
 }
 
 .spy-page th {
@@ -331,7 +331,7 @@
 .spy-page td:first-child,
 .spy-page th:nth-child(2),
 .spy-page td:nth-child(2) {
-  text-align: left;
+  text-align: center;
 }
 
 .spy-page tr:last-child td {

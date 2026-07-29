@@ -227,7 +227,7 @@
 .btc-page #marketCapTable td:not(:first-child),
 .btc-page #projTable th:not(:first-child),
 .btc-page #projTable td:not(:first-child) {
-  text-align: right;
+  text-align: center;
 }
 
 .btc-page #projTable th:nth-child(1) {
