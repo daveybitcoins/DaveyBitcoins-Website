@@ -1,0 +1,3 @@
+:HL["/_next/static/chunks/3op59vx4o_i1a.css","style"]
+:HL["/_next/static/chunks/0x6iysdy1agz1.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"dividend-tracker","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"xFM_plNK6gXasgfYI58ri"}
