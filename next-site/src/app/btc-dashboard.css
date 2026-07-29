@@ -8,7 +8,7 @@
 
 .btc-page .dashboard > .card {
   display: flex;
-  aspect-ratio: 1;
+  aspect-ratio: 4 / 3;
   flex: 0 0 var(--btc-card-basis);
   min-height: 0;
   flex-direction: column;
