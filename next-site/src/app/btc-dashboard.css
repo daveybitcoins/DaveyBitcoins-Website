@@ -3,7 +3,7 @@
 
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-between;
 }
 
 .btc-page .dashboard > .card {
@@ -26,6 +26,22 @@
 
 .btc-page .dashboard .card-value--price {
   font-size: clamp(1.35rem, 1.9vw, 1.7rem);
+}
+
+.btc-page #vFair {
+  color: var(--spy-orange);
+}
+
+.btc-page #vDev {
+  color: #58c56f;
+}
+
+.btc-page .halving-card .card-value {
+  color: #ffbf63;
+}
+
+.btc-page .difficulty-card .card-value {
+  color: #6aa9ff;
 }
 
 .btc-page .dashboard .card-sub,
@@ -299,9 +315,19 @@
   }
 }
 
+@media (min-width: 901px) and (max-width: 1050px) {
+  .btc-page .dashboard .bear-card {
+    margin-inline: auto;
+  }
+}
+
 @media (max-width: 700px) {
   .btc-page .dashboard {
     --btc-card-basis: calc(26.6667% - 0.32rem);
+  }
+
+  .btc-page .dashboard .bear-card {
+    margin-inline: auto;
   }
 }
 
