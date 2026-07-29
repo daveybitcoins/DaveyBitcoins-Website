@@ -257,10 +257,10 @@ button {
 .hero-copy h1 {
   max-width: 800px;
   margin: 1.7rem 0 1.5rem;
-  font-size: clamp(3.8rem, 7vw, 7rem);
+  font-size: clamp(3rem, 4.5vw, 4.75rem);
   font-weight: 760;
-  letter-spacing: -0.072em;
-  line-height: 0.93;
+  letter-spacing: -0.058em;
+  line-height: 0.98;
 }
 
 .hero-copy h1 span {
@@ -922,8 +922,8 @@ button {
   }
 
   .hero-copy h1 {
-    font-size: clamp(3.15rem, 17vw, 5rem);
-    letter-spacing: -0.075em;
+    font-size: clamp(2.65rem, 11vw, 3.5rem);
+    letter-spacing: -0.06em;
   }
 
   .eyebrow {
