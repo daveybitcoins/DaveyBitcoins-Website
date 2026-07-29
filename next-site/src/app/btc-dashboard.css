@@ -7,7 +7,7 @@
 .btc-page .bear-progress {
   position: relative;
   height: 5px;
-  margin-top: 0.8rem;
+  margin-top: 0.6rem;
   overflow: hidden;
   background: var(--spy-border-soft);
 }
@@ -38,9 +38,9 @@
   display: flex;
   justify-content: space-between;
   gap: 0.5rem;
-  margin-top: 0.45rem;
+  margin-top: 0.35rem;
   color: var(--spy-faint);
-  font-size: 0.49rem;
+  font-size: 0.46rem;
 }
 
 .btc-page .moving-averages-card {
@@ -53,7 +53,7 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .btc-page .moving-averages-grid {
@@ -63,23 +63,23 @@
 }
 
 .btc-page .moving-average-item {
-  padding: 0.85rem;
+  padding: 0.65rem;
   border: 1px solid var(--spy-border);
   background: color-mix(in srgb, var(--spy-canvas) 82%, transparent);
   text-align: center;
 }
 
 .btc-page .moving-average-period {
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.3rem;
   color: var(--spy-orange);
-  font-size: 0.58rem;
+  font-size: 0.54rem;
   font-weight: 700;
   letter-spacing: 0.08em;
 }
 
 .btc-page .moving-average-value {
   color: var(--spy-text);
-  font-size: 0.95rem;
+  font-size: 0.84rem;
   font-weight: 700;
 }
 

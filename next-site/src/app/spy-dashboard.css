@@ -124,15 +124,15 @@
 .spy-page .dashboard {
   display: grid;
   grid-template-columns: 1.35fr repeat(4, 1fr);
-  gap: 0.75rem;
-  margin: 1rem 0;
+  gap: 0.6rem;
+  margin: 0.75rem 0;
 }
 
 .spy-page .card {
   position: relative;
   min-width: 0;
-  min-height: 160px;
-  padding: 1.2rem;
+  min-height: 138px;
+  padding: 0.95rem;
   overflow: hidden;
   border: 1px solid var(--spy-border);
   border-radius: 3px;
@@ -150,30 +150,30 @@
 
 .spy-page .card-label {
   color: var(--spy-faint);
-  font-size: 0.61rem;
+  font-size: 0.56rem;
   font-weight: 650;
   letter-spacing: 0.09em;
   text-transform: uppercase;
 }
 
 .spy-page .card-value {
-  margin-top: 0.75rem;
+  margin-top: 0.55rem;
   color: var(--val-color, var(--spy-text));
-  font-size: clamp(1.4rem, 2.4vw, 2.25rem);
+  font-size: clamp(1.25rem, 2vw, 1.95rem);
   font-weight: 700;
   letter-spacing: -0.055em;
 }
 
 .spy-page .card-value--price {
-  font-size: clamp(1.9rem, 3vw, 2.7rem);
+  font-size: clamp(1.65rem, 2.5vw, 2.3rem);
 }
 
 .spy-page .card-sub,
 .spy-page .card-detail {
-  margin-top: 0.55rem;
+  margin-top: 0.4rem;
   color: var(--spy-muted);
-  font-size: 0.6rem;
-  line-height: 1.55;
+  font-size: 0.55rem;
+  line-height: 1.45;
 }
 
 .spy-page .card-detail--gold {
@@ -184,7 +184,7 @@
 .spy-page .risk-bar-wrap {
   position: relative;
   height: 7px;
-  margin-top: 1rem;
+  margin-top: 0.75rem;
 }
 
 .spy-page .risk-bar-bg {
@@ -215,9 +215,9 @@
 .spy-page .zone-labels {
   display: flex;
   justify-content: space-between;
-  margin-top: 0.55rem;
+  margin-top: 0.42rem;
   color: var(--spy-faint);
-  font-size: 0.48rem;
+  font-size: 0.44rem;
   text-transform: uppercase;
 }
 
