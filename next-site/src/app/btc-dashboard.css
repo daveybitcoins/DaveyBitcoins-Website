@@ -145,6 +145,77 @@
   min-width: 820px;
 }
 
+.btc-page #marketCapTable,
+.btc-page #projTable,
+.btc-page #riskLowsTable {
+  table-layout: fixed;
+}
+
+.btc-page #marketCapTable th:nth-child(1) {
+  width: 32%;
+}
+
+.btc-page #marketCapTable th:nth-child(2) {
+  width: 32%;
+}
+
+.btc-page #marketCapTable th:nth-child(3) {
+  width: 36%;
+}
+
+.btc-page #marketCapTable th:not(:first-child),
+.btc-page #marketCapTable td:not(:first-child),
+.btc-page #projTable th:not(:first-child),
+.btc-page #projTable td:not(:first-child) {
+  text-align: right;
+}
+
+.btc-page #projTable th:nth-child(1) {
+  width: 18%;
+}
+
+.btc-page #projTable th:nth-child(2) {
+  width: 20%;
+}
+
+.btc-page #projTable th:nth-child(3) {
+  width: 22%;
+}
+
+.btc-page #projTable th:nth-child(4),
+.btc-page #projTable th:nth-child(5) {
+  width: 20%;
+}
+
+.btc-page #riskLowsTable {
+  min-width: 940px;
+}
+
+.btc-page #riskLowsTable th:nth-child(1) {
+  width: 13%;
+}
+
+.btc-page #riskLowsTable th:nth-child(2) {
+  width: 29%;
+}
+
+.btc-page #riskLowsTable th:nth-child(3),
+.btc-page #riskLowsTable th:nth-child(4) {
+  width: 13%;
+}
+
+.btc-page #riskLowsTable th:nth-child(5),
+.btc-page #riskLowsTable th:nth-child(6),
+.btc-page #riskLowsTable th:nth-child(7) {
+  width: 10.66%;
+}
+
+.btc-page #marketCapTable td,
+.btc-page #projTable td,
+.btc-page #riskLowsTable td {
+  font-variant-numeric: tabular-nums;
+}
+
 .btc-page #midtermLegend {
   display: flex;
   flex-wrap: wrap;
