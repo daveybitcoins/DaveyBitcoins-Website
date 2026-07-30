@@ -1,3 +1,3 @@
-:HL["/_next/static/css/d342de931bbe759c.css","style"]
+:HL["/_next/static/css/88795102e2122f72.css","style"]
 :HL["/_next/static/css/573089ee1cdcece9.css","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"dividend-tracker","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"Uv5mYiLFvJHzZajQd2WCx"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"dividend-tracker","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"iiERh40bVIrZ3_cukQwxo"}
