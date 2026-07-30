@@ -207,7 +207,6 @@ export default function BitcoinRiskMetricPage() {
         <section className="spy-panel risk-table-wrap">
           <div className="spy-section-heading">
             <div>
-              <p className="spy-section-index">01 / Risk map</p>
               <h2>Price at Each Risk Level (Combined)</h2>
             </div>
             <p>
@@ -221,7 +220,6 @@ export default function BitcoinRiskMetricPage() {
         <section className="spy-panel proj-table-wrap">
           <div className="spy-section-heading">
             <div>
-              <p className="spy-section-index">02 / Market cap</p>
               <h2>BTC Price at Market Caps</h2>
             </div>
             <p>
@@ -254,7 +252,6 @@ export default function BitcoinRiskMetricPage() {
         <section className="spy-panel proj-table-wrap">
           <div className="spy-section-heading">
             <div>
-              <p className="spy-section-index">03 / Fair value</p>
               <h2>Bitcoin Market-Cap-Adjusted Power-Law Fair Value</h2>
             </div>
             <p>
@@ -309,7 +306,6 @@ export default function BitcoinRiskMetricPage() {
         <section className="spy-panel risk-lows-wrap">
           <div className="spy-section-heading">
             <div>
-              <p className="spy-section-index">04 / History</p>
               <h2>Historical Risk Lows — Accumulation Opportunities</h2>
             </div>
             <p>
@@ -338,7 +334,6 @@ export default function BitcoinRiskMetricPage() {
         <section className="spy-panel chart-panel">
           <div className="chart-header">
             <div>
-              <p className="spy-section-index">05 / Price</p>
               <h2 className="chart-label">
                 BTC/USD — Price Colored by Risk (Log Scale)
               </h2>
@@ -356,7 +351,6 @@ export default function BitcoinRiskMetricPage() {
         <section className="spy-panel chart-panel">
           <div className="chart-header">
             <div>
-              <p className="spy-section-index">06 / Cycle</p>
               <h2 className="chart-label">Risk Oscillator (0 – 1)</h2>
             </div>
             <div className="chart-note">
@@ -370,7 +364,6 @@ export default function BitcoinRiskMetricPage() {
         <section className="spy-panel chart-panel">
           <div className="chart-header">
             <div>
-              <p className="spy-section-index">07 / Cycle history</p>
               <h2 className="chart-label">
                 BTC Year-To-Date ROI — Midterm Election Years
               </h2>
@@ -389,7 +382,6 @@ export default function BitcoinRiskMetricPage() {
         <section className="spy-panel methodology">
           <div className="spy-section-heading">
             <div>
-              <p className="spy-section-index">Methodology</p>
               <h2>How combined risk works</h2>
             </div>
             <p>
