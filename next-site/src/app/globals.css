@@ -323,79 +323,302 @@ button {
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 4px;
-  background: var(--surface);
-  box-shadow: 0 26px 90px rgb(0 0 0 / 22%);
+  background:
+    radial-gradient(circle at 50% 44%, rgb(247 147 26 / 13%), transparent 34%),
+    linear-gradient(145deg, color-mix(in srgb, var(--surface-raised) 92%, transparent), var(--surface));
+  box-shadow:
+    0 36px 90px rgb(0 0 0 / 28%),
+    inset 0 1px 0 rgb(255 255 255 / 3%);
+  perspective: 900px;
 }
 
-.signal-panel::after {
+.signal-panel::before {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, rgb(247 147 26 / 12%), transparent 58%);
+  background:
+    linear-gradient(90deg, transparent 49.8%, rgb(247 147 26 / 7%) 50%, transparent 50.2%),
+    linear-gradient(transparent 49.8%, rgb(247 147 26 / 7%) 50%, transparent 50.2%);
   content: "";
   pointer-events: none;
 }
 
-.signal-rings {
+.signal-panel::after {
+  position: absolute;
+  inset: 12% 9%;
+  border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  border-radius: 50%;
+  box-shadow: 0 0 80px rgb(247 147 26 / 5%);
+  content: "";
+  pointer-events: none;
+  transform: rotateX(68deg);
+}
+
+.signal-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.25;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--line) 58%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--line) 58%, transparent) 1px, transparent 1px);
+  background-size: 38px 38px;
+  mask-image: radial-gradient(circle at center, #000, transparent 72%);
+  transform: perspective(500px) rotateX(64deg) scale(1.4) translateY(24%);
+  transform-origin: center 70%;
+}
+
+.signal-scene {
   position: absolute;
   inset: 50% auto auto 50%;
-  width: 340px;
+  width: 360px;
   aspect-ratio: 1;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) rotateX(-8deg) rotateY(12deg);
+  transform-style: preserve-3d;
+  animation: signal-float 7s ease-in-out infinite;
 }
 
-.signal-rings span {
+.signal-orbit {
   position: absolute;
-}
-
-.signal-rings__outer,
-.signal-rings__middle,
-.signal-rings__inner {
   inset: 0;
   border: 1px solid var(--line-strong);
   border-radius: 50%;
+  transform-style: preserve-3d;
 }
 
-.signal-rings__middle {
-  inset: 19%;
+.signal-orbit::before {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from 20deg,
+    transparent 0 58%,
+    rgb(247 147 26 / 6%) 68%,
+    rgb(247 147 26 / 78%) 82%,
+    transparent 84%
+  );
+  content: "";
+  mask: radial-gradient(circle, transparent 68.7%, #000 69.2% 69.8%, transparent 70.3%);
+}
+
+.signal-orbit--outer {
+  border-color: color-mix(in srgb, var(--orange) 30%, var(--line));
+  transform: rotateX(67deg) rotateZ(8deg);
+  animation: orbit-outer 14s linear infinite;
+}
+
+.signal-orbit--middle {
+  inset: 14%;
   border-style: dashed;
+  transform: rotateY(70deg) rotateZ(24deg);
+  animation: orbit-middle 11s linear infinite reverse;
 }
 
-.signal-rings__inner {
-  inset: 37%;
-  border-color: var(--orange);
-  background: color-mix(in srgb, var(--orange) 10%, var(--surface));
+.signal-orbit--inner {
+  inset: 27%;
+  border-color: color-mix(in srgb, var(--orange) 72%, var(--line));
+  transform: rotateX(38deg) rotateY(58deg) rotateZ(-18deg);
+  animation: orbit-inner 8s linear infinite;
+}
+
+.signal-orbit__node {
+  position: absolute;
+  top: 50%;
+  right: -5px;
+  width: 9px;
+  height: 9px;
+  border: 1px solid #ffd59b;
+  border-radius: 50%;
+  background: var(--orange);
   box-shadow:
-    0 0 40px rgb(247 147 26 / 12%),
-    inset 0 0 30px rgb(247 147 26 / 12%);
+    0 0 8px var(--orange),
+    0 0 22px rgb(247 147 26 / 65%);
+  transform: translateY(-50%) translateZ(3px);
 }
 
-.signal-rings__mark {
-  inset: 50% auto auto 50%;
-  z-index: 2;
-  color: var(--orange-soft);
-  font-size: 3.2rem;
-  font-weight: 700;
-  transform: translate(-50%, -52%);
+.signal-orbit--middle .signal-orbit__node {
+  width: 7px;
+  height: 7px;
 }
 
-.signal-rings__sweep {
+.signal-orbit--inner .signal-orbit__node {
+  width: 6px;
+  height: 6px;
+}
+
+.signal-coin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 112px;
+  height: 112px;
+  transform: translate(-50%, -50%) translateZ(22px) rotateX(-8deg);
+  transform-style: preserve-3d;
+  animation: coin-turn 9s linear infinite;
+}
+
+.signal-coin__edge,
+.signal-coin__face {
+  position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: conic-gradient(
-    from 210deg,
-    transparent 0deg,
-    rgb(247 147 26 / 0%) 270deg,
-    rgb(247 147 26 / 34%) 354deg,
-    var(--orange) 359deg,
-    transparent 360deg
-  );
-  mask: radial-gradient(circle, transparent 0 49%, #000 50% 50.5%, transparent 51%);
-  animation: sweep 9s linear infinite;
 }
 
-@keyframes sweep {
+.signal-coin__edge {
+  border: 4px double color-mix(in srgb, var(--orange-soft) 68%, #4e2907);
+  background:
+    repeating-conic-gradient(
+      from 4deg,
+      #6d3909 0 5deg,
+      #f7931a 5deg 8deg,
+      #8d4b0d 8deg 12deg
+    );
+  box-shadow: 0 0 18px rgb(247 147 26 / 15%);
+}
+
+.signal-coin__face {
+  display: grid;
+  place-items: center;
+  border: 3px solid #ffbd5d;
+  background:
+    radial-gradient(circle at 34% 28%, #ffd28d 0 3%, transparent 4%),
+    radial-gradient(circle at 36% 30%, #ffb341, #d86e05 62%, #8d4304);
+  box-shadow:
+    inset 0 0 0 5px #b85b06,
+    inset 0 0 0 7px #ffc164,
+    inset -14px -18px 28px rgb(77 32 0 / 35%),
+    0 0 40px rgb(247 147 26 / 25%);
+  color: #fff0d6;
+  font-size: 3.55rem;
+  font-weight: 800;
+  line-height: 1;
+  text-shadow:
+    1px 2px 0 #8c4307,
+    -1px -1px 0 #ffd18a;
+  backface-visibility: hidden;
+}
+
+.signal-coin__face::after {
+  position: absolute;
+  inset: 13px;
+  border: 1px dashed rgb(255 231 193 / 45%);
+  border-radius: 50%;
+  content: "";
+}
+
+.signal-coin__face--front {
+  transform: translateZ(10px);
+}
+
+.signal-coin__face--back {
+  background:
+    radial-gradient(circle at 34% 28%, #ffbd5d, #cb6505 66%, #713403);
+  transform: rotateY(180deg) translateZ(10px);
+}
+
+.signal-shadow {
+  position: absolute;
+  top: 66%;
+  left: 50%;
+  width: 145px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 55%);
+  filter: blur(13px);
+  transform: translate(-50%, -50%) rotateX(72deg) translateZ(-75px);
+  animation: signal-shadow 7s ease-in-out infinite;
+}
+
+.signal-panel__label {
+  position: absolute;
+  z-index: 4;
+  color: var(--faint);
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.52rem;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.signal-panel__label--top {
+  top: 1.25rem;
+  left: 1.25rem;
+}
+
+.signal-panel__label--bottom {
+  right: 1.25rem;
+  bottom: 1.25rem;
+}
+
+@keyframes signal-float {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) rotateX(-8deg) rotateY(12deg) translateY(0);
+  }
+  50% {
+    transform: translate(-50%, -50%) rotateX(-4deg) rotateY(-7deg) translateY(-9px);
+  }
+}
+
+@keyframes signal-shadow {
+  0%,
+  100% {
+    opacity: 0.55;
+    scale: 1;
+  }
+  50% {
+    opacity: 0.35;
+    scale: 0.86;
+  }
+}
+
+@keyframes orbit-outer {
   to {
-    transform: rotate(360deg);
+    transform: rotateX(67deg) rotateZ(368deg);
+  }
+}
+
+@keyframes orbit-middle {
+  to {
+    transform: rotateY(70deg) rotateZ(384deg);
+  }
+}
+
+@keyframes orbit-inner {
+  to {
+    transform: rotateX(38deg) rotateY(58deg) rotateZ(342deg);
+  }
+}
+
+@keyframes coin-turn {
+  0% {
+    transform: translate(-50%, -50%) translateZ(22px) rotateX(-8deg) rotateY(0deg);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateZ(28px) rotateX(7deg) rotateY(180deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) translateZ(22px) rotateX(-8deg) rotateY(360deg);
+  }
+}
+
+@supports not (transform-style: preserve-3d) {
+  .signal-scene,
+  .signal-coin {
+    transform-style: flat;
+  }
+
+  .signal-coin__face--back,
+  .signal-coin__edge {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signal-scene {
+    transform: translate(-50%, -50%) rotateX(-8deg) rotateY(12deg);
+  }
+
+  .signal-coin {
+    transform: translate(-50%, -50%) translateZ(22px) rotateX(-8deg) rotateY(-24deg);
   }
 }
 
@@ -939,8 +1162,17 @@ button {
     min-height: 340px;
   }
 
-  .signal-rings {
+  .signal-scene {
     width: 260px;
+  }
+
+  .signal-coin {
+    width: 92px;
+    height: 92px;
+  }
+
+  .signal-coin__face {
+    font-size: 2.9rem;
   }
 
   .tools-shell {
