@@ -527,27 +527,6 @@ button {
   animation: signal-shadow 7s ease-in-out infinite;
 }
 
-.signal-panel__label {
-  position: absolute;
-  z-index: 4;
-  color: var(--faint);
-  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
-  font-size: 0.52rem;
-  font-weight: 650;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.signal-panel__label--top {
-  top: 1.25rem;
-  left: 1.25rem;
-}
-
-.signal-panel__label--bottom {
-  right: 1.25rem;
-  bottom: 1.25rem;
-}
-
 @keyframes signal-float {
   0%,
   100% {

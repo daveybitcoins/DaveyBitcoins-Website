@@ -223,12 +223,6 @@ export default function Home() {
 
               <span className="signal-shadow" />
             </div>
-            <span className="signal-panel__label signal-panel__label--top">
-              Market signal / live
-            </span>
-            <span className="signal-panel__label signal-panel__label--bottom">
-              03 axes · 360° cycle
-            </span>
           </div>
         </div>
       </section>
