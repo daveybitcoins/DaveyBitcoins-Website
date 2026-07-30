@@ -192,14 +192,43 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="signal-panel" aria-label="Animated Bitcoin orbit">
-            <div className="signal-rings" aria-hidden="true">
-              <span className="signal-rings__outer" />
-              <span className="signal-rings__middle" />
-              <span className="signal-rings__inner" />
-              <span className="signal-rings__mark">₿</span>
-              <span className="signal-rings__sweep" />
+          <div className="signal-panel" aria-label="Animated 3D Bitcoin orbit">
+            <div className="signal-grid" aria-hidden="true" />
+            <div className="signal-scene" aria-hidden="true">
+              <div className="signal-orbit signal-orbit--outer">
+                <span className="signal-orbit__node" />
+              </div>
+              <div className="signal-orbit signal-orbit--middle">
+                <span className="signal-orbit__node" />
+              </div>
+              <div className="signal-orbit signal-orbit--inner">
+                <span className="signal-orbit__node" />
+              </div>
+
+              <div className="signal-coin">
+                {[-8, -4, 0, 4, 8].map((depth) => (
+                  <span
+                    className="signal-coin__edge"
+                    style={{ transform: `translateZ(${depth}px)` }}
+                    key={depth}
+                  />
+                ))}
+                <span className="signal-coin__face signal-coin__face--front">
+                  ₿
+                </span>
+                <span className="signal-coin__face signal-coin__face--back">
+                  ₿
+                </span>
+              </div>
+
+              <span className="signal-shadow" />
             </div>
+            <span className="signal-panel__label signal-panel__label--top">
+              Market signal / live
+            </span>
+            <span className="signal-panel__label signal-panel__label--bottom">
+              03 axes · 360° cycle
+            </span>
           </div>
         </div>
       </section>
