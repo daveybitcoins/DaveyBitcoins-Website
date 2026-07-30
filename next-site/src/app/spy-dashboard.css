@@ -53,7 +53,7 @@
 
 .spy-intro {
   position: relative;
-  padding: 2.4rem 0 2rem;
+  padding: 0.85rem 0 0.9rem;
   border-bottom: 1px solid var(--spy-border);
 }
 
@@ -68,9 +68,9 @@
 }
 
 .spy-intro h1 {
-  margin: 0.8rem 0 0.7rem;
+  margin: 0.35rem 0;
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(2.7rem, 6vw, 5.6rem);
+  font-size: clamp(1rem, 1.6vw, 1.5rem);
   font-weight: 760;
   letter-spacing: -0.07em;
   line-height: 0.95;
@@ -111,7 +111,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   padding: 0.3rem 0.55rem;
   border: 1px solid color-mix(in srgb, var(--spy-orange) 30%, transparent);
   border-radius: 2px;
@@ -151,7 +151,7 @@
 
 .spy-page .card-label {
   color: var(--spy-faint);
-  font-size: 0.56rem;
+  font-size: 0.64rem;
   font-weight: 650;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -160,20 +160,20 @@
 .spy-page .card-value {
   margin-top: 0.55rem;
   color: var(--val-color, var(--spy-text));
-  font-size: clamp(1.25rem, 2vw, 1.95rem);
+  font-size: clamp(1.45rem, 2.2vw, 2.15rem);
   font-weight: 700;
   letter-spacing: -0.055em;
 }
 
 .spy-page .card-value--price {
-  font-size: clamp(1.65rem, 2.5vw, 2.3rem);
+  font-size: clamp(1.85rem, 2.7vw, 2.55rem);
 }
 
 .spy-page .card-sub,
 .spy-page .card-detail {
   margin-top: 0.4rem;
   color: var(--spy-muted);
-  font-size: 0.55rem;
+  font-size: 0.62rem;
   line-height: 1.45;
 }
 
@@ -218,7 +218,7 @@
   justify-content: space-between;
   margin-top: 0.42rem;
   color: var(--spy-faint);
-  font-size: 0.44rem;
+  font-size: 0.5rem;
   text-transform: uppercase;
 }
 
