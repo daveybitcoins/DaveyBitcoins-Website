@@ -99,7 +99,6 @@ export default function QqqRiskMetricPage() {
         <section className="spy-panel risk-table-wrap">
           <div className="spy-section-heading">
             <div>
-              <p className="spy-section-index">01 / Risk map</p>
               <h2>Risk Price Scenarios</h2>
             </div>
             <p>
@@ -116,7 +115,6 @@ export default function QqqRiskMetricPage() {
         <section className="spy-panel risk-lows-wrap">
           <div className="spy-section-heading">
             <div>
-              <p className="spy-section-index">02 / History</p>
               <h2>Notable Historic Market Events</h2>
             </div>
             <p>
@@ -146,7 +144,6 @@ export default function QqqRiskMetricPage() {
         <section className="spy-panel chart-panel">
           <div className="chart-header">
             <div>
-              <p className="spy-section-index">03 / Price</p>
               <h2 className="chart-label">
                 QQQ — Price Colored by Risk (Log Scale)
               </h2>
@@ -161,7 +158,6 @@ export default function QqqRiskMetricPage() {
         <section className="spy-panel chart-panel">
           <div className="chart-header">
             <div>
-              <p className="spy-section-index">04 / Cycle</p>
               <h2 className="chart-label">200W Risk Oscillator (0 – 1)</h2>
             </div>
             <div className="chart-note">
@@ -176,7 +172,6 @@ export default function QqqRiskMetricPage() {
         <section className="spy-panel chart-panel">
           <div className="chart-header">
             <div>
-              <p className="spy-section-index">05 / Volatility</p>
               <h2 className="chart-label">VIX — Fear Index</h2>
             </div>
             <div className="chart-note">
@@ -190,7 +185,6 @@ export default function QqqRiskMetricPage() {
         <section className="spy-panel chart-panel" id="dcaSection">
           <div className="chart-header">
             <div>
-              <p className="spy-section-index">06 / Backtest</p>
               <h2 className="chart-label">DCA Simulator</h2>
             </div>
             <div className="chart-note">
@@ -351,7 +345,6 @@ export default function QqqRiskMetricPage() {
         <section className="spy-panel methodology">
           <div className="spy-section-heading">
             <div>
-              <p className="spy-section-index">Methodology</p>
               <h2>How the model works</h2>
             </div>
             <p>

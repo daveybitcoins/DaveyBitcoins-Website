@@ -100,7 +100,6 @@ export default function SpyRiskMetricPage() {
         <section className="spy-panel risk-table-wrap">
           <div className="spy-section-heading">
             <div>
-              <p className="spy-section-index">01 / Risk map</p>
               <h2>Risk Price Scenarios</h2>
             </div>
             <p>
@@ -117,7 +116,6 @@ export default function SpyRiskMetricPage() {
         <section className="spy-panel pe-proj-wrap valuation-stress-wrap">
           <div className="spy-section-heading">
             <div>
-              <p className="spy-section-index">02 / Valuation</p>
               <h2>Valuation-Aware Downside Scenarios</h2>
             </div>
             <p>
@@ -149,7 +147,6 @@ export default function SpyRiskMetricPage() {
         <section className="spy-panel pe-proj-wrap">
           <div className="spy-section-heading">
             <div>
-              <p className="spy-section-index">03 / Earnings</p>
               <h2>Forward P/E Price Projections</h2>
             </div>
             <p className="pe-current-context" id="peCurrentContext" />
@@ -221,7 +218,6 @@ export default function SpyRiskMetricPage() {
         <section className="spy-panel risk-lows-wrap">
           <div className="spy-section-heading">
             <div>
-              <p className="spy-section-index">04 / History</p>
               <h2>Notable Historic Market Events</h2>
             </div>
             <p>
@@ -251,7 +247,6 @@ export default function SpyRiskMetricPage() {
         <section className="spy-panel chart-panel">
           <div className="chart-header">
             <div>
-              <p className="spy-section-index">05 / Price</p>
               <h2 className="chart-label">
                 SPY — Price Colored by Risk (Log Scale)
               </h2>
@@ -266,7 +261,6 @@ export default function SpyRiskMetricPage() {
         <section className="spy-panel chart-panel">
           <div className="chart-header">
             <div>
-              <p className="spy-section-index">06 / Cycle</p>
               <h2 className="chart-label">200W Risk Oscillator (0 – 1)</h2>
             </div>
             <div className="chart-note">
@@ -281,7 +275,6 @@ export default function SpyRiskMetricPage() {
         <section className="spy-panel chart-panel">
           <div className="chart-header">
             <div>
-              <p className="spy-section-index">07 / Volatility</p>
               <h2 className="chart-label">VIX — Fear Index</h2>
             </div>
             <div className="chart-note">
@@ -295,7 +288,6 @@ export default function SpyRiskMetricPage() {
         <section className="spy-panel chart-panel" id="dcaSection">
           <div className="chart-header">
             <div>
-              <p className="spy-section-index">08 / Backtest</p>
               <h2 className="chart-label">DCA Simulator</h2>
             </div>
             <div className="chart-note">
@@ -456,7 +448,6 @@ export default function SpyRiskMetricPage() {
         <section className="spy-panel methodology">
           <div className="spy-section-heading">
             <div>
-              <p className="spy-section-index">Methodology</p>
               <h2>How the model works</h2>
             </div>
             <p>
