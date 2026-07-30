@@ -70,7 +70,7 @@
 .spy-intro h1 {
   margin: 0.35rem 0;
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(1rem, 1.6vw, 1.5rem);
+  font-size: clamp(2rem, 3.2vw, 3.15rem);
   font-weight: 760;
   letter-spacing: -0.07em;
   line-height: 0.95;
