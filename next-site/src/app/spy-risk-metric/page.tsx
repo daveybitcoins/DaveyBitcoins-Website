@@ -13,6 +13,7 @@ export const metadata: Metadata = {
     description:
       "SPY risk, valuation scenarios, market history, and a risk-based DCA simulator.",
     url: "/spy-risk-metric/",
+    images: ["/social-preview.png"],
   },
 };
 

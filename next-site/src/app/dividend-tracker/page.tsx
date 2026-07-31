@@ -14,6 +14,7 @@ export const metadata: Metadata = {
     description:
       "Track dividend income, yields, holdings, and upcoming payouts with a monthly calendar.",
     url: "/dividend-tracker/",
+    images: ["/social-preview.png"],
   },
 };
 

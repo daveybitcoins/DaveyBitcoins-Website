@@ -14,6 +14,7 @@ export const metadata: Metadata = {
     description:
       "Daily trend, pullback, momentum, sector, crossover, and market-risk context for the top 300 stocks.",
     url: "/ema-scanner/",
+    images: ["/social-preview.png"],
   },
 };
 

@@ -14,6 +14,14 @@ export const metadata: Metadata = {
       "Market risk metrics and practical investing tools for long-term builders.",
     url: "/",
     siteName: "DaveyBitcoins",
+    images: [
+      {
+        url: "/social-preview.png",
+        width: 1200,
+        height: 630,
+        alt: "A glowing Bitcoin surrounded by orbital rings",
+      },
+    ],
     type: "website",
   },
   twitter: {
@@ -21,6 +29,7 @@ export const metadata: Metadata = {
     title: "DaveyBitcoins",
     description:
       "Market risk metrics and practical investing tools for long-term builders.",
+    images: ["/social-preview.png"],
   },
 };
 
