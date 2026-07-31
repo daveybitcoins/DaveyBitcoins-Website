@@ -13,6 +13,7 @@ export const metadata: Metadata = {
     description:
       "QQQ market-cycle risk, historic events, and a risk-based DCA simulator.",
     url: "/qqq-risk-metric/",
+    images: ["/social-preview.png"],
   },
 };
 

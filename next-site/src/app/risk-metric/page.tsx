@@ -13,6 +13,7 @@ export const metadata: Metadata = {
     description:
       "Bitcoin combined risk, weekly moving averages, cycle context, and market-cap-adjusted fair value.",
     url: "/risk-metric/",
+    images: ["/social-preview.png"],
   },
 };
 
