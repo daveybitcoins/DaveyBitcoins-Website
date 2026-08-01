@@ -95,11 +95,25 @@ const checks = [
       if (dec2040Value < 1.5e6 || dec2040Value > 3e6) {
         throw new Error(`expected adjusted Dec 2040 fair value, got ${dec2040FairValue}`);
       }
-      await expectText(page, 'market-cap-adjusted fair value through 2040 in All view');
+      await expectText(page, 'market-cap-adjusted fair value through 2040');
       const projectionEnd = await page.locator('#priceCanvas').getAttribute('data-projection-end');
       const projectionPoints = Number(await page.locator('#priceCanvas').getAttribute('data-projection-points'));
       if (projectionEnd !== '2040-12-01' || projectionPoints < 5000) {
         throw new Error(`expected price chart projection through 2040, got ${projectionEnd} with ${projectionPoints} points`);
+      }
+      const zoomControls = await page.locator('.zoom-btn, .brush-overlay').count();
+      if (zoomControls !== 0) {
+        throw new Error(`expected fixed BTC chart views without zoom controls, found ${zoomControls}`);
+      }
+      await page.locator('#priceCanvas').dispatchEvent('wheel', { deltaY: -120 });
+      await page.waitForTimeout(50);
+      if (await page.locator('#priceCanvas').getAttribute('data-projection-end') !== '2040-12-01') {
+        throw new Error('BTC price chart changed range after a wheel event');
+      }
+      await page.locator('#riskCanvas').dispatchEvent('wheel', { deltaY: -120 });
+      await page.waitForTimeout(50);
+      if (await page.locator('#priceCanvas').getAttribute('data-projection-end') !== '2040-12-01') {
+        throw new Error('BTC risk chart changed the shared price-chart range after a wheel event');
       }
     },
   },

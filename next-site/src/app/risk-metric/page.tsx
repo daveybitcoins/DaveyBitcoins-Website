@@ -340,8 +340,7 @@ export default function BitcoinRiskMetricPage() {
               </h2>
             </div>
             <div className="chart-note">
-              Historical risk · market-cap-adjusted fair value through 2040 in
-              All view
+              Historical risk · market-cap-adjusted fair value through 2040
             </div>
           </div>
           <canvas id="priceCanvas" width="1380" height="540" />

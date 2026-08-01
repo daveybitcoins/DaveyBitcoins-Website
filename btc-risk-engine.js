@@ -835,43 +835,10 @@ async function main() {
     });
   }
 
-  // ====== ZOOM/PAN STATE (shared between both charts) ======
-  const view = { startIdx: 0, endIdx: n-1 };
-
-  // Restore view from URL params if present
-  (function restoreFromURL() {
-    const params = new URLSearchParams(window.location.search);
-    const from = params.get('from');
-    const to = params.get('to');
-    if (from) {
-      const idx = pts.findIndex(p => p.date >= from);
-      if (idx >= 0) view.startIdx = idx;
-    }
-    if (to) {
-      let idx = -1;
-      for (let i = pts.length - 1; i >= 0; i--) { if (pts[i].date <= to) { idx = i; break; } }
-      if (idx >= 0) view.endIdx = idx;
-    }
-    if (view.endIdx - view.startIdx < 60) { view.startIdx = 0; view.endIdx = n - 1; }
-  })();
-
-  function syncURL() {
-    const params = new URLSearchParams(window.location.search);
-    const s = Math.max(0, Math.floor(view.startIdx));
-    const e = Math.min(n - 1, Math.ceil(view.endIdx));
-    if (s === 0 && e === n - 1) {
-      params.delete('from'); params.delete('to');
-    } else {
-      params.set('from', pts[s].date);
-      params.set('to', pts[e].date);
-    }
-    const qs = params.toString();
-    const url = window.location.pathname + (qs ? '?' + qs : '');
-    history.replaceState(null, '', url);
-  }
-
+  // These charts intentionally stay on the complete historical view so the
+  // log-price scale and the risk timeline always share one stable context.
   function getVisibleRange() {
-    return { s: Math.max(0, Math.floor(view.startIdx)), e: Math.min(n-1, Math.ceil(view.endIdx)) };
+    return { s: 0, e: n - 1 };
   }
 
   function visibleSample() {
@@ -1053,16 +1020,14 @@ async function main() {
   function renderAll() {
     renderPriceChart();
     renderRiskChart();
-    syncURL();
   }
 
-  // ====== ZOOM / PAN CONTROLS ======
-  function attachZoomPan(canvasId, tipId) {
+  // ====== CHART TOOLTIPS ======
+  function attachChartTooltip(canvasId, tipId) {
     const cv = document.getElementById(canvasId);
     const W = cv.width;
     const P = { l:80, r: canvasId === 'priceCanvas' ? 60 : 76 };
     const cw = W - P.l - P.r;
-    let brushing = false, brushStartX = 0;
     function fullPriceProjectionView() {
       const { s, e } = getVisibleRange();
       return canvasId === 'priceCanvas' && s === 0 && e === n - 1;
@@ -1087,12 +1052,6 @@ async function main() {
       return Math.round(s + (canvasX - P.l) / cw * (end - s));
     }
 
-    // Create brush overlay div inside the chart-panel
-    const panel = cv.closest('.chart-panel');
-    const overlay = document.createElement('div');
-    overlay.className = 'brush-overlay';
-    panel.appendChild(overlay);
-
     function mouseIdxFromEvent(e) {
       const rect = cv.getBoundingClientRect();
       const scaleX = W / rect.width;
@@ -1100,90 +1059,12 @@ async function main() {
       return indexFromCanvasX(mx);
     }
 
-    // Convert canvas X coordinate to a CSS percentage of the canvas element
-    function canvasXToPercent(canvasX) {
-      return Math.max(0, Math.min(100, (canvasX / W) * 100));
-    }
-
-    // Scroll to zoom
-    cv.addEventListener('wheel', e => {
-      e.preventDefault();
-      const { s, e: end } = getVisibleRange();
-      const range = end - s;
-      const mouseIdx = mouseIdxFromEvent(e);
-      const mouseRatio = (mouseIdx - s) / range;
-
-      const zoomFactor = e.deltaY > 0 ? 1.15 : 0.87;
-      const newRange = Math.max(60, Math.min(n-1, range * zoomFactor));
-      const newStart = mouseIdx - mouseRatio * newRange;
-      const newEnd = mouseIdx + (1 - mouseRatio) * newRange;
-
-      view.startIdx = Math.max(0, newStart);
-      view.endIdx = Math.min(n-1, newEnd);
-      if (view.endIdx - view.startIdx < 60) return;
-      renderAll();
-    }, { passive: false });
-
-    // Brush to zoom
-    cv.addEventListener('mousedown', e => {
-      brushing = true;
-      const rect = cv.getBoundingClientRect();
-      brushStartX = e.clientX - rect.left;
-      // Position overlay at start
-      const scaleX = W / rect.width;
-      const canvasX = brushStartX * scaleX;
-      const pct = canvasXToPercent(canvasX);
-      overlay.style.left = pct + '%';
-      overlay.style.width = '0%';
-      overlay.style.display = 'block';
-    });
-
-    window.addEventListener('mousemove', e => {
-      if (!document.querySelector('[data-risk-dashboard="btc"]')) return;
-      if (!brushing) return;
-      const rect = cv.getBoundingClientRect();
-      const scaleX = W / rect.width;
-      const currentX = e.clientX - rect.left;
-      const startCanvas = brushStartX * scaleX;
-      const currentCanvas = currentX * scaleX;
-      // Clamp to chart area
-      const left = Math.max(P.l, Math.min(startCanvas, currentCanvas));
-      const right = Math.min(W - P.r, Math.max(startCanvas, currentCanvas));
-      overlay.style.left = canvasXToPercent(left) + '%';
-      overlay.style.width = canvasXToPercent(right - left) + '%';
-    });
-
-    window.addEventListener('mouseup', e => {
-      if (!brushing) return;
-      brushing = false;
-      overlay.style.display = 'none';
-      // Calculate selected index range
-      const rect = cv.getBoundingClientRect();
-      const scaleX = W / rect.width;
-      const currentX = e.clientX - rect.left;
-      const startCanvas = brushStartX * scaleX;
-      const currentCanvas = currentX * scaleX;
-      const left = Math.max(P.l, Math.min(startCanvas, currentCanvas));
-      const right = Math.min(W - P.r, Math.max(startCanvas, currentCanvas));
-      // Only zoom if selection is wide enough
-      if (right - left < 20) return;
-      const { s, e: end } = getVisibleRange();
-      const range = end - s;
-      const newS = fullPriceProjectionView() ? indexFromCanvasX(left) : s + ((left - P.l) / cw) * range;
-      const newE = fullPriceProjectionView() ? indexFromCanvasX(right) : s + ((right - P.l) / cw) * range;
-      if (newE - newS < 60) return;
-      view.startIdx = Math.max(0, newS);
-      view.endIdx = Math.min(n-1, newE);
-      renderAll();
-    });
-
     cv.style.cursor = 'crosshair';
 
     // Tooltip
     const tip = document.getElementById(tipId);
     cv.addEventListener('mousemove', e => {
       if (!document.querySelector('[data-risk-dashboard="btc"]')) return;
-      if (brushing) { tip.style.display='none'; return; }
       const rect = cv.getBoundingClientRect();
       const scaleX = W / rect.width;
       const canvasX = (e.clientX - rect.left) * scaleX;
@@ -1228,34 +1109,6 @@ async function main() {
       tip.style.top = tipY + 'px';
     });
     cv.addEventListener('mouseleave', () => tip.style.display='none');
-  }
-
-  // ====== ZOOM BUTTONS ======
-  function addZoomButtons() {
-    const bar = document.createElement('div');
-    bar.style.cssText = 'display:flex;justify-content:center;gap:8px;margin:12px 0 4px;flex-wrap:wrap;';
-    const btns = [
-      ['1Y', 365], ['2Y', 730], ['4Y', 1460], ['All', n],
-      ['Reset', -1]
-    ];
-    btns.forEach(([label, days]) => {
-      const b = document.createElement('button');
-      b.textContent = label;
-      b.className = 'zoom-btn';
-      b.addEventListener('click', () => {
-        if (days === -1 || days >= n) {
-          view.startIdx = 0; view.endIdx = n-1;
-        } else {
-          view.startIdx = Math.max(0, n-1-days);
-          view.endIdx = n-1;
-        }
-        renderAll();
-      });
-      bar.appendChild(b);
-    });
-    // Insert after legend bar
-    const legendBar = document.getElementById('legendBar');
-    legendBar.parentNode.insertBefore(bar, legendBar.nextSibling);
   }
 
   // ====== MIDTERM YTD ROI CHART ======
@@ -1511,9 +1364,8 @@ async function main() {
   // ====== INIT ======
   renderAll();
   renderMidtermChart();
-  attachZoomPan('priceCanvas', 'priceTip');
-  attachZoomPan('riskCanvas', 'riskTip');
-  addZoomButtons();
+  attachChartTooltip('priceCanvas', 'priceTip');
+  attachChartTooltip('riskCanvas', 'riskTip');
 
   // Legend bar — labeled segments
   (function(){

@@ -154,10 +154,6 @@
   }
   @media(max-width:900px){.risk-table{grid-template-columns:repeat(5,1fr)}}
   @media(max-width:500px){.risk-table{grid-template-columns:repeat(3,1fr)}}
-  .zoom-btn{background:var(--btn-bg);color:var(--btn-text);border:1px solid var(--btn-border);border-radius:6px;padding:4px 14px;font:11px JetBrains Mono,monospace;cursor:pointer;transition:all 0.2s}
-  .zoom-btn:hover{background:var(--btn-hover);color:var(--btn-hover-text)}
-  .zoom-btn.active{background:var(--btn-hover);color:var(--btn-hover-text)}
-  .brush-overlay{position:absolute;top:0;bottom:0;background:rgba(247,147,26,0.15);border-left:1px solid rgba(247,147,26,0.5);border-right:1px solid rgba(247,147,26,0.5);pointer-events:none;display:none;z-index:5}
   footer{text-align:center;margin-top:36px;padding-bottom:20px;font-size:0.58rem;color:var(--footer-text);letter-spacing:1.5px}
   .card-price{background:linear-gradient(140deg,var(--bg-card) 0%,rgba(20,19,15,0.95) 100%)}
   .card-price::after{content:'';position:absolute;inset:0;border-radius:14px;background:radial-gradient(ellipse at 50% 0%,rgba(200,212,240,0.07) 0%,transparent 65%);pointer-events:none}
@@ -238,8 +234,8 @@
   h1 span,[data-theme="light"] h1 span{background:none;-webkit-text-fill-color:currentColor;color:var(--text-heading)}
   h1::before{content:'>';color:var(--accent-blue);font-family:'IBM Plex Mono',monospace;margin-right:0.45rem}
   .subtitle,.chart-label,.card-label,.risk-table-wrap h4,.proj-table-wrap h4,.risk-lows-wrap h4,.methodology h3{letter-spacing:0.06em}
-  .header-nav a,.theme-toggle,.zoom-btn,.dca-row input,.dca-row select{border-radius:2px;box-shadow:none}
-  .header-nav a:hover,.theme-toggle:hover,.zoom-btn:hover,.zoom-btn.active{box-shadow:inset 3px 0 0 rgba(247,147,26,0.65);text-decoration:none}
+  .header-nav a,.theme-toggle,.dca-row input,.dca-row select{border-radius:2px;box-shadow:none}
+  .header-nav a:hover,.theme-toggle:hover{box-shadow:inset 3px 0 0 rgba(247,147,26,0.65);text-decoration:none}
   .dashboard{gap:12px;margin-bottom:24px}
   .card,.chart-panel,.methodology,.risk-table-wrap,.proj-table-wrap,.risk-lows-wrap,.pe-proj-wrap,.trade-table-wrap,[data-theme="light"] .card,[data-theme="light"] .chart-panel,[data-theme="light"] .methodology,[data-theme="light"] .risk-table-wrap,[data-theme="light"] .proj-table-wrap,[data-theme="light"] .risk-lows-wrap,[data-theme="light"] .pe-proj-wrap,[data-theme="light"] .trade-table-wrap{background:color-mix(in srgb,var(--bg-card) 92%,transparent);border:1px solid var(--border);border-radius:2px;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
   .card:hover,.chart-panel:hover{transform:none;box-shadow:none;border-color:color-mix(in srgb,var(--accent-blue) 55%,var(--border))}
@@ -372,7 +368,7 @@
   <div class="chart-panel">
     <div class="chart-header">
       <div class="chart-label">BTC/USD — Price Colored by Risk (Log Scale)</div>
-      <div class="chart-note">Historical risk · market-cap-adjusted fair value through 2040 in All view</div>
+      <div class="chart-note">Historical risk · market-cap-adjusted fair value through 2040</div>
     </div>
     <canvas id="priceCanvas" width="1380" height="540"></canvas>
     <div class="tooltip" id="priceTip"><div class="tt-date"></div><div class="tt-price"></div><div><span class="tt-risk-label">Risk:</span> <span class="tt-risk"></span></div></div>
@@ -1246,43 +1242,10 @@ async function main() {
     });
   }
 
-  // ====== ZOOM/PAN STATE (shared between both charts) ======
-  const view = { startIdx: 0, endIdx: n-1 };
-
-  // Restore view from URL params if present
-  (function restoreFromURL() {
-    const params = new URLSearchParams(window.location.search);
-    const from = params.get('from');
-    const to = params.get('to');
-    if (from) {
-      const idx = pts.findIndex(p => p.date >= from);
-      if (idx >= 0) view.startIdx = idx;
-    }
-    if (to) {
-      let idx = -1;
-      for (let i = pts.length - 1; i >= 0; i--) { if (pts[i].date <= to) { idx = i; break; } }
-      if (idx >= 0) view.endIdx = idx;
-    }
-    if (view.endIdx - view.startIdx < 60) { view.startIdx = 0; view.endIdx = n - 1; }
-  })();
-
-  function syncURL() {
-    const params = new URLSearchParams(window.location.search);
-    const s = Math.max(0, Math.floor(view.startIdx));
-    const e = Math.min(n - 1, Math.ceil(view.endIdx));
-    if (s === 0 && e === n - 1) {
-      params.delete('from'); params.delete('to');
-    } else {
-      params.set('from', pts[s].date);
-      params.set('to', pts[e].date);
-    }
-    const qs = params.toString();
-    const url = window.location.pathname + (qs ? '?' + qs : '');
-    history.replaceState(null, '', url);
-  }
-
+  // These charts intentionally stay on the complete historical view so the
+  // log-price scale and the risk timeline always share one stable context.
   function getVisibleRange() {
-    return { s: Math.max(0, Math.floor(view.startIdx)), e: Math.min(n-1, Math.ceil(view.endIdx)) };
+    return { s: 0, e: n - 1 };
   }
 
   function visibleSample() {
@@ -1464,16 +1427,14 @@ async function main() {
   function renderAll() {
     renderPriceChart();
     renderRiskChart();
-    syncURL();
   }
 
-  // ====== ZOOM / PAN CONTROLS ======
-  function attachZoomPan(canvasId, tipId) {
+  // ====== CHART TOOLTIPS ======
+  function attachChartTooltip(canvasId, tipId) {
     const cv = document.getElementById(canvasId);
     const W = cv.width;
     const P = { l:80, r: canvasId === 'priceCanvas' ? 60 : 76 };
     const cw = W - P.l - P.r;
-    let brushing = false, brushStartX = 0;
     function fullPriceProjectionView() {
       const { s, e } = getVisibleRange();
       return canvasId === 'priceCanvas' && s === 0 && e === n - 1;
@@ -1498,12 +1459,6 @@ async function main() {
       return Math.round(s + (canvasX - P.l) / cw * (end - s));
     }
 
-    // Create brush overlay div inside the chart-panel
-    const panel = cv.closest('.chart-panel');
-    const overlay = document.createElement('div');
-    overlay.className = 'brush-overlay';
-    panel.appendChild(overlay);
-
     function mouseIdxFromEvent(e) {
       const rect = cv.getBoundingClientRect();
       const scaleX = W / rect.width;
@@ -1511,88 +1466,11 @@ async function main() {
       return indexFromCanvasX(mx);
     }
 
-    // Convert canvas X coordinate to a CSS percentage of the canvas element
-    function canvasXToPercent(canvasX) {
-      return Math.max(0, Math.min(100, (canvasX / W) * 100));
-    }
-
-    // Scroll to zoom
-    cv.addEventListener('wheel', e => {
-      e.preventDefault();
-      const { s, e: end } = getVisibleRange();
-      const range = end - s;
-      const mouseIdx = mouseIdxFromEvent(e);
-      const mouseRatio = (mouseIdx - s) / range;
-
-      const zoomFactor = e.deltaY > 0 ? 1.15 : 0.87;
-      const newRange = Math.max(60, Math.min(n-1, range * zoomFactor));
-      const newStart = mouseIdx - mouseRatio * newRange;
-      const newEnd = mouseIdx + (1 - mouseRatio) * newRange;
-
-      view.startIdx = Math.max(0, newStart);
-      view.endIdx = Math.min(n-1, newEnd);
-      if (view.endIdx - view.startIdx < 60) return;
-      renderAll();
-    }, { passive: false });
-
-    // Brush to zoom
-    cv.addEventListener('mousedown', e => {
-      brushing = true;
-      const rect = cv.getBoundingClientRect();
-      brushStartX = e.clientX - rect.left;
-      // Position overlay at start
-      const scaleX = W / rect.width;
-      const canvasX = brushStartX * scaleX;
-      const pct = canvasXToPercent(canvasX);
-      overlay.style.left = pct + '%';
-      overlay.style.width = '0%';
-      overlay.style.display = 'block';
-    });
-
-    window.addEventListener('mousemove', e => {
-      if (!brushing) return;
-      const rect = cv.getBoundingClientRect();
-      const scaleX = W / rect.width;
-      const currentX = e.clientX - rect.left;
-      const startCanvas = brushStartX * scaleX;
-      const currentCanvas = currentX * scaleX;
-      // Clamp to chart area
-      const left = Math.max(P.l, Math.min(startCanvas, currentCanvas));
-      const right = Math.min(W - P.r, Math.max(startCanvas, currentCanvas));
-      overlay.style.left = canvasXToPercent(left) + '%';
-      overlay.style.width = canvasXToPercent(right - left) + '%';
-    });
-
-    window.addEventListener('mouseup', e => {
-      if (!brushing) return;
-      brushing = false;
-      overlay.style.display = 'none';
-      // Calculate selected index range
-      const rect = cv.getBoundingClientRect();
-      const scaleX = W / rect.width;
-      const currentX = e.clientX - rect.left;
-      const startCanvas = brushStartX * scaleX;
-      const currentCanvas = currentX * scaleX;
-      const left = Math.max(P.l, Math.min(startCanvas, currentCanvas));
-      const right = Math.min(W - P.r, Math.max(startCanvas, currentCanvas));
-      // Only zoom if selection is wide enough
-      if (right - left < 20) return;
-      const { s, e: end } = getVisibleRange();
-      const range = end - s;
-      const newS = fullPriceProjectionView() ? indexFromCanvasX(left) : s + ((left - P.l) / cw) * range;
-      const newE = fullPriceProjectionView() ? indexFromCanvasX(right) : s + ((right - P.l) / cw) * range;
-      if (newE - newS < 60) return;
-      view.startIdx = Math.max(0, newS);
-      view.endIdx = Math.min(n-1, newE);
-      renderAll();
-    });
-
     cv.style.cursor = 'crosshair';
 
     // Tooltip
     const tip = document.getElementById(tipId);
     cv.addEventListener('mousemove', e => {
-      if (brushing) { tip.style.display='none'; return; }
       const rect = cv.getBoundingClientRect();
       const scaleX = W / rect.width;
       const canvasX = (e.clientX - rect.left) * scaleX;
@@ -1637,34 +1515,6 @@ async function main() {
       tip.style.top = tipY + 'px';
     });
     cv.addEventListener('mouseleave', () => tip.style.display='none');
-  }
-
-  // ====== ZOOM BUTTONS ======
-  function addZoomButtons() {
-    const bar = document.createElement('div');
-    bar.style.cssText = 'display:flex;justify-content:center;gap:8px;margin:12px 0 4px;flex-wrap:wrap;';
-    const btns = [
-      ['1Y', 365], ['2Y', 730], ['4Y', 1460], ['All', n],
-      ['Reset', -1]
-    ];
-    btns.forEach(([label, days]) => {
-      const b = document.createElement('button');
-      b.textContent = label;
-      b.className = 'zoom-btn';
-      b.addEventListener('click', () => {
-        if (days === -1 || days >= n) {
-          view.startIdx = 0; view.endIdx = n-1;
-        } else {
-          view.startIdx = Math.max(0, n-1-days);
-          view.endIdx = n-1;
-        }
-        renderAll();
-      });
-      bar.appendChild(b);
-    });
-    // Insert after legend bar
-    const legendBar = document.getElementById('legendBar');
-    legendBar.parentNode.insertBefore(bar, legendBar.nextSibling);
   }
 
   // ====== MIDTERM YTD ROI CHART ======
@@ -1919,9 +1769,8 @@ async function main() {
   // ====== INIT ======
   renderAll();
   renderMidtermChart();
-  attachZoomPan('priceCanvas', 'priceTip');
-  attachZoomPan('riskCanvas', 'riskTip');
-  addZoomButtons();
+  attachChartTooltip('priceCanvas', 'priceTip');
+  attachChartTooltip('riskCanvas', 'riskTip');
 
   // Legend bar — labeled segments
   (function(){

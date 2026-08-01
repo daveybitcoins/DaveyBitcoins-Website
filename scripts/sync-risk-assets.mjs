@@ -98,9 +98,16 @@ function syncBitcoinDashboard() {
   });`,
     );
 
+  const generatedEngine =
+    `/* eslint-disable */\n/* Generated from ${sourceFile} by scripts/sync-risk-assets.mjs. */\n${migrated.trim()}\n`;
+
   writeFileSync(
     resolve(publicDirectory, "btc-risk-engine.js"),
-    `/* eslint-disable */\n/* Generated from ${sourceFile} by scripts/sync-risk-assets.mjs. */\n${migrated.trim()}\n`,
+    generatedEngine,
+  );
+  writeFileSync(
+    resolve(repositoryRoot, "btc-risk-engine.js"),
+    generatedEngine,
   );
 
   copyFileSync(
