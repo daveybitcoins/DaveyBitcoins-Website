@@ -876,20 +876,15 @@ async function main() {
     cv.dataset.projectionPoints = fullProjectionView ? String(dampedFairValuePath.length) : '0';
 
     // Price grid
-    const formatPriceTick=val=>val>=1000?'$'+val.toLocaleString():val>=1?'$'+val:'$'+val.toFixed(4);
     ctx.textAlign='right'; ctx.font='10px JetBrains Mono';
     for(let e2=minE;e2<=maxE;e2++){
       const y=yOf(Math.pow(10,e2));
       ctx.strokeStyle=tc.gridLine;ctx.lineWidth=1;
       ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke();
-      if(e2<maxE){
-        const minorVal=3*Math.pow(10,e2), y3=yOf(minorVal);
-        ctx.strokeStyle=tc.gridLineMinor;ctx.beginPath();ctx.moveTo(P.l,y3);ctx.lineTo(W-P.r,y3);ctx.stroke();
-        ctx.fillStyle=tc.axisText;ctx.font='9px JetBrains Mono';ctx.fillText(formatPriceTick(minorVal),P.l-8,y3+3);
-      }
+      if(e2<maxE){const y3=yOf(3*Math.pow(10,e2));ctx.strokeStyle=tc.gridLineMinor;ctx.beginPath();ctx.moveTo(P.l,y3);ctx.lineTo(W-P.r,y3);ctx.stroke();}
       ctx.fillStyle=tc.axisText;
       const val=Math.pow(10,e2);
-      ctx.font='10px JetBrains Mono';ctx.fillText(formatPriceTick(val),P.l-8,y+3);
+      ctx.fillText(val>=1000?'$'+val.toLocaleString():val>=1?'$'+val:'$'+val.toFixed(4),P.l-8,y+3);
     }
 
     // Year grid
@@ -932,7 +927,8 @@ async function main() {
       ctx.beginPath();ctx.moveTo(forecastX,P.t);ctx.lineTo(forecastX,H-P.b);ctx.stroke();
       ctx.strokeStyle='#58c56f';ctx.lineWidth=2.4;ctx.setLineDash([10,5]);
       ctx.beginPath();
-      for(let i=0;i<dampedFairValuePath.length;i+=14){
+      // Draw the exact daily path used by the projection table and tooltip.
+      for(let i=0;i<dampedFairValuePath.length;i++){
         const point=dampedFairValuePath[i];
         const x=xOfTime(point.ms), y=yOf(point.value);
         i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
