@@ -426,7 +426,7 @@ export default function BitcoinRiskMetricPage() {
 
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20260801-no-zoom" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20260801-log-axis" strategy="afterInteractive" />
     </main>
   );
 }
