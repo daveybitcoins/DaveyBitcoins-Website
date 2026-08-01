@@ -40,7 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# The legacy repository ignores lockfiles globally; keep this app reproducible.
+# The legacy repository ignores package manifests and lockfiles globally; keep
+# this app's dependency definition reproducible.
+!package.json
 !package-lock.json
 
 # Generated from the legacy dashboards by `npm run sync:risk`.

@@ -1,0 +1,35 @@
+{
+  "name": "daveybitcoins-next",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "sync:risk": "node ../scripts/sync-risk-assets.mjs",
+    "predev": "npm run sync:risk",
+    "dev": "next dev",
+    "prebuild": "npm run sync:risk",
+    "build": "next build",
+    "preview": "python3 -m http.server 3001 --directory out",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "next": "16.2.12",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.12",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  },
+  "overrides": {
+    "brace-expansion": "5.0.8",
+    "minimatch": "10.2.6",
+    "postcss": "8.5.25",
+    "sharp": "0.35.3"
+  }
+}
