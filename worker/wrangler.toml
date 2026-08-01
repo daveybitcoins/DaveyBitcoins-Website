@@ -2,6 +2,23 @@ name = "daveybitcoins-api"
 main = "index.js"
 compatibility_date = "2024-01-01"
 
+# Native rate-limit bindings require Wrangler 4.36.0 or newer.
+[[ratelimits]]
+name = "QUOTE_RATE_LIMITER"
+namespace_id = "2026073101"
+
+  [ratelimits.simple]
+  limit = 120
+  period = 60
+
+[[ratelimits]]
+name = "DIVIDEND_RATE_LIMITER"
+namespace_id = "2026073102"
+
+  [ratelimits.simple]
+  limit = 30
+  period = 60
+
 # Cron triggers: weekdays 15:00 and 21:00 UTC.
 # This is 11:00 AM / 5:00 PM ET during daylight saving time, and 10:00 AM / 4:00 PM ET during standard time.
 [triggers]

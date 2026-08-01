@@ -7,6 +7,7 @@
 
 const ALLOWED_ORIGINS = ['https://daveybitcoins.com', 'https://www.daveybitcoins.com', 'http://localhost:3000'];
 const SYMBOL_RE = /^[A-Z0-9][A-Z0-9.:-]{0,14}$/;
+const QUOTE_CACHE_SECONDS = 60;
 
 function corsHeaders(request) {
   const origin = request?.headers?.get('Origin') || '';
@@ -15,6 +16,7 @@ function corsHeaders(request) {
     'Access-Control-Allow-Origin': allowed,
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
+    'Vary': 'Origin',
   };
 }
 
@@ -41,8 +43,78 @@ function normalizeSymbol(value) {
   return SYMBOL_RE.test(symbol) ? symbol : null;
 }
 
+function clientKey(request) {
+  return request.headers.get('CF-Connecting-IP') || 'unknown-client';
+}
+
+async function consumeRateLimit(request, limiter, units = 1) {
+  if (!limiter) return false;
+  const key = clientKey(request);
+  for (let index = 0; index < units; index += 1) {
+    const { success } = await limiter.limit({ key });
+    if (!success) return false;
+  }
+  return true;
+}
+
+function rateLimitResponse(request) {
+  return errorResponse(request, 'Rate limit exceeded', 429, {
+    'Retry-After': '60',
+  });
+}
+
+function quoteCacheKey(request, symbol) {
+  const url = new URL(request.url);
+  url.pathname = `/__cache/quote/${encodeURIComponent(symbol)}`;
+  url.search = '';
+  return new Request(url.toString(), { method: 'GET' });
+}
+
+async function fetchFinnhubQuote(request, env, ctx, symbol) {
+  if (!env.FINNHUB_KEY) {
+    return {
+      status: 503,
+      data: { error: 'Quote service is not configured' },
+      cacheStatus: 'BYPASS',
+    };
+  }
+
+  const cache = caches.default;
+  const cacheKey = quoteCacheKey(request, symbol);
+  const cached = await cache.match(cacheKey);
+  if (cached) {
+    return {
+      status: cached.status,
+      data: await cached.json(),
+      cacheStatus: 'HIT',
+    };
+  }
+
+  const finnhubUrl = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${env.FINNHUB_KEY}`;
+  const response = await fetch(finnhubUrl);
+  let data;
+  try {
+    data = await response.json();
+  } catch {
+    data = { error: 'Quote service returned an invalid response' };
+  }
+
+  if (response.ok && !data?.error) {
+    const cacheResponse = new Response(JSON.stringify(data), {
+      status: response.status,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': `public, max-age=${QUOTE_CACHE_SECONDS}`,
+      },
+    });
+    ctx.waitUntil(cache.put(cacheKey, cacheResponse));
+  }
+
+  return { status: response.status, data, cacheStatus: 'MISS' };
+}
+
 // ====== FINNHUB PROXY ======
-async function handleFinnhubProxy(request, env) {
+async function handleFinnhubProxy(request, env, ctx) {
   const url = new URL(request.url);
   const symbol = normalizeSymbol(url.searchParams.get('symbol'));
 
@@ -50,16 +122,21 @@ async function handleFinnhubProxy(request, env) {
     return errorResponse(request, 'Missing or invalid symbol parameter');
   }
 
-  try {
-    const finnhubUrl = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${env.FINNHUB_KEY}`;
-    const resp = await fetch(finnhubUrl);
-    const data = await resp.json();
-    const cacheHeader = resp.ok ? 'public, max-age=60' : 'no-store';
+  if (!await consumeRateLimit(request, env.QUOTE_RATE_LIMITER)) {
+    return rateLimitResponse(request);
+  }
 
-    return jsonResponse(request, data, {
-      status: resp.status,
+  try {
+    const result = await fetchFinnhubQuote(request, env, ctx, symbol);
+    const cacheHeader = result.status >= 200 && result.status < 300
+      ? `public, max-age=${QUOTE_CACHE_SECONDS}`
+      : 'no-store';
+
+    return jsonResponse(request, result.data, {
+      status: result.status,
       headers: {
         'Cache-Control': cacheHeader,
+        'X-Quote-Cache': result.cacheStatus,
       },
     });
   } catch (err) {
@@ -69,29 +146,32 @@ async function handleFinnhubProxy(request, env) {
 
 // ====== FINNHUB BATCH QUOTES PROXY ======
 const BATCH_CONCURRENCY = 10;
-async function handleFinnhubBatchProxy(request, env) {
+async function handleFinnhubBatchProxy(request, env, ctx) {
   const url = new URL(request.url);
-  const symbols = (url.searchParams.get('symbols') || '')
+  const symbols = [...new Set((url.searchParams.get('symbols') || '')
     .split(',')
     .map(normalizeSymbol)
-    .filter(Boolean)
+    .filter(Boolean))]
     .slice(0, 50);
 
   if (!symbols.length) {
     return errorResponse(request, 'Missing or invalid symbols parameter');
   }
 
+  if (!await consumeRateLimit(request, env.QUOTE_RATE_LIMITER, symbols.length)) {
+    return rateLimitResponse(request);
+  }
+
   const results = [];
+  const cacheStatuses = [];
   for (let i = 0; i < symbols.length; i += BATCH_CONCURRENCY) {
     const chunk = symbols.slice(i, i + BATCH_CONCURRENCY);
     const batch = await Promise.all(
       chunk.map(async (symbol) => {
         try {
-          const resp = await fetch(
-            `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${env.FINNHUB_KEY}`
-          );
-          const data = await resp.json();
-          return [symbol, data];
+          const result = await fetchFinnhubQuote(request, env, ctx, symbol);
+          cacheStatuses.push(result.cacheStatus);
+          return [symbol, result.data];
         } catch (err) {
           console.warn(`Finnhub fetch failed for ${symbol}:`, err.message);
           return [symbol, { error: 'fetch failed' }];
@@ -101,9 +181,15 @@ async function handleFinnhubBatchProxy(request, env) {
     results.push(...batch);
   }
 
+  const cacheStatus = cacheStatuses.every((status) => status === 'HIT')
+    ? 'HIT'
+    : cacheStatuses.every((status) => status === 'MISS')
+      ? 'MISS'
+      : 'PARTIAL';
   return jsonResponse(request, Object.fromEntries(results), {
     headers: {
-      'Cache-Control': 'public, max-age=60',
+      'Cache-Control': `public, max-age=${QUOTE_CACHE_SECONDS}`,
+      'X-Quote-Cache': cacheStatus,
     },
   });
 }
@@ -220,6 +306,10 @@ async function handleDividendHistoryProxy(request, env) {
     return errorResponse(request, 'Missing or invalid symbol');
   }
 
+  if (!await consumeRateLimit(request, env.DIVIDEND_RATE_LIMITER)) {
+    return rateLimitResponse(request);
+  }
+
   try {
     let source = 'massive';
     let payments = await fetchMassiveDividendHistory(symbol, env);
@@ -258,22 +348,28 @@ async function triggerGitHubWorkflow(env, workflowFile) {
 
 // ====== REQUEST HANDLER ======
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     // Handle CORS preflight
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders(request) });
+    }
+
+    if (request.method !== 'GET') {
+      return errorResponse(request, 'Method not allowed', 405, {
+        'Allow': 'GET, OPTIONS',
+      });
     }
 
     const url = new URL(request.url);
 
     // Finnhub quote proxy: /api/quote?symbol=SPY
     if (url.pathname === '/api/quote') {
-      return handleFinnhubProxy(request, env);
+      return handleFinnhubProxy(request, env, ctx);
     }
 
     // Finnhub batch quotes: /api/quotes?symbols=AAPL,MSFT,O
     if (url.pathname === '/api/quotes') {
-      return handleFinnhubBatchProxy(request, env);
+      return handleFinnhubBatchProxy(request, env, ctx);
     }
 
     // Dividend history: /api/dividends/AAPL

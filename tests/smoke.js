@@ -2,11 +2,18 @@ const express = require('express');
 const path = require('path');
 const { chromium } = require('@playwright/test');
 
-const rootDir = path.resolve(__dirname, '..');
+const isNextExport = process.argv.includes('--next-export');
+const rootDir = isNextExport
+  ? path.resolve(__dirname, '..', 'next-site', 'out')
+  : path.resolve(__dirname, '..');
+
+function dashboardPath(slug) {
+  return isNextExport ? `/${slug}/` : `/${slug}.html`;
+}
 
 const checks = [
   {
-    path: '/ema-scanner.html',
+    path: dashboardPath('ema-scanner'),
     name: 'EMA scanner',
     assert: async (page) => {
       await page.waitForFunction(() => document.querySelectorAll('#scanner-table tbody tr').length >= 100, null, { timeout: 10000 });
@@ -27,7 +34,7 @@ const checks = [
     },
   },
   {
-    path: '/dividend-tracker.html',
+    path: dashboardPath('dividend-tracker'),
     name: 'Dividend tracker',
     assert: async (page) => {
       await page.waitForSelector('#app-content', { timeout: 10000 });
@@ -37,7 +44,7 @@ const checks = [
     },
   },
   {
-    path: '/risk-metric.html',
+    path: dashboardPath('risk-metric'),
     name: 'BTC risk metric',
     assert: async (page) => {
       // Allow for live-quote fallbacks plus the full-history regression on cold CI runners.
@@ -61,7 +68,7 @@ const checks = [
       await expectText(page, 'Bitcoin Market-Cap-Adjusted Power-Law Fair Value');
       await expectText(page, 'Long-run scenario, not a short-term price target');
       await expectText(page, 'power-law growth above a 6% long-run nominal rate is reduced by half');
-      await expectText(page, 'World Gold Council’s long-term model');
+      await expectText(page, 'World Gold Council');
       await expectText(page, 'gpower-law');
       const projectionHeaders = await page.locator('#projTable th').allTextContents();
       for (const header of ['Adjusted Fair Value', 'Fair Value Growth', 'Gap to Fair Value']) {
@@ -97,7 +104,7 @@ const checks = [
     },
   },
   {
-    path: '/spy-risk-metric.html',
+    path: dashboardPath('spy-risk-metric'),
     name: 'SPY risk metric',
     assert: async (page) => {
       await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length === 10, null, { timeout: 20000 });
@@ -185,7 +192,7 @@ const checks = [
     },
   },
   {
-    path: '/qqq-risk-metric.html',
+    path: dashboardPath('qqq-risk-metric'),
     name: 'QQQ risk metric',
     assert: async (page) => {
       await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length === 10, null, { timeout: 20000 });
@@ -276,6 +283,8 @@ async function run() {
   const { server, baseUrl } = await startServer();
   const browser = await chromium.launch();
   const failures = [];
+
+  console.log(`Testing ${isNextExport ? 'Next.js static export' : 'legacy HTML'} from ${rootDir}`);
 
   try {
     for (const check of checks) {

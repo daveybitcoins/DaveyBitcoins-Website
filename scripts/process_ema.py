@@ -27,6 +27,20 @@ CROSSOVER_THRESHOLD = 1.0  # percent
 TOP_N = 300  # Filter to top N stocks by market cap
 
 
+def is_common_stock(ticker):
+    """Exclude preferred shares, depositary receipts, and foreign OTC tickers."""
+    # Preferred shares such as BAC/PK and MS/PE.
+    if "/" in ticker:
+        return False
+    # Five-letter foreign OTC tickers such as MURGF.
+    if len(ticker) == 5 and ticker.endswith("F"):
+        return False
+    # Preferred shares without a slash, such as WFCNP, JPMPR, and BRKPR.
+    if re.match(r"^[A-Z]{2,4}(PR|NP|P)$", ticker) and len(ticker) >= 4:
+        return False
+    return True
+
+
 def _date_from_path(filepath):
     """Extract the YYYY-MM-DD date string embedded in a CSV filename."""
     m = re.search(r"(\d{4}-\d{2}-\d{2})", os.path.basename(filepath))
@@ -609,7 +623,7 @@ def _append_breadth_history(data_date, current):
     # Write back
     os.makedirs(os.path.dirname(BREADTH_HISTORY), exist_ok=True)
     with open(BREADTH_HISTORY, "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=fieldnames, lineterminator="\r\n")
         writer.writeheader()
         writer.writerows(rows)
 
@@ -1065,22 +1079,7 @@ def main():
     all_stocks = parse_csv(csv_path)
     print(f"Parsed {len(all_stocks)} stocks from CSV")
 
-    # Filter out preferred shares, depositary receipts, and foreign OTC tickers
-    # Examples: BAC/PK, MS/PE, WFC/PD, T/PA, BRK.B is OK (class shares), MURGF (foreign OTC)
-    import re
-    def is_common_stock(ticker):
-        # Exclude tickers with "/" (preferred shares like BAC/PK, MS/PE)
-        if "/" in ticker:
-            return False
-        # Exclude 5-letter tickers ending in F (foreign OTC like MURGF)
-        if len(ticker) == 5 and ticker.endswith("F"):
-            return False
-        # Exclude preferred shares without "/" (e.g., WFCNP, JPMPR, BRKPR)
-        # These are typically 4-6 letter tickers ending in P/PR/NP
-        if re.match(r'^[A-Z]{2,4}(PR|NP|P)$', ticker) and len(ticker) >= 4:
-            return False
-        return True
-
+    # Filter out preferred shares, depositary receipts, and foreign OTC tickers.
     before = len(all_stocks)
     all_stocks = [s for s in all_stocks if is_common_stock(s["symbol"])]
     filtered_out = before - len(all_stocks)

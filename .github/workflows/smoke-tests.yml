@@ -14,12 +14,40 @@ jobs:
         with:
           node-version: '22'
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            next-site/package-lock.json
 
-      - name: Install dependencies
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install legacy test dependencies
         run: npm ci
+
+      - name: Install Next.js dependencies
+        run: npm ci --prefix next-site
+
+      - name: Lint Next.js application
+        run: npm run lint --prefix next-site
+
+      - name: Build Next.js static export
+        run: npm run build --prefix next-site
+
+      - name: Test data validation rules
+        run: python -m unittest tests/test_validate_data.py
+
+      - name: Validate website data
+        run: python scripts/validate_data.py
+
+      - name: Test Cloudflare Worker
+        run: npm run test:worker
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Run smoke tests
+      - name: Run legacy smoke tests
         run: npm run smoke
+
+      - name: Run Next.js export smoke tests
+        run: npm run smoke:next
