@@ -1,0 +1,132 @@
+const assert = require('node:assert/strict');
+const { readFileSync } = require('node:fs');
+const { resolve } = require('node:path');
+const { test } = require('node:test');
+
+const ROOT = resolve(__dirname, '..');
+const ENGINE_PATH = resolve(ROOT, 'btc-risk-engine.js');
+const DATA_PATH = resolve(ROOT, 'data.csv');
+const FIXTURE_CUTOFF = '2026-07-31';
+const NEXT_HALVING_ESTIMATE = Date.parse('2028-04-13T00:00:00Z');
+const PROJECTION_END = Date.parse('2040-12-01T00:00:00Z');
+
+function extractFunction(source, name) {
+  const start = source.indexOf(`function ${name}(`);
+  assert.notEqual(start, -1, `Could not find ${name} in ${ENGINE_PATH}`);
+
+  const bodyStart = source.indexOf('{', start);
+  let depth = 0;
+  for (let index = bodyStart; index < source.length; index += 1) {
+    if (source[index] === '{') depth += 1;
+    if (source[index] === '}') depth -= 1;
+    if (depth === 0) return source.slice(start, index + 1);
+  }
+  throw new Error(`Could not parse ${name} in ${ENGINE_PATH}`);
+}
+
+function loadProductionModel() {
+  const source = readFileSync(ENGINE_PATH, 'utf8');
+  const constants = source.match(
+    /const GENESIS =[^]*?const FAIR_VALUE_PROJECTION_END_MS = Date\.UTC\(2040, 11, 1\);/,
+  );
+  assert.ok(constants, 'Could not load BTC risk model constants');
+
+  const functions = [
+    'buildDampedFairValuePath',
+    'dampedFairValueAt',
+    'buildDataset',
+    'normCdf',
+    'dateMs',
+    'priceAtRiskForDate',
+  ].map(name => extractFunction(source, name));
+
+  return new Function(
+    `${constants[0]}\n${functions.join('\n')}\nreturn { buildDataset, buildDampedFairValuePath, dampedFairValueAt, priceAtRiskForDate, dateMs };`,
+  )();
+}
+
+function fixtureData() {
+  return readFileSync(DATA_PATH, 'utf8')
+    .trim()
+    .split('\n')
+    .slice(1)
+    .map(row => {
+      const [date, price] = row.split(',');
+      return [date, Number(price)];
+    })
+    .filter(([date, price]) => date <= FIXTURE_CUTOFF && Number.isFinite(price));
+}
+
+function pointForDate(points, date) {
+  const point = points.find(candidate => candidate.date === date);
+  assert.ok(point, `Missing fixture point for ${date}`);
+  return point;
+}
+
+function approximately(actual, expected, tolerance = 1e-9) {
+  assert.ok(
+    Math.abs(actual - expected) <= tolerance,
+    `Expected ${actual} to be within ${tolerance} of ${expected}`,
+  );
+}
+
+test('historical halving risk readings stay calibrated', () => {
+  const { buildDataset } = loadProductionModel();
+  const { pts } = buildDataset(fixtureData());
+  const fixtures = {
+    '2012-11-28': 0.22811473253607017,
+    '2016-07-09': 0.20655404166730124,
+    '2020-05-11': 0.260512656493095,
+    '2024-04-20': 0.5149596037232537,
+  };
+
+  for (const [date, expectedRisk] of Object.entries(fixtures)) {
+    approximately(pointForDate(pts, date).riskCombo, expectedRisk);
+  }
+});
+
+test('next-halving price-at-risk fixture remains deterministic', () => {
+  const { buildDataset, priceAtRiskForDate } = loadProductionModel();
+  const { pts, slope, intercept } = buildDataset(fixtureData());
+  const last = pts.at(-1);
+  const priceAtHalfRisk = priceAtRiskForDate(
+    NEXT_HALVING_ESTIMATE,
+    slope,
+    intercept,
+    last.rollMean,
+    last.rollStd,
+    0.5,
+  );
+
+  approximately(priceAtHalfRisk, 181531.56384211133, 0.01);
+});
+
+test('forecast path, tooltip lookup, and projection dates agree', () => {
+  const source = readFileSync(ENGINE_PATH, 'utf8');
+  const {
+    buildDataset,
+    buildDampedFairValuePath,
+    dampedFairValueAt,
+    dateMs,
+  } = loadProductionModel();
+  const { pts, slope } = buildDataset(fixtureData());
+  const last = pts.at(-1);
+  const path = buildDampedFairValuePath(
+    dateMs(last.date),
+    last.trendPrice,
+    slope,
+    PROJECTION_END,
+  );
+  const dateIndex = Math.round((NEXT_HALVING_ESTIMATE - path[0].ms) / 864e5);
+
+  approximately(path[dateIndex].value, 234858.5613314731, 0.01);
+  approximately(
+    dampedFairValueAt(path, NEXT_HALVING_ESTIMATE),
+    path[dateIndex].value,
+    1e-9,
+  );
+
+  assert.match(source, /dampedFairValueAt\(dampedFairValuePath,\s*futureMs\)/);
+  assert.match(source, /dampedFairValueAt\(dampedFairValuePath,\s*hoverMs\)/);
+  assert.match(source, /for\(let i=0;i<dampedFairValuePath\.length;i\+\+\)/);
+});

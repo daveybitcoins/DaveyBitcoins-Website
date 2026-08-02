@@ -43,6 +43,9 @@ jobs:
       - name: Validate website data
         run: python scripts/validate_data.py
 
+      - name: Test BTC risk model
+        run: npm run test:model
+
       - name: Test Cloudflare Worker
         run: npm run test:worker
 

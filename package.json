@@ -7,6 +7,7 @@
     "test": "npm run smoke",
     "smoke": "node tests/smoke.js",
     "smoke:next": "node tests/smoke.js --next-export",
+    "test:model": "node --test tests/btc-risk-model.test.js",
     "test:worker": "node --test worker/index.test.js",
     "start": "node server.js"
   },
