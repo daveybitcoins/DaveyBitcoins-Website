@@ -52,6 +52,32 @@ const checks = [
       await expectText(page, 'Bitcoin Risk Metric');
       await expectText(page, 'Combined Risk');
       await expectText(page, 'Major Weekly Moving Averages');
+      const sectionLinks = page.locator('.btc-section-nav a');
+      if (await sectionLinks.count() !== 10) {
+        throw new Error(`expected 10 BTC section-navigation links, got ${await sectionLinks.count()}`);
+      }
+      const sectionNavLayout = await page.locator('.btc-section-nav').evaluate((nav) => {
+        const style = getComputedStyle(nav);
+        return {
+          display: style.display,
+          position: style.position,
+          width: nav.getBoundingClientRect().width,
+        };
+      });
+      if (sectionNavLayout.display !== 'none' && (
+        sectionNavLayout.width > 200 ||
+        !['fixed', 'sticky'].includes(sectionNavLayout.position)
+      )) {
+        throw new Error(`expected side navigation without a full-width banner, got ${JSON.stringify(sectionNavLayout)}`);
+      }
+      const sectionTargets = await sectionLinks.evaluateAll((links) =>
+        links.map((link) => link.getAttribute('href'))
+      );
+      for (const href of sectionTargets) {
+        if (!href || !href.startsWith('#') || await page.locator(href).count() !== 1) {
+          throw new Error(`BTC section navigation has an invalid target: ${href}`);
+        }
+      }
       const movingAveragePeriods = await page.locator('#movingAveragesCard .moving-average-period').allTextContents();
       if (movingAveragePeriods.join(',') !== '300W,200W,50W,21W,13W,8W') {
         throw new Error(`unexpected BTC moving-average periods: ${movingAveragePeriods.join(',')}`);

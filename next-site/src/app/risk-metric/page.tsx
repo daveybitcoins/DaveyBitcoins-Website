@@ -89,9 +89,33 @@ function Tooltip({
 
 const movingAverages = [300, 200, 50, 21, 13, 8];
 
+const sectionLinks = [
+  ["summary", "Summary"],
+  ["movingAveragesCard", "Moving averages"],
+  ["risk-levels", "Risk levels"],
+  ["market-caps", "Market caps"],
+  ["fair-value", "Fair value"],
+  ["historical-lows", "Historical lows"],
+  ["price-chart", "Price chart"],
+  ["risk-oscillator", "Risk oscillator"],
+  ["midterm-cycles", "Midterm cycles"],
+  ["methodology", "Methodology"],
+] as const;
+
 export default function BitcoinRiskMetricPage() {
   return (
     <main className="spy-page btc-page" data-risk-dashboard="btc">
+      <aside className="btc-section-nav" aria-label="Bitcoin dashboard sections">
+        <div className="btc-section-nav__label">On this page</div>
+        <nav className="btc-section-nav__links">
+          {sectionLinks.map(([id, label], index) => (
+            <a href={`#${id}`} key={id}>
+              <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+              {label}
+            </a>
+          ))}
+        </nav>
+      </aside>
       <div className="spy-container">
         <header className="spy-intro">
           <p className="spy-kicker">Bitcoin cycle dashboard · Updated daily</p>
@@ -108,7 +132,7 @@ export default function BitcoinRiskMetricPage() {
           </div>
         </header>
 
-        <section className="dashboard" aria-label="Bitcoin market summary">
+        <section className="dashboard" id="summary" aria-label="Bitcoin market summary">
           <article className="card card-price">
             <div className="card-label">BTC Price</div>
             <div className="card-value card-value--price" id="vPrice">
@@ -205,7 +229,7 @@ export default function BitcoinRiskMetricPage() {
           </div>
         </section>
 
-        <section className="spy-panel risk-table-wrap">
+        <section className="spy-panel risk-table-wrap" id="risk-levels">
           <div className="spy-section-heading">
             <div>
               <h2>Price at Each Risk Level (Combined)</h2>
@@ -218,7 +242,7 @@ export default function BitcoinRiskMetricPage() {
           <div className="risk-table" id="riskTable" />
         </section>
 
-        <section className="spy-panel proj-table-wrap">
+        <section className="spy-panel proj-table-wrap" id="market-caps">
           <div className="spy-section-heading">
             <div>
               <h2>BTC Price at Market Caps</h2>
@@ -250,7 +274,7 @@ export default function BitcoinRiskMetricPage() {
           </div>
         </section>
 
-        <section className="spy-panel proj-table-wrap">
+        <section className="spy-panel proj-table-wrap" id="fair-value">
           <div className="spy-section-heading">
             <div>
               <h2>Bitcoin Market-Cap-Adjusted Power-Law Fair Value</h2>
@@ -304,7 +328,7 @@ export default function BitcoinRiskMetricPage() {
           </div>
         </section>
 
-        <section className="spy-panel risk-lows-wrap">
+        <section className="spy-panel risk-lows-wrap" id="historical-lows">
           <div className="spy-section-heading">
             <div>
               <h2>Historical Risk Lows — Accumulation Opportunities</h2>
@@ -332,7 +356,7 @@ export default function BitcoinRiskMetricPage() {
           </div>
         </section>
 
-        <section className="spy-panel chart-panel">
+        <section className="spy-panel chart-panel" id="price-chart">
           <div className="chart-header">
             <div>
               <h2 className="chart-label">
@@ -348,7 +372,7 @@ export default function BitcoinRiskMetricPage() {
           <div className="legend-bar" id="legendBar" />
         </section>
 
-        <section className="spy-panel chart-panel">
+        <section className="spy-panel chart-panel" id="risk-oscillator">
           <div className="chart-header">
             <div>
               <h2 className="chart-label">Risk Oscillator (0 – 1)</h2>
@@ -361,7 +385,7 @@ export default function BitcoinRiskMetricPage() {
           <Tooltip id="riskTip" valueLabel="Risk" showPrice={false} />
         </section>
 
-        <section className="spy-panel chart-panel">
+        <section className="spy-panel chart-panel" id="midterm-cycles">
           <div className="chart-header">
             <div>
               <h2 className="chart-label">
@@ -379,7 +403,7 @@ export default function BitcoinRiskMetricPage() {
 
         <div className="update-status" id="updateStatus" />
 
-        <section className="spy-panel methodology">
+        <section className="spy-panel methodology" id="methodology">
           <div className="spy-section-heading">
             <div>
               <h2>How combined risk works</h2>

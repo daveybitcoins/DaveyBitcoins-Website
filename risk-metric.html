@@ -249,12 +249,35 @@
   table th,.proj-table th,.risk-lows-table th,.pe-proj-table th,.trade-table th{color:var(--accent-blue);font-family:'IBM Plex Mono','JetBrains Mono',monospace}
   table td,.proj-table td,.risk-lows-table td,.pe-proj-table td,.trade-table td{border-bottom-color:var(--border-light)}
   #headerDate{border-color:rgba(247,147,26,0.24)!important;background:rgba(247,147,26,0.07)!important;font-family:'IBM Plex Mono','JetBrains Mono',monospace!important}
+  #summary,#movingAveragesCard,#risk-levels,#market-caps,#fair-value,#historical-lows,#price-chart,#risk-oscillator,#midterm-cycles,#methodology{scroll-margin-top:92px}
+  .btc-section-nav{display:none;position:fixed;top:24px;left:24px;z-index:40;width:160px;padding:14px;border:1px solid var(--border);background:color-mix(in srgb,var(--bg-card) 92%,transparent);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+  .btc-section-nav__label{display:block;padding:0 7px 10px;border-bottom:1px solid var(--border);color:var(--text-dimmer);font-size:0.52rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
+  .btc-section-nav__links{display:grid;gap:2px;padding-top:9px}
+  .btc-section-nav a{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto;padding:7px 9px;border:1px solid transparent;color:var(--text-dim);font-size:0.58rem;line-height:1.2;white-space:nowrap;text-decoration:none}
+  .btc-section-nav a span{color:var(--accent-blue);font-size:0.5rem}
+  .btc-section-nav a:hover,.btc-section-nav a:focus-visible{border-color:var(--border);background:color-mix(in srgb,var(--accent-blue) 8%,transparent);color:var(--text);outline:none}
+  @media(min-width:900px){.btc-section-nav{display:block}.btc-section-nav a{width:100%}.container{max-width:none;margin-left:200px;margin-right:24px}}
   @media(max-width:640px){header{text-align:left}.header-nav{justify-content:flex-start}}
 </style>
 </head>
 <body>
 <div class="bg-mesh"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
 <div class="noise-overlay"></div>
+<aside class="btc-section-nav" aria-label="Bitcoin dashboard sections">
+  <div class="btc-section-nav__label">On this page</div>
+  <nav class="btc-section-nav__links">
+    <a href="#summary"><span aria-hidden="true">01</span>Summary</a>
+    <a href="#movingAveragesCard"><span aria-hidden="true">02</span>Moving averages</a>
+    <a href="#risk-levels"><span aria-hidden="true">03</span>Risk levels</a>
+    <a href="#market-caps"><span aria-hidden="true">04</span>Market caps</a>
+    <a href="#fair-value"><span aria-hidden="true">05</span>Fair value</a>
+    <a href="#historical-lows"><span aria-hidden="true">06</span>Historical lows</a>
+    <a href="#price-chart"><span aria-hidden="true">07</span>Price chart</a>
+    <a href="#risk-oscillator"><span aria-hidden="true">08</span>Risk oscillator</a>
+    <a href="#midterm-cycles"><span aria-hidden="true">09</span>Midterm cycles</a>
+    <a href="#methodology"><span aria-hidden="true">10</span>Methodology</a>
+  </nav>
+</aside>
 <div class="container" style="position:relative;z-index:2;">
   <header>
     <div class="header-nav">
@@ -267,7 +290,7 @@
     <div class="subtitle"><span class="live-dot"></span>Combined Structural + Momentum · Power-Law Regression · Math · Patience</div>
     <div id="headerDate" style="margin-top:10px;font-size:0.65rem;letter-spacing:1px;color:var(--text-dim);display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border:1px solid rgba(247,147,26,0.24);border-radius:4px;background:rgba(247,147,26,0.07);font-family:'JetBrains Mono',monospace;"></div>
   </header>
-  <div class="dashboard">
+  <div class="dashboard" id="summary">
     <div class="card card-price" style="--glow:rgba(247,147,26,0.3)">
       <div class="card-label">BTC Price</div>
       <div class="card-value" id="vPrice" style="--val-color:#f7931a;font-size:2.4rem;letter-spacing:-2px;font-weight:700">—</div>
@@ -314,11 +337,11 @@
       <div class="moving-average-item"><div class="moving-average-period">8W</div><div class="moving-average-value" id="vMa8W">—</div></div>
     </div>
   </div>
-  <div class="risk-table-wrap">
+  <div class="risk-table-wrap" id="risk-levels">
     <h4>Price at Each Risk Level (Combined)</h4>
     <div class="risk-table" id="riskTable"></div>
   </div>
-  <div class="proj-table-wrap">
+  <div class="proj-table-wrap" id="market-caps">
     <h4>BTC Price at Market Caps</h4>
     <div class="market-cap-meta">
       <div>Current Supply: <span id="currentSupply">—</span></div>
@@ -333,7 +356,7 @@
       </table>
     </div>
   </div>
-  <div class="proj-table-wrap">
+  <div class="proj-table-wrap" id="fair-value">
     <h4>Bitcoin Market-Cap-Adjusted Power-Law Fair Value</h4>
     <p class="proj-method-note" id="projMethodNote">
       <strong>Long-run scenario, not a short-term price target.</strong>
@@ -356,7 +379,7 @@
       <tbody id="projBody"></tbody>
     </table>
   </div>
-  <div class="risk-lows-wrap">
+  <div class="risk-lows-wrap" id="historical-lows">
     <h4>Historical Risk Lows — Accumulation Opportunities</h4>
     <table class="risk-lows-table" id="riskLowsTable">
       <thead>
@@ -365,7 +388,7 @@
       <tbody id="riskLowsBody"></tbody>
     </table>
   </div>
-  <div class="chart-panel">
+  <div class="chart-panel" id="price-chart">
     <div class="chart-header">
       <div class="chart-label">BTC/USD — Price Colored by Risk (Log Scale)</div>
       <div class="chart-note">Historical risk · market-cap-adjusted fair value through 2040</div>
@@ -374,7 +397,7 @@
     <div class="tooltip" id="priceTip"><div class="tt-date"></div><div class="tt-price"></div><div><span class="tt-risk-label">Risk:</span> <span class="tt-risk"></span></div></div>
     <div class="legend-bar" id="legendBar"></div>
   </div>
-  <div class="chart-panel">
+  <div class="chart-panel" id="risk-oscillator">
     <div class="chart-header">
       <div class="chart-label">Risk Oscillator (0 – 1)</div>
       <div class="chart-note">Combined = √(Structural × Momentum)</div>
@@ -382,7 +405,7 @@
     <canvas id="riskCanvas" width="1380" height="340"></canvas>
     <div class="tooltip" id="riskTip"><div class="tt-date"></div><div>Risk: <span class="tt-risk"></span></div></div>
   </div>
-  <div class="chart-panel">
+  <div class="chart-panel" id="midterm-cycles">
     <div class="chart-header">
       <div class="chart-label">BTC Year-To-Date ROI — Midterm Election Years</div>
       <div class="chart-note"></div>
@@ -392,7 +415,7 @@
     <div id="midtermLegend" style="display:flex;justify-content:center;gap:20px;margin-top:14px;flex-wrap:wrap"></div>
   </div>
   <div class="update-status" id="updateStatus" style="display:none"></div>
-  <div class="methodology">
+  <div class="methodology" id="methodology">
     <h3>Methodology (Combined Risk)</h3>
     <p><span class="hl">Power-Law Regression:</span> <code>log₁₀(price)</code> vs <code>log₁₀(days since Jan 3 2009)</code>. The smooth chart line uses the fixed full-history curve. Historical risk uses an as-of regression at each date so past risk readings are not calibrated with future prices.</p>
     <p><span class="hl">Structural Risk (Decaying Envelope):</span> Normalizes the residual against a time-decaying upper envelope fitted from cycle peaks. The max deviation capacity shrinks as Bitcoin matures, producing more realistic risk boundaries.</p>

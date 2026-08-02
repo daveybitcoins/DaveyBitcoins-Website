@@ -1,3 +1,92 @@
+.btc-page [id="summary"],
+.btc-page [id="movingAveragesCard"],
+.btc-page [id="risk-levels"],
+.btc-page [id="market-caps"],
+.btc-page [id="fair-value"],
+.btc-page [id="historical-lows"],
+.btc-page [id="price-chart"],
+.btc-page [id="risk-oscillator"],
+.btc-page [id="midterm-cycles"],
+.btc-page [id="methodology"] {
+  scroll-margin-top: 1.5rem;
+}
+
+.btc-section-nav {
+  display: none;
+  position: sticky;
+  top: 7rem;
+  z-index: 40;
+  width: 10rem;
+  padding: 0.85rem;
+  border: 1px solid var(--spy-border);
+  background: color-mix(in srgb, var(--spy-card) 92%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.btc-section-nav__label {
+  display: block;
+  padding: 0 0.45rem 0.65rem;
+  border-bottom: 1px solid var(--spy-border);
+  color: var(--spy-faint);
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.btc-section-nav__links {
+  display: grid;
+  gap: 0.15rem;
+  padding-top: 0.55rem;
+}
+
+.btc-section-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+  width: 100%;
+  padding: 0.42rem 0.55rem;
+  border: 1px solid transparent;
+  color: var(--spy-muted);
+  font-size: 0.58rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.btc-section-nav a span {
+  color: var(--spy-orange);
+  font-size: 0.5rem;
+}
+
+.btc-section-nav a:hover,
+.btc-section-nav a:focus-visible {
+  border-color: var(--spy-border);
+  background: color-mix(in srgb, var(--spy-orange) 8%, transparent);
+  color: var(--spy-text);
+  outline: none;
+}
+
+@media (min-width: 900px) {
+  .btc-page {
+    display: grid;
+    grid-template-columns: 10rem minmax(0, 1500px);
+    align-items: start;
+    justify-content: center;
+    gap: 1rem;
+    padding: 0 1.5rem;
+  }
+
+  .btc-page .spy-container {
+    width: 100%;
+    margin: 0;
+  }
+
+  .btc-section-nav {
+    display: block;
+  }
+}
+
 .btc-page .dashboard {
   --btc-card-basis: calc(13.3333% - 0.4rem);
 
@@ -306,6 +395,22 @@
 
   .btc-page .moving-averages-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) and (max-width: 1399px) {
+  .btc-page .dashboard {
+    --btc-card-basis: calc(20% - 0.64rem);
+
+    justify-content: flex-start;
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1199px) {
+  .btc-page .dashboard {
+    --btc-card-basis: calc(33.3333% - 0.5333rem);
+
+    justify-content: flex-start;
   }
 }
 
