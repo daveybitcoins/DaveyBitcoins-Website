@@ -250,22 +250,22 @@
   table td,.proj-table td,.risk-lows-table td,.pe-proj-table td,.trade-table td{border-bottom-color:var(--border-light)}
   #headerDate{border-color:rgba(247,147,26,0.24)!important;background:rgba(247,147,26,0.07)!important;font-family:'IBM Plex Mono','JetBrains Mono',monospace!important}
   #summary,#movingAveragesCard,#risk-levels,#market-caps,#fair-value,#historical-lows,#price-chart,#risk-oscillator,#midterm-cycles,#methodology{scroll-margin-top:92px}
-  .btc-section-nav{display:none;position:fixed;top:24px;left:24px;z-index:40;width:160px;padding:14px;border:1px solid var(--border);background:color-mix(in srgb,var(--bg-card) 92%,transparent);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-  .btc-section-nav__label{display:block;padding:0 7px 10px;border-bottom:1px solid var(--border);color:var(--text-dimmer);font-size:0.52rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
-  .btc-section-nav__links{display:grid;gap:2px;padding-top:9px}
-  .btc-section-nav a{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto;padding:7px 9px;border:1px solid transparent;color:var(--text-dim);font-size:0.58rem;line-height:1.2;white-space:nowrap;text-decoration:none}
-  .btc-section-nav a span{color:var(--accent-blue);font-size:0.5rem}
-  .btc-section-nav a:hover,.btc-section-nav a:focus-visible{border-color:var(--border);background:color-mix(in srgb,var(--accent-blue) 8%,transparent);color:var(--text);outline:none}
-  @media(min-width:900px){.btc-section-nav{display:block}.btc-section-nav a{width:100%}.container{max-width:none;margin-left:200px;margin-right:24px}}
+  .risk-section-nav{display:none;position:fixed;top:24px;left:24px;z-index:40;width:160px;padding:14px;border:1px solid var(--border);background:color-mix(in srgb,var(--bg-card) 92%,transparent);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+  .risk-section-nav__label{display:block;padding:0 7px 10px;border-bottom:1px solid var(--border);color:var(--text-dimmer);font-size:0.52rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
+  .risk-section-nav__links{display:grid;gap:2px;padding-top:9px}
+  .risk-section-nav a{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto;padding:7px 9px;border:1px solid transparent;color:var(--text-dim);font-size:0.58rem;line-height:1.2;white-space:nowrap;text-decoration:none}
+  .risk-section-nav a span{color:var(--accent-blue);font-size:0.5rem}
+  .risk-section-nav a:hover,.risk-section-nav a:focus-visible{border-color:var(--border);background:color-mix(in srgb,var(--accent-blue) 8%,transparent);color:var(--text);outline:none}
+  @media(min-width:900px){.risk-section-nav{display:block}.risk-section-nav a{width:100%}.container{max-width:none;margin-left:200px;margin-right:24px}}
   @media(max-width:640px){header{text-align:left}.header-nav{justify-content:flex-start}}
 </style>
 </head>
 <body>
 <div class="bg-mesh"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
 <div class="noise-overlay"></div>
-<aside class="btc-section-nav" aria-label="Bitcoin dashboard sections">
-  <div class="btc-section-nav__label">On this page</div>
-  <nav class="btc-section-nav__links">
+<aside class="risk-section-nav" aria-label="Dashboard sections">
+  <div class="risk-section-nav__label">On this page</div>
+  <nav class="risk-section-nav__links">
     <a href="#summary"><span aria-hidden="true">01</span>Summary</a>
     <a href="#movingAveragesCard"><span aria-hidden="true">02</span>Moving averages</a>
     <a href="#risk-levels"><span aria-hidden="true">03</span>Risk levels</a>

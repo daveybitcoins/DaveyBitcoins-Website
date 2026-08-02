@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { RiskSectionNav } from "@/components/risk-section-nav";
 
 export const metadata: Metadata = {
   title: "QQQ Risk Metric | DaveyBitcoins",
@@ -35,9 +36,24 @@ function Tooltip({
   );
 }
 
+const sectionLinks = [
+  ["summary", "Summary"],
+  ["risk-scenarios", "Risk scenarios"],
+  ["historic-events", "Historic events"],
+  ["price-chart", "Price chart"],
+  ["risk-oscillator", "Risk oscillator"],
+  ["vix-chart", "VIX chart"],
+  ["dcaSection", "DCA simulator"],
+  ["methodology", "Methodology"],
+] as const;
+
 export default function QqqRiskMetricPage() {
   return (
-    <main className="spy-page qqq-page" data-risk-dashboard="qqq">
+    <main
+      className="spy-page qqq-page risk-page-with-sections"
+      data-risk-dashboard="qqq"
+    >
+      <RiskSectionNav links={sectionLinks} />
       <div className="spy-container">
         <header className="spy-intro">
           <p className="spy-kicker">Market cycle dashboard · Updated daily</p>
@@ -53,7 +69,7 @@ export default function QqqRiskMetricPage() {
           </div>
         </header>
 
-        <section className="dashboard" aria-label="QQQ market summary">
+        <section className="dashboard" id="summary" aria-label="QQQ market summary">
           <article className="card card-price">
             <div className="card-label">QQQ / USD</div>
             <div className="card-value card-value--price" id="vPrice">
@@ -97,7 +113,7 @@ export default function QqqRiskMetricPage() {
           </article>
         </section>
 
-        <section className="spy-panel risk-table-wrap">
+        <section className="spy-panel risk-table-wrap" id="risk-scenarios">
           <div className="spy-section-heading">
             <div>
               <h2>Risk Price Scenarios</h2>
@@ -113,7 +129,7 @@ export default function QqqRiskMetricPage() {
           </p>
         </section>
 
-        <section className="spy-panel risk-lows-wrap">
+        <section className="spy-panel risk-lows-wrap" id="historic-events">
           <div className="spy-section-heading">
             <div>
               <h2>Notable Historic Market Events</h2>
@@ -142,7 +158,7 @@ export default function QqqRiskMetricPage() {
           </div>
         </section>
 
-        <section className="spy-panel chart-panel">
+        <section className="spy-panel chart-panel" id="price-chart">
           <div className="chart-header">
             <div>
               <h2 className="chart-label">
@@ -156,7 +172,7 @@ export default function QqqRiskMetricPage() {
           <div className="legend-bar" id="legendBar" />
         </section>
 
-        <section className="spy-panel chart-panel">
+        <section className="spy-panel chart-panel" id="risk-oscillator">
           <div className="chart-header">
             <div>
               <h2 className="chart-label">200W Risk Oscillator (0 – 1)</h2>
@@ -170,7 +186,7 @@ export default function QqqRiskMetricPage() {
           <Tooltip id="riskTip" valueLabel="Risk" />
         </section>
 
-        <section className="spy-panel chart-panel">
+        <section className="spy-panel chart-panel" id="vix-chart">
           <div className="chart-header">
             <div>
               <h2 className="chart-label">VIX — Fear Index</h2>
@@ -343,7 +359,7 @@ export default function QqqRiskMetricPage() {
           </div>
         </section>
 
-        <section className="spy-panel methodology">
+        <section className="spy-panel methodology" id="methodology">
           <div className="spy-section-heading">
             <div>
               <h2>How the model works</h2>

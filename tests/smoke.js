@@ -11,6 +11,35 @@ function dashboardPath(slug) {
   return isNextExport ? `/${slug}/` : `/${slug}.html`;
 }
 
+async function assertSectionNavigation(page, expectedCount, dashboardName) {
+  const sectionLinks = page.locator('.risk-section-nav a');
+  if (await sectionLinks.count() !== expectedCount) {
+    throw new Error(`expected ${expectedCount} ${dashboardName} section-navigation links, got ${await sectionLinks.count()}`);
+  }
+  const sectionNavLayout = await page.locator('.risk-section-nav').evaluate((nav) => {
+    const style = getComputedStyle(nav);
+    return {
+      display: style.display,
+      position: style.position,
+      width: nav.getBoundingClientRect().width,
+    };
+  });
+  if (sectionNavLayout.display !== 'none' && (
+    sectionNavLayout.width > 200 ||
+    !['fixed', 'sticky'].includes(sectionNavLayout.position)
+  )) {
+    throw new Error(`expected side navigation without a full-width banner, got ${JSON.stringify(sectionNavLayout)}`);
+  }
+  const sectionTargets = await sectionLinks.evaluateAll((links) =>
+    links.map((link) => link.getAttribute('href'))
+  );
+  for (const href of sectionTargets) {
+    if (!href || !href.startsWith('#') || await page.locator(href).count() !== 1) {
+      throw new Error(`${dashboardName} section navigation has an invalid target: ${href}`);
+    }
+  }
+}
+
 const checks = [
   {
     path: dashboardPath('ema-scanner'),
@@ -52,32 +81,7 @@ const checks = [
       await expectText(page, 'Bitcoin Risk Metric');
       await expectText(page, 'Combined Risk');
       await expectText(page, 'Major Weekly Moving Averages');
-      const sectionLinks = page.locator('.btc-section-nav a');
-      if (await sectionLinks.count() !== 10) {
-        throw new Error(`expected 10 BTC section-navigation links, got ${await sectionLinks.count()}`);
-      }
-      const sectionNavLayout = await page.locator('.btc-section-nav').evaluate((nav) => {
-        const style = getComputedStyle(nav);
-        return {
-          display: style.display,
-          position: style.position,
-          width: nav.getBoundingClientRect().width,
-        };
-      });
-      if (sectionNavLayout.display !== 'none' && (
-        sectionNavLayout.width > 200 ||
-        !['fixed', 'sticky'].includes(sectionNavLayout.position)
-      )) {
-        throw new Error(`expected side navigation without a full-width banner, got ${JSON.stringify(sectionNavLayout)}`);
-      }
-      const sectionTargets = await sectionLinks.evaluateAll((links) =>
-        links.map((link) => link.getAttribute('href'))
-      );
-      for (const href of sectionTargets) {
-        if (!href || !href.startsWith('#') || await page.locator(href).count() !== 1) {
-          throw new Error(`BTC section navigation has an invalid target: ${href}`);
-        }
-      }
+      await assertSectionNavigation(page, 10, 'BTC');
       const movingAveragePeriods = await page.locator('#movingAveragesCard .moving-average-period').allTextContents();
       if (movingAveragePeriods.join(',') !== '300W,200W,50W,21W,13W,8W') {
         throw new Error(`unexpected BTC moving-average periods: ${movingAveragePeriods.join(',')}`);
@@ -150,6 +154,7 @@ const checks = [
       await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length === 10, null, { timeout: 20000 });
       await expectText(page, 'Risk Price Scenarios');
       await expectText(page, 'Market Cycle Risk');
+      await assertSectionNavigation(page, 10, 'SPY');
       const riskLevels = await page.locator('#riskTable .rc-risk').allTextContents();
       if (riskLevels.join(',') !== '0.10,0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.00') {
         throw new Error(`unexpected SPY risk scenario intervals: ${riskLevels.join(',')}`);
@@ -238,6 +243,7 @@ const checks = [
       await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length === 10, null, { timeout: 20000 });
       await expectText(page, 'Risk Price Scenarios');
       await expectText(page, 'Market Cycle Risk');
+      await assertSectionNavigation(page, 8, 'QQQ');
       const riskLevels = await page.locator('#riskTable .rc-risk').allTextContents();
       if (riskLevels.join(',') !== '0.10,0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.00') {
         throw new Error(`unexpected QQQ risk scenario intervals: ${riskLevels.join(',')}`);

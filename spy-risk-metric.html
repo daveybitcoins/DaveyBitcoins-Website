@@ -232,12 +232,35 @@
   table th,.risk-lows-table th,.pe-proj-table th{color:var(--accent-blue);font-family:'IBM Plex Mono','JetBrains Mono',monospace}
   table td,.risk-lows-table td,.pe-proj-table td{border-bottom-color:var(--border-light)}
   #headerDate{border-color:rgba(247,147,26,0.24)!important;background:rgba(247,147,26,0.07)!important;font-family:'IBM Plex Mono','JetBrains Mono',monospace!important}
+  #summary,#risk-scenarios,#downside-scenarios,#pe-projections,#historic-events,#price-chart,#risk-oscillator,#vix-chart,#dcaSection,#methodology{scroll-margin-top:92px}
+  .risk-section-nav{display:none;position:fixed;top:24px;left:24px;z-index:40;width:160px;padding:14px;border:1px solid var(--border);background:color-mix(in srgb,var(--bg-card) 92%,transparent);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+  .risk-section-nav__label{display:block;padding:0 7px 10px;border-bottom:1px solid var(--border);color:var(--text-dimmer);font-size:0.52rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
+  .risk-section-nav__links{display:grid;gap:2px;padding-top:9px}
+  .risk-section-nav a{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto;padding:7px 9px;border:1px solid transparent;color:var(--text-dim);font-size:0.58rem;line-height:1.2;white-space:nowrap;text-decoration:none}
+  .risk-section-nav a span{color:var(--accent-blue);font-size:0.5rem}
+  .risk-section-nav a:hover,.risk-section-nav a:focus-visible{border-color:var(--border);background:color-mix(in srgb,var(--accent-blue) 8%,transparent);color:var(--text);outline:none}
+  @media(min-width:900px){.risk-section-nav{display:block}.risk-section-nav a{width:100%}.container{max-width:none;margin-left:200px;margin-right:24px}}
   @media(max-width:640px){header{text-align:left}.header-nav{justify-content:flex-start}}
 </style>
 </head>
 <body>
 <div class="bg-mesh"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
 <div class="noise-overlay"></div>
+<aside class="risk-section-nav" aria-label="Dashboard sections">
+  <div class="risk-section-nav__label">On this page</div>
+  <nav class="risk-section-nav__links">
+    <a href="#summary"><span aria-hidden="true">01</span>Summary</a>
+    <a href="#risk-scenarios"><span aria-hidden="true">02</span>Risk scenarios</a>
+    <a href="#downside-scenarios"><span aria-hidden="true">03</span>Downside scenarios</a>
+    <a href="#pe-projections"><span aria-hidden="true">04</span>P/E projections</a>
+    <a href="#historic-events"><span aria-hidden="true">05</span>Historic events</a>
+    <a href="#price-chart"><span aria-hidden="true">06</span>Price chart</a>
+    <a href="#risk-oscillator"><span aria-hidden="true">07</span>Risk oscillator</a>
+    <a href="#vix-chart"><span aria-hidden="true">08</span>VIX chart</a>
+    <a href="#dcaSection"><span aria-hidden="true">09</span>DCA simulator</a>
+    <a href="#methodology"><span aria-hidden="true">10</span>Methodology</a>
+  </nav>
+</aside>
 <div class="container" style="position:relative;z-index:2;">
   <header>
     <div class="header-nav">
@@ -250,7 +273,7 @@
     <div class="subtitle"><span class="live-dot"></span>Risk · 200-Week Trend-Deviation Percentile</div>
     <div id="headerDate" style="margin-top:10px;font-size:0.65rem;letter-spacing:1px;color:var(--text-dim);display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border:1px solid rgba(247,147,26,0.24);border-radius:4px;background:rgba(247,147,26,0.07);font-family:'JetBrains Mono',monospace;"></div>
   </header>
-  <div class="dashboard">
+  <div class="dashboard" id="summary">
     <div class="card card-price" style="--glow:rgba(247,147,26,0.5)">
       <div class="card-label">SPY / USD</div>
       <div class="card-value" id="vPrice" style="font-size:2.4rem;letter-spacing:-2px;font-weight:700;color:var(--text-heading)">—</div>
@@ -263,14 +286,14 @@
     <div class="card" style="--glow:#ffbf63"><div class="card-label">Vs. 200W MA</div><div class="card-value" id="vDev" style="--val-color:#ffbf63">—</div></div>
     <div class="card" style="--glow:#ef5d4f"><div class="card-label">VIX (Close)</div><div class="card-value" id="vVixLevel" style="--val-color:#ef5d4f">—</div><div class="card-sub" id="vVixImplied"></div></div>
   </div>
-  <div class="risk-table-wrap">
+  <div class="risk-table-wrap" id="risk-scenarios">
     <h4>Risk Price Scenarios</h4>
     <div class="risk-table" id="riskTable"></div>
     <div style="text-align:center;font-size:0.65rem;color:var(--meth-text);margin-top:10px;letter-spacing:0.3px;line-height:1.6">
       Prices solve for each market-cycle risk decile using the current long-term trend and trailing 20-year weekly deviation distribution. Statistical scenarios—not price targets.
     </div>
   </div>
-  <div class="pe-proj-wrap valuation-stress-wrap">
+  <div class="pe-proj-wrap valuation-stress-wrap" id="downside-scenarios">
     <h4>Valuation-Aware Downside Scenarios</h4>
     <div class="pe-current-context">15× forward P/E scenario floor · Earnings estimates decline with the severity of the downturn</div>
     <table class="pe-proj-table" id="valuationStressTable">
@@ -283,7 +306,7 @@
       Uses the July 2026 forward EPS anchor of $373.08. The 15× multiple is a valuation scenario—not a guaranteed market floor.
     </div>
   </div>
-  <div class="pe-proj-wrap">
+  <div class="pe-proj-wrap" id="pe-projections">
     <h4>Forward P/E Price Projections</h4>
     <div class="pe-current-context" id="peCurrentContext"></div>
     <div class="pe-proj-sub">
@@ -308,7 +331,7 @@
       Consensus estimates can change and the July 2026 growth reading includes material GAAP one-time gains; update after Q3 earnings season.
     </div>
   </div>
-  <div class="risk-lows-wrap">
+  <div class="risk-lows-wrap" id="historic-events">
     <h4>Notable Historic Market Events</h4>
     <table class="risk-lows-table" id="riskLowsTable">
       <thead>
@@ -317,7 +340,7 @@
       <tbody id="riskLowsBody"></tbody>
     </table>
   </div>
-  <div class="chart-panel">
+  <div class="chart-panel" id="price-chart">
     <div class="chart-header">
       <div class="chart-label">SPY — Price Colored by Risk (Log Scale)</div>
       <div class="chart-note">200-Week Moving Average</div>
@@ -326,7 +349,7 @@
     <div class="tooltip" id="priceTip"><div class="tt-date"></div><div class="tt-price"></div><div>Risk: <span class="tt-risk"></span></div></div>
     <div class="legend-bar" id="legendBar"></div>
   </div>
-  <div class="chart-panel">
+  <div class="chart-panel" id="risk-oscillator">
     <div class="chart-header">
       <div class="chart-label">200W Risk Oscillator (0 – 1)</div>
       <div class="chart-note">Weekly risk only · 1990+ aligned with VIX · shaded = ≥10% drawdown windows</div>
@@ -334,7 +357,7 @@
     <canvas id="riskCanvas" width="1380" height="340"></canvas>
     <div class="tooltip" id="riskTip"><div class="tt-date"></div><div>Risk: <span class="tt-risk"></span></div></div>
   </div>
-  <div class="chart-panel">
+  <div class="chart-panel" id="vix-chart">
     <div class="chart-header">
       <div class="chart-label">VIX — Fear Index</div>
       <div class="chart-note">Same 1990+ time axis · shaded = ≥10% SPY drawdown windows</div>
@@ -409,7 +432,7 @@
       </div>
     </div>
   </div>
-  <div class="methodology">
+  <div class="methodology" id="methodology">
     <h3>Methodology</h3>
     <p><span class="hl">200-Week Risk:</span> Calculates <code>ln(price ÷ 200W MA)</code> from weekly closes, then ranks that deviation against its trailing 20-year weekly history. The latest incomplete week uses the current week-to-date close.</p>
     <p><span class="hl">Weekly Updates:</span> Historical readings change only at each weekly close and are carried across intervening daily chart observations. This keeps the oscillator focused on long-term market-cycle risk rather than short-term noise.</p>

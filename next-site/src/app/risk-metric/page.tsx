@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { RiskSectionNav } from "@/components/risk-section-nav";
 
 export const metadata: Metadata = {
   title: "Bitcoin Risk Metric | DaveyBitcoins",
@@ -104,18 +105,8 @@ const sectionLinks = [
 
 export default function BitcoinRiskMetricPage() {
   return (
-    <main className="spy-page btc-page" data-risk-dashboard="btc">
-      <aside className="btc-section-nav" aria-label="Bitcoin dashboard sections">
-        <div className="btc-section-nav__label">On this page</div>
-        <nav className="btc-section-nav__links">
-          {sectionLinks.map(([id, label], index) => (
-            <a href={`#${id}`} key={id}>
-              <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-              {label}
-            </a>
-          ))}
-        </nav>
-      </aside>
+    <main className="spy-page btc-page risk-page-with-sections" data-risk-dashboard="btc">
+      <RiskSectionNav links={sectionLinks} />
       <div className="spy-container">
         <header className="spy-intro">
           <p className="spy-kicker">Bitcoin cycle dashboard · Updated daily</p>

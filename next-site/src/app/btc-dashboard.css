@@ -1,17 +1,8 @@
-.btc-page [id="summary"],
-.btc-page [id="movingAveragesCard"],
-.btc-page [id="risk-levels"],
-.btc-page [id="market-caps"],
-.btc-page [id="fair-value"],
-.btc-page [id="historical-lows"],
-.btc-page [id="price-chart"],
-.btc-page [id="risk-oscillator"],
-.btc-page [id="midterm-cycles"],
-.btc-page [id="methodology"] {
+.risk-section-nav + .spy-container > [id] {
   scroll-margin-top: 1.5rem;
 }
 
-.btc-section-nav {
+.risk-section-nav {
   display: none;
   position: sticky;
   top: 7rem;
@@ -23,7 +14,7 @@
   backdrop-filter: blur(18px);
 }
 
-.btc-section-nav__label {
+.risk-section-nav__label {
   display: block;
   padding: 0 0.45rem 0.65rem;
   border-bottom: 1px solid var(--spy-border);
@@ -34,13 +25,13 @@
   text-transform: uppercase;
 }
 
-.btc-section-nav__links {
+.risk-section-nav__links {
   display: grid;
   gap: 0.15rem;
   padding-top: 0.55rem;
 }
 
-.btc-section-nav a {
+.risk-section-nav a {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -54,13 +45,13 @@
   white-space: nowrap;
 }
 
-.btc-section-nav a span {
+.risk-section-nav a span {
   color: var(--spy-orange);
   font-size: 0.5rem;
 }
 
-.btc-section-nav a:hover,
-.btc-section-nav a:focus-visible {
+.risk-section-nav a:hover,
+.risk-section-nav a:focus-visible {
   border-color: var(--spy-border);
   background: color-mix(in srgb, var(--spy-orange) 8%, transparent);
   color: var(--spy-text);
@@ -68,7 +59,7 @@
 }
 
 @media (min-width: 900px) {
-  .btc-page {
+  .risk-page-with-sections {
     display: grid;
     grid-template-columns: 10rem minmax(0, 1500px);
     align-items: start;
@@ -77,12 +68,12 @@
     padding: 0 1.5rem;
   }
 
-  .btc-page .spy-container {
+  .risk-page-with-sections .spy-container {
     width: 100%;
     margin: 0;
   }
 
-  .btc-section-nav {
+  .risk-section-nav {
     display: block;
   }
 }

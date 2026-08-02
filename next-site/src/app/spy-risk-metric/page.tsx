@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { RiskSectionNav } from "@/components/risk-section-nav";
 
 export const metadata: Metadata = {
   title: "SPY Risk Metric | DaveyBitcoins",
@@ -35,9 +36,23 @@ function Tooltip({
   );
 }
 
+const sectionLinks = [
+  ["summary", "Summary"],
+  ["risk-scenarios", "Risk scenarios"],
+  ["downside-scenarios", "Downside scenarios"],
+  ["pe-projections", "P/E projections"],
+  ["historic-events", "Historic events"],
+  ["price-chart", "Price chart"],
+  ["risk-oscillator", "Risk oscillator"],
+  ["vix-chart", "VIX chart"],
+  ["dcaSection", "DCA simulator"],
+  ["methodology", "Methodology"],
+] as const;
+
 export default function SpyRiskMetricPage() {
   return (
-    <main className="spy-page" data-risk-dashboard="spy">
+    <main className="spy-page risk-page-with-sections" data-risk-dashboard="spy">
+      <RiskSectionNav links={sectionLinks} />
       <div className="spy-container">
         <header className="spy-intro">
           <p className="spy-kicker">Market cycle dashboard · Updated daily</p>
@@ -53,7 +68,7 @@ export default function SpyRiskMetricPage() {
           </div>
         </header>
 
-        <section className="dashboard" aria-label="SPY market summary">
+        <section className="dashboard" id="summary" aria-label="SPY market summary">
           <article className="card card-price">
             <div className="card-label">SPY / USD</div>
             <div className="card-value card-value--price" id="vPrice">
@@ -98,7 +113,7 @@ export default function SpyRiskMetricPage() {
           </article>
         </section>
 
-        <section className="spy-panel risk-table-wrap">
+        <section className="spy-panel risk-table-wrap" id="risk-scenarios">
           <div className="spy-section-heading">
             <div>
               <h2>Risk Price Scenarios</h2>
@@ -114,7 +129,10 @@ export default function SpyRiskMetricPage() {
           </p>
         </section>
 
-        <section className="spy-panel pe-proj-wrap valuation-stress-wrap">
+        <section
+          className="spy-panel pe-proj-wrap valuation-stress-wrap"
+          id="downside-scenarios"
+        >
           <div className="spy-section-heading">
             <div>
               <h2>Valuation-Aware Downside Scenarios</h2>
@@ -145,7 +163,7 @@ export default function SpyRiskMetricPage() {
           </p>
         </section>
 
-        <section className="spy-panel pe-proj-wrap">
+        <section className="spy-panel pe-proj-wrap" id="pe-projections">
           <div className="spy-section-heading">
             <div>
               <h2>Forward P/E Price Projections</h2>
@@ -216,7 +234,7 @@ export default function SpyRiskMetricPage() {
           </p>
         </section>
 
-        <section className="spy-panel risk-lows-wrap">
+        <section className="spy-panel risk-lows-wrap" id="historic-events">
           <div className="spy-section-heading">
             <div>
               <h2>Notable Historic Market Events</h2>
@@ -245,7 +263,7 @@ export default function SpyRiskMetricPage() {
           </div>
         </section>
 
-        <section className="spy-panel chart-panel">
+        <section className="spy-panel chart-panel" id="price-chart">
           <div className="chart-header">
             <div>
               <h2 className="chart-label">
@@ -259,7 +277,7 @@ export default function SpyRiskMetricPage() {
           <div className="legend-bar" id="legendBar" />
         </section>
 
-        <section className="spy-panel chart-panel">
+        <section className="spy-panel chart-panel" id="risk-oscillator">
           <div className="chart-header">
             <div>
               <h2 className="chart-label">200W Risk Oscillator (0 – 1)</h2>
@@ -273,7 +291,7 @@ export default function SpyRiskMetricPage() {
           <Tooltip id="riskTip" valueLabel="Risk" />
         </section>
 
-        <section className="spy-panel chart-panel">
+        <section className="spy-panel chart-panel" id="vix-chart">
           <div className="chart-header">
             <div>
               <h2 className="chart-label">VIX — Fear Index</h2>
@@ -446,7 +464,7 @@ export default function SpyRiskMetricPage() {
           </div>
         </section>
 
-        <section className="spy-panel methodology">
+        <section className="spy-panel methodology" id="methodology">
           <div className="spy-section-heading">
             <div>
               <h2>How the model works</h2>
