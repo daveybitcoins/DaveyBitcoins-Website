@@ -6,7 +6,9 @@ const { test } = require('node:test');
 const ROOT = resolve(__dirname, '..');
 const ENGINE_PATH = resolve(ROOT, 'btc-risk-engine.js');
 const DATA_PATH = resolve(ROOT, 'data.csv');
-const FIXTURE_CUTOFF = '2026-07-31';
+// Freeze the dataset before the actively revised recent-price window so daily
+// market-data updates do not change these regression fixtures.
+const FIXTURE_CUTOFF = '2025-12-31';
 const NEXT_HALVING_ESTIMATE = Date.parse('2028-04-13T00:00:00Z');
 const PROJECTION_END = Date.parse('2040-12-01T00:00:00Z');
 
@@ -74,10 +76,10 @@ test('historical halving risk readings stay calibrated', () => {
   const { buildDataset } = loadProductionModel();
   const { pts } = buildDataset(fixtureData());
   const fixtures = {
-    '2012-11-28': 0.22811473253607017,
+    '2012-11-28': 0.22627442366399386,
     '2016-07-09': 0.20655404166730124,
     '2020-05-11': 0.260512656493095,
-    '2024-04-20': 0.5149596037232537,
+    '2024-04-20': 0.5149596037232536,
   };
 
   for (const [date, expectedRisk] of Object.entries(fixtures)) {
@@ -98,7 +100,7 @@ test('next-halving price-at-risk fixture remains deterministic', () => {
     0.5,
   );
 
-  approximately(priceAtHalfRisk, 181531.56384211133, 0.01);
+  approximately(priceAtHalfRisk, 201614.77652696377, 0.01);
 });
 
 test('forecast path, tooltip lookup, and projection dates agree', () => {
@@ -119,7 +121,7 @@ test('forecast path, tooltip lookup, and projection dates agree', () => {
   );
   const dateIndex = Math.round((NEXT_HALVING_ESTIMATE - path[0].ms) / 864e5);
 
-  approximately(path[dateIndex].value, 234858.5613314731, 0.01);
+  approximately(path[dateIndex].value, 248457.8165483145, 0.01);
   approximately(
     dampedFairValueAt(path, NEXT_HALVING_ESTIMATE),
     path[dateIndex].value,
