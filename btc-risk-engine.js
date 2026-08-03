@@ -99,14 +99,19 @@ const STRUCTURAL_SOFT_FLOOR_SCALE = 0.15;
 const STRUCTURAL_SOFT_FLOOR_MAX = 0.02;
 const STRUCTURAL_SOFT_FLOOR_MIN = 0.005;
 const STRUCTURAL_FLOOR_BREAK_RISK = 0.01;
-const FAIR_VALUE_DAMPENING_MARKET_CAP = 20e12;
 const FAIR_VALUE_PROJECTION_SUPPLY = 20.8e6;
 const FAIR_VALUE_LONG_RUN_GROWTH = 0.06;
+const FAIR_VALUE_GOLD_GROWTH = 0.052;
 const FAIR_VALUE_DAMPENING_POWER = 2;
 const FAIR_VALUE_DAYS_PER_YEAR = 365.2425;
 const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);
+const FAIR_VALUE_SCENARIOS = {
+  conservative: { label: 'Conservative', marketCap: 13e12 },
+  base: { label: 'Base', marketCap: 20e12 },
+  aggressive: { label: 'Aggressive', marketCap: 31e12 }
+};
 
-function buildDampedFairValuePath(startMs, startValue, slope, endMs) {
+function buildDampedFairValuePath(startMs, startValue, slope, endMs, scenario) {
   const path = [{ ms: startMs, value: startValue }];
   let projectionMs = startMs;
   let dampedValue = startValue;
@@ -118,8 +123,10 @@ function buildDampedFairValuePath(startMs, startValue, slope, endMs) {
     const longRunLogGrowth = Math.log1p(FAIR_VALUE_LONG_RUN_GROWTH) *
       stepDays / FAIR_VALUE_DAYS_PER_YEAR;
     const modeledMarketCap = dampedValue * FAIR_VALUE_PROJECTION_SUPPLY;
+    const elapsedYears = (projectionMs - startMs) / 864e5 / FAIR_VALUE_DAYS_PER_YEAR;
+    const dampingMarketCap = scenario.marketCap * Math.pow(1 + FAIR_VALUE_GOLD_GROWTH, elapsedYears);
     const dampingShare = 1 / (1 + Math.pow(
-      modeledMarketCap / FAIR_VALUE_DAMPENING_MARKET_CAP,
+      modeledMarketCap / dampingMarketCap,
       FAIR_VALUE_DAMPENING_POWER
     ));
     const dampedLogGrowth = longRunLogGrowth +
@@ -596,11 +603,13 @@ async function main() {
   const last = pts[n-1];
   const isLive = live;
   const lastDateMs = dateMs(last.date);
-  const dampedFairValuePath = buildDampedFairValuePath(
+  let activeFairValueScenario = 'base';
+  let dampedFairValuePath = buildDampedFairValuePath(
     lastDateMs,
     last.trendPrice,
     slope,
-    FAIR_VALUE_PROJECTION_END_MS
+    FAIR_VALUE_PROJECTION_END_MS,
+    FAIR_VALUE_SCENARIOS[activeFairValueScenario]
   );
 
   // Dashboard
@@ -657,8 +666,9 @@ async function main() {
   }
 
   // ====== MARKET-CAP-DAMPED FAIR VALUE (semiannual through 2030, annual through 2040) ======
-  {
+  function renderFairValueProjectionTable() {
     const projBody = document.getElementById('projBody');
+    projBody.innerHTML = '';
     const todayFV = last.trendPrice;
     const todayPrice = last.price;
     const moNames = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec'];
@@ -699,6 +709,25 @@ async function main() {
       projBody.appendChild(tr);
     }
   }
+
+  function setFairValueScenario(scenarioKey) {
+    if (!FAIR_VALUE_SCENARIOS[scenarioKey]) return;
+    activeFairValueScenario = scenarioKey;
+    dampedFairValuePath = buildDampedFairValuePath(
+      lastDateMs,
+      last.trendPrice,
+      slope,
+      FAIR_VALUE_PROJECTION_END_MS,
+      FAIR_VALUE_SCENARIOS[activeFairValueScenario]
+    );
+    document.querySelectorAll('[data-fair-value-scenario]').forEach(function(button) {
+      button.setAttribute('aria-pressed', button.dataset.fairValueScenario === activeFairValueScenario ? 'true' : 'false');
+    });
+    renderFairValueProjectionTable();
+    renderPriceChart();
+  }
+
+  renderFairValueProjectionTable();
 
   // ====== HISTORICAL RISK LOWS ======
   {
@@ -874,6 +903,7 @@ async function main() {
     const yOf=p=>{const lp=Math.log10(p);return P.t+ch-((lp-minE)/(maxE-minE))*ch;};
     cv.dataset.projectionEnd = fullProjectionView ? '2040-12-01' : '';
     cv.dataset.projectionPoints = fullProjectionView ? String(dampedFairValuePath.length) : '0';
+    cv.dataset.projectionScenario = activeFairValueScenario;
 
     // Price grid
     ctx.textAlign='right'; ctx.font='10px JetBrains Mono';
@@ -937,7 +967,7 @@ async function main() {
       ctx.lineTo(xOfTime(finalPoint.ms),yOf(finalPoint.value));
       ctx.stroke();ctx.setLineDash([]);
       ctx.fillStyle='#58c56f';ctx.font='10px JetBrains Mono';ctx.textAlign='right';
-      ctx.fillText('ADJUSTED FAIR VALUE',W-P.r-6,yOf(finalPoint.value)-8);
+      ctx.fillText(FAIR_VALUE_SCENARIOS[activeFairValueScenario].label.toUpperCase() + ' FAIR VALUE',W-P.r-6,yOf(finalPoint.value)-8);
     }
 
     // Price line
@@ -1363,6 +1393,11 @@ async function main() {
   })();
 
   // ====== INIT ======
+  document.querySelectorAll('[data-fair-value-scenario]').forEach(function(button) {
+    button.addEventListener('click', function() {
+      setFairValueScenario(button.dataset.fairValueScenario);
+    });
+  });
   renderAll();
   renderMidtermChart();
   attachChartTooltip('priceCanvas', 'priceTip');

@@ -167,6 +167,14 @@
   .proj-formula{display:block;margin:10px 0 8px;padding:10px 12px;border-left:2px solid var(--accent-blue);background:color-mix(in srgb,var(--bg) 82%,transparent);color:var(--text-heading);font-family:'IBM Plex Mono','JetBrains Mono',monospace;font-size:0.68rem;line-height:1.7;overflow-x:auto}
   .proj-method-note a{color:var(--accent-blue);text-decoration:none}
   .proj-method-note a:hover{text-decoration:underline}
+  .fair-value-scenarios{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-width:940px;margin:0 auto 18px}
+  .fair-value-scenario{appearance:none;border:1px solid var(--border);border-radius:8px;background:color-mix(in srgb,var(--bg) 82%,transparent);color:var(--text-dim);padding:12px 14px;text-align:left;cursor:pointer;transition:border-color .2s,background .2s,color .2s,transform .2s}
+  .fair-value-scenario:hover{border-color:var(--accent-blue);color:var(--text-bright);transform:translateY(-1px)}
+  .fair-value-scenario[aria-pressed="true"]{border-color:#58c56f;background:color-mix(in srgb,#58c56f 10%,var(--bg));color:var(--text-heading);box-shadow:0 0 0 1px color-mix(in srgb,#58c56f 35%,transparent)}
+  .fair-value-scenario strong,.fair-value-scenario span{display:block}
+  .fair-value-scenario strong{font-family:'Outfit',sans-serif;font-size:.72rem;letter-spacing:.6px;text-transform:uppercase}
+  .fair-value-scenario span{margin-top:4px;font-size:.61rem;line-height:1.45}
+  .fair-value-scenario .scenario-cap{color:#58c56f;font-family:'IBM Plex Mono','JetBrains Mono',monospace;font-weight:600}
   .proj-table{width:100%;border-collapse:collapse}
   #projTable{min-width:820px}
   .proj-table th{font-size:0.55rem;color:var(--text-dimmer);text-transform:uppercase;letter-spacing:1.5px;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
@@ -179,7 +187,7 @@
   .market-cap-meta span{color:var(--text-heading);font-weight:600}
   .market-cap-scroll{max-height:520px;overflow:auto;border-top:1px solid var(--border-light);border-bottom:1px solid var(--border-light)}
   .market-cap-scroll .proj-table th{position:sticky;top:0;background:var(--bg-card);z-index:1}
-  @media(max-width:600px){.proj-table th,.proj-table td{padding:6px 8px;font-size:0.65rem}}
+  @media(max-width:600px){.fair-value-scenarios{grid-template-columns:1fr}.proj-table th,.proj-table td{padding:6px 8px;font-size:0.65rem}}
   .risk-lows-wrap{background:rgba(20,19,15,0.74);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:20px 24px;margin-bottom:36px;overflow-x:auto;transition:background 0.3s,border-color 0.3s}
   [data-theme="light"] .risk-lows-wrap{background:rgba(255,255,255,0.7);border-color:var(--border)}
   .risk-lows-wrap h4{font-family:'Outfit',sans-serif;font-size:0.65rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;text-align:center}
@@ -358,14 +366,25 @@
   </div>
   <div class="proj-table-wrap" id="fair-value">
     <h4>Bitcoin Market-Cap-Adjusted Power-Law Fair Value</h4>
+    <div class="fair-value-scenarios" role="group" aria-label="Fair value projection scenario">
+      <button type="button" class="fair-value-scenario" data-fair-value-scenario="conservative" aria-pressed="false">
+        <strong>Conservative</strong><span><span class="scenario-cap">$13T today</span> Investable and central-bank gold</span>
+      </button>
+      <button type="button" class="fair-value-scenario" data-fair-value-scenario="base" aria-pressed="true">
+        <strong>Base</strong><span><span class="scenario-cap">$20T today</span> Midpoint gold-equivalence case</span>
+      </button>
+      <button type="button" class="fair-value-scenario" data-fair-value-scenario="aggressive" aria-pressed="false">
+        <strong>Aggressive</strong><span><span class="scenario-cap">$31T today</span> Total above-ground gold</span>
+      </button>
+    </div>
     <p class="proj-method-note" id="projMethodNote">
       <strong>Long-run scenario, not a short-term price target.</strong>
       The path begins with Bitcoin’s historical power-law regression, then progressively slows its
-      excess growth as the modeled market cap approaches $20T. At $20T, the power-law growth above a
+      excess growth as the modeled market cap approaches the selected gold-linked threshold. In the base case, at $20T the power-law growth above a
       6% long-run nominal rate is reduced by half; the path continues converging toward 6% as the asset grows.
-      The calculation assumes 20.8M BTC.
-      <code class="proj-formula">g<sub>effective</sub> = g<sub>6%</sub> + (g<sub>power-law</sub> − g<sub>6%</sub>) × 1 / [1 + (M / $20T)²]</code>
-      Here, <strong>M</strong> is the modeled fair-value market cap. The 6% mature-asset rate is
+      The threshold grows 5.2% annually with the gold model, and the calculation assumes 20.8M BTC.
+      <code class="proj-formula">g<sub>effective</sub> = g<sub>6%</sub> + (g<sub>power-law</sub> − g<sub>6%</sub>) × 1 / [1 + (M / K<sub>scenario,t</sub>)²]</code>
+      Here, <strong>M</strong> is the modeled fair-value market cap and <strong>K<sub>scenario,t</sub></strong> is the selected, annually growing damping threshold. The 6% mature-asset rate is
       informed by gold: free-floating gold compounded about 8% from 1971–2023, while the
       <a href="https://www.gold.org/goldhub/research/golds-long-term-expected-returns/building-block-approach" target="_blank" rel="noopener">World Gold Council’s long-term model</a>
       estimates 5.2% annually for 2025–2040. Bitcoin retains more of its historical power-law growth
@@ -529,14 +548,19 @@ const STRUCTURAL_SOFT_FLOOR_SCALE = 0.15;
 const STRUCTURAL_SOFT_FLOOR_MAX = 0.02;
 const STRUCTURAL_SOFT_FLOOR_MIN = 0.005;
 const STRUCTURAL_FLOOR_BREAK_RISK = 0.01;
-const FAIR_VALUE_DAMPENING_MARKET_CAP = 20e12;
 const FAIR_VALUE_PROJECTION_SUPPLY = 20.8e6;
 const FAIR_VALUE_LONG_RUN_GROWTH = 0.06;
+const FAIR_VALUE_GOLD_GROWTH = 0.052;
 const FAIR_VALUE_DAMPENING_POWER = 2;
 const FAIR_VALUE_DAYS_PER_YEAR = 365.2425;
 const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);
+const FAIR_VALUE_SCENARIOS = {
+  conservative: { label: 'Conservative', marketCap: 13e12 },
+  base: { label: 'Base', marketCap: 20e12 },
+  aggressive: { label: 'Aggressive', marketCap: 31e12 }
+};
 
-function buildDampedFairValuePath(startMs, startValue, slope, endMs) {
+function buildDampedFairValuePath(startMs, startValue, slope, endMs, scenario) {
   const path = [{ ms: startMs, value: startValue }];
   let projectionMs = startMs;
   let dampedValue = startValue;
@@ -548,8 +572,10 @@ function buildDampedFairValuePath(startMs, startValue, slope, endMs) {
     const longRunLogGrowth = Math.log1p(FAIR_VALUE_LONG_RUN_GROWTH) *
       stepDays / FAIR_VALUE_DAYS_PER_YEAR;
     const modeledMarketCap = dampedValue * FAIR_VALUE_PROJECTION_SUPPLY;
+    const elapsedYears = (projectionMs - startMs) / 864e5 / FAIR_VALUE_DAYS_PER_YEAR;
+    const dampingMarketCap = scenario.marketCap * Math.pow(1 + FAIR_VALUE_GOLD_GROWTH, elapsedYears);
     const dampingShare = 1 / (1 + Math.pow(
-      modeledMarketCap / FAIR_VALUE_DAMPENING_MARKET_CAP,
+      modeledMarketCap / dampingMarketCap,
       FAIR_VALUE_DAMPENING_POWER
     ));
     const dampedLogGrowth = longRunLogGrowth +
@@ -1026,11 +1052,13 @@ async function main() {
   const last = pts[n-1];
   const isLive = live;
   const lastDateMs = dateMs(last.date);
-  const dampedFairValuePath = buildDampedFairValuePath(
+  let activeFairValueScenario = 'base';
+  let dampedFairValuePath = buildDampedFairValuePath(
     lastDateMs,
     last.trendPrice,
     slope,
-    FAIR_VALUE_PROJECTION_END_MS
+    FAIR_VALUE_PROJECTION_END_MS,
+    FAIR_VALUE_SCENARIOS[activeFairValueScenario]
   );
 
   // Dashboard
@@ -1087,8 +1115,9 @@ async function main() {
   }
 
   // ====== MARKET-CAP-DAMPED FAIR VALUE (semiannual through 2030, annual through 2040) ======
-  {
+  function renderFairValueProjectionTable() {
     const projBody = document.getElementById('projBody');
+    projBody.innerHTML = '';
     const todayFV = last.trendPrice;
     const todayPrice = last.price;
     const moNames = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec'];
@@ -1129,6 +1158,25 @@ async function main() {
       projBody.appendChild(tr);
     }
   }
+
+  function setFairValueScenario(scenarioKey) {
+    if (!FAIR_VALUE_SCENARIOS[scenarioKey]) return;
+    activeFairValueScenario = scenarioKey;
+    dampedFairValuePath = buildDampedFairValuePath(
+      lastDateMs,
+      last.trendPrice,
+      slope,
+      FAIR_VALUE_PROJECTION_END_MS,
+      FAIR_VALUE_SCENARIOS[activeFairValueScenario]
+    );
+    document.querySelectorAll('[data-fair-value-scenario]').forEach(function(button) {
+      button.setAttribute('aria-pressed', button.dataset.fairValueScenario === activeFairValueScenario ? 'true' : 'false');
+    });
+    renderFairValueProjectionTable();
+    renderPriceChart();
+  }
+
+  renderFairValueProjectionTable();
 
   // ====== HISTORICAL RISK LOWS ======
   {
@@ -1304,6 +1352,7 @@ async function main() {
     const yOf=p=>{const lp=Math.log10(p);return P.t+ch-((lp-minE)/(maxE-minE))*ch;};
     cv.dataset.projectionEnd = fullProjectionView ? '2040-12-01' : '';
     cv.dataset.projectionPoints = fullProjectionView ? String(dampedFairValuePath.length) : '0';
+    cv.dataset.projectionScenario = activeFairValueScenario;
 
     // Price grid
     ctx.textAlign='right'; ctx.font='10px JetBrains Mono';
@@ -1367,7 +1416,7 @@ async function main() {
       ctx.lineTo(xOfTime(finalPoint.ms),yOf(finalPoint.value));
       ctx.stroke();ctx.setLineDash([]);
       ctx.fillStyle='#58c56f';ctx.font='10px JetBrains Mono';ctx.textAlign='right';
-      ctx.fillText('ADJUSTED FAIR VALUE',W-P.r-6,yOf(finalPoint.value)-8);
+      ctx.fillText(FAIR_VALUE_SCENARIOS[activeFairValueScenario].label.toUpperCase() + ' FAIR VALUE',W-P.r-6,yOf(finalPoint.value)-8);
     }
 
     // Price line
@@ -1791,6 +1840,11 @@ async function main() {
   })();
 
   // ====== INIT ======
+  document.querySelectorAll('[data-fair-value-scenario]').forEach(function(button) {
+    button.addEventListener('click', function() {
+      setFairValueScenario(button.dataset.fairValueScenario);
+    });
+  });
   renderAll();
   renderMidtermChart();
   attachChartTooltip('priceCanvas', 'priceTip');

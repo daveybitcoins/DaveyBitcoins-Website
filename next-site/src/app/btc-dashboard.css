@@ -271,6 +271,60 @@
   text-underline-offset: 3px;
 }
 
+.btc-page .fair-value-scenarios {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+.btc-page .fair-value-scenario {
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--spy-border);
+  background: var(--spy-canvas);
+  color: var(--spy-muted);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s,
+    transform 0.2s;
+}
+
+.btc-page .fair-value-scenario:hover {
+  border-color: var(--spy-orange);
+  color: var(--spy-text);
+  transform: translateY(-1px);
+}
+
+.btc-page .fair-value-scenario[aria-pressed="true"] {
+  border-color: #58c56f;
+  background: color-mix(in srgb, #58c56f 10%, var(--spy-canvas));
+  color: var(--spy-text);
+  box-shadow: 0 0 0 1px color-mix(in srgb, #58c56f 35%, transparent);
+}
+
+.btc-page .fair-value-scenario strong,
+.btc-page .fair-value-scenario span {
+  display: block;
+}
+
+.btc-page .fair-value-scenario strong {
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.btc-page .fair-value-scenario > span {
+  margin-top: 0.3rem;
+  font-size: 0.58rem;
+  line-height: 1.5;
+}
+
+.btc-page .fair-value-scenario .scenario-cap {
+  color: #58c56f;
+  font-family: var(--font-mono), monospace;
+  font-weight: 700;
+}
+
 .btc-page .proj-formula {
   display: block;
   margin: 0.8rem 0;
@@ -428,6 +482,10 @@
 }
 
 @media (max-width: 620px) {
+  .btc-page .fair-value-scenarios {
+    grid-template-columns: 1fr;
+  }
+
   .btc-page .moving-averages-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

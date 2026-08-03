@@ -118,10 +118,11 @@ test('forecast path, tooltip lookup, and projection dates agree', () => {
     last.trendPrice,
     slope,
     PROJECTION_END,
+    { marketCap: 20e12 },
   );
   const dateIndex = Math.round((NEXT_HALVING_ESTIMATE - path[0].ms) / 864e5);
 
-  approximately(path[dateIndex].value, 248457.8165483145, 0.01);
+  approximately(path[dateIndex].value, 249069.92082868578, 0.01);
   approximately(
     dampedFairValueAt(path, NEXT_HALVING_ESTIMATE),
     path[dateIndex].value,
@@ -131,4 +132,18 @@ test('forecast path, tooltip lookup, and projection dates agree', () => {
   assert.match(source, /dampedFairValueAt\(dampedFairValuePath,\s*futureMs\)/);
   assert.match(source, /dampedFairValueAt\(dampedFairValuePath,\s*hoverMs\)/);
   assert.match(source, /for\(let i=0;i<dampedFairValuePath\.length;i\+\+\)/);
+
+  const scenarioValues = [13e12, 20e12, 31e12].map(marketCap =>
+    buildDampedFairValuePath(
+      dateMs(last.date),
+      last.trendPrice,
+      slope,
+      PROJECTION_END,
+      { marketCap },
+    ).at(-1).value,
+  );
+  assert.ok(scenarioValues[0] < scenarioValues[1]);
+  assert.ok(scenarioValues[1] < scenarioValues[2]);
+  assert.match(source, /data-fair-value-scenario/);
+  assert.match(source, /renderFairValueProjectionTable\(\);\s*renderPriceChart\(\);/);
 });

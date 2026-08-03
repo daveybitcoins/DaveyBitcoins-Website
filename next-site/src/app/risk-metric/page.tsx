@@ -275,20 +275,66 @@ export default function BitcoinRiskMetricPage() {
               historical power-law path through 2040.
             </p>
           </div>
+          <div
+            className="fair-value-scenarios"
+            role="group"
+            aria-label="Fair value projection scenario"
+          >
+            <button
+              type="button"
+              className="fair-value-scenario"
+              data-fair-value-scenario="conservative"
+              aria-pressed="false"
+            >
+              <strong>Conservative</strong>
+              <span>
+                <span className="scenario-cap">$13T today</span> Investable and
+                central-bank gold
+              </span>
+            </button>
+            <button
+              type="button"
+              className="fair-value-scenario"
+              data-fair-value-scenario="base"
+              aria-pressed="true"
+            >
+              <strong>Base</strong>
+              <span>
+                <span className="scenario-cap">$20T today</span> Midpoint
+                gold-equivalence case
+              </span>
+            </button>
+            <button
+              type="button"
+              className="fair-value-scenario"
+              data-fair-value-scenario="aggressive"
+              aria-pressed="false"
+            >
+              <strong>Aggressive</strong>
+              <span>
+                <span className="scenario-cap">$31T today</span> Total
+                above-ground gold
+              </span>
+            </button>
+          </div>
           <p className="proj-method-note" id="projMethodNote">
             <strong>Long-run scenario, not a short-term price target.</strong>{" "}
             The path begins with Bitcoin&apos;s historical power-law regression,
             then progressively slows its excess growth as the modeled market
-            cap approaches $20T. At $20T, the power-law growth above a 6%
-            long-run nominal rate is reduced by half; the path continues
-            converging toward 6% as the asset grows. The calculation assumes
-            20.8M BTC.
+            cap approaches the selected gold-linked threshold. In the base
+            case, at $20T the power-law growth above a 6% long-run nominal rate
+            is reduced by half; the path continues converging toward 6% as the
+            asset grows. The threshold grows 5.2% annually with the gold model,
+            and the calculation assumes 20.8M BTC.
             <code className="proj-formula">
               g<sub>effective</sub> = g<sub>6%</sub> + (g
-              <sub>power-law</sub> − g<sub>6%</sub>) × 1 / [1 + (M / $20T)²]
+              <sub>power-law</sub> − g<sub>6%</sub>) × 1 / [1 + (M / K
+              <sub>scenario,t</sub>)²]
             </code>
-            Here, <strong>M</strong> is the modeled fair-value market cap. The
-            6% mature-asset rate is informed by gold: free-floating gold
+            Here, <strong>M</strong> is the modeled fair-value market cap and K
+            <sub>scenario,t</sub> is the selected, annually growing damping
+            threshold. The 6% mature-asset rate is informed by gold:
+            free-floating gold
             compounded about 8% from 1971–2023, while the{" "}
             <a
               href="https://www.gold.org/goldhub/research/golds-long-term-expected-returns/building-block-approach"
@@ -441,7 +487,7 @@ export default function BitcoinRiskMetricPage() {
 
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20260801-daily-forecast" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20260803-gold-scenarios" strategy="afterInteractive" />
     </main>
   );
 }
