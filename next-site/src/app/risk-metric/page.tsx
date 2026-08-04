@@ -509,7 +509,7 @@ export default function BitcoinRiskMetricPage() {
 
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20260803-time-capitulation" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20260804-log-minor-ticks" strategy="afterInteractive" />
     </main>
   );
 }
