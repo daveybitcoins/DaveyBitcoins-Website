@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Script from "next/script";
 import { RiskSectionNav } from "@/components/risk-section-nav";
 
@@ -123,7 +124,21 @@ export default function BitcoinRiskMetricPage() {
           </div>
         </header>
 
-        <section className="dashboard" id="summary" aria-label="Bitcoin market summary">
+        <div className="btc-summary-overview">
+          <figure className="btc-summary-art">
+            <Image
+              src="/social-preview.png"
+              alt="A glowing Bitcoin clock in a futuristic golden landscape"
+              fill
+              sizes="(max-width: 900px) 100vw, 24vw"
+              priority
+            />
+            <figcaption>
+              <strong>Bitcoin // Time, cycles &amp; risk</strong>
+              <span>A visual map for the long game.</span>
+            </figcaption>
+          </figure>
+          <section className="dashboard" id="summary" aria-label="Bitcoin market summary">
           <article className="card card-price">
             <div className="card-label">BTC Price</div>
             <div className="card-value card-value--price" id="vPrice">
@@ -199,7 +214,8 @@ export default function BitcoinRiskMetricPage() {
             rightId="vBearRange"
             rightText="—"
           />
-        </section>
+          </section>
+        </div>
 
         <section className="card moving-averages-card" id="movingAveragesCard">
           <div className="moving-averages-head">

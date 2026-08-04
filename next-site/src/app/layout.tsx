@@ -18,8 +18,8 @@ export const metadata: Metadata = {
       {
         url: "/social-preview.png",
         width: 1200,
-        height: 630,
-        alt: "A glowing Bitcoin surrounded by orbital rings",
+        height: 1200,
+        alt: "A glowing Bitcoin clock in a futuristic golden landscape",
       },
     ],
     type: "website",
