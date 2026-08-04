@@ -895,13 +895,30 @@ async function main() {
     cv.dataset.projectionPoints = fullProjectionView ? String(dampedFairValuePath.length) : '0';
     cv.dataset.projectionScenario = activeFairValueScenario;
 
-    // Price grid
+    // Price grid: major lines mark powers of ten. Minor ticks at 2x through
+    // 9x make each logarithmic decade readable without implying linear spacing.
     ctx.textAlign='right'; ctx.font='10px JetBrains Mono';
+    const logMinorMultipliers=[2,3,4,5,6,7,8,9];
+    cv.dataset.logMinorTickMultipliers=logMinorMultipliers.join(',');
+    cv.dataset.logMinorTickCount=String(Math.max(0,maxE-minE)*logMinorMultipliers.length);
     for(let e2=minE;e2<=maxE;e2++){
       const y=yOf(Math.pow(10,e2));
       ctx.strokeStyle=tc.gridLine;ctx.lineWidth=1;
       ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke();
-      if(e2<maxE){const y3=yOf(3*Math.pow(10,e2));ctx.strokeStyle=tc.gridLineMinor;ctx.beginPath();ctx.moveTo(P.l,y3);ctx.lineTo(W-P.r,y3);ctx.stroke();}
+      if(e2<maxE){
+        for(const multiplier of logMinorMultipliers){
+          const minorY=yOf(multiplier*Math.pow(10,e2));
+          ctx.save();
+          ctx.globalAlpha=multiplier===5?0.5:0.28;
+          ctx.strokeStyle=tc.gridLineMinor;ctx.lineWidth=0.6;
+          ctx.beginPath();ctx.moveTo(P.l,minorY);ctx.lineTo(W-P.r,minorY);ctx.stroke();
+          ctx.restore();
+          ctx.save();
+          ctx.globalAlpha=0.78;ctx.strokeStyle=tc.axisText;ctx.lineWidth=1;
+          ctx.beginPath();ctx.moveTo(P.l-6,minorY);ctx.lineTo(P.l,minorY);ctx.stroke();
+          ctx.restore();
+        }
+      }
       ctx.fillStyle=tc.axisText;
       const val=Math.pow(10,e2);
       ctx.fillText(val>=1000?'$'+val.toLocaleString():val>=1?'$'+val:'$'+val.toFixed(4),P.l-8,y+3);
