@@ -478,16 +478,22 @@ export default function BitcoinRiskMetricPage() {
               at ten minutes per block.
             </p>
             <p>
-              <span className="hl">Bear Market Progress:</span> Compares time
-              since the latest all-time high with completed Bitcoin bear
-              markets and a model-derived downside range.
+              <span className="hl">Bear Market Progress:</span> Uses the 363–376
+              day range of the two most recent completed bear markets, with the
+              midpoint used only for the progress bar. The price zone spans the
+              power-law lower boundary through the 0.46× trend level seen at
+              the 2018 bottom. Because the 2025 ATH reached only 1.09× trend—
+              versus 2.14× in 2021, 6.02× in 2017, and 8.42× in 2013—the base
+              case allows capitulation to occur through time and apathy rather
+              than requiring another blow-off decline. An external liquidity
+              or leverage shock can still push price below the modeled zone.
             </p>
           </div>
         </section>
 
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20260803-gold-scenarios" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20260803-time-capitulation" strategy="afterInteractive" />
     </main>
   );
 }

@@ -456,12 +456,12 @@ async function refreshDifficultyAdjustment() {
 }
 
 // ====== BEAR MARKET PROGRESS ======
-const COMPLETED_BEAR_CYCLES = [
-  { peak: '2011-06-08', bottom: '2011-11-18' },
-  { peak: '2013-11-30', bottom: '2015-01-14' },
-  { peak: '2017-12-17', bottom: '2018-12-15' },
-  { peak: '2021-11-10', bottom: '2022-11-21' }
-];
+// The two most recent completed ATH-to-ATL phases lasted 363 and 376 days.
+// Use their window directly and reserve the midpoint for the progress bar.
+const BEAR_MARKET_MIN_DAYS = 363;
+const BEAR_MARKET_MAX_DAYS = 376;
+const BEAR_MARKET_MIDPOINT_DAYS = Math.round((BEAR_MARKET_MIN_DAYS + BEAR_MARKET_MAX_DAYS) / 2);
+const MODERN_BOTTOM_TREND_HIGH = 0.46;
 
 function compactUsd(value) {
   if (!Number.isFinite(value)) return '—';
@@ -514,14 +514,14 @@ function addDays(dateStr, days) {
   return dateMs(dateStr) + days * 864e5;
 }
 
-function nearestPoint(pts, dateStr) {
-  let best = pts[0];
-  let bestDelta = Math.abs(dateMs(best.date) - dateMs(dateStr));
-  for (const p of pts) {
-    const delta = Math.abs(dateMs(p.date) - dateMs(dateStr));
-    if (delta < bestDelta) { best = p; bestDelta = delta; }
+function formatDateWindow(startMs, endMs) {
+  const start = new Date(startMs);
+  const end = new Date(endMs);
+  if (start.getUTCFullYear() === end.getUTCFullYear() && start.getUTCMonth() === end.getUTCMonth()) {
+    const month = start.toLocaleDateString(undefined, { month: 'short', timeZone: 'UTC' });
+    return month + ' ' + start.getUTCDate() + '–' + end.getUTCDate() + ', ' + end.getUTCFullYear();
   }
-  return best;
+  return formatHalvingDate(startMs) + '–' + formatHalvingDate(endMs);
 }
 
 function priceAtRiskForDate(targetMs, slope, intercept, rollMean, rollStd, risk) {
@@ -548,16 +548,6 @@ function renderBearMarketProgress(pts, slope, intercept) {
   const barEl = document.getElementById('bearProgressBar');
   if (!pctEl || !subEl || !targetEl || !rangeEl || !barEl || pts.length === 0) return;
 
-  const completedCycles = COMPLETED_BEAR_CYCLES.map(cycle => {
-    const peak = nearestPoint(pts, cycle.peak);
-    const bottom = nearestPoint(pts, cycle.bottom);
-    return {
-      days: Math.round((dateMs(bottom.date) - dateMs(peak.date)) / 864e5),
-      drawdown: bottom.price / peak.price - 1
-    };
-  }).filter(cycle => cycle.days > 0 && Number.isFinite(cycle.drawdown));
-
-  const avgDays = Math.round(completedCycles.reduce((sum, c) => sum + c.days, 0) / completedCycles.length);
   let athIdx = 0;
   for (let i = 1; i < pts.length; i++) {
     if (pts[i].price >= pts[athIdx].price) athIdx = i;
@@ -566,24 +556,24 @@ function renderBearMarketProgress(pts, slope, intercept) {
   const peak = pts[athIdx];
   const last = pts[pts.length - 1];
   const elapsedDays = Math.max(0, Math.round((dateMs(last.date) - dateMs(peak.date)) / 864e5));
-  const progressPct = avgDays > 0 ? (elapsedDays / avgDays) * 100 : 0;
+  const progressPct = (elapsedDays / BEAR_MARKET_MIDPOINT_DAYS) * 100;
   const drawdownPct = (last.price / peak.price - 1) * 100;
-  const targetMs = addDays(peak.date, avgDays);
+  const targetStartMs = addDays(peak.date, BEAR_MARKET_MIN_DAYS);
+  const targetMs = addDays(peak.date, BEAR_MARKET_MIDPOINT_DAYS);
+  const targetEndMs = addDays(peak.date, BEAR_MARKET_MAX_DAYS);
   const riskFloorPrice = priceAtRiskForDate(targetMs, slope, intercept, last.rollMean, last.rollStd, 0);
-  let lowestRecentClose = last.price;
-  for (let i = athIdx; i < pts.length; i++) {
-    if (pts[i].price < lowestRecentClose) lowestRecentClose = pts[i].price;
-  }
-  const priceLow = Math.min(riskFloorPrice, lowestRecentClose);
-  const priceHigh = Math.max(riskFloorPrice, lowestRecentClose);
+  const targetDaysSinceGenesis = (targetMs - GENESIS) / 864e5;
+  const trendAtTarget = Math.pow(10, slope * Math.log10(targetDaysSinceGenesis) + intercept);
+  const priceLow = riskFloorPrice;
+  const priceHigh = trendAtTarget * MODERN_BOTTOM_TREND_HIGH;
   const status = athIdx === pts.length - 1 ? 'At cycle high' : drawdownPct <= -20 ? 'Active bear' : 'Cycle watch';
-  const targetPrefix = progressPct > 115 ? 'Est. bottom was ' : 'Est. bottom ';
+  const targetPrefix = progressPct > 115 ? 'Window was ' : 'Window ';
 
   pctEl.textContent = Math.round(progressPct) + '%';
   pctEl.style.setProperty('--val-color', riskColor(Math.min(1, progressPct / 100)));
-  subEl.textContent = status + ' · ATH ' + formatHalvingDate(dateMs(peak.date)) + ' · ' + drawdownPct.toFixed(1) + '%';
-  targetEl.textContent = targetPrefix + formatHalvingDate(targetMs);
-  rangeEl.textContent = compactUsd(priceLow) + '–' + compactUsd(priceHigh);
+  subEl.textContent = status + ' · time-capitulation watch · ' + drawdownPct.toFixed(1) + '%';
+  targetEl.textContent = targetPrefix + formatDateWindow(targetStartMs, targetEndMs);
+  rangeEl.textContent = compactUsd(priceLow) + '–' + compactUsd(priceHigh) + ' zone';
   barEl.style.width = Math.max(0, Math.min(100, progressPct)) + '%';
 }
 
