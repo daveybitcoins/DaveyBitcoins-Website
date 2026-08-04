@@ -86,33 +86,31 @@
   justify-content: space-between;
 }
 
-.btc-page .btc-summary-overview {
+.btc-page .btc-intro {
   display: grid;
-  grid-template-columns: minmax(240px, 0.72fr) minmax(0, 3fr);
-  gap: 0.75rem;
-  margin: 0.75rem 0;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 440px);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 5rem);
 }
 
-.btc-page .btc-summary-overview .dashboard {
-  margin: 0;
-}
-
-.btc-page .btc-summary-art {
+.btc-page .btc-intro-art {
   position: relative;
-  min-height: 190px;
+  width: 100%;
+  height: clamp(190px, 14vw, 235px);
+  justify-self: end;
   overflow: hidden;
   border: 1px solid var(--spy-border);
   border-radius: 3px;
   background: var(--spy-card);
 }
 
-.btc-page .btc-summary-art img {
+.btc-page .btc-intro-art img {
   object-fit: cover;
   object-position: 50% 47%;
   filter: saturate(0.92) contrast(1.04);
 }
 
-.btc-page .btc-summary-art::after {
+.btc-page .btc-intro-art::after {
   position: absolute;
   inset: 0;
   background: linear-gradient(180deg, transparent 42%, rgb(5 6 4 / 88%) 100%);
@@ -120,7 +118,7 @@
   pointer-events: none;
 }
 
-.btc-page .btc-summary-art figcaption {
+.btc-page .btc-intro-art figcaption {
   position: absolute;
   right: 1rem;
   bottom: 0.9rem;
@@ -133,21 +131,14 @@
   text-transform: uppercase;
 }
 
-.btc-page .btc-summary-art figcaption strong,
-.btc-page .btc-summary-art figcaption span {
+.btc-page .btc-intro-art figcaption strong,
+.btc-page .btc-intro-art figcaption span {
   display: block;
 }
 
-.btc-page .btc-summary-art figcaption strong {
+.btc-page .btc-intro-art figcaption strong {
   color: var(--spy-orange);
   font-size: 0.54rem;
-}
-
-@media (min-width: 1400px) {
-  .btc-page .btc-summary-overview .dashboard > .card {
-    min-height: 190px;
-    aspect-ratio: auto;
-  }
 }
 
 .btc-page .dashboard > .card {
@@ -523,15 +514,20 @@
   }
 }
 
-@media (max-width: 900px) {
-  .btc-page .btc-summary-overview {
+@media (max-width: 1200px) {
+  .btc-page .btc-intro {
     grid-template-columns: 1fr;
+    gap: 1.25rem;
   }
 
-  .btc-page .btc-summary-art {
-    min-height: 220px;
+  .btc-page .btc-intro-art {
+    width: min(100%, 620px);
+    height: 220px;
+    justify-self: start;
   }
+}
 
+@media (max-width: 900px) {
   .btc-page .dashboard {
     --btc-card-basis: calc(20% - 0.36rem);
   }

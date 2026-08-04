@@ -109,28 +109,27 @@ export default function BitcoinRiskMetricPage() {
     <main className="spy-page btc-page risk-page-with-sections" data-risk-dashboard="btc">
       <RiskSectionNav links={sectionLinks} />
       <div className="spy-container">
-        <header className="spy-intro">
-          <p className="spy-kicker">Bitcoin cycle dashboard · Updated daily</p>
-          <h1>
-            Bitcoin <span>Risk Metric</span>
-          </h1>
-          <p className="spy-subtitle">
-            <span className="live-dot" />
-            Combined Structural + Momentum · Power-Law Regression · Math ·
-            Patience
-          </p>
-          <div id="headerDate" className="spy-date">
-            Loading Bitcoin history…
+        <header className="spy-intro btc-intro">
+          <div className="btc-intro-copy">
+            <p className="spy-kicker">Bitcoin cycle dashboard · Updated daily</p>
+            <h1>
+              Bitcoin <span>Risk Metric</span>
+            </h1>
+            <p className="spy-subtitle">
+              <span className="live-dot" />
+              Combined Structural + Momentum · Power-Law Regression · Math ·
+              Patience
+            </p>
+            <div id="headerDate" className="spy-date">
+              Loading Bitcoin history…
+            </div>
           </div>
-        </header>
-
-        <div className="btc-summary-overview">
-          <figure className="btc-summary-art">
+          <figure className="btc-intro-art">
             <Image
               src="/social-preview.png"
               alt="A glowing Bitcoin clock in a futuristic golden landscape"
               fill
-              sizes="(max-width: 900px) 100vw, 24vw"
+              sizes="(max-width: 1200px) 100vw, 440px"
               priority
             />
             <figcaption>
@@ -138,7 +137,9 @@ export default function BitcoinRiskMetricPage() {
               <span>A visual map for the long game.</span>
             </figcaption>
           </figure>
-          <section className="dashboard" id="summary" aria-label="Bitcoin market summary">
+        </header>
+
+        <section className="dashboard" id="summary" aria-label="Bitcoin market summary">
           <article className="card card-price">
             <div className="card-label">BTC Price</div>
             <div className="card-value card-value--price" id="vPrice">
@@ -214,8 +215,7 @@ export default function BitcoinRiskMetricPage() {
             rightId="vBearRange"
             rightText="—"
           />
-          </section>
-        </div>
+        </section>
 
         <section className="card moving-averages-card" id="movingAveragesCard">
           <div className="moving-averages-head">
