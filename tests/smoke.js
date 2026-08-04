@@ -131,6 +131,11 @@ const checks = [
       if (projectionEnd !== '2040-12-01' || projectionPoints < 5000) {
         throw new Error(`expected price chart projection through 2040, got ${projectionEnd} with ${projectionPoints} points`);
       }
+      const minorTickMultipliers = await page.locator('#priceCanvas').getAttribute('data-log-minor-tick-multipliers');
+      const minorTickCount = Number(await page.locator('#priceCanvas').getAttribute('data-log-minor-tick-count'));
+      if (minorTickMultipliers !== '2,3,4,5,6,7,8,9' || minorTickCount < 8) {
+        throw new Error(`expected logarithmic minor ticks for each decade, got ${minorTickMultipliers} (${minorTickCount})`);
+      }
       const zoomControls = await page.locator('.zoom-btn, .brush-overlay').count();
       if (zoomControls !== 0) {
         throw new Error(`expected fixed BTC chart views without zoom controls, found ${zoomControls}`);
