@@ -86,6 +86,70 @@
   justify-content: space-between;
 }
 
+.btc-page .btc-summary-overview {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.72fr) minmax(0, 3fr);
+  gap: 0.75rem;
+  margin: 0.75rem 0;
+}
+
+.btc-page .btc-summary-overview .dashboard {
+  margin: 0;
+}
+
+.btc-page .btc-summary-art {
+  position: relative;
+  min-height: 190px;
+  overflow: hidden;
+  border: 1px solid var(--spy-border);
+  border-radius: 3px;
+  background: var(--spy-card);
+}
+
+.btc-page .btc-summary-art img {
+  object-fit: cover;
+  object-position: 50% 47%;
+  filter: saturate(0.92) contrast(1.04);
+}
+
+.btc-page .btc-summary-art::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 42%, rgb(5 6 4 / 88%) 100%);
+  content: "";
+  pointer-events: none;
+}
+
+.btc-page .btc-summary-art figcaption {
+  position: absolute;
+  right: 1rem;
+  bottom: 0.9rem;
+  left: 1rem;
+  z-index: 1;
+  color: #f4ead3;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  line-height: 1.55;
+  text-transform: uppercase;
+}
+
+.btc-page .btc-summary-art figcaption strong,
+.btc-page .btc-summary-art figcaption span {
+  display: block;
+}
+
+.btc-page .btc-summary-art figcaption strong {
+  color: var(--spy-orange);
+  font-size: 0.54rem;
+}
+
+@media (min-width: 1400px) {
+  .btc-page .btc-summary-overview .dashboard > .card {
+    min-height: 190px;
+    aspect-ratio: auto;
+  }
+}
+
 .btc-page .dashboard > .card {
   display: flex;
   aspect-ratio: 4 / 3;
@@ -460,6 +524,14 @@
 }
 
 @media (max-width: 900px) {
+  .btc-page .btc-summary-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .btc-page .btc-summary-art {
+    min-height: 220px;
+  }
+
   .btc-page .dashboard {
     --btc-card-basis: calc(20% - 0.36rem);
   }
