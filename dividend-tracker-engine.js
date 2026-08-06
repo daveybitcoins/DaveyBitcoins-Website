@@ -508,38 +508,29 @@
         return payments.slice(-4);
     }
 
-    function annualizedRateFromPayments(div, freq) {
-        var expected = paymentsPerYear(freq);
-        if (!expected) return null;
-
+    function latestDividendPayment(div, freq) {
         var payments = currentFrequencyPayments(div, freq)
             .map(function (p) { return Number(p.amount); })
             .filter(function (amount) { return Number.isFinite(amount) && amount > 0; });
-        if (payments.length === 0) return null;
-
-        var sum = payments.reduce(function (acc, amount) { return acc + amount; }, 0);
-        if (payments.length >= expected) return sum;
-        return (sum / payments.length) * expected;
+        return payments.length > 0 ? payments[payments.length - 1] : null;
     }
 
     function getAnnualDividendRate(ticker) {
         var div = getDividendInfo(ticker);
         if (!div) return null;
         var freq = getDividendFrequency(ticker, div);
-        var annualized = annualizedRateFromPayments(div, freq);
         var expected = paymentsPerYear(freq);
-        if (annualized && expected && div.last_payments && div.last_payments.length < expected) return annualized;
-        return div.dividend_rate || annualized || null;
+        var latestPayment = latestDividendPayment(div, freq);
+        if (latestPayment && expected) return latestPayment * expected;
+        return div.dividend_rate || null;
     }
 
     function getDividendPerPayment(ticker) {
         var div = getDividendInfo(ticker);
         if (!div) return null;
         var freq = getDividendFrequency(ticker, div);
-        var payments = currentFrequencyPayments(div, freq)
-            .map(function (p) { return Number(p.amount); })
-            .filter(function (amount) { return Number.isFinite(amount) && amount > 0; });
-        if (payments.length > 0) return payments[payments.length - 1];
+        var latestPayment = latestDividendPayment(div, freq);
+        if (latestPayment) return latestPayment;
 
         var annualRate = getAnnualDividendRate(ticker);
         var expected = paymentsPerYear(freq);
@@ -579,7 +570,7 @@
 
         var html = '<div class="table-wrap"><table id="holdings-table"><thead><tr>' +
             '<th>Ticker</th><th>Name</th><th>Shares</th><th>Cost Basis / Share</th><th>Cost Basis / Total</th><th>Price</th><th>% Gain</th><th>Current Value</th>' +
-            '<th>Yield</th><th>Div / Share (Yr)</th><th>Annual Div</th><th>Monthly Div</th><th>Frequency</th>' +
+            '<th>Yield</th><th>Latest Div / Share</th><th>Annual Div</th><th>Monthly Div</th><th>Frequency</th>' +
             '<th>% of Portfolio</th><th></th>' +
             '</tr></thead><tbody>';
 
@@ -588,6 +579,7 @@
             var price = getLivePrice(h.ticker);
             var value = price ? h.shares * price : null;
             var annualRate = getAnnualDividendRate(h.ticker);
+            var perPayment = getDividendPerPayment(h.ticker);
             var annualDiv = annualRate ? h.shares * annualRate : null;
             var pctPortfolio = (value && totalValue > 0) ? (value / totalValue) * 100 : null;
             var yld = getDividendYield(h.ticker);
@@ -618,7 +610,7 @@
                 '<td class="num">' + (gainLoss ? gainLoss : "--") + '</td>' +
                 '<td class="num">' + (value ? fmtUSD(value) : "--") + '</td>' +
                 '<td class="num">' + (yld ? fmtPct(yld) : "--") + '</td>' +
-                '<td class="num">' + (annualRate ? fmtUSDPerShare(annualRate) : "--") + '</td>' +
+                '<td class="num">' + (perPayment ? fmtUSDPerShare(perPayment) : "--") + '</td>' +
                 '<td class="num pos">' + (annualDiv ? fmtUSD(annualDiv) : "--") + '</td>' +
                 '<td class="num pos">' + (annualDiv ? fmtUSD(annualDiv / 12) : "--") + '</td>' +
                 '<td style="text-align:center">' + freqBadge + '</td>' +
@@ -628,7 +620,7 @@
         });
 
         html += '</tbody></table></div>';
-        html += '<p class="dividend-disclaimer">Dividend payments are subject to change by the company or fund manager. Div / Share (Yr) is the annual per-share estimate used for the Annual Div and Monthly Div calculations.</p>';
+        html += '<p class="dividend-disclaimer">Dividend payments are subject to change by the company or fund manager. Income estimates annualize each holding\'s latest dividend payment using its payment frequency.</p>';
         wrap.innerHTML = html;
 
         wrap.querySelectorAll(".btn-delete").forEach(function (btn) {

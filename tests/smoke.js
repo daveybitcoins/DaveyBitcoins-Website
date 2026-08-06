@@ -70,6 +70,29 @@ const checks = [
       await expectText(page, 'Dividend Portfolio Tracker');
       await expectText(page, 'Annual Income');
       await expectText(page, 'dividend stocks');
+
+      await page.route('https://daveybitcoins-api.dave-erazo78.workers.dev/**', (route) => route.abort());
+      await page.evaluate(() => {
+        localStorage.setItem('dividend_portfolios', JSON.stringify([{
+          name: 'Main',
+          holdings: [{ ticker: 'BTCI', shares: 6000, costBasis: 28.60 }],
+        }]));
+        localStorage.removeItem('dividend_history_cache');
+      });
+      await page.reload();
+      await page.waitForFunction(() => document.querySelector('#monthly-income')?.textContent === '$3,874.80', null, { timeout: 10000 });
+
+      if (await page.locator('#annual-income').innerText() !== '$46,497.60') {
+        throw new Error('BTCI annual income is not based on the latest dividend payment');
+      }
+      if (await page.locator('#monthly-income').innerText() !== '$3,874.80') {
+        throw new Error('BTCI monthly income is not based on the latest dividend payment');
+      }
+      const btciRow = await page.locator('#holdings-table tbody tr').innerText();
+      if (!btciRow.includes('$0.6458') || !btciRow.includes('$46,497.60') || !btciRow.includes('$3,874.80')) {
+        throw new Error(`BTCI holding math does not tie to the latest payment: ${btciRow}`);
+      }
+      await expectText(page, 'Latest Div / Share');
     },
   },
   {

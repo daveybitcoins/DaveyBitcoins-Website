@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import "./dividend-tracker.css";
 
-const DIVIDEND_ENGINE_VERSION = "20260806-2";
+const DIVIDEND_ENGINE_VERSION = "20260806-3";
 
 export const metadata: Metadata = {
   title: "Dividend Portfolio Tracker | DaveyBitcoins",
