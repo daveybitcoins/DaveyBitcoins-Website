@@ -557,7 +557,6 @@ const FAIR_VALUE_DAMPENING_POWER = 2;
 const FAIR_VALUE_DAYS_PER_YEAR = 365.2425;
 const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);
 const PROJECTED_RISK_BOUNDARIES = [0.25, 0.50, 0.75];
-const HISTORICAL_RISK_BAND_DAYS = Math.round(4 * FAIR_VALUE_DAYS_PER_YEAR);
 const FAIR_VALUE_SCENARIOS = {
   conservative: { label: 'Conservative', marketCap: 13e12 },
   base: { label: 'Base', marketCap: 20e12 },
@@ -1438,26 +1437,6 @@ async function main() {
     for(let i=s;i<=e;i+=S){const x=xOf(i),y=yOf(pts[i].trendPrice);i===s?ctx.moveTo(x,y):ctx.lineTo(x,y);}
     ctx.stroke();ctx.setLineDash([]);
 
-    // Extend the same threshold curves into the trailing four-year momentum
-    // window so each forecast boundary visibly continues its own history.
-    if(fullProjectionView) {
-      const historicalBandStartMs=lastDateMs-HISTORICAL_RISK_BAND_DAYS*864e5;
-      PROJECTED_RISK_BOUNDARIES.forEach(risk=>{
-        ctx.strokeStyle=risk===0.50?'#58c56f':riskColor(risk,0.72);
-        ctx.lineWidth=risk===0.50?1.8:1.2;ctx.setLineDash(risk===0.50?[10,5]:[4,5]);ctx.beginPath();
-        let started=false;
-        for(let i=s;i<=e;i+=S){
-          const pointMs=dateMs(pts[i].date);
-          if(pointMs<historicalBandStartMs) continue;
-          const x=xOf(i),y=yOf(priceAtRiskForPoint(pts[i],risk));
-          started?ctx.lineTo(x,y):ctx.moveTo(x,y);started=true;
-        }
-        const finalY=yOf(priceAtRiskForPoint(last,risk));
-        started?ctx.lineTo(xOfTime(lastDateMs),finalY):ctx.moveTo(xOfTime(lastDateMs),finalY);
-        ctx.stroke();ctx.setLineDash([]);
-      });
-    }
-
     // Scenario-adjusted future risk zones. Each boundary preserves the risk
     // model's price-to-0.50 ratio while anchoring it to the selected damped
     // fair-value path, so scenario changes move the full forecast coherently.
@@ -1524,6 +1503,25 @@ async function main() {
       const prev=Math.max(s,i-S);
       ctx.strokeStyle=riskColor(pts[i].riskCombo);ctx.lineWidth=2.5;
       ctx.beginPath();ctx.moveTo(xOf(prev),yOf(pts[prev].price));ctx.lineTo(xOf(i),yOf(pts[i].price));ctx.stroke();
+    }
+
+    // Draw threshold history last so crossings with actual price do not make
+    // the dashed curves look broken. Start once the as-of regression has a
+    // full year of observations, then continue without a recent-date cutoff.
+    if(fullProjectionView) {
+      const historicalBandStartIndex=Math.max(s,365);
+      PROJECTED_RISK_BOUNDARIES.forEach(risk=>{
+        ctx.strokeStyle=risk===0.50?'rgba(88,197,111,0.72)':riskColor(risk,0.62);
+        ctx.lineWidth=risk===0.50?1.5:1.1;ctx.setLineDash(risk===0.50?[10,5]:[4,5]);ctx.beginPath();
+        let started=false;
+        for(let i=historicalBandStartIndex;i<=e;i+=S){
+          const x=xOf(i),y=yOf(priceAtRiskForPoint(pts[i],risk));
+          started?ctx.lineTo(x,y):ctx.moveTo(x,y);started=true;
+        }
+        const finalY=yOf(priceAtRiskForPoint(last,risk));
+        started?ctx.lineTo(xOfTime(lastDateMs),finalY):ctx.moveTo(xOfTime(lastDateMs),finalY);
+        ctx.stroke();ctx.setLineDash([]);
+      });
     }
   }
 

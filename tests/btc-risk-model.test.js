@@ -241,6 +241,7 @@ test('projected risk bands remain ordered around the selected fair-value scenari
   assert.match(source, /if\(risk===0\.50\) return/);
   assert.match(source, /const currentHalfRiskPrice = priceAtRiskForDate/);
   assert.match(source, /lastDateMs,\s*currentHalfRiskPrice,\s*slope/);
-  assert.match(source, /HISTORICAL_RISK_BAND_DAYS/);
+  assert.doesNotMatch(source, /HISTORICAL_RISK_BAND_DAYS/);
+  assert.match(source, /const historicalBandStartIndex=Math\.max\(s,365\)/);
   assert.match(source, /yOf\(priceAtRiskForPoint\(pts\[i\],risk\)\)/);
 });
