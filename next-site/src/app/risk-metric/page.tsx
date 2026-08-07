@@ -82,7 +82,8 @@ function Tooltip({
       {showPrice && <div className="tt-price" />}
       {valueLabel && (
         <div>
-          {valueLabel}: <span className="tt-risk" />
+          <span className="tt-risk-label">{valueLabel}:</span>{" "}
+          <span className="tt-risk" />
         </div>
       )}
     </div>
@@ -510,7 +511,7 @@ export default function BitcoinRiskMetricPage() {
 
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20260807-projected-risk-tooltips" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20260807-projected-risk-tooltip-fix" strategy="afterInteractive" />
     </main>
   );
 }

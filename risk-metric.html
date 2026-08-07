@@ -1473,9 +1473,12 @@ async function main() {
           index===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
         });
         ctx.stroke();ctx.setLineDash([]);
-        const finalBandPoint=projectedRiskBands[projectedRiskBands.length-1];
-        ctx.fillStyle=riskColor(risk);ctx.font='9px JetBrains Mono';ctx.textAlign='right';
-        ctx.fillText('RISK '+risk.toFixed(2),W-P.r-6,yOf(finalBandPoint.prices[boundaryIndex])-4);
+        // Stagger labels across the early forecast so the converging lines do
+        // not pile their text on top of the fair-value label at the right edge.
+        const labelIndexes=[12,24,36];
+        const labelPoint=projectedRiskBands[Math.min(labelIndexes[boundaryIndex],projectedRiskBands.length-1)];
+        ctx.fillStyle=riskColor(risk);ctx.font='9px JetBrains Mono';ctx.textAlign='left';
+        ctx.fillText('RISK '+risk.toFixed(2),xOfTime(labelPoint.ms)+6,yOf(labelPoint.prices[boundaryIndex])-4);
       });
       ctx.strokeStyle=tc.gridZero;ctx.lineWidth=1;ctx.setLineDash([3,4]);
       ctx.beginPath();ctx.moveTo(forecastX,P.t);ctx.lineTo(forecastX,H-P.b);ctx.stroke();
@@ -1638,7 +1641,7 @@ async function main() {
           }));
           tip.querySelector('.tt-date').textContent=new Date(hoverMs).toISOString().slice(0,10);
           tip.querySelector('.tt-price').textContent='Fair value: $'+value.toLocaleString(undefined,{maximumFractionDigits:0});
-          riskLabel.textContent='';
+          if(riskLabel) riskLabel.textContent='';
           const riskEl=tip.querySelector('.tt-risk');
           riskEl.classList.add('tt-band-list');
           riskEl.innerHTML=boundaryValues.map(point=>

@@ -185,4 +185,11 @@ test('projected risk bands remain ordered around the selected fair-value scenari
   assert.match(source, /projectedRiskBoundaries/);
   assert.match(source, /Fair value: \$/);
   assert.match(source, /Risk '\+point\.risk\.toFixed\(2\)/);
+  assert.match(source, /if\(riskLabel\) riskLabel\.textContent=''/);
+  const pageSource = readFileSync(
+    resolve(ROOT, 'next-site/src/app/risk-metric/page.tsx'),
+    'utf8',
+  );
+  assert.match(pageSource, /className="tt-risk-label"/);
+  assert.match(source, /const labelIndexes=\[12,24,36\]/);
 });
