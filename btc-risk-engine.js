@@ -1022,12 +1022,6 @@ async function main() {
           index===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
         });
         ctx.stroke();ctx.setLineDash([]);
-        // Stagger labels across the early forecast so the converging lines do
-        // not pile their text on top of the fair-value label at the right edge.
-        const labelIndexes=[12,24,36];
-        const labelPoint=projectedRiskBands[Math.min(labelIndexes[boundaryIndex],projectedRiskBands.length-1)];
-        ctx.fillStyle=riskColor(risk);ctx.font='9px JetBrains Mono';ctx.textAlign='left';
-        ctx.fillText('RISK '+risk.toFixed(2),xOfTime(labelPoint.ms)+6,yOf(labelPoint.prices[boundaryIndex])-4);
       });
       ctx.strokeStyle=tc.gridZero;ctx.lineWidth=1;ctx.setLineDash([3,4]);
       ctx.beginPath();ctx.moveTo(forecastX,P.t);ctx.lineTo(forecastX,H-P.b);ctx.stroke();
@@ -1044,8 +1038,6 @@ async function main() {
       const finalPoint=dampedFairValuePath[dampedFairValuePath.length-1];
       ctx.lineTo(xOfTime(finalPoint.ms),yOf(finalPoint.value));
       ctx.stroke();ctx.setLineDash([]);
-      ctx.fillStyle='#58c56f';ctx.font='10px JetBrains Mono';ctx.textAlign='right';
-      ctx.fillText(FAIR_VALUE_SCENARIOS[activeFairValueScenario].label.toUpperCase() + ' FAIR VALUE',W-P.r-6,yOf(finalPoint.value)-8);
     }
 
     // Price line

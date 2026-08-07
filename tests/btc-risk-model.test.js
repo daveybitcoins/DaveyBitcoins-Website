@@ -191,5 +191,6 @@ test('projected risk bands remain ordered around the selected fair-value scenari
     'utf8',
   );
   assert.match(pageSource, /className="tt-risk-label"/);
-  assert.match(source, /const labelIndexes=\[12,24,36\]/);
+  assert.doesNotMatch(source, /fillText\('RISK '/);
+  assert.doesNotMatch(source, /fillText\([^\n]*FAIR VALUE/);
 });
