@@ -154,14 +154,23 @@ test('projected risk bands remain ordered around the selected fair-value scenari
     buildDataset,
     buildDampedFairValuePath,
     dampedFairValueAt,
+    priceAtRiskForDate,
     projectedRiskPriceAtDate,
     dateMs,
   } = loadProductionModel();
   const { pts, slope, intercept } = buildDataset(fixtureData());
   const last = pts.at(-1);
+  const currentHalfRiskPrice = priceAtRiskForDate(
+    dateMs(last.date),
+    slope,
+    intercept,
+    last.rollMean,
+    last.rollStd,
+    0.50,
+  );
   const path = buildDampedFairValuePath(
     dateMs(last.date),
-    last.trendPrice,
+    currentHalfRiskPrice,
     slope,
     PROJECTION_END,
     { marketCap: 20e12 },
@@ -181,6 +190,28 @@ test('projected risk bands remain ordered around the selected fair-value scenari
   assert.ok(prices[0] < prices[1]);
   assert.ok(prices[1] < prices[2]);
   approximately(prices[1], dampedFairValueAt(path, PROJECTION_END), 1e-9);
+  for (const risk of [0.25, 0.50, 0.75]) {
+    approximately(
+      projectedRiskPriceAtDate(
+        dateMs(last.date),
+        path,
+        slope,
+        intercept,
+        last.rollMean,
+        last.rollStd,
+        risk,
+      ),
+      priceAtRiskForDate(
+        dateMs(last.date),
+        slope,
+        intercept,
+        last.rollMean,
+        last.rollStd,
+        risk,
+      ),
+      1e-9,
+    );
+  }
   const source = readFileSync(ENGINE_PATH, 'utf8');
   assert.match(source, /projectedRiskBoundaries/);
   assert.match(source, /Fair value: \$/);
@@ -194,4 +225,6 @@ test('projected risk bands remain ordered around the selected fair-value scenari
   assert.doesNotMatch(source, /fillText\('RISK '/);
   assert.doesNotMatch(source, /fillText\([^\n]*FAIR VALUE/);
   assert.match(source, /if\(risk===0\.50\) return/);
+  assert.match(source, /const currentHalfRiskPrice = priceAtRiskForDate/);
+  assert.match(source, /lastDateMs,\s*currentHalfRiskPrice,\s*slope/);
 });

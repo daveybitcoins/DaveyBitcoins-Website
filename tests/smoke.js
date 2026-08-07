@@ -118,7 +118,7 @@ const checks = [
       const weeklyObservations = Number(await page.locator('#movingAveragesCard').getAttribute('data-weekly-observations'));
       if (weeklyObservations < 300) throw new Error(`insufficient BTC weekly history: ${weeklyObservations}`);
       await expectText(page, 'Price at Each Risk Level');
-      await expectText(page, 'Bitcoin Market-Cap-Adjusted Power-Law Fair Value');
+      await expectText(page, 'Bitcoin 0.50-Risk-Centered Fair Value Projection');
       await expectText(page, 'Long-run scenario, not a short-term price target');
       await expectText(page, 'power-law growth above a 6% long-run nominal rate is reduced by half');
       await expectText(page, 'World Gold Council');

@@ -600,10 +600,13 @@ async function main() {
   const last = pts[n-1];
   const isLive = live;
   const lastDateMs = dateMs(last.date);
+  const currentHalfRiskPrice = priceAtRiskForDate(
+    lastDateMs,slope,intercept,last.rollMean,last.rollStd,0.50
+  );
   let activeFairValueScenario = 'base';
   let dampedFairValuePath = buildDampedFairValuePath(
     lastDateMs,
-    last.trendPrice,
+    currentHalfRiskPrice,
     slope,
     FAIR_VALUE_PROJECTION_END_MS,
     FAIR_VALUE_SCENARIOS[activeFairValueScenario]
@@ -616,8 +619,9 @@ async function main() {
   hd.innerHTML = '<span style="width:6px;height:6px;background:#58c56f;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> as of ' + last.date + (isLive ? ' · live via ' + isLive.source : ' · historical fallback');
   document.getElementById('vRisk').textContent = last.riskCombo.toFixed(3);
   document.getElementById('vRisk').style.setProperty('--val-color', riskColor(last.riskCombo));
-  document.getElementById('vFair').textContent = '$' + last.trendPrice.toLocaleString(undefined,{maximumFractionDigits:0});
-  const devPct = ((last.price/last.trendPrice-1)*100).toFixed(1);
+  document.getElementById('vFair').textContent = '$' + currentHalfRiskPrice.toLocaleString(undefined,{maximumFractionDigits:0});
+  document.getElementById('vGrowth').textContent = 'Combined risk 0.50 center';
+  const devPct = ((last.price/currentHalfRiskPrice-1)*100).toFixed(1);
   document.getElementById('vDev').textContent = (devPct>0?'+':'') + devPct + '%';
   document.getElementById('needle').style.left = (last.riskCombo*100)+'%';
   renderWeeklyMovingAverages(rawData);
@@ -666,7 +670,7 @@ async function main() {
   function renderFairValueProjectionTable() {
     const projBody = document.getElementById('projBody');
     projBody.innerHTML = '';
-    const todayFV = last.trendPrice;
+    const todayFV = currentHalfRiskPrice;
     const todayPrice = last.price;
     const moNames = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec'];
     const curDate = new Date(last.date + 'T00:00:00Z');
@@ -712,7 +716,7 @@ async function main() {
     activeFairValueScenario = scenarioKey;
     dampedFairValuePath = buildDampedFairValuePath(
       lastDateMs,
-      last.trendPrice,
+      currentHalfRiskPrice,
       slope,
       FAIR_VALUE_PROJECTION_END_MS,
       FAIR_VALUE_SCENARIOS[activeFairValueScenario]

@@ -367,7 +367,7 @@
     </div>
   </div>
   <div class="proj-table-wrap" id="fair-value">
-    <h4>Bitcoin Market-Cap-Adjusted Power-Law Fair Value</h4>
+    <h4>Bitcoin 0.50-Risk-Centered Fair Value Projection</h4>
     <div class="fair-value-scenarios" role="group" aria-label="Fair value projection scenario">
       <button type="button" class="fair-value-scenario" data-fair-value-scenario="conservative" aria-pressed="false">
         <strong>Conservative</strong><span><span class="scenario-cap">$13T today</span> Investable and central-bank gold</span>
@@ -381,7 +381,7 @@
     </div>
     <p class="proj-method-note" id="projMethodNote">
       <strong>Long-run scenario, not a short-term price target.</strong>
-      The path begins with Bitcoin’s historical power-law regression, then progressively slows its
+      The path begins at today’s combined-risk 0.50 price, making fair value the center of the projected risk bands, then progressively slows its
       excess growth as the modeled market cap approaches the selected gold-linked threshold. In the base case, at $20T the power-law growth above a
       6% long-run nominal rate is reduced by half; the path continues converging toward 6% as the asset grows.
       The threshold grows 5.2% annually with the gold model, and the calculation assumes 20.8M BTC.
@@ -1051,10 +1051,13 @@ async function main() {
   const last = pts[n-1];
   const isLive = live;
   const lastDateMs = dateMs(last.date);
+  const currentHalfRiskPrice = priceAtRiskForDate(
+    lastDateMs,slope,intercept,last.rollMean,last.rollStd,0.50
+  );
   let activeFairValueScenario = 'base';
   let dampedFairValuePath = buildDampedFairValuePath(
     lastDateMs,
-    last.trendPrice,
+    currentHalfRiskPrice,
     slope,
     FAIR_VALUE_PROJECTION_END_MS,
     FAIR_VALUE_SCENARIOS[activeFairValueScenario]
@@ -1067,8 +1070,9 @@ async function main() {
   hd.innerHTML = '<span style="width:6px;height:6px;background:#58c56f;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> as of ' + last.date + (isLive ? ' · live via ' + isLive.source : ' · historical fallback');
   document.getElementById('vRisk').textContent = last.riskCombo.toFixed(3);
   document.getElementById('vRisk').style.setProperty('--val-color', riskColor(last.riskCombo));
-  document.getElementById('vFair').textContent = '$' + last.trendPrice.toLocaleString(undefined,{maximumFractionDigits:0});
-  const devPct = ((last.price/last.trendPrice-1)*100).toFixed(1);
+  document.getElementById('vFair').textContent = '$' + currentHalfRiskPrice.toLocaleString(undefined,{maximumFractionDigits:0});
+  document.getElementById('vGrowth').textContent = 'Combined risk 0.50 center';
+  const devPct = ((last.price/currentHalfRiskPrice-1)*100).toFixed(1);
   document.getElementById('vDev').textContent = (devPct>0?'+':'') + devPct + '%';
   document.getElementById('needle').style.left = (last.riskCombo*100)+'%';
   renderWeeklyMovingAverages(rawData);
@@ -1117,7 +1121,7 @@ async function main() {
   function renderFairValueProjectionTable() {
     const projBody = document.getElementById('projBody');
     projBody.innerHTML = '';
-    const todayFV = last.trendPrice;
+    const todayFV = currentHalfRiskPrice;
     const todayPrice = last.price;
     const moNames = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec'];
     const curDate = new Date(last.date + 'T00:00:00Z');
@@ -1163,7 +1167,7 @@ async function main() {
     activeFairValueScenario = scenarioKey;
     dampedFairValuePath = buildDampedFairValuePath(
       lastDateMs,
-      last.trendPrice,
+      currentHalfRiskPrice,
       slope,
       FAIR_VALUE_PROJECTION_END_MS,
       FAIR_VALUE_SCENARIOS[activeFairValueScenario]
