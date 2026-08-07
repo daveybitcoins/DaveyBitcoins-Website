@@ -993,10 +993,9 @@ function priceAtRiskForDate(targetMs, slope, intercept, rollMean, rollStd, risk)
 }
 
 function projectedRiskPriceAtDate(targetMs, fairValuePath, slope, intercept, rollMean, rollStd, risk) {
-  const days = (targetMs - GENESIS) / 864e5;
-  const rawTrendPrice = Math.pow(10, slope * Math.log10(days) + intercept);
   const rawRiskPrice = priceAtRiskForDate(targetMs, slope, intercept, rollMean, rollStd, risk);
-  return dampedFairValueAt(fairValuePath, targetMs) * rawRiskPrice / rawTrendPrice;
+  const rawHalfRiskPrice = priceAtRiskForDate(targetMs, slope, intercept, rollMean, rollStd, 0.50);
+  return dampedFairValueAt(fairValuePath, targetMs) * rawRiskPrice / rawHalfRiskPrice;
 }
 
 function renderBearMarketProgress(pts, slope, intercept) {
@@ -1467,6 +1466,9 @@ async function main() {
         ctx.closePath();ctx.fillStyle=zone.color;ctx.fill();
       });
       PROJECTED_RISK_BOUNDARIES.forEach((risk,boundaryIndex)=>{
+        // The fair-value path itself is the 0.50 boundary, so do not draw a
+        // second dashed line directly beneath it.
+        if(risk===0.50) return;
         ctx.strokeStyle=riskColor(risk,0.72);ctx.lineWidth=1.2;ctx.setLineDash([4,5]);ctx.beginPath();
         projectedRiskBands.forEach((point,index)=>{
           const x=xOfTime(point.ms),y=yOf(point.prices[boundaryIndex]);

@@ -180,7 +180,7 @@ test('projected risk bands remain ordered around the selected fair-value scenari
 
   assert.ok(prices[0] < prices[1]);
   assert.ok(prices[1] < prices[2]);
-  assert.ok(prices[0] < dampedFairValueAt(path, PROJECTION_END));
+  approximately(prices[1], dampedFairValueAt(path, PROJECTION_END), 1e-9);
   const source = readFileSync(ENGINE_PATH, 'utf8');
   assert.match(source, /projectedRiskBoundaries/);
   assert.match(source, /Fair value: \$/);
@@ -193,4 +193,5 @@ test('projected risk bands remain ordered around the selected fair-value scenari
   assert.match(pageSource, /className="tt-risk-label"/);
   assert.doesNotMatch(source, /fillText\('RISK '/);
   assert.doesNotMatch(source, /fillText\([^\n]*FAIR VALUE/);
+  assert.match(source, /if\(risk===0\.50\) return/);
 });
