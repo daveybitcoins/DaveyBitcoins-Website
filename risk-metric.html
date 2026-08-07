@@ -557,6 +557,7 @@ const FAIR_VALUE_DAMPENING_POWER = 2;
 const FAIR_VALUE_DAYS_PER_YEAR = 365.2425;
 const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);
 const PROJECTED_RISK_BOUNDARIES = [0.25, 0.50, 0.75];
+const HISTORICAL_RISK_BAND_DAYS = Math.round(4 * FAIR_VALUE_DAYS_PER_YEAR);
 const FAIR_VALUE_SCENARIOS = {
   conservative: { label: 'Conservative', marketCap: 13e12 },
   base: { label: 'Base', marketCap: 20e12 },
@@ -992,6 +993,19 @@ function priceAtRiskForDate(targetMs, slope, intercept, rollMean, rollStd, risk)
   return Math.pow(10, ((lo + hi) / 2) + regLogPrice);
 }
 
+function priceAtRiskForPoint(point, risk) {
+  const envMax = Math.max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * point.logDays);
+  const envRange = envMax - ENV_LOWER;
+  let lo = ENV_LOWER, hi = envMax;
+  for (let it = 0; it < 80; it++) {
+    const mid = (lo + hi) / 2;
+    const structural = (mid - ENV_LOWER) / envRange;
+    const momentum = normCdf((mid - point.rollMean) / point.rollStd);
+    if (Math.sqrt(structural * momentum) < risk) lo = mid; else hi = mid;
+  }
+  return Math.pow(10, ((lo + hi) / 2) + point.regLogPrice);
+}
+
 function projectedRiskPriceAtDate(targetMs, fairValuePath, slope, intercept, rollMean, rollStd, risk) {
   const rawRiskPrice = priceAtRiskForDate(targetMs, slope, intercept, rollMean, rollStd, risk);
   const rawHalfRiskPrice = priceAtRiskForDate(targetMs, slope, intercept, rollMean, rollStd, 0.50);
@@ -1087,24 +1101,12 @@ async function main() {
 
   // Risk-price table
   {
-    const envMax = Math.max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * last.logDays);
-    const envRange = envMax - ENV_LOWER;
-    const lastReg = last.regLogPrice;
-    const rollMean = last.rollMean;
-    const rollStd = last.rollStd;
     const tbl = document.getElementById('riskTable');
     const riskLevels=[0.01];
     for(let r=0.05;r<=0.50;r+=0.05) riskLevels.push(r);
     for(let r=0.60;r<=1.001;r+=0.10) riskLevels.push(r);
     for(const r of riskLevels){
-      let lo=ENV_LOWER, hi=envMax;
-      for(let it=0;it<80;it++){
-        const mid=(lo+hi)/2;
-        const S=(mid-ENV_LOWER)/envRange;
-        const M=normCdf((mid-rollMean)/rollStd);
-        if(Math.sqrt(S*M)<r) lo=mid; else hi=mid;
-      }
-      const price=Math.pow(10,(lo+hi)/2+lastReg);
+      const price=priceAtRiskForPoint(last,r);
       const cell=document.createElement('div');
       cell.className='risk-cell';
       const pStr=price>=1e6?'$'+(price/1e6).toFixed(1)+'M':price>=1e3?'$'+Math.round(price/1e3)+'K':'$'+Math.round(price);
@@ -1436,8 +1438,28 @@ async function main() {
     for(let i=s;i<=e;i+=S){const x=xOf(i),y=yOf(pts[i].trendPrice);i===s?ctx.moveTo(x,y):ctx.lineTo(x,y);}
     ctx.stroke();ctx.setLineDash([]);
 
+    // Extend the same threshold curves into the trailing four-year momentum
+    // window so each forecast boundary visibly continues its own history.
+    if(fullProjectionView) {
+      const historicalBandStartMs=lastDateMs-HISTORICAL_RISK_BAND_DAYS*864e5;
+      PROJECTED_RISK_BOUNDARIES.forEach(risk=>{
+        ctx.strokeStyle=risk===0.50?'#58c56f':riskColor(risk,0.72);
+        ctx.lineWidth=risk===0.50?1.8:1.2;ctx.setLineDash(risk===0.50?[10,5]:[4,5]);ctx.beginPath();
+        let started=false;
+        for(let i=s;i<=e;i+=S){
+          const pointMs=dateMs(pts[i].date);
+          if(pointMs<historicalBandStartMs) continue;
+          const x=xOf(i),y=yOf(priceAtRiskForPoint(pts[i],risk));
+          started?ctx.lineTo(x,y):ctx.moveTo(x,y);started=true;
+        }
+        const finalY=yOf(priceAtRiskForPoint(last,risk));
+        started?ctx.lineTo(xOfTime(lastDateMs),finalY):ctx.moveTo(xOfTime(lastDateMs),finalY);
+        ctx.stroke();ctx.setLineDash([]);
+      });
+    }
+
     // Scenario-adjusted future risk zones. Each boundary preserves the risk
-    // model's price-to-trend ratio while anchoring it to the selected damped
+    // model's price-to-0.50 ratio while anchoring it to the selected damped
     // fair-value path, so scenario changes move the full forecast coherently.
     if(fullProjectionView) {
       const forecastX=xOfTime(lastDateMs);

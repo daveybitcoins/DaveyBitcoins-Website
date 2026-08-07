@@ -512,7 +512,7 @@ export default function BitcoinRiskMetricPage() {
 
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20260807-risk-table-aligned-projection" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20260807-continuous-risk-bands" strategy="afterInteractive" />
     </main>
   );
 }

@@ -40,11 +40,12 @@ function loadProductionModel() {
     'normCdf',
     'dateMs',
     'priceAtRiskForDate',
+    'priceAtRiskForPoint',
     'projectedRiskPriceAtDate',
   ].map(name => extractFunction(source, name));
 
   return new Function(
-    `${constants[0]}\n${functions.join('\n')}\nreturn { buildDataset, buildDampedFairValuePath, dampedFairValueAt, priceAtRiskForDate, projectedRiskPriceAtDate, dateMs };`,
+    `${constants[0]}\n${functions.join('\n')}\nreturn { buildDataset, buildDampedFairValuePath, dampedFairValueAt, priceAtRiskForDate, priceAtRiskForPoint, projectedRiskPriceAtDate, dateMs };`,
   )();
 }
 
@@ -155,6 +156,7 @@ test('projected risk bands remain ordered around the selected fair-value scenari
     buildDampedFairValuePath,
     dampedFairValueAt,
     priceAtRiskForDate,
+    priceAtRiskForPoint,
     projectedRiskPriceAtDate,
     dateMs,
   } = loadProductionModel();
@@ -192,6 +194,18 @@ test('projected risk bands remain ordered around the selected fair-value scenari
   approximately(prices[1], dampedFairValueAt(path, PROJECTION_END), 1e-9);
   for (const risk of [0.25, 0.50, 0.75]) {
     approximately(
+      priceAtRiskForPoint(last, risk),
+      priceAtRiskForDate(
+        dateMs(last.date),
+        slope,
+        intercept,
+        last.rollMean,
+        last.rollStd,
+        risk,
+      ),
+      1e-9,
+    );
+    approximately(
       projectedRiskPriceAtDate(
         dateMs(last.date),
         path,
@@ -227,4 +241,6 @@ test('projected risk bands remain ordered around the selected fair-value scenari
   assert.match(source, /if\(risk===0\.50\) return/);
   assert.match(source, /const currentHalfRiskPrice = priceAtRiskForDate/);
   assert.match(source, /lastDateMs,\s*currentHalfRiskPrice,\s*slope/);
+  assert.match(source, /HISTORICAL_RISK_BAND_DAYS/);
+  assert.match(source, /yOf\(priceAtRiskForPoint\(pts\[i\],risk\)\)/);
 });
