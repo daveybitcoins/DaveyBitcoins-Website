@@ -105,6 +105,7 @@ const FAIR_VALUE_GOLD_GROWTH = 0.052;
 const FAIR_VALUE_DAMPENING_POWER = 2;
 const FAIR_VALUE_DAYS_PER_YEAR = 365.2425;
 const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);
+const PROJECTED_RISK_BOUNDARIES = [0.25, 0.50, 0.75];
 const FAIR_VALUE_SCENARIOS = {
   conservative: { label: 'Conservative', marketCap: 13e12 },
   base: { label: 'Base', marketCap: 20e12 },
@@ -540,6 +541,13 @@ function priceAtRiskForDate(targetMs, slope, intercept, rollMean, rollStd, risk)
   return Math.pow(10, ((lo + hi) / 2) + regLogPrice);
 }
 
+function projectedRiskPriceAtDate(targetMs, fairValuePath, slope, intercept, rollMean, rollStd, risk) {
+  const days = (targetMs - GENESIS) / 864e5;
+  const rawTrendPrice = Math.pow(10, slope * Math.log10(days) + intercept);
+  const rawRiskPrice = priceAtRiskForDate(targetMs, slope, intercept, rollMean, rollStd, risk);
+  return dampedFairValueAt(fairValuePath, targetMs) * rawRiskPrice / rawTrendPrice;
+}
+
 function renderBearMarketProgress(pts, slope, intercept) {
   const pctEl = document.getElementById('vBearPct');
   const subEl = document.getElementById('vBearSub');
@@ -884,9 +892,26 @@ async function main() {
     const xOfTime=ms=>P.l+((ms-chartStartMs)/(chartEndMs-chartStartMs))*cw;
     const xOf=i=>fullProjectionView ? xOfTime(dateMs(pts[i].date)) : P.l+((i-s)/(e-s))*cw;
     const visPrices = pts.slice(s,e+1).map(p=>p.price);
+    const projectedRiskBands=[];
     if(fullProjectionView) {
       for(let i=0;i<dampedFairValuePath.length;i+=30) visPrices.push(dampedFairValuePath[i].value);
       visPrices.push(dampedFairValuePath[dampedFairValuePath.length-1].value);
+      for(let i=0;i<dampedFairValuePath.length;i+=30) {
+        const ms=dampedFairValuePath[i].ms;
+        const prices=PROJECTED_RISK_BOUNDARIES.map(risk=>projectedRiskPriceAtDate(
+          ms,dampedFairValuePath,slope,intercept,last.rollMean,last.rollStd,risk
+        ));
+        projectedRiskBands.push({ms,prices});
+        visPrices.push(...prices);
+      }
+      const finalRiskMs=dampedFairValuePath[dampedFairValuePath.length-1].ms;
+      if(projectedRiskBands[projectedRiskBands.length-1].ms!==finalRiskMs) {
+        const prices=PROJECTED_RISK_BOUNDARIES.map(risk=>projectedRiskPriceAtDate(
+          finalRiskMs,dampedFairValuePath,slope,intercept,last.rollMean,last.rollStd,risk
+        ));
+        projectedRiskBands.push({ms:finalRiskMs,prices});
+        visPrices.push(...prices);
+      }
     }
     const minE=Math.floor(Math.log10(Math.min(...visPrices)));
     const maxE=Math.ceil(Math.log10(Math.max(...visPrices)));
@@ -894,6 +919,7 @@ async function main() {
     cv.dataset.projectionEnd = fullProjectionView ? '2040-12-01' : '';
     cv.dataset.projectionPoints = fullProjectionView ? String(dampedFairValuePath.length) : '0';
     cv.dataset.projectionScenario = activeFairValueScenario;
+    cv.dataset.projectedRiskBoundaries = fullProjectionView ? PROJECTED_RISK_BOUNDARIES.join(',') : '';
 
     // Price grid: major lines mark powers of ten. Minor ticks at 2x through
     // 9x make each logarithmic decade readable without implying linear spacing.
@@ -956,12 +982,54 @@ async function main() {
     for(let i=s;i<=e;i+=S){const x=xOf(i),y=yOf(pts[i].trendPrice);i===s?ctx.moveTo(x,y):ctx.lineTo(x,y);}
     ctx.stroke();ctx.setLineDash([]);
 
-    // Market-cap-damped fair value projection
+    // Scenario-adjusted future risk zones. Each boundary preserves the risk
+    // model's price-to-trend ratio while anchoring it to the selected damped
+    // fair-value path, so scenario changes move the full forecast coherently.
     if(fullProjectionView) {
       const forecastX=xOfTime(lastDateMs);
-      ctx.fillStyle=tc.zoneA;ctx.fillRect(forecastX,P.t,W-P.r-forecastX,ch);
+      const projectedZones=[
+        {lower:null,upper:0,color:riskColor(0.12,0.10)},
+        {lower:0,upper:1,color:riskColor(0.37,0.10)},
+        {lower:1,upper:2,color:riskColor(0.62,0.10)},
+        {lower:2,upper:null,color:riskColor(0.88,0.10)}
+      ];
+      projectedZones.forEach(zone=>{
+        ctx.beginPath();
+        if(zone.upper===null) {
+          ctx.moveTo(xOfTime(projectedRiskBands[0].ms),P.t);
+          ctx.lineTo(xOfTime(projectedRiskBands[projectedRiskBands.length-1].ms),P.t);
+        } else {
+          projectedRiskBands.forEach((point,index)=>{
+            const x=xOfTime(point.ms),y=yOf(point.prices[zone.upper]);
+            index===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+          });
+        }
+        if(zone.lower===null) {
+          ctx.lineTo(xOfTime(projectedRiskBands[projectedRiskBands.length-1].ms),H-P.b);
+          ctx.lineTo(xOfTime(projectedRiskBands[0].ms),H-P.b);
+        } else {
+          for(let i=projectedRiskBands.length-1;i>=0;i--) {
+            const point=projectedRiskBands[i];
+            ctx.lineTo(xOfTime(point.ms),yOf(point.prices[zone.lower]));
+          }
+        }
+        ctx.closePath();ctx.fillStyle=zone.color;ctx.fill();
+      });
+      PROJECTED_RISK_BOUNDARIES.forEach((risk,boundaryIndex)=>{
+        ctx.strokeStyle=riskColor(risk,0.72);ctx.lineWidth=1.2;ctx.setLineDash([4,5]);ctx.beginPath();
+        projectedRiskBands.forEach((point,index)=>{
+          const x=xOfTime(point.ms),y=yOf(point.prices[boundaryIndex]);
+          index===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+        });
+        ctx.stroke();ctx.setLineDash([]);
+        const finalBandPoint=projectedRiskBands[projectedRiskBands.length-1];
+        ctx.fillStyle=riskColor(risk);ctx.font='9px JetBrains Mono';ctx.textAlign='right';
+        ctx.fillText('RISK '+risk.toFixed(2),W-P.r-6,yOf(finalBandPoint.prices[boundaryIndex])-4);
+      });
       ctx.strokeStyle=tc.gridZero;ctx.lineWidth=1;ctx.setLineDash([3,4]);
       ctx.beginPath();ctx.moveTo(forecastX,P.t);ctx.lineTo(forecastX,H-P.b);ctx.stroke();
+
+      // Market-cap-damped fair value projection
       ctx.strokeStyle='#58c56f';ctx.lineWidth=2.4;ctx.setLineDash([10,5]);
       ctx.beginPath();
       // Draw the exact daily path used by the projection table and tooltip.
@@ -1112,12 +1180,21 @@ async function main() {
         const hoverMs=dateMs(pts[0].date)+ratio*(FAIR_VALUE_PROJECTION_END_MS-dateMs(pts[0].date));
         if(hoverMs>lastDateMs) {
           const value=dampedFairValueAt(dampedFairValuePath,hoverMs);
+          const boundaryValues=PROJECTED_RISK_BOUNDARIES.map(risk=>({
+            risk,
+            price:projectedRiskPriceAtDate(
+              hoverMs,dampedFairValuePath,slope,intercept,last.rollMean,last.rollStd,risk
+            )
+          }));
           tip.querySelector('.tt-date').textContent=new Date(hoverMs).toISOString().slice(0,10);
-          tip.querySelector('.tt-price').textContent='$'+value.toLocaleString(undefined,{maximumFractionDigits:0});
-          riskLabel.textContent='Path:';
+          tip.querySelector('.tt-price').textContent='Fair value: $'+value.toLocaleString(undefined,{maximumFractionDigits:0});
+          riskLabel.textContent='';
           const riskEl=tip.querySelector('.tt-risk');
-          riskEl.textContent='Adjusted fair value';
-          riskEl.style.color='#58c56f';
+          riskEl.classList.add('tt-band-list');
+          riskEl.innerHTML=boundaryValues.map(point=>
+            '<span class="tt-band-row"><span style="color:'+riskColor(point.risk)+'">Risk '+point.risk.toFixed(2)+'</span><span>$'+point.price.toLocaleString(undefined,{maximumFractionDigits:0})+'</span></span>'
+          ).join('');
+          riskEl.style.color='';
           tip.style.display='block';
           const tipX=e.clientX-rect.left+16, tipY=e.clientY-rect.top-40;
           tip.style.left=(tipX+tip.offsetWidth>rect.width?tipX-tip.offsetWidth-32:tipX)+'px';
@@ -1134,6 +1211,7 @@ async function main() {
         tip.querySelector('.tt-price').textContent = '$' + p.price.toLocaleString(undefined,{maximumFractionDigits:2});
       }
       const riskEl = tip.querySelector('.tt-risk');
+      riskEl.classList.remove('tt-band-list');
       if (tipId === 'riskTip') {
         riskEl.textContent = 'C:'+p.riskCombo.toFixed(3)+' S:'+p.riskMM.toFixed(3)+' M:'+p.riskZS.toFixed(3);
       } else {

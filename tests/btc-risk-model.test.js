@@ -40,10 +40,11 @@ function loadProductionModel() {
     'normCdf',
     'dateMs',
     'priceAtRiskForDate',
+    'projectedRiskPriceAtDate',
   ].map(name => extractFunction(source, name));
 
   return new Function(
-    `${constants[0]}\n${functions.join('\n')}\nreturn { buildDataset, buildDampedFairValuePath, dampedFairValueAt, priceAtRiskForDate, dateMs };`,
+    `${constants[0]}\n${functions.join('\n')}\nreturn { buildDataset, buildDampedFairValuePath, dampedFairValueAt, priceAtRiskForDate, projectedRiskPriceAtDate, dateMs };`,
   )();
 }
 
@@ -146,4 +147,42 @@ test('forecast path, tooltip lookup, and projection dates agree', () => {
   assert.ok(scenarioValues[1] < scenarioValues[2]);
   assert.match(source, /data-fair-value-scenario/);
   assert.match(source, /renderFairValueProjectionTable\(\);\s*renderPriceChart\(\);/);
+});
+
+test('projected risk bands remain ordered around the selected fair-value scenario', () => {
+  const {
+    buildDataset,
+    buildDampedFairValuePath,
+    dampedFairValueAt,
+    projectedRiskPriceAtDate,
+    dateMs,
+  } = loadProductionModel();
+  const { pts, slope, intercept } = buildDataset(fixtureData());
+  const last = pts.at(-1);
+  const path = buildDampedFairValuePath(
+    dateMs(last.date),
+    last.trendPrice,
+    slope,
+    PROJECTION_END,
+    { marketCap: 20e12 },
+  );
+  const prices = [0.25, 0.50, 0.75].map(risk =>
+    projectedRiskPriceAtDate(
+      PROJECTION_END,
+      path,
+      slope,
+      intercept,
+      last.rollMean,
+      last.rollStd,
+      risk,
+    ),
+  );
+
+  assert.ok(prices[0] < prices[1]);
+  assert.ok(prices[1] < prices[2]);
+  assert.ok(prices[0] < dampedFairValueAt(path, PROJECTION_END));
+  const source = readFileSync(ENGINE_PATH, 'utf8');
+  assert.match(source, /projectedRiskBoundaries/);
+  assert.match(source, /Fair value: \$/);
+  assert.match(source, /Risk '\+point\.risk\.toFixed\(2\)/);
 });

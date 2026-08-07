@@ -417,7 +417,8 @@ export default function BitcoinRiskMetricPage() {
               </h2>
             </div>
             <div className="chart-note">
-              Historical risk · market-cap-adjusted fair value through 2040
+              Historical risk · projected risk bands + market-cap-adjusted fair
+              value through 2040
             </div>
           </div>
           <canvas id="priceCanvas" width="1380" height="540" />
@@ -509,7 +510,7 @@ export default function BitcoinRiskMetricPage() {
 
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20260804-log-minor-ticks" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20260807-projected-risk-tooltips" strategy="afterInteractive" />
     </main>
   );
 }

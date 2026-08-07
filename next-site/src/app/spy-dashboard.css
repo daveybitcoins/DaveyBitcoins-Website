@@ -496,6 +496,20 @@
   font-weight: 700;
 }
 
+.spy-page .tt-band-list {
+  display: grid;
+  min-width: 150px;
+  gap: 0.1rem;
+  margin-top: 0.3rem;
+  font-weight: 500;
+}
+
+.spy-page .tt-band-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.15rem;
+}
+
 .spy-page .legend-bar {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
