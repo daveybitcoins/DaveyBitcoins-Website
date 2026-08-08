@@ -151,7 +151,7 @@ test('forecast path, tooltip lookup, and projection dates agree', () => {
   assert.match(source, /renderFairValueProjectionTable\(\);\s*renderPriceChart\(\);/);
 });
 
-test('projected risk bands remain ordered around the selected fair-value scenario', () => {
+test('projected risk bands remain ordered around their independent 0.50-risk path', () => {
   const {
     buildDataset,
     buildDampedFairValuePath,
@@ -261,9 +261,11 @@ test('projected risk bands remain ordered around the selected fair-value scenari
   assert.match(pageSource, /className="tt-risk-label"/);
   assert.doesNotMatch(source, /fillText\('RISK '/);
   assert.doesNotMatch(source, /fillText\([^\n]*FAIR VALUE/);
-  assert.match(source, /if\(risk===0\.50\) return/);
+  assert.doesNotMatch(source, /if\(risk===0\.50\) return/);
   assert.match(source, /const currentHalfRiskPrice = priceAtRiskForDate/);
-  assert.match(source, /lastDateMs,\s*currentHalfRiskPrice,\s*slope/);
+  assert.match(source, /let dampedFairValuePath = buildDampedFairValuePath\(\s*lastDateMs,\s*last\.trendPrice,\s*slope/);
+  assert.match(source, /let dampedRiskCenterPath = buildDampedFairValuePath\(\s*lastDateMs,\s*currentHalfRiskPrice,\s*slope/);
+  assert.match(source, /hoverMs,dampedRiskCenterPath,slope,intercept/);
   assert.doesNotMatch(source, /HISTORICAL_RISK_BAND_DAYS/);
   assert.doesNotMatch(source, /historicalBandStartIndex/);
   assert.doesNotMatch(source, /yOf\(priceAtRiskForPoint\(pts\[i\],risk\)\)/);

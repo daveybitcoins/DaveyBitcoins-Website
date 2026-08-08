@@ -367,7 +367,7 @@
     </div>
   </div>
   <div class="proj-table-wrap" id="fair-value">
-    <h4>Bitcoin 0.50-Risk-Centered Fair Value Projection</h4>
+    <h4>Bitcoin Market-Cap-Adjusted Power-Law Fair Value</h4>
     <div class="fair-value-scenarios" role="group" aria-label="Fair value projection scenario">
       <button type="button" class="fair-value-scenario" data-fair-value-scenario="conservative" aria-pressed="false">
         <strong>Conservative</strong><span><span class="scenario-cap">$13T today</span> Investable and central-bank gold</span>
@@ -381,7 +381,7 @@
     </div>
     <p class="proj-method-note" id="projMethodNote">
       <strong>Long-run scenario, not a short-term price target.</strong>
-      The path begins at today’s combined-risk 0.50 price, making fair value the center of the projected risk bands, then progressively slows its
+      The path begins with Bitcoin’s historical power-law regression, then progressively slows its
       excess growth as the modeled market cap approaches the selected gold-linked threshold. In the base case, at $20T the power-law growth above a
       6% long-run nominal rate is reduced by half; the path continues converging toward 6% as the asset grows.
       The threshold grows 5.2% annually with the gold model, and the calculation assumes 20.8M BTC.
@@ -1006,10 +1006,10 @@ function priceAtRiskForPoint(point, risk) {
   return Math.pow(10, ((lo + hi) / 2) + point.regLogPrice);
 }
 
-function projectedRiskPriceAtDate(targetMs, fairValuePath, slope, intercept, rollMean, rollStd, risk) {
+function projectedRiskPriceAtDate(targetMs, riskCenterPath, slope, intercept, rollMean, rollStd, risk) {
   const rawRiskPrice = priceAtRiskForDate(targetMs, slope, intercept, rollMean, rollStd, risk);
   const rawHalfRiskPrice = priceAtRiskForDate(targetMs, slope, intercept, rollMean, rollStd, 0.50);
-  return dampedFairValueAt(fairValuePath, targetMs) * rawRiskPrice / rawHalfRiskPrice;
+  return dampedFairValueAt(riskCenterPath, targetMs) * rawRiskPrice / rawHalfRiskPrice;
 }
 
 function smoothHistoricalRiskBandPriceAtDate(targetMs, currentMs, currentHalfRiskPrice, slope, intercept, rollMean, rollStd, risk) {
@@ -1080,6 +1080,13 @@ async function main() {
   let activeFairValueScenario = 'base';
   let dampedFairValuePath = buildDampedFairValuePath(
     lastDateMs,
+    last.trendPrice,
+    slope,
+    FAIR_VALUE_PROJECTION_END_MS,
+    FAIR_VALUE_SCENARIOS[activeFairValueScenario]
+  );
+  let dampedRiskCenterPath = buildDampedFairValuePath(
+    lastDateMs,
     currentHalfRiskPrice,
     slope,
     FAIR_VALUE_PROJECTION_END_MS,
@@ -1093,9 +1100,9 @@ async function main() {
   hd.innerHTML = '<span style="width:6px;height:6px;background:#58c56f;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> as of ' + last.date + (isLive ? ' · live via ' + isLive.source : ' · historical fallback');
   document.getElementById('vRisk').textContent = last.riskCombo.toFixed(3);
   document.getElementById('vRisk').style.setProperty('--val-color', riskColor(last.riskCombo));
-  document.getElementById('vFair').textContent = '$' + currentHalfRiskPrice.toLocaleString(undefined,{maximumFractionDigits:0});
-  document.getElementById('vGrowth').textContent = 'Combined risk 0.50 center';
-  const devPct = ((last.price/currentHalfRiskPrice-1)*100).toFixed(1);
+  document.getElementById('vFair').textContent = '$' + last.trendPrice.toLocaleString(undefined,{maximumFractionDigits:0});
+  document.getElementById('vGrowth').textContent = 'Power-law regression fair value';
+  const devPct = ((last.price/last.trendPrice-1)*100).toFixed(1);
   document.getElementById('vDev').textContent = (devPct>0?'+':'') + devPct + '%';
   document.getElementById('needle').style.left = (last.riskCombo*100)+'%';
   renderWeeklyMovingAverages(rawData);
@@ -1132,7 +1139,7 @@ async function main() {
   function renderFairValueProjectionTable() {
     const projBody = document.getElementById('projBody');
     projBody.innerHTML = '';
-    const todayFV = currentHalfRiskPrice;
+    const todayFV = last.trendPrice;
     const todayPrice = last.price;
     const moNames = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec'];
     const curDate = new Date(last.date + 'T00:00:00Z');
@@ -1177,6 +1184,13 @@ async function main() {
     if (!FAIR_VALUE_SCENARIOS[scenarioKey]) return;
     activeFairValueScenario = scenarioKey;
     dampedFairValuePath = buildDampedFairValuePath(
+      lastDateMs,
+      last.trendPrice,
+      slope,
+      FAIR_VALUE_PROJECTION_END_MS,
+      FAIR_VALUE_SCENARIOS[activeFairValueScenario]
+    );
+    dampedRiskCenterPath = buildDampedFairValuePath(
       lastDateMs,
       currentHalfRiskPrice,
       slope,
@@ -1361,18 +1375,18 @@ async function main() {
     if(fullProjectionView) {
       for(let i=0;i<dampedFairValuePath.length;i+=30) visPrices.push(dampedFairValuePath[i].value);
       visPrices.push(dampedFairValuePath[dampedFairValuePath.length-1].value);
-      for(let i=0;i<dampedFairValuePath.length;i+=30) {
-        const ms=dampedFairValuePath[i].ms;
+      for(let i=0;i<dampedRiskCenterPath.length;i+=30) {
+        const ms=dampedRiskCenterPath[i].ms;
         const prices=PROJECTED_RISK_BOUNDARIES.map(risk=>projectedRiskPriceAtDate(
-          ms,dampedFairValuePath,slope,intercept,last.rollMean,last.rollStd,risk
+          ms,dampedRiskCenterPath,slope,intercept,last.rollMean,last.rollStd,risk
         ));
         projectedRiskBands.push({ms,prices});
         visPrices.push(...prices);
       }
-      const finalRiskMs=dampedFairValuePath[dampedFairValuePath.length-1].ms;
+      const finalRiskMs=dampedRiskCenterPath[dampedRiskCenterPath.length-1].ms;
       if(projectedRiskBands[projectedRiskBands.length-1].ms!==finalRiskMs) {
         const prices=PROJECTED_RISK_BOUNDARIES.map(risk=>projectedRiskPriceAtDate(
-          finalRiskMs,dampedFairValuePath,slope,intercept,last.rollMean,last.rollStd,risk
+          finalRiskMs,dampedRiskCenterPath,slope,intercept,last.rollMean,last.rollStd,risk
         ));
         projectedRiskBands.push({ms:finalRiskMs,prices});
         visPrices.push(...prices);
@@ -1475,9 +1489,6 @@ async function main() {
         ctx.closePath();ctx.fillStyle=zone.color;ctx.fill();
       });
       PROJECTED_RISK_BOUNDARIES.forEach((risk,boundaryIndex)=>{
-        // The fair-value path itself is the 0.50 boundary, so do not draw a
-        // second dashed line directly beneath it.
-        if(risk===0.50) return;
         ctx.strokeStyle=riskColor(risk,0.72);ctx.lineWidth=1.2;ctx.setLineDash([4,5]);ctx.beginPath();
         projectedRiskBands.forEach((point,index)=>{
           const x=xOfTime(point.ms),y=yOf(point.prices[boundaryIndex]);
@@ -1640,7 +1651,7 @@ async function main() {
           const boundaryValues=DISPLAY_RISK_BOUNDARIES.map(risk=>({
             risk,
             price:projectedRiskPriceAtDate(
-              hoverMs,dampedFairValuePath,slope,intercept,last.rollMean,last.rollStd,risk
+              hoverMs,dampedRiskCenterPath,slope,intercept,last.rollMean,last.rollStd,risk
             )
           }));
           tip.querySelector('.tt-date').textContent=new Date(hoverMs).toISOString().slice(0,10);

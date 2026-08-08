@@ -285,7 +285,7 @@ export default function BitcoinRiskMetricPage() {
         <section className="spy-panel proj-table-wrap" id="fair-value">
           <div className="spy-section-heading">
             <div>
-              <h2>Bitcoin 0.50-Risk-Centered Fair Value Projection</h2>
+              <h2>Bitcoin Market-Cap-Adjusted Power-Law Fair Value</h2>
             </div>
             <p>
               A maturity-adjusted long-run scenario extending Bitcoin&apos;s
@@ -336,12 +336,12 @@ export default function BitcoinRiskMetricPage() {
           </div>
           <p className="proj-method-note" id="projMethodNote">
             <strong>Long-run scenario, not a short-term price target.</strong>{" "}
-            The path begins at today&apos;s combined-risk 0.50 price, making fair
-            value the center of the projected risk bands, then progressively
-            slows its excess growth as the modeled market cap approaches the
-            selected gold-linked threshold. In the base case, at $20T the
-            power-law growth above a 6% long-run nominal rate is reduced by
-            half; the path continues converging toward 6% as the asset grows.
+            The path begins with Bitcoin&apos;s historical power-law regression,
+            then progressively slows its excess growth as the modeled market
+            cap approaches the selected gold-linked threshold. In the base
+            case, at $20T the power-law growth above a 6% long-run nominal rate
+            is reduced by half; the path continues converging toward 6% as the
+            asset grows.
             The threshold grows 5.2% annually with the gold model, and the
             calculation assumes 20.8M BTC.
             <code className="proj-formula">
@@ -512,7 +512,7 @@ export default function BitcoinRiskMetricPage() {
 
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20260807-forward-risk-lines-only" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20260808-true-fair-value" strategy="afterInteractive" />
     </main>
   );
 }
