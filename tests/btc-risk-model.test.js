@@ -268,4 +268,5 @@ test('projected risk bands remain ordered around the selected fair-value scenari
   assert.match(source, /const historicalBandStartIndex=Math\.max\(s,365\)/);
   assert.doesNotMatch(source, /yOf\(priceAtRiskForPoint\(pts\[i\],risk\)\)/);
   assert.match(source, /smoothHistoricalRiskBandPriceAtDate/);
+  assert.doesNotMatch(source, /ctx\.strokeStyle=tc\.regressionLine/);
 });

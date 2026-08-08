@@ -1440,12 +1440,6 @@ async function main() {
       }
     }
 
-    // Regression
-    ctx.strokeStyle=tc.regressionLine;ctx.lineWidth=1.5;ctx.setLineDash([8,5]);
-    ctx.beginPath();
-    for(let i=s;i<=e;i+=S){const x=xOf(i),y=yOf(pts[i].trendPrice);i===s?ctx.moveTo(x,y):ctx.lineTo(x,y);}
-    ctx.stroke();ctx.setLineDash([]);
-
     // Scenario-adjusted future risk zones. Each boundary preserves the risk
     // model's price-to-0.50 ratio while anchoring it to the selected damped
     // fair-value path, so scenario changes move the full forecast coherently.
