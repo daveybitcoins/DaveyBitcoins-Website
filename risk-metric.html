@@ -1509,31 +1509,6 @@ async function main() {
       ctx.beginPath();ctx.moveTo(xOf(prev),yOf(pts[prev].price));ctx.lineTo(xOf(i),yOf(pts[i].price));ctx.stroke();
     }
 
-    // Draw a smooth structural envelope last so historical peaks and lows can
-    // be read against stable bands instead of rolling momentum noise. The
-    // envelope widens backward, compresses over time, and meets today's risk
-    // table values exactly at the projection boundary.
-    if(fullProjectionView) {
-      const historicalBandStartIndex=Math.max(s,365);
-      PROJECTED_RISK_BOUNDARIES.forEach(risk=>{
-        ctx.strokeStyle=risk===0.50?'rgba(88,197,111,0.72)':riskColor(risk,0.62);
-        ctx.lineWidth=risk===0.50?1.5:1.1;ctx.setLineDash(risk===0.50?[10,5]:[4,5]);ctx.beginPath();
-        let started=false;
-        for(let i=historicalBandStartIndex;i<=e;i+=S){
-          const pointMs=dateMs(pts[i].date);
-          const bandPrice=smoothHistoricalRiskBandPriceAtDate(
-            pointMs,lastDateMs,currentHalfRiskPrice,slope,intercept,last.rollMean,last.rollStd,risk
-          );
-          const x=xOf(i),y=yOf(bandPrice);
-          started?ctx.lineTo(x,y):ctx.moveTo(x,y);started=true;
-        }
-        const finalY=yOf(smoothHistoricalRiskBandPriceAtDate(
-          lastDateMs,lastDateMs,currentHalfRiskPrice,slope,intercept,last.rollMean,last.rollStd,risk
-        ));
-        started?ctx.lineTo(xOfTime(lastDateMs),finalY):ctx.moveTo(xOfTime(lastDateMs),finalY);
-        ctx.stroke();ctx.setLineDash([]);
-      });
-    }
   }
 
   // ====== RENDER RISK CHART ======
