@@ -269,4 +269,7 @@ test('projected risk bands remain ordered around the selected fair-value scenari
   assert.doesNotMatch(source, /yOf\(priceAtRiskForPoint\(pts\[i\],risk\)\)/);
   assert.match(source, /smoothHistoricalRiskBandPriceAtDate/);
   assert.doesNotMatch(source, /ctx\.strokeStyle=tc\.regressionLine/);
+  assert.match(source, /const DISPLAY_RISK_BOUNDARIES = \[0\.75, 0\.50, 0\.25\]/);
+  assert.match(source, /boundaryValues=DISPLAY_RISK_BOUNDARIES\.map/);
+  assert.match(source, /Actual risk/);
 });

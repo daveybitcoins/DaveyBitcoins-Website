@@ -557,6 +557,7 @@ const FAIR_VALUE_DAMPENING_POWER = 2;
 const FAIR_VALUE_DAYS_PER_YEAR = 365.2425;
 const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);
 const PROJECTED_RISK_BOUNDARIES = [0.25, 0.50, 0.75];
+const DISPLAY_RISK_BOUNDARIES = [0.75, 0.50, 0.25];
 const FAIR_VALUE_SCENARIOS = {
   conservative: { label: 'Conservative', marketCap: 13e12 },
   base: { label: 'Base', marketCap: 20e12 },
@@ -1661,7 +1662,7 @@ async function main() {
         const hoverMs=dateMs(pts[0].date)+ratio*(FAIR_VALUE_PROJECTION_END_MS-dateMs(pts[0].date));
         if(hoverMs>lastDateMs) {
           const value=dampedFairValueAt(dampedFairValuePath,hoverMs);
-          const boundaryValues=PROJECTED_RISK_BOUNDARIES.map(risk=>({
+          const boundaryValues=DISPLAY_RISK_BOUNDARIES.map(risk=>({
             risk,
             price:projectedRiskPriceAtDate(
               hoverMs,dampedFairValuePath,slope,intercept,last.rollMean,last.rollStd,risk
@@ -1686,19 +1687,32 @@ async function main() {
       const idx = mouseIdxFromEvent(e);
       if (idx < 0 || idx >= n) { tip.style.display='none'; return; }
       const p = pts[idx];
-      if(riskLabel) riskLabel.textContent='Risk:';
       tip.querySelector('.tt-date').textContent = p.date;
       if (tip.querySelector('.tt-price')) {
-        tip.querySelector('.tt-price').textContent = '$' + p.price.toLocaleString(undefined,{maximumFractionDigits:2});
+        tip.querySelector('.tt-price').textContent = (tipId==='priceTip'?'BTC price: ':'$') + '$' + p.price.toLocaleString(undefined,{maximumFractionDigits:2});
       }
       const riskEl = tip.querySelector('.tt-risk');
-      riskEl.classList.remove('tt-band-list');
-      if (tipId === 'riskTip') {
-        riskEl.textContent = 'C:'+p.riskCombo.toFixed(3)+' S:'+p.riskMM.toFixed(3)+' M:'+p.riskZS.toFixed(3);
+      if (tipId === 'priceTip') {
+        if(riskLabel) riskLabel.textContent='';
+        const pointMs=dateMs(p.date);
+        const boundaryValues=DISPLAY_RISK_BOUNDARIES.map(risk=>({
+          risk,
+          price:smoothHistoricalRiskBandPriceAtDate(
+            pointMs,lastDateMs,currentHalfRiskPrice,slope,intercept,last.rollMean,last.rollStd,risk
+          )
+        }));
+        riskEl.classList.add('tt-band-list');
+        riskEl.innerHTML='<span class="tt-band-row"><span>Actual risk</span><span style="color:'+riskColor(p.riskCombo)+'">'+p.riskCombo.toFixed(3)+'</span></span>'+
+          boundaryValues.map(point=>
+            '<span class="tt-band-row"><span style="color:'+riskColor(point.risk)+'">Risk '+point.risk.toFixed(2)+'</span><span>$'+point.price.toLocaleString(undefined,{maximumFractionDigits:0})+'</span></span>'
+          ).join('');
+        riskEl.style.color='';
       } else {
-        riskEl.textContent = p.riskCombo.toFixed(3);
+        if(riskLabel) riskLabel.textContent='Risk:';
+        riskEl.classList.remove('tt-band-list');
+        riskEl.textContent = 'C:'+p.riskCombo.toFixed(3)+' S:'+p.riskMM.toFixed(3)+' M:'+p.riskZS.toFixed(3);
+        riskEl.style.color = riskColor(p.riskCombo);
       }
-      riskEl.style.color = riskColor(p.riskCombo);
       tip.style.display = 'block';
       const tipX = e.clientX - rect.left + 16;
       const tipY = e.clientY - rect.top - 40;
