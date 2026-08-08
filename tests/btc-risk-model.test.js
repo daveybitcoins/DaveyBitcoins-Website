@@ -42,10 +42,11 @@ function loadProductionModel() {
     'priceAtRiskForDate',
     'priceAtRiskForPoint',
     'projectedRiskPriceAtDate',
+    'smoothHistoricalRiskBandPriceAtDate',
   ].map(name => extractFunction(source, name));
 
   return new Function(
-    `${constants[0]}\n${functions.join('\n')}\nreturn { buildDataset, buildDampedFairValuePath, dampedFairValueAt, priceAtRiskForDate, priceAtRiskForPoint, projectedRiskPriceAtDate, dateMs };`,
+    `${constants[0]}\n${functions.join('\n')}\nreturn { buildDataset, buildDampedFairValuePath, dampedFairValueAt, priceAtRiskForDate, priceAtRiskForPoint, projectedRiskPriceAtDate, smoothHistoricalRiskBandPriceAtDate, dateMs };`,
   )();
 }
 
@@ -158,6 +159,7 @@ test('projected risk bands remain ordered around the selected fair-value scenari
     priceAtRiskForDate,
     priceAtRiskForPoint,
     projectedRiskPriceAtDate,
+    smoothHistoricalRiskBandPriceAtDate,
     dateMs,
   } = loadProductionModel();
   const { pts, slope, intercept } = buildDataset(fixtureData());
@@ -206,6 +208,27 @@ test('projected risk bands remain ordered around the selected fair-value scenari
       1e-9,
     );
     approximately(
+      smoothHistoricalRiskBandPriceAtDate(
+        dateMs(last.date),
+        dateMs(last.date),
+        currentHalfRiskPrice,
+        slope,
+        intercept,
+        last.rollMean,
+        last.rollStd,
+        risk,
+      ),
+      priceAtRiskForDate(
+        dateMs(last.date),
+        slope,
+        intercept,
+        last.rollMean,
+        last.rollStd,
+        risk,
+      ),
+      1e-9,
+    );
+    approximately(
       projectedRiskPriceAtDate(
         dateMs(last.date),
         path,
@@ -243,5 +266,6 @@ test('projected risk bands remain ordered around the selected fair-value scenari
   assert.match(source, /lastDateMs,\s*currentHalfRiskPrice,\s*slope/);
   assert.doesNotMatch(source, /HISTORICAL_RISK_BAND_DAYS/);
   assert.match(source, /const historicalBandStartIndex=Math\.max\(s,365\)/);
-  assert.match(source, /yOf\(priceAtRiskForPoint\(pts\[i\],risk\)\)/);
+  assert.doesNotMatch(source, /yOf\(priceAtRiskForPoint\(pts\[i\],risk\)\)/);
+  assert.match(source, /smoothHistoricalRiskBandPriceAtDate/);
 });

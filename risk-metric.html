@@ -1011,6 +1011,15 @@ function projectedRiskPriceAtDate(targetMs, fairValuePath, slope, intercept, rol
   return dampedFairValueAt(fairValuePath, targetMs) * rawRiskPrice / rawHalfRiskPrice;
 }
 
+function smoothHistoricalRiskBandPriceAtDate(targetMs, currentMs, currentHalfRiskPrice, slope, intercept, rollMean, rollStd, risk) {
+  const targetDays = (targetMs - GENESIS) / 864e5;
+  const currentDays = (currentMs - GENESIS) / 864e5;
+  const smoothCenterPrice = currentHalfRiskPrice * Math.pow(targetDays / currentDays, slope);
+  const rawRiskPrice = priceAtRiskForDate(targetMs, slope, intercept, rollMean, rollStd, risk);
+  const rawHalfRiskPrice = priceAtRiskForDate(targetMs, slope, intercept, rollMean, rollStd, 0.50);
+  return smoothCenterPrice * rawRiskPrice / rawHalfRiskPrice;
+}
+
 function renderBearMarketProgress(pts, slope, intercept) {
   const pctEl = document.getElementById('vBearPct');
   const subEl = document.getElementById('vBearSub');
@@ -1505,9 +1514,10 @@ async function main() {
       ctx.beginPath();ctx.moveTo(xOf(prev),yOf(pts[prev].price));ctx.lineTo(xOf(i),yOf(pts[i].price));ctx.stroke();
     }
 
-    // Draw threshold history last so crossings with actual price do not make
-    // the dashed curves look broken. Start once the as-of regression has a
-    // full year of observations, then continue without a recent-date cutoff.
+    // Draw a smooth structural envelope last so historical peaks and lows can
+    // be read against stable bands instead of rolling momentum noise. The
+    // envelope widens backward, compresses over time, and meets today's risk
+    // table values exactly at the projection boundary.
     if(fullProjectionView) {
       const historicalBandStartIndex=Math.max(s,365);
       PROJECTED_RISK_BOUNDARIES.forEach(risk=>{
@@ -1515,10 +1525,16 @@ async function main() {
         ctx.lineWidth=risk===0.50?1.5:1.1;ctx.setLineDash(risk===0.50?[10,5]:[4,5]);ctx.beginPath();
         let started=false;
         for(let i=historicalBandStartIndex;i<=e;i+=S){
-          const x=xOf(i),y=yOf(priceAtRiskForPoint(pts[i],risk));
+          const pointMs=dateMs(pts[i].date);
+          const bandPrice=smoothHistoricalRiskBandPriceAtDate(
+            pointMs,lastDateMs,currentHalfRiskPrice,slope,intercept,last.rollMean,last.rollStd,risk
+          );
+          const x=xOf(i),y=yOf(bandPrice);
           started?ctx.lineTo(x,y):ctx.moveTo(x,y);started=true;
         }
-        const finalY=yOf(priceAtRiskForPoint(last,risk));
+        const finalY=yOf(smoothHistoricalRiskBandPriceAtDate(
+          lastDateMs,lastDateMs,currentHalfRiskPrice,slope,intercept,last.rollMean,last.rollStd,risk
+        ));
         started?ctx.lineTo(xOfTime(lastDateMs),finalY):ctx.moveTo(xOfTime(lastDateMs),finalY);
         ctx.stroke();ctx.setLineDash([]);
       });
