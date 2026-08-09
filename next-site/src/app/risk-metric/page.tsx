@@ -95,6 +95,7 @@ const movingAverages = [300, 200, 50, 21, 13, 8];
 const sectionLinks = [
   ["summary", "Summary"],
   ["movingAveragesCard", "Moving averages"],
+  ["model-snapshot", "Model snapshot"],
   ["risk-levels", "Risk levels"],
   ["market-caps", "Market caps"],
   ["fair-value", "Fair value"],
@@ -237,6 +238,69 @@ export default function BitcoinRiskMetricPage() {
           </div>
         </section>
 
+        <section className="spy-panel model-snapshot" id="model-snapshot">
+          <div className="model-snapshot-head">
+            <div>
+              <h2>Model Snapshot &amp; Historical Check</h2>
+              <p>
+                Current components, exact zone definitions, and descriptive
+                one-year outcomes from monthly historical snapshots.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="snapshot-refresh"
+              id="refreshRiskSnapshot"
+            >
+              Refresh coherent snapshot
+            </button>
+          </div>
+          <div className="model-snapshot-grid">
+            <div>
+              <span>Structural</span>
+              <strong id="vStructuralRisk">—</strong>
+            </div>
+            <div>
+              <span>Momentum</span>
+              <strong id="vMomentumRisk">—</strong>
+            </div>
+            <div>
+              <span>Combined / Zone</span>
+              <strong id="vCombinedZone">—</strong>
+            </div>
+            <div>
+              <span>Momentum Window</span>
+              <strong id="vMomentumWindow">—</strong>
+            </div>
+            <div>
+              <span>Regression Slope</span>
+              <strong id="vRegressionSlope">—</strong>
+            </div>
+            <div>
+              <span>Model Version</span>
+              <strong>2026.08</strong>
+            </div>
+          </div>
+          <div className="model-backtest-scroll">
+            <table className="model-backtest-table" id="modelBacktestTable">
+              <thead>
+                <tr>
+                  <th>Risk Zone</th>
+                  <th>Monthly Samples</th>
+                  <th>Median 1Y Return</th>
+                  <th>Positive 1Y</th>
+                  <th>Median Max Drawdown</th>
+                </tr>
+              </thead>
+              <tbody id="modelBacktestBody" />
+            </table>
+          </div>
+          <p className="model-snapshot-note" id="modelSnapshotNote">
+            Historical monthly observations overlap and are descriptive, not
+            independent forecasts.
+          </p>
+        </section>
+
         <section className="spy-panel risk-table-wrap" id="risk-levels">
           <div className="spy-section-heading">
             <div>
@@ -262,7 +326,7 @@ export default function BitcoinRiskMetricPage() {
           </div>
           <div className="market-cap-meta">
             <div>
-              Current Supply: <span id="currentSupply">—</span>
+              Mined Supply Estimate: <span id="currentSupply">—</span>
             </div>
             <div>
               Block Height: <span id="currentSupplyHeight">—</span>
@@ -305,8 +369,8 @@ export default function BitcoinRiskMetricPage() {
             >
               <strong>Conservative</strong>
               <span>
-                <span className="scenario-cap">$13T today</span> Investable and
-                central-bank gold
+                <span className="scenario-cap">$15T · end-2025</span> Investable
+                gold including derivatives
               </span>
             </button>
             <button
@@ -317,7 +381,7 @@ export default function BitcoinRiskMetricPage() {
             >
               <strong>Base</strong>
               <span>
-                <span className="scenario-cap">$20T today</span> Midpoint
+                <span className="scenario-cap">$23T · end-2025</span> Midpoint
                 gold-equivalence case
               </span>
             </button>
@@ -329,7 +393,7 @@ export default function BitcoinRiskMetricPage() {
             >
               <strong>Aggressive</strong>
               <span>
-                <span className="scenario-cap">$31T today</span> Total
+                <span className="scenario-cap">$31T · end-2025</span> Total
                 above-ground gold
               </span>
             </button>
@@ -339,11 +403,12 @@ export default function BitcoinRiskMetricPage() {
             The path begins with Bitcoin&apos;s historical power-law regression,
             then progressively slows its excess growth as the modeled market
             cap approaches the selected gold-linked threshold. In the base
-            case, at $20T the power-law growth above a 6% long-run nominal rate
+            case, at $23T the power-law growth above a 6% long-run nominal rate
             is reduced by half; the path continues converging toward 6% as the
             asset grows.
-            The threshold grows 5.2% annually with the gold model, and the
-            calculation assumes 20.8M BTC.
+            The threshold grows 5.2% annually as a modeling assumption based on
+            the gold-return estimate, and the calculation holds projected
+            Bitcoin supply at 20.8M BTC.
             <code className="proj-formula">
               g<sub>effective</sub> = g<sub>6%</sub> + (g
               <sub>power-law</sub> − g<sub>6%</sub>) × 1 / [1 + (M / K
@@ -473,13 +538,14 @@ export default function BitcoinRiskMetricPage() {
             <p>
               <span className="hl">Power-Law Regression:</span>{" "}
               <code>log₁₀(price)</code> vs{" "}
-              <code>log₁₀(days since Jan 3 2009)</code>. Historical risk uses an
-              as-of regression at each date to avoid future-price calibration.
+              <code>log₁₀(days since Jan 3 2009)</code>. Readings begin after a
+              30-observation warm-up, then use an as-of regression at each date
+              to avoid future-price calibration.
             </p>
             <p>
               <span className="hl">Structural Risk:</span> Normalizes the model
               residual against a time-decaying upper envelope fitted from cycle
-              peaks.
+              peaks, with a continuous 0.005 floor.
             </p>
             <p>
               <span className="hl">Momentum Risk:</span> A four-year rolling
@@ -489,7 +555,8 @@ export default function BitcoinRiskMetricPage() {
             <p>
               <span className="hl">Combined:</span> Geometric mean √(S × M).
               When either frame indicates low risk, the combined reading is
-              pulled lower.
+              pulled lower. Zones are Accumulate 0.00–0.20, Neutral 0.20–0.50,
+              Caution 0.50–0.80, and Euphoria 0.80–1.00 everywhere on the site.
             </p>
             <p>
               <span className="hl">Halving Countdown:</span> Uses current block
@@ -507,12 +574,18 @@ export default function BitcoinRiskMetricPage() {
               than requiring another blow-off decline. An external liquidity
               or leverage shock can still push price below the modeled zone.
             </p>
+            <p>
+              <span className="hl">Coherent Updates:</span> On page load, one
+              current quote recalculates every card, table, and chart. Use the
+              snapshot refresh control for a new quote; price is never updated
+              independently from its dependent metrics.
+            </p>
           </div>
         </section>
 
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20260808-true-fair-value" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20260809-model-consistency" strategy="afterInteractive" />
     </main>
   );
 }

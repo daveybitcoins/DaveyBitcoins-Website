@@ -91,25 +91,29 @@ async function fetchWithTimeout(url, options, timeoutMs) {
 
 const GENESIS = new Date('2009-01-03T00:00:00Z').getTime();
 const WINDOW = 1460;
+const MIN_REGRESSION_OBSERVATIONS = 30;
 const ENV_UPPER_A = 4.6;
 const ENV_UPPER_B = -1.10;
 const ENV_LOWER = -0.45;
 const ENV_MIN_MAX = 0.05;
-const STRUCTURAL_SOFT_FLOOR_SCALE = 0.15;
-const STRUCTURAL_SOFT_FLOOR_MAX = 0.02;
-const STRUCTURAL_SOFT_FLOOR_MIN = 0.005;
-const STRUCTURAL_FLOOR_BREAK_RISK = 0.01;
+const STRUCTURAL_RISK_FLOOR = 0.005;
 const FAIR_VALUE_PROJECTION_SUPPLY = 20.8e6;
 const FAIR_VALUE_LONG_RUN_GROWTH = 0.06;
 const FAIR_VALUE_GOLD_GROWTH = 0.052;
 const FAIR_VALUE_DAMPENING_POWER = 2;
 const FAIR_VALUE_DAYS_PER_YEAR = 365.2425;
 const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);
-const PROJECTED_RISK_BOUNDARIES = [0.25, 0.50, 0.75];
-const DISPLAY_RISK_BOUNDARIES = [0.75, 0.50, 0.25];
+const RISK_ZONES = [
+  { name: 'Accumulate', min: 0.00, max: 0.20, colorRisk: 0.10 },
+  { name: 'Neutral', min: 0.20, max: 0.50, colorRisk: 0.35 },
+  { name: 'Caution', min: 0.50, max: 0.80, colorRisk: 0.65 },
+  { name: 'Euphoria', min: 0.80, max: 1.00, colorRisk: 0.90 }
+];
+const PROJECTED_RISK_BOUNDARIES = RISK_ZONES.slice(0, -1).map(zone => zone.max);
+const DISPLAY_RISK_BOUNDARIES = [...PROJECTED_RISK_BOUNDARIES].reverse();
 const FAIR_VALUE_SCENARIOS = {
-  conservative: { label: 'Conservative', marketCap: 13e12 },
-  base: { label: 'Base', marketCap: 20e12 },
+  conservative: { label: 'Conservative', marketCap: 15e12 },
+  base: { label: 'Base', marketCap: 23e12 },
   aggressive: { label: 'Aggressive', marketCap: 31e12 }
 };
 
@@ -170,24 +174,13 @@ function buildDataset(rawData) {
   const { slope, intercept } = fitRegression(n);
 
   pts.forEach((p, i) => {
-    const asOf = i >= 365 ? fitRegression(i + 1) : { slope, intercept };
+    const asOf = fitRegression(Math.max(MIN_REGRESSION_OBSERVATIONS, i + 1));
     p.trendLogPrice = slope * p.logDays + intercept;
     p.trendPrice = Math.pow(10, p.trendLogPrice);
     p.regLogPrice = asOf.slope * p.logDays + asOf.intercept;
     p.regPrice = Math.pow(10, p.regLogPrice);
     p.residual = p.logPrice - p.regLogPrice;
-    const envMax = Math.max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * p.logDays);
-    const envRange = envMax - ENV_LOWER;
-    const structuralRaw = (p.residual - ENV_LOWER) / envRange;
-    if (structuralRaw < 0) {
-      const floorDepth = ENV_LOWER - p.residual;
-      p.riskMM = Math.max(
-        STRUCTURAL_SOFT_FLOOR_MIN,
-        STRUCTURAL_SOFT_FLOOR_MAX * Math.exp(-floorDepth / STRUCTURAL_SOFT_FLOOR_SCALE)
-      );
-    } else {
-      p.riskMM = Math.min(1, structuralRaw);
-    }
+    p.riskMM = structuralRiskForResidual(p.residual, p.logDays);
   });
 
   // Prior-window rolling Z-score. The current point is compared with the
@@ -211,14 +204,32 @@ function buildDataset(rawData) {
       pts[i].rollStd = 0.1;
     }
     rSum += residuals[i]; rSumSq += residuals[i]*residuals[i];
-    if (i >= WINDOW - 1) { rSum -= residuals[i-WINDOW+1]; rSumSq -= residuals[i-WINDOW+1]*residuals[i-WINDOW+1]; }
+    if (i >= WINDOW) { rSum -= residuals[i-WINDOW]; rSumSq -= residuals[i-WINDOW]*residuals[i-WINDOW]; }
   }
 
   pts.forEach(p => {
     p.riskCombo = Math.sqrt(p.riskMM * p.riskZS);
   });
 
-  return { pts, slope, intercept };
+  return { pts: pts.slice(MIN_REGRESSION_OBSERVATIONS - 1), slope, intercept };
+}
+
+function structuralRiskForResidual(residual, logDays) {
+  const envMax = Math.max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * logDays);
+  const structuralRaw = (residual - ENV_LOWER) / (envMax - ENV_LOWER);
+  return Math.min(1, Math.max(STRUCTURAL_RISK_FLOOR, structuralRaw));
+}
+
+function combinedRiskForResidual(residual, logDays, rollMean, rollStd) {
+  const structural = structuralRiskForResidual(residual, logDays);
+  const momentum = normCdf((residual - rollMean) / rollStd);
+  return Math.sqrt(structural * momentum);
+}
+
+function riskZoneForScore(score) {
+  return RISK_ZONES.find((zone, index) =>
+    score < zone.max || index === RISK_ZONES.length - 1
+  );
 }
 
 function normCdf(z) {
@@ -516,6 +527,82 @@ function addDays(dateStr, days) {
   return dateMs(dateStr) + days * 864e5;
 }
 
+function median(values) {
+  if (!values.length) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
+function buildRiskBacktest(pts) {
+  const groups = RISK_ZONES.map(zone => ({ zone, returns: [], drawdowns: [] }));
+  let priorMonth = '';
+  for (let i = 0; i < pts.length; i++) {
+    const point = pts[i];
+    const month = point.date.slice(0, 7);
+    if (month === priorMonth) continue;
+    priorMonth = month;
+    const targetMs = dateMs(point.date) + FAIR_VALUE_DAYS_PER_YEAR * 864e5;
+    let lo = i + 1, hi = pts.length - 1;
+    while (lo < hi) {
+      const mid = Math.floor((lo + hi) / 2);
+      if (dateMs(pts[mid].date) < targetMs) lo = mid + 1; else hi = mid;
+    }
+    if (lo >= pts.length || Math.abs(dateMs(pts[lo].date) - targetMs) > 7 * 864e5) continue;
+    const zoneIndex = RISK_ZONES.indexOf(riskZoneForScore(point.riskCombo));
+    const oneYearReturn = (pts[lo].price / point.price - 1) * 100;
+    let minimumPrice = point.price;
+    for (let j = i + 1; j <= lo; j++) minimumPrice = Math.min(minimumPrice, pts[j].price);
+    groups[zoneIndex].returns.push(oneYearReturn);
+    groups[zoneIndex].drawdowns.push((minimumPrice / point.price - 1) * 100);
+  }
+  return groups.map(group => ({
+    zone: group.zone,
+    observations: group.returns.length,
+    medianReturn: median(group.returns),
+    positiveRate: group.returns.length
+      ? group.returns.filter(value => value > 0).length / group.returns.length * 100
+      : null,
+    medianDrawdown: median(group.drawdowns)
+  }));
+}
+
+function renderModelSnapshot(pts, slope, last, live) {
+  const structuralEl = document.getElementById('vStructuralRisk');
+  const momentumEl = document.getElementById('vMomentumRisk');
+  const combinedEl = document.getElementById('vCombinedZone');
+  const windowEl = document.getElementById('vMomentumWindow');
+  const slopeEl = document.getElementById('vRegressionSlope');
+  const body = document.getElementById('modelBacktestBody');
+  const note = document.getElementById('modelSnapshotNote');
+  if (!structuralEl || !momentumEl || !combinedEl || !windowEl || !slopeEl || !body) return;
+
+  const currentZone = riskZoneForScore(last.riskCombo);
+  structuralEl.textContent = last.riskMM.toFixed(3);
+  momentumEl.textContent = last.riskZS.toFixed(3);
+  combinedEl.textContent = last.riskCombo.toFixed(3) + ' · ' + currentZone.name;
+  combinedEl.style.color = riskColor(last.riskCombo);
+  windowEl.textContent = WINDOW.toLocaleString() + ' prior days';
+  slopeEl.textContent = slope.toFixed(3);
+
+  body.innerHTML = '';
+  buildRiskBacktest(pts).forEach(result => {
+    const tr = document.createElement('tr');
+    const formatPct = value => value == null ? '—' : (value >= 0 ? '+' : '') + value.toFixed(1) + '%';
+    tr.innerHTML = '<td style="color:' + riskColor(result.zone.colorRisk) + '">' + result.zone.name +
+      '<span class="backtest-range">' + result.zone.min.toFixed(2) + '–' + result.zone.max.toFixed(2) + '</span></td>' +
+      '<td>' + result.observations.toLocaleString() + '</td>' +
+      '<td>' + formatPct(result.medianReturn) + '</td>' +
+      '<td>' + (result.positiveRate == null ? '—' : result.positiveRate.toFixed(0) + '%') + '</td>' +
+      '<td>' + formatPct(result.medianDrawdown) + '</td>';
+    body.appendChild(tr);
+  });
+  if (note) {
+    note.textContent = 'As of ' + last.date + (live ? ' via ' + live.source : ' using the daily dataset') +
+      '. Monthly observations overlap and are descriptive, not independent forecasts.';
+  }
+}
+
 function formatDateWindow(startMs, endMs) {
   const start = new Date(startMs);
   const end = new Date(endMs);
@@ -531,28 +618,28 @@ function priceAtRiskForDate(targetMs, slope, intercept, rollMean, rollStd, risk)
   const logDays = Math.log10(days);
   const regLogPrice = slope * logDays + intercept;
   const envMax = Math.max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * logDays);
-  const envRange = envMax - ENV_LOWER;
-  let lo = ENV_LOWER, hi = envMax;
+  let lo = ENV_LOWER - 2, hi = envMax;
   for (let it = 0; it < 80; it++) {
     const mid = (lo + hi) / 2;
-    const structural = (mid - ENV_LOWER) / envRange;
-    const momentum = normCdf((mid - rollMean) / rollStd);
-    if (Math.sqrt(structural * momentum) < risk) lo = mid; else hi = mid;
+    if (combinedRiskForResidual(mid, logDays, rollMean, rollStd) < risk) lo = mid; else hi = mid;
   }
   return Math.pow(10, ((lo + hi) / 2) + regLogPrice);
 }
 
 function priceAtRiskForPoint(point, risk) {
   const envMax = Math.max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * point.logDays);
-  const envRange = envMax - ENV_LOWER;
-  let lo = ENV_LOWER, hi = envMax;
+  let lo = ENV_LOWER - 2, hi = envMax;
   for (let it = 0; it < 80; it++) {
     const mid = (lo + hi) / 2;
-    const structural = (mid - ENV_LOWER) / envRange;
-    const momentum = normCdf((mid - point.rollMean) / point.rollStd);
-    if (Math.sqrt(structural * momentum) < risk) lo = mid; else hi = mid;
+    if (combinedRiskForResidual(mid, point.logDays, point.rollMean, point.rollStd) < risk) lo = mid; else hi = mid;
   }
   return Math.pow(10, ((lo + hi) / 2) + point.regLogPrice);
+}
+
+function lowerEnvelopePriceAtDate(targetMs, slope, intercept) {
+  const days = (targetMs - GENESIS) / 864e5;
+  const regLogPrice = slope * Math.log10(days) + intercept;
+  return Math.pow(10, regLogPrice + ENV_LOWER);
 }
 
 function projectedRiskPriceAtDate(targetMs, riskCenterPath, slope, intercept, rollMean, rollStd, risk) {
@@ -591,7 +678,7 @@ function renderBearMarketProgress(pts, slope, intercept) {
   const targetStartMs = addDays(peak.date, BEAR_MARKET_MIN_DAYS);
   const targetMs = addDays(peak.date, BEAR_MARKET_MIDPOINT_DAYS);
   const targetEndMs = addDays(peak.date, BEAR_MARKET_MAX_DAYS);
-  const riskFloorPrice = priceAtRiskForDate(targetMs, slope, intercept, last.rollMean, last.rollStd, 0);
+  const riskFloorPrice = lowerEnvelopePriceAtDate(targetMs, slope, intercept);
   const targetDaysSinceGenesis = (targetMs - GENESIS) / 864e5;
   const trendAtTarget = Math.pow(10, slope * Math.log10(targetDaysSinceGenesis) + intercept);
   const priceLow = riskFloorPrice;
@@ -644,9 +731,11 @@ async function main() {
 
   // Dashboard
   document.getElementById('vPrice').textContent = '$' + last.price.toLocaleString(undefined,{maximumFractionDigits:0});
-  document.getElementById('vPriceTime').textContent = last.date;
+  document.getElementById('vPriceTime').textContent = isLive
+    ? 'Coherent snapshot · ' + isLive.updatedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' via ' + isLive.source
+    : last.date + ' · daily dataset';
   const hd = document.getElementById('headerDate');
-  hd.innerHTML = '<span style="width:6px;height:6px;background:#58c56f;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> as of ' + last.date + (isLive ? ' · live via ' + isLive.source : ' · historical fallback');
+  hd.innerHTML = '<span style="width:6px;height:6px;background:#58c56f;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> coherent snapshot as of ' + last.date + (isLive ? ' · ' + isLive.source : ' · daily dataset');
   document.getElementById('vRisk').textContent = last.riskCombo.toFixed(3);
   document.getElementById('vRisk').style.setProperty('--val-color', riskColor(last.riskCombo));
   document.getElementById('vFair').textContent = '$' + last.trendPrice.toLocaleString(undefined,{maximumFractionDigits:0});
@@ -655,6 +744,7 @@ async function main() {
   document.getElementById('vDev').textContent = (devPct>0?'+':'') + devPct + '%';
   document.getElementById('needle').style.left = (last.riskCombo*100)+'%';
   renderWeeklyMovingAverages(rawData);
+  renderModelSnapshot(pts, slope, last, live);
   renderBearMarketProgress(pts, slope, intercept);
   const fallbackSupplyHeight = fallbackBlockHeight(Date.now());
   renderMarketCapTable(bitcoinSupplyAtHeight(fallbackSupplyHeight), fallbackSupplyHeight, last.price);
@@ -678,7 +768,7 @@ async function main() {
       const pctMove=((price/last.price-1)*100).toFixed(1);
       const pctStr=pctMove>=0?'+'+pctMove+'%':pctMove+'%';
       const pctColor=pctMove>=0?'#58c56f':'#ef5d4f';
-      const rLabel=r<0.02?'0.00':r.toFixed(2);
+      const rLabel=r.toFixed(2);
       cell.innerHTML='<div class="rc-risk" style="color:'+riskColor(r)+'">'+rLabel+'</div><div class="rc-price">'+pStr+'</div><div style="font-size:0.62rem;margin-top:3px;color:'+pctColor+';letter-spacing:0.3px">'+pctStr+'</div>';
       tbl.appendChild(cell);
     }
@@ -865,8 +955,7 @@ async function main() {
         return '<td class="rl-return" style="color:' + col + '">' + (ret >= 0 ? '+' : '') + Math.round(ret) + '%</td>';
       }
       function calibratedLowRisk(point) {
-        const structural = point.riskMM <= 0 ? STRUCTURAL_FLOOR_BREAK_RISK : point.riskMM;
-        return Math.sqrt(structural * point.riskZS);
+        return point.riskCombo;
       }
       function riskBand(score) {
         if (score < 0.05) return 'Extreme low';
@@ -1086,10 +1175,12 @@ async function main() {
     const yOf=r=>P.t+ch*(1-r);
 
     // Zone fills
-    [[0,0.20,tc.zoneA],[0.20,0.50,tc.zoneB],[0.50,0.80,tc.zoneC],[0.80,1,tc.zoneD]].forEach(([lo,hi,c])=>{
+    const zoneColors=[tc.zoneA,tc.zoneB,tc.zoneC,tc.zoneD];
+    RISK_ZONES.forEach((zone,index)=>{
+      const lo=zone.min,hi=zone.max,c=zoneColors[index];
       ctx.fillStyle=c;ctx.fillRect(P.l,yOf(hi),cw,yOf(lo)-yOf(hi));
     });
-    [0.20,0.50,0.80].forEach(v=>{
+    PROJECTED_RISK_BOUNDARIES.forEach(v=>{
       ctx.strokeStyle=tc.zoneDash;ctx.lineWidth=1;ctx.setLineDash([4,4]);
       ctx.beginPath();ctx.moveTo(P.l,yOf(v));ctx.lineTo(W-P.r,yOf(v));ctx.stroke();ctx.setLineDash([]);
     });
@@ -1514,6 +1605,8 @@ async function main() {
       setFairValueScenario(button.dataset.fairValueScenario);
     });
   });
+  const refreshButton = document.getElementById('refreshRiskSnapshot');
+  if (refreshButton) refreshButton.addEventListener('click', function() { window.location.reload(); });
   renderAll();
   renderMidtermChart();
   attachChartTooltip('priceCanvas', 'priceTip');
@@ -1522,12 +1615,11 @@ async function main() {
   // Legend bar — labeled segments
   (function(){
     const el=document.getElementById('legendBar');
-    const segments=[
-      {name:'Accumulate',range:'0.00–0.25',risk:0.12},
-      {name:'Neutral',range:'0.25–0.50',risk:0.37},
-      {name:'Caution',range:'0.50–0.75',risk:0.62},
-      {name:'Euphoria',range:'0.75–1.00',risk:0.88}
-    ];
+    const segments=RISK_ZONES.map(zone=>({
+      name:zone.name,
+      range:zone.min.toFixed(2)+'–'+zone.max.toFixed(2),
+      risk:zone.colorRisk
+    }));
     el.innerHTML='';
     segments.forEach(s=>{
       const d=document.createElement('div');
@@ -1560,18 +1652,3 @@ setInterval(function () {
     window.location.reload();
   }
 }, 5 * 60 * 1000);
-
-// Auto-refresh BTC price every 60 seconds
-setInterval(async function () {
-  try {
-    const live = await fetchCurrentBtcPrice();
-    if (!live) return;
-    const price = live.price;
-    const dt = live.updatedAt;
-    const timeStr = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const el = document.getElementById('vPrice');
-    const sub = document.getElementById('vPriceTime');
-    if (el) el.textContent = '$' + price.toLocaleString(undefined, { maximumFractionDigits: 0 });
-    if (sub) sub.textContent = 'Updated ' + timeStr + ' via ' + live.source;
-  } catch {}
-}, 60000);

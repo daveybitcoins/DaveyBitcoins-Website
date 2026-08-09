@@ -259,7 +259,7 @@
   table th,.proj-table th,.risk-lows-table th,.pe-proj-table th,.trade-table th{color:var(--accent-blue);font-family:'IBM Plex Mono','JetBrains Mono',monospace}
   table td,.proj-table td,.risk-lows-table td,.pe-proj-table td,.trade-table td{border-bottom-color:var(--border-light)}
   #headerDate{border-color:rgba(247,147,26,0.24)!important;background:rgba(247,147,26,0.07)!important;font-family:'IBM Plex Mono','JetBrains Mono',monospace!important}
-  #summary,#movingAveragesCard,#risk-levels,#market-caps,#fair-value,#historical-lows,#price-chart,#risk-oscillator,#midterm-cycles,#methodology{scroll-margin-top:92px}
+  #summary,#movingAveragesCard,#model-snapshot,#risk-levels,#market-caps,#fair-value,#historical-lows,#price-chart,#risk-oscillator,#midterm-cycles,#methodology{scroll-margin-top:92px}
   .risk-section-nav{display:none;position:fixed;top:24px;left:24px;z-index:40;width:160px;padding:14px;border:1px solid var(--border);background:color-mix(in srgb,var(--bg-card) 92%,transparent);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
   .risk-section-nav__label{display:block;padding:0 7px 10px;border-bottom:1px solid var(--border);color:var(--text-dimmer);font-size:0.52rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
   .risk-section-nav__links{display:grid;gap:2px;padding-top:9px}
@@ -267,6 +267,12 @@
   .risk-section-nav a span{color:var(--accent-blue);font-size:0.5rem}
   .risk-section-nav a:hover,.risk-section-nav a:focus-visible{border-color:var(--border);background:color-mix(in srgb,var(--accent-blue) 8%,transparent);color:var(--text);outline:none}
   @media(min-width:900px){.risk-section-nav{display:block}.risk-section-nav a{width:100%}.container{max-width:none;margin-left:200px;margin-right:24px}}
+  .model-snapshot{margin:18px 0;padding:18px;border:1px solid var(--border);background:var(--bg-card)}
+  .model-snapshot-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.model-snapshot-head h4,.model-snapshot-head p{margin:0}.model-snapshot-head p{margin-top:6px;color:var(--text-dim);font-size:.65rem}
+  .snapshot-refresh{padding:10px 12px;border:1px solid var(--border);background:var(--bg);color:var(--accent-blue);cursor:pointer;font:700 .58rem 'JetBrains Mono',monospace;text-transform:uppercase}
+  .model-snapshot-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:14px}.model-snapshot-grid>div{padding:10px;border:1px solid var(--border);background:var(--bg)}.model-snapshot-grid span,.model-snapshot-grid strong{display:block}.model-snapshot-grid span{color:var(--text-dimmer);font-size:.5rem;text-transform:uppercase}.model-snapshot-grid strong{margin-top:5px;font-size:.8rem}
+  .model-backtest-scroll{margin-top:12px;overflow-x:auto}.model-backtest-table{width:100%;min-width:720px;border-collapse:collapse}.backtest-range{display:block;color:var(--text-dimmer);font-size:.5rem}.model-snapshot-note{color:var(--text-dimmer);font-size:.56rem}
+  @media(max-width:760px){.risk-table{grid-template-columns:repeat(2,minmax(0,1fr))!important}.model-snapshot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.model-snapshot-head{flex-direction:column}.snapshot-refresh{width:100%}}
   @media(max-width:640px){header{text-align:left}.header-nav{justify-content:flex-start}}
 </style>
 </head>
@@ -278,14 +284,15 @@
   <nav class="risk-section-nav__links">
     <a href="#summary"><span aria-hidden="true">01</span>Summary</a>
     <a href="#movingAveragesCard"><span aria-hidden="true">02</span>Moving averages</a>
-    <a href="#risk-levels"><span aria-hidden="true">03</span>Risk levels</a>
-    <a href="#market-caps"><span aria-hidden="true">04</span>Market caps</a>
-    <a href="#fair-value"><span aria-hidden="true">05</span>Fair value</a>
-    <a href="#historical-lows"><span aria-hidden="true">06</span>Historical lows</a>
-    <a href="#price-chart"><span aria-hidden="true">07</span>Price chart</a>
-    <a href="#risk-oscillator"><span aria-hidden="true">08</span>Risk oscillator</a>
-    <a href="#midterm-cycles"><span aria-hidden="true">09</span>Midterm cycles</a>
-    <a href="#methodology"><span aria-hidden="true">10</span>Methodology</a>
+    <a href="#model-snapshot"><span aria-hidden="true">03</span>Model snapshot</a>
+    <a href="#risk-levels"><span aria-hidden="true">04</span>Risk levels</a>
+    <a href="#market-caps"><span aria-hidden="true">05</span>Market caps</a>
+    <a href="#fair-value"><span aria-hidden="true">06</span>Fair value</a>
+    <a href="#historical-lows"><span aria-hidden="true">07</span>Historical lows</a>
+    <a href="#price-chart"><span aria-hidden="true">08</span>Price chart</a>
+    <a href="#risk-oscillator"><span aria-hidden="true">09</span>Risk oscillator</a>
+    <a href="#midterm-cycles"><span aria-hidden="true">10</span>Midterm cycles</a>
+    <a href="#methodology"><span aria-hidden="true">11</span>Methodology</a>
   </nav>
 </aside>
 <div class="container" style="position:relative;z-index:2;">
@@ -347,6 +354,30 @@
       <div class="moving-average-item"><div class="moving-average-period">8W</div><div class="moving-average-value" id="vMa8W">—</div></div>
     </div>
   </div>
+  <div class="model-snapshot" id="model-snapshot">
+    <div class="model-snapshot-head">
+      <div>
+        <h4>Model Snapshot &amp; Historical Check</h4>
+        <p>Current components, exact zone definitions, and descriptive one-year outcomes from monthly historical snapshots.</p>
+      </div>
+      <button type="button" class="snapshot-refresh" id="refreshRiskSnapshot">Refresh coherent snapshot</button>
+    </div>
+    <div class="model-snapshot-grid">
+      <div><span>Structural</span><strong id="vStructuralRisk">—</strong></div>
+      <div><span>Momentum</span><strong id="vMomentumRisk">—</strong></div>
+      <div><span>Combined / Zone</span><strong id="vCombinedZone">—</strong></div>
+      <div><span>Momentum Window</span><strong id="vMomentumWindow">—</strong></div>
+      <div><span>Regression Slope</span><strong id="vRegressionSlope">—</strong></div>
+      <div><span>Model Version</span><strong>2026.08</strong></div>
+    </div>
+    <div class="model-backtest-scroll">
+      <table class="model-backtest-table" id="modelBacktestTable">
+        <thead><tr><th>Risk Zone</th><th>Monthly Samples</th><th>Median 1Y Return</th><th>Positive 1Y</th><th>Median Max Drawdown</th></tr></thead>
+        <tbody id="modelBacktestBody"></tbody>
+      </table>
+    </div>
+    <p class="model-snapshot-note" id="modelSnapshotNote">Historical monthly observations overlap and are descriptive, not independent forecasts.</p>
+  </div>
   <div class="risk-table-wrap" id="risk-levels">
     <h4>Price at Each Risk Level (Combined)</h4>
     <div class="risk-table" id="riskTable"></div>
@@ -354,7 +385,7 @@
   <div class="proj-table-wrap" id="market-caps">
     <h4>BTC Price at Market Caps</h4>
     <div class="market-cap-meta">
-      <div>Current Supply: <span id="currentSupply">—</span></div>
+      <div>Mined Supply Estimate: <span id="currentSupply">—</span></div>
       <div>Block Height: <span id="currentSupplyHeight">—</span></div>
     </div>
     <div class="market-cap-scroll">
@@ -370,21 +401,21 @@
     <h4>Bitcoin Market-Cap-Adjusted Power-Law Fair Value</h4>
     <div class="fair-value-scenarios" role="group" aria-label="Fair value projection scenario">
       <button type="button" class="fair-value-scenario" data-fair-value-scenario="conservative" aria-pressed="false">
-        <strong>Conservative</strong><span><span class="scenario-cap">$13T today</span> Investable and central-bank gold</span>
+        <strong>Conservative</strong><span><span class="scenario-cap">$15T · end-2025</span> Investable gold including derivatives</span>
       </button>
       <button type="button" class="fair-value-scenario" data-fair-value-scenario="base" aria-pressed="true">
-        <strong>Base</strong><span><span class="scenario-cap">$20T today</span> Midpoint gold-equivalence case</span>
+        <strong>Base</strong><span><span class="scenario-cap">$23T · end-2025</span> Midpoint gold-equivalence case</span>
       </button>
       <button type="button" class="fair-value-scenario" data-fair-value-scenario="aggressive" aria-pressed="false">
-        <strong>Aggressive</strong><span><span class="scenario-cap">$31T today</span> Total above-ground gold</span>
+        <strong>Aggressive</strong><span><span class="scenario-cap">$31T · end-2025</span> Total above-ground gold</span>
       </button>
     </div>
     <p class="proj-method-note" id="projMethodNote">
       <strong>Long-run scenario, not a short-term price target.</strong>
       The path begins with Bitcoin’s historical power-law regression, then progressively slows its
-      excess growth as the modeled market cap approaches the selected gold-linked threshold. In the base case, at $20T the power-law growth above a
+      excess growth as the modeled market cap approaches the selected gold-linked threshold. In the base case, at $23T the power-law growth above a
       6% long-run nominal rate is reduced by half; the path continues converging toward 6% as the asset grows.
-      The threshold grows 5.2% annually with the gold model, and the calculation assumes 20.8M BTC.
+      The threshold grows 5.2% annually as a modeling assumption based on the gold-return estimate, and the calculation holds projected Bitcoin supply at 20.8M BTC.
       <code class="proj-formula">g<sub>effective</sub> = g<sub>6%</sub> + (g<sub>power-law</sub> − g<sub>6%</sub>) × 1 / [1 + (M / K<sub>scenario,t</sub>)²]</code>
       Here, <strong>M</strong> is the modeled fair-value market cap and <strong>K<sub>scenario,t</sub></strong> is the selected, annually growing damping threshold. The 6% mature-asset rate is
       informed by gold: free-floating gold compounded about 8% from 1971–2023, while the
@@ -438,13 +469,13 @@
   <div class="update-status" id="updateStatus" style="display:none"></div>
   <div class="methodology" id="methodology">
     <h3>Methodology (Combined Risk)</h3>
-    <p><span class="hl">Power-Law Regression:</span> <code>log₁₀(price)</code> vs <code>log₁₀(days since Jan 3 2009)</code>. The smooth chart line uses the fixed full-history curve. Historical risk uses an as-of regression at each date so past risk readings are not calibrated with future prices.</p>
-    <p><span class="hl">Structural Risk (Decaying Envelope):</span> Normalizes the residual against a time-decaying upper envelope fitted from cycle peaks. The max deviation capacity shrinks as Bitcoin matures, producing more realistic risk boundaries.</p>
+    <p><span class="hl">Power-Law Regression:</span> <code>log₁₀(price)</code> vs <code>log₁₀(days since Jan 3 2009)</code>. The smooth chart line uses the fixed full-history curve. Readings begin after a 30-observation warm-up, then historical risk uses an as-of regression at each date so past readings are not calibrated with future prices.</p>
+    <p><span class="hl">Structural Risk (Decaying Envelope):</span> Normalizes the residual against a time-decaying upper envelope fitted from cycle peaks, with a continuous 0.005 floor. The max deviation capacity shrinks as Bitcoin matures.</p>
     <p><span class="hl">Momentum Risk (Rolling Z-Score → CDF):</span> 4-year rolling z-score mapped through Gaussian CDF. Cycle-sensitive, adapts to declining volatility.</p>
-    <p><span class="hl">Combined:</span> Geometric mean √(S × M) of both. Pulls toward the lower signal — if either frame says low risk, that's more informative. Historical low tables use a calibrated floor-break score when structural risk falls below the lower model boundary, so deep-cycle lows are not displayed as literal zero risk.</p>
+    <p><span class="hl">Combined:</span> Geometric mean √(S × M) of both. Zones are Accumulate 0.00–0.20, Neutral 0.20–0.50, Caution 0.50–0.80, and Euphoria 0.80–1.00 everywhere on the site.</p>
     <p><span class="hl">Halving Countdown:</span> Uses the current Bitcoin block height when available, targets the next 210,000-block subsidy epoch, and estimates the date at 10 minutes per block. If the height API is unavailable, it falls back to a clock-based estimate from block 840,000.</p>
     <p><span class="hl">Bear Market Progress:</span> Uses the 363–376 day range of the two most recent completed bear markets, with the midpoint used only for the progress bar. The price zone spans the power-law lower boundary through the 0.46× trend level seen at the 2018 bottom. Because the 2025 ATH reached only 1.09× trend—versus 2.14× in 2021, 6.02× in 2017, and 8.42× in 2013—the base case allows capitulation to occur through time and apathy rather than requiring another blow-off decline. An external liquidity or leverage shock can still push price below the modeled zone.</p>
-    <p><span class="hl">Updates:</span> The source price dataset is refreshed daily by automation. On page load, the page also fetches the current BTC price from live quote APIs and appends it to the in-memory dataset, so every dashboard card, chart, table, and projection is recalculated from the latest available reading. Tabs left open reload after a new UTC day begins.</p>
+    <p><span class="hl">Updates:</span> The source price dataset is refreshed daily by automation. On page load, the page fetches a current BTC quote and recalculates every card, chart, table, and projection as one coherent snapshot. Use the snapshot refresh control for a new quote; the price is never updated independently from its dependent metrics. Tabs left open reload after a new UTC day begins.</p>
   </div>
   <footer>
     Not financial advice
@@ -542,25 +573,29 @@ async function fetchWithTimeout(url, options, timeoutMs) {
 
 const GENESIS = new Date('2009-01-03T00:00:00Z').getTime();
 const WINDOW = 1460;
+const MIN_REGRESSION_OBSERVATIONS = 30;
 const ENV_UPPER_A = 4.6;
 const ENV_UPPER_B = -1.10;
 const ENV_LOWER = -0.45;
 const ENV_MIN_MAX = 0.05;
-const STRUCTURAL_SOFT_FLOOR_SCALE = 0.15;
-const STRUCTURAL_SOFT_FLOOR_MAX = 0.02;
-const STRUCTURAL_SOFT_FLOOR_MIN = 0.005;
-const STRUCTURAL_FLOOR_BREAK_RISK = 0.01;
+const STRUCTURAL_RISK_FLOOR = 0.005;
 const FAIR_VALUE_PROJECTION_SUPPLY = 20.8e6;
 const FAIR_VALUE_LONG_RUN_GROWTH = 0.06;
 const FAIR_VALUE_GOLD_GROWTH = 0.052;
 const FAIR_VALUE_DAMPENING_POWER = 2;
 const FAIR_VALUE_DAYS_PER_YEAR = 365.2425;
 const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);
-const PROJECTED_RISK_BOUNDARIES = [0.25, 0.50, 0.75];
-const DISPLAY_RISK_BOUNDARIES = [0.75, 0.50, 0.25];
+const RISK_ZONES = [
+  { name: 'Accumulate', min: 0.00, max: 0.20, colorRisk: 0.10 },
+  { name: 'Neutral', min: 0.20, max: 0.50, colorRisk: 0.35 },
+  { name: 'Caution', min: 0.50, max: 0.80, colorRisk: 0.65 },
+  { name: 'Euphoria', min: 0.80, max: 1.00, colorRisk: 0.90 }
+];
+const PROJECTED_RISK_BOUNDARIES = RISK_ZONES.slice(0, -1).map(zone => zone.max);
+const DISPLAY_RISK_BOUNDARIES = [...PROJECTED_RISK_BOUNDARIES].reverse();
 const FAIR_VALUE_SCENARIOS = {
-  conservative: { label: 'Conservative', marketCap: 13e12 },
-  base: { label: 'Base', marketCap: 20e12 },
+  conservative: { label: 'Conservative', marketCap: 15e12 },
+  base: { label: 'Base', marketCap: 23e12 },
   aggressive: { label: 'Aggressive', marketCap: 31e12 }
 };
 
@@ -621,24 +656,13 @@ function buildDataset(rawData) {
   const { slope, intercept } = fitRegression(n);
 
   pts.forEach((p, i) => {
-    const asOf = i >= 365 ? fitRegression(i + 1) : { slope, intercept };
+    const asOf = fitRegression(Math.max(MIN_REGRESSION_OBSERVATIONS, i + 1));
     p.trendLogPrice = slope * p.logDays + intercept;
     p.trendPrice = Math.pow(10, p.trendLogPrice);
     p.regLogPrice = asOf.slope * p.logDays + asOf.intercept;
     p.regPrice = Math.pow(10, p.regLogPrice);
     p.residual = p.logPrice - p.regLogPrice;
-    const envMax = Math.max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * p.logDays);
-    const envRange = envMax - ENV_LOWER;
-    const structuralRaw = (p.residual - ENV_LOWER) / envRange;
-    if (structuralRaw < 0) {
-      const floorDepth = ENV_LOWER - p.residual;
-      p.riskMM = Math.max(
-        STRUCTURAL_SOFT_FLOOR_MIN,
-        STRUCTURAL_SOFT_FLOOR_MAX * Math.exp(-floorDepth / STRUCTURAL_SOFT_FLOOR_SCALE)
-      );
-    } else {
-      p.riskMM = Math.min(1, structuralRaw);
-    }
+    p.riskMM = structuralRiskForResidual(p.residual, p.logDays);
   });
 
   // Prior-window rolling Z-score. The current point is compared with the
@@ -662,14 +686,32 @@ function buildDataset(rawData) {
       pts[i].rollStd = 0.1;
     }
     rSum += residuals[i]; rSumSq += residuals[i]*residuals[i];
-    if (i >= WINDOW - 1) { rSum -= residuals[i-WINDOW+1]; rSumSq -= residuals[i-WINDOW+1]*residuals[i-WINDOW+1]; }
+    if (i >= WINDOW) { rSum -= residuals[i-WINDOW]; rSumSq -= residuals[i-WINDOW]*residuals[i-WINDOW]; }
   }
 
   pts.forEach(p => {
     p.riskCombo = Math.sqrt(p.riskMM * p.riskZS);
   });
 
-  return { pts, slope, intercept };
+  return { pts: pts.slice(MIN_REGRESSION_OBSERVATIONS - 1), slope, intercept };
+}
+
+function structuralRiskForResidual(residual, logDays) {
+  const envMax = Math.max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * logDays);
+  const structuralRaw = (residual - ENV_LOWER) / (envMax - ENV_LOWER);
+  return Math.min(1, Math.max(STRUCTURAL_RISK_FLOOR, structuralRaw));
+}
+
+function combinedRiskForResidual(residual, logDays, rollMean, rollStd) {
+  const structural = structuralRiskForResidual(residual, logDays);
+  const momentum = normCdf((residual - rollMean) / rollStd);
+  return Math.sqrt(structural * momentum);
+}
+
+function riskZoneForScore(score) {
+  return RISK_ZONES.find((zone, index) =>
+    score < zone.max || index === RISK_ZONES.length - 1
+  );
 }
 
 function normCdf(z) {
@@ -967,6 +1009,82 @@ function addDays(dateStr, days) {
   return dateMs(dateStr) + days * 864e5;
 }
 
+function median(values) {
+  if (!values.length) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
+function buildRiskBacktest(pts) {
+  const groups = RISK_ZONES.map(zone => ({ zone, returns: [], drawdowns: [] }));
+  let priorMonth = '';
+  for (let i = 0; i < pts.length; i++) {
+    const point = pts[i];
+    const month = point.date.slice(0, 7);
+    if (month === priorMonth) continue;
+    priorMonth = month;
+    const targetMs = dateMs(point.date) + FAIR_VALUE_DAYS_PER_YEAR * 864e5;
+    let lo = i + 1, hi = pts.length - 1;
+    while (lo < hi) {
+      const mid = Math.floor((lo + hi) / 2);
+      if (dateMs(pts[mid].date) < targetMs) lo = mid + 1; else hi = mid;
+    }
+    if (lo >= pts.length || Math.abs(dateMs(pts[lo].date) - targetMs) > 7 * 864e5) continue;
+    const zoneIndex = RISK_ZONES.indexOf(riskZoneForScore(point.riskCombo));
+    const oneYearReturn = (pts[lo].price / point.price - 1) * 100;
+    let minimumPrice = point.price;
+    for (let j = i + 1; j <= lo; j++) minimumPrice = Math.min(minimumPrice, pts[j].price);
+    groups[zoneIndex].returns.push(oneYearReturn);
+    groups[zoneIndex].drawdowns.push((minimumPrice / point.price - 1) * 100);
+  }
+  return groups.map(group => ({
+    zone: group.zone,
+    observations: group.returns.length,
+    medianReturn: median(group.returns),
+    positiveRate: group.returns.length
+      ? group.returns.filter(value => value > 0).length / group.returns.length * 100
+      : null,
+    medianDrawdown: median(group.drawdowns)
+  }));
+}
+
+function renderModelSnapshot(pts, slope, last, live) {
+  const structuralEl = document.getElementById('vStructuralRisk');
+  const momentumEl = document.getElementById('vMomentumRisk');
+  const combinedEl = document.getElementById('vCombinedZone');
+  const windowEl = document.getElementById('vMomentumWindow');
+  const slopeEl = document.getElementById('vRegressionSlope');
+  const body = document.getElementById('modelBacktestBody');
+  const note = document.getElementById('modelSnapshotNote');
+  if (!structuralEl || !momentumEl || !combinedEl || !windowEl || !slopeEl || !body) return;
+
+  const currentZone = riskZoneForScore(last.riskCombo);
+  structuralEl.textContent = last.riskMM.toFixed(3);
+  momentumEl.textContent = last.riskZS.toFixed(3);
+  combinedEl.textContent = last.riskCombo.toFixed(3) + ' · ' + currentZone.name;
+  combinedEl.style.color = riskColor(last.riskCombo);
+  windowEl.textContent = WINDOW.toLocaleString() + ' prior days';
+  slopeEl.textContent = slope.toFixed(3);
+
+  body.innerHTML = '';
+  buildRiskBacktest(pts).forEach(result => {
+    const tr = document.createElement('tr');
+    const formatPct = value => value == null ? '—' : (value >= 0 ? '+' : '') + value.toFixed(1) + '%';
+    tr.innerHTML = '<td style="color:' + riskColor(result.zone.colorRisk) + '">' + result.zone.name +
+      '<span class="backtest-range">' + result.zone.min.toFixed(2) + '–' + result.zone.max.toFixed(2) + '</span></td>' +
+      '<td>' + result.observations.toLocaleString() + '</td>' +
+      '<td>' + formatPct(result.medianReturn) + '</td>' +
+      '<td>' + (result.positiveRate == null ? '—' : result.positiveRate.toFixed(0) + '%') + '</td>' +
+      '<td>' + formatPct(result.medianDrawdown) + '</td>';
+    body.appendChild(tr);
+  });
+  if (note) {
+    note.textContent = 'As of ' + last.date + (live ? ' via ' + live.source : ' using the daily dataset') +
+      '. Monthly observations overlap and are descriptive, not independent forecasts.';
+  }
+}
+
 function formatDateWindow(startMs, endMs) {
   const start = new Date(startMs);
   const end = new Date(endMs);
@@ -982,28 +1100,28 @@ function priceAtRiskForDate(targetMs, slope, intercept, rollMean, rollStd, risk)
   const logDays = Math.log10(days);
   const regLogPrice = slope * logDays + intercept;
   const envMax = Math.max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * logDays);
-  const envRange = envMax - ENV_LOWER;
-  let lo = ENV_LOWER, hi = envMax;
+  let lo = ENV_LOWER - 2, hi = envMax;
   for (let it = 0; it < 80; it++) {
     const mid = (lo + hi) / 2;
-    const structural = (mid - ENV_LOWER) / envRange;
-    const momentum = normCdf((mid - rollMean) / rollStd);
-    if (Math.sqrt(structural * momentum) < risk) lo = mid; else hi = mid;
+    if (combinedRiskForResidual(mid, logDays, rollMean, rollStd) < risk) lo = mid; else hi = mid;
   }
   return Math.pow(10, ((lo + hi) / 2) + regLogPrice);
 }
 
 function priceAtRiskForPoint(point, risk) {
   const envMax = Math.max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * point.logDays);
-  const envRange = envMax - ENV_LOWER;
-  let lo = ENV_LOWER, hi = envMax;
+  let lo = ENV_LOWER - 2, hi = envMax;
   for (let it = 0; it < 80; it++) {
     const mid = (lo + hi) / 2;
-    const structural = (mid - ENV_LOWER) / envRange;
-    const momentum = normCdf((mid - point.rollMean) / point.rollStd);
-    if (Math.sqrt(structural * momentum) < risk) lo = mid; else hi = mid;
+    if (combinedRiskForResidual(mid, point.logDays, point.rollMean, point.rollStd) < risk) lo = mid; else hi = mid;
   }
   return Math.pow(10, ((lo + hi) / 2) + point.regLogPrice);
+}
+
+function lowerEnvelopePriceAtDate(targetMs, slope, intercept) {
+  const days = (targetMs - GENESIS) / 864e5;
+  const regLogPrice = slope * Math.log10(days) + intercept;
+  return Math.pow(10, regLogPrice + ENV_LOWER);
 }
 
 function projectedRiskPriceAtDate(targetMs, riskCenterPath, slope, intercept, rollMean, rollStd, risk) {
@@ -1042,7 +1160,7 @@ function renderBearMarketProgress(pts, slope, intercept) {
   const targetStartMs = addDays(peak.date, BEAR_MARKET_MIN_DAYS);
   const targetMs = addDays(peak.date, BEAR_MARKET_MIDPOINT_DAYS);
   const targetEndMs = addDays(peak.date, BEAR_MARKET_MAX_DAYS);
-  const riskFloorPrice = priceAtRiskForDate(targetMs, slope, intercept, last.rollMean, last.rollStd, 0);
+  const riskFloorPrice = lowerEnvelopePriceAtDate(targetMs, slope, intercept);
   const targetDaysSinceGenesis = (targetMs - GENESIS) / 864e5;
   const trendAtTarget = Math.pow(10, slope * Math.log10(targetDaysSinceGenesis) + intercept);
   const priceLow = riskFloorPrice;
@@ -1095,9 +1213,11 @@ async function main() {
 
   // Dashboard
   document.getElementById('vPrice').textContent = '$' + last.price.toLocaleString(undefined,{maximumFractionDigits:0});
-  document.getElementById('vPriceTime').textContent = last.date;
+  document.getElementById('vPriceTime').textContent = isLive
+    ? 'Coherent snapshot · ' + isLive.updatedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' via ' + isLive.source
+    : last.date + ' · daily dataset';
   const hd = document.getElementById('headerDate');
-  hd.innerHTML = '<span style="width:6px;height:6px;background:#58c56f;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> as of ' + last.date + (isLive ? ' · live via ' + isLive.source : ' · historical fallback');
+  hd.innerHTML = '<span style="width:6px;height:6px;background:#58c56f;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> coherent snapshot as of ' + last.date + (isLive ? ' · ' + isLive.source : ' · daily dataset');
   document.getElementById('vRisk').textContent = last.riskCombo.toFixed(3);
   document.getElementById('vRisk').style.setProperty('--val-color', riskColor(last.riskCombo));
   document.getElementById('vFair').textContent = '$' + last.trendPrice.toLocaleString(undefined,{maximumFractionDigits:0});
@@ -1106,6 +1226,7 @@ async function main() {
   document.getElementById('vDev').textContent = (devPct>0?'+':'') + devPct + '%';
   document.getElementById('needle').style.left = (last.riskCombo*100)+'%';
   renderWeeklyMovingAverages(rawData);
+  renderModelSnapshot(pts, slope, last, live);
   renderBearMarketProgress(pts, slope, intercept);
   const fallbackSupplyHeight = fallbackBlockHeight(Date.now());
   renderMarketCapTable(bitcoinSupplyAtHeight(fallbackSupplyHeight), fallbackSupplyHeight, last.price);
@@ -1129,7 +1250,7 @@ async function main() {
       const pctMove=((price/last.price-1)*100).toFixed(1);
       const pctStr=pctMove>=0?'+'+pctMove+'%':pctMove+'%';
       const pctColor=pctMove>=0?'#58c56f':'#ef5d4f';
-      const rLabel=r<0.02?'0.00':r.toFixed(2);
+      const rLabel=r.toFixed(2);
       cell.innerHTML='<div class="rc-risk" style="color:'+riskColor(r)+'">'+rLabel+'</div><div class="rc-price">'+pStr+'</div><div style="font-size:0.62rem;margin-top:3px;color:'+pctColor+';letter-spacing:0.3px">'+pctStr+'</div>';
       tbl.appendChild(cell);
     }
@@ -1316,8 +1437,7 @@ async function main() {
         return '<td class="rl-return" style="color:' + col + '">' + (ret >= 0 ? '+' : '') + Math.round(ret) + '%</td>';
       }
       function calibratedLowRisk(point) {
-        const structural = point.riskMM <= 0 ? STRUCTURAL_FLOOR_BREAK_RISK : point.riskMM;
-        return Math.sqrt(structural * point.riskZS);
+        return point.riskCombo;
       }
       function riskBand(score) {
         if (score < 0.05) return 'Extreme low';
@@ -1537,10 +1657,12 @@ async function main() {
     const yOf=r=>P.t+ch*(1-r);
 
     // Zone fills
-    [[0,0.20,tc.zoneA],[0.20,0.50,tc.zoneB],[0.50,0.80,tc.zoneC],[0.80,1,tc.zoneD]].forEach(([lo,hi,c])=>{
+    const zoneColors=[tc.zoneA,tc.zoneB,tc.zoneC,tc.zoneD];
+    RISK_ZONES.forEach((zone,index)=>{
+      const lo=zone.min,hi=zone.max,c=zoneColors[index];
       ctx.fillStyle=c;ctx.fillRect(P.l,yOf(hi),cw,yOf(lo)-yOf(hi));
     });
-    [0.20,0.50,0.80].forEach(v=>{
+    PROJECTED_RISK_BOUNDARIES.forEach(v=>{
       ctx.strokeStyle=tc.zoneDash;ctx.lineWidth=1;ctx.setLineDash([4,4]);
       ctx.beginPath();ctx.moveTo(P.l,yOf(v));ctx.lineTo(W-P.r,yOf(v));ctx.stroke();ctx.setLineDash([]);
     });
@@ -1963,6 +2085,8 @@ async function main() {
       setFairValueScenario(button.dataset.fairValueScenario);
     });
   });
+  const refreshButton = document.getElementById('refreshRiskSnapshot');
+  if (refreshButton) refreshButton.addEventListener('click', function() { window.location.reload(); });
   renderAll();
   renderMidtermChart();
   attachChartTooltip('priceCanvas', 'priceTip');
@@ -1971,12 +2095,11 @@ async function main() {
   // Legend bar — labeled segments
   (function(){
     const el=document.getElementById('legendBar');
-    const segments=[
-      {name:'Accumulate',range:'0.00–0.25',risk:0.12},
-      {name:'Neutral',range:'0.25–0.50',risk:0.37},
-      {name:'Caution',range:'0.50–0.75',risk:0.62},
-      {name:'Euphoria',range:'0.75–1.00',risk:0.88}
-    ];
+    const segments=RISK_ZONES.map(zone=>({
+      name:zone.name,
+      range:zone.min.toFixed(2)+'–'+zone.max.toFixed(2),
+      risk:zone.colorRisk
+    }));
     el.innerHTML='';
     segments.forEach(s=>{
       const d=document.createElement('div');
@@ -2012,20 +2135,6 @@ setInterval(function () {
   }
 }, 5 * 60 * 1000);
 
-// Auto-refresh BTC price every 60 seconds
-setInterval(async function () {
-  try {
-    const live = await fetchCurrentBtcPrice();
-    if (!live) return;
-    const price = live.price;
-    const dt = live.updatedAt;
-    const timeStr = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const el = document.getElementById('vPrice');
-    const sub = document.getElementById('vPriceTime');
-    if (el) el.textContent = '$' + price.toLocaleString(undefined, { maximumFractionDigits: 0 });
-    if (sub) sub.textContent = 'Updated ' + timeStr + ' via ' + live.source;
-  } catch {}
-}, 60000);
 </script>
 </body>
 </html>

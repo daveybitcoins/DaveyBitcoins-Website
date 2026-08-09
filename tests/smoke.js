@@ -104,7 +104,7 @@ const checks = [
       await expectText(page, 'Bitcoin Risk Metric');
       await expectText(page, 'Combined Risk');
       await expectText(page, 'Major Weekly Moving Averages');
-      await assertSectionNavigation(page, 10, 'BTC');
+      await assertSectionNavigation(page, 11, 'BTC');
       const movingAveragePeriods = await page.locator('#movingAveragesCard .moving-average-period').allTextContents();
       if (movingAveragePeriods.join(',') !== '300W,200W,50W,21W,13W,8W') {
         throw new Error(`unexpected BTC moving-average periods: ${movingAveragePeriods.join(',')}`);
@@ -119,8 +119,13 @@ const checks = [
       if (weeklyObservations < 300) throw new Error(`insufficient BTC weekly history: ${weeklyObservations}`);
       await expectText(page, 'Price at Each Risk Level');
       await expectText(page, 'Bitcoin Market-Cap-Adjusted Power-Law Fair Value');
+      await expectText(page, 'Model Snapshot & Historical Check');
+      await expectText(page, 'Momentum Window');
+      await expectText(page, 'Monthly Samples');
+      const backtestRows = await page.locator('#modelBacktestBody tr').count();
+      if (backtestRows !== 4) throw new Error(`expected 4 BTC backtest rows, got ${backtestRows}`);
       await expectText(page, 'Long-run scenario, not a short-term price target');
-      await expectText(page, 'power-law growth above a 6% long-run nominal rate is reduced by half');
+      await expectText(page, 'at $23T the power-law growth above a 6% long-run nominal rate is reduced by half');
       await expectText(page, 'World Gold Council');
       await expectText(page, 'gpower-law');
       const projectionHeaders = await page.locator('#projTable th').allTextContents();
@@ -172,6 +177,14 @@ const checks = [
       await page.waitForTimeout(50);
       if (await page.locator('#priceCanvas').getAttribute('data-projection-end') !== '2040-12-01') {
         throw new Error('BTC risk chart changed the shared price-chart range after a wheel event');
+      }
+      await page.setViewportSize({ width: 390, height: 844 });
+      const mobileWidth = await page.evaluate(() => ({
+        viewport: window.innerWidth,
+        document: document.documentElement.scrollWidth,
+      }));
+      if (mobileWidth.document > mobileWidth.viewport + 1) {
+        throw new Error(`BTC dashboard overflows mobile viewport: ${JSON.stringify(mobileWidth)}`);
       }
     },
   },

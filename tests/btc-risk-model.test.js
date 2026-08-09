@@ -36,17 +36,20 @@ function loadProductionModel() {
   const functions = [
     'buildDampedFairValuePath',
     'dampedFairValueAt',
+    'structuralRiskForResidual',
+    'combinedRiskForResidual',
     'buildDataset',
     'normCdf',
     'dateMs',
     'priceAtRiskForDate',
     'priceAtRiskForPoint',
+    'lowerEnvelopePriceAtDate',
     'projectedRiskPriceAtDate',
     'smoothHistoricalRiskBandPriceAtDate',
   ].map(name => extractFunction(source, name));
 
   return new Function(
-    `${constants[0]}\n${functions.join('\n')}\nreturn { buildDataset, buildDampedFairValuePath, dampedFairValueAt, priceAtRiskForDate, priceAtRiskForPoint, projectedRiskPriceAtDate, smoothHistoricalRiskBandPriceAtDate, dateMs };`,
+    `${constants[0]}\n${functions.join('\n')}\nreturn { buildDataset, buildDampedFairValuePath, dampedFairValueAt, priceAtRiskForDate, priceAtRiskForPoint, projectedRiskPriceAtDate, smoothHistoricalRiskBandPriceAtDate, structuralRiskForResidual, combinedRiskForResidual, lowerEnvelopePriceAtDate, dateMs };`,
   )();
 }
 
@@ -79,15 +82,31 @@ test('historical halving risk readings stay calibrated', () => {
   const { buildDataset } = loadProductionModel();
   const { pts } = buildDataset(fixtureData());
   const fixtures = {
-    '2012-11-28': 0.22627442366399386,
-    '2016-07-09': 0.20655404166730124,
-    '2020-05-11': 0.260512656493095,
-    '2024-04-20': 0.5149596037232536,
+    '2012-11-28': 0.1920494599469015,
+    '2016-07-09': 0.20664905039520842,
+    '2020-05-11': 0.2607545106705342,
+    '2024-04-20': 0.5150876309313476,
   };
 
   for (const [date, expectedRisk] of Object.entries(fixtures)) {
     approximately(pointForDate(pts, date).riskCombo, expectedRisk);
   }
+});
+
+test('momentum baseline contains exactly the prior 1,460 observations', () => {
+  const { buildDataset } = loadProductionModel();
+  const { pts } = buildDataset(fixtureData());
+  const point = pts.at(-1);
+  const pointIndex = pts.length - 1;
+  const priorWindow = pts.slice(pointIndex - 1460, pointIndex);
+  const expectedMean = priorWindow.reduce((sum, candidate) => sum + candidate.residual, 0) / 1460;
+  const expectedVariance = Math.max(
+    0.0001,
+    priorWindow.reduce((sum, candidate) => sum + candidate.residual ** 2, 0) / 1460 - expectedMean ** 2,
+  );
+
+  approximately(point.rollMean, expectedMean, 1e-12);
+  approximately(point.rollStd, Math.sqrt(expectedVariance), 1e-12);
 });
 
 test('next-halving price-at-risk fixture remains deterministic', () => {
@@ -103,7 +122,7 @@ test('next-halving price-at-risk fixture remains deterministic', () => {
     0.5,
   );
 
-  approximately(priceAtHalfRisk, 201614.77652696377, 0.01);
+  approximately(priceAtHalfRisk, 201654.91385283033, 0.01);
 });
 
 test('forecast path, tooltip lookup, and projection dates agree', () => {
@@ -121,11 +140,11 @@ test('forecast path, tooltip lookup, and projection dates agree', () => {
     last.trendPrice,
     slope,
     PROJECTION_END,
-    { marketCap: 20e12 },
+      { marketCap: 23e12 },
   );
   const dateIndex = Math.round((NEXT_HALVING_ESTIMATE - path[0].ms) / 864e5);
 
-  approximately(path[dateIndex].value, 249069.92082868578, 0.01);
+  approximately(path[dateIndex].value, 250117.36277442117, 0.01);
   approximately(
     dampedFairValueAt(path, NEXT_HALVING_ESTIMATE),
     path[dateIndex].value,
@@ -136,7 +155,7 @@ test('forecast path, tooltip lookup, and projection dates agree', () => {
   assert.match(source, /dampedFairValueAt\(dampedFairValuePath,\s*hoverMs\)/);
   assert.match(source, /for\(let i=0;i<dampedFairValuePath\.length;i\+\+\)/);
 
-  const scenarioValues = [13e12, 20e12, 31e12].map(marketCap =>
+  const scenarioValues = [15e12, 23e12, 31e12].map(marketCap =>
     buildDampedFairValuePath(
       dateMs(last.date),
       last.trendPrice,
@@ -177,9 +196,9 @@ test('projected risk bands remain ordered around their independent 0.50-risk pat
     currentHalfRiskPrice,
     slope,
     PROJECTION_END,
-    { marketCap: 20e12 },
+    { marketCap: 23e12 },
   );
-  const prices = [0.25, 0.50, 0.75].map(risk =>
+  const prices = [0.20, 0.50, 0.80].map(risk =>
     projectedRiskPriceAtDate(
       PROJECTION_END,
       path,
@@ -194,7 +213,7 @@ test('projected risk bands remain ordered around their independent 0.50-risk pat
   assert.ok(prices[0] < prices[1]);
   assert.ok(prices[1] < prices[2]);
   approximately(prices[1], dampedFairValueAt(path, PROJECTION_END), 1e-9);
-  for (const risk of [0.25, 0.50, 0.75]) {
+  for (const risk of [0.20, 0.50, 0.80]) {
     approximately(
       priceAtRiskForPoint(last, risk),
       priceAtRiskForDate(
@@ -271,7 +290,32 @@ test('projected risk bands remain ordered around their independent 0.50-risk pat
   assert.doesNotMatch(source, /yOf\(priceAtRiskForPoint\(pts\[i\],risk\)\)/);
   assert.match(source, /smoothHistoricalRiskBandPriceAtDate/);
   assert.doesNotMatch(source, /ctx\.strokeStyle=tc\.regressionLine/);
-  assert.match(source, /const DISPLAY_RISK_BOUNDARIES = \[0\.75, 0\.50, 0\.25\]/);
+  assert.match(source, /const PROJECTED_RISK_BOUNDARIES = RISK_ZONES\.slice/);
+  assert.match(source, /const DISPLAY_RISK_BOUNDARIES = \[\.\.\.PROJECTED_RISK_BOUNDARIES\]\.reverse/);
   assert.match(source, /boundaryValues=DISPLAY_RISK_BOUNDARIES\.map/);
   assert.match(source, /Actual risk/);
+  assert.match(source, /name: 'Accumulate', min: 0\.00, max: 0\.20/);
+  assert.match(source, /name: 'Euphoria', min: 0\.80, max: 1\.00/);
+  assert.doesNotMatch(source, /Auto-refresh BTC price every 60 seconds/);
+  assert.match(source, /refreshRiskSnapshot/);
+});
+
+test('risk-price inversion reproduces the production combined score', () => {
+  const {
+    buildDataset,
+    combinedRiskForResidual,
+    priceAtRiskForPoint,
+  } = loadProductionModel();
+  const { pts } = buildDataset(fixtureData());
+  const point = pts.at(-1);
+
+  for (const risk of [0.01, 0.20, 0.50, 0.80, 0.99]) {
+    const price = priceAtRiskForPoint(point, risk);
+    const residual = Math.log10(price) - point.regLogPrice;
+    approximately(
+      combinedRiskForResidual(residual, point.logDays, point.rollMean, point.rollStd),
+      risk,
+      1e-9,
+    );
+  }
 });

@@ -282,6 +282,101 @@
   grid-template-columns: repeat(8, minmax(90px, 1fr));
 }
 
+.btc-page .model-snapshot-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.btc-page .model-snapshot-head h2,
+.btc-page .model-snapshot-head p {
+  margin: 0;
+}
+
+.btc-page .model-snapshot-head p {
+  max-width: 680px;
+  margin-top: 0.45rem;
+  color: var(--spy-muted);
+  font-size: 0.64rem;
+  line-height: 1.6;
+}
+
+.btc-page .snapshot-refresh {
+  flex: 0 0 auto;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--spy-border);
+  background: color-mix(in srgb, var(--spy-orange) 9%, var(--spy-canvas));
+  color: var(--spy-orange);
+  cursor: pointer;
+  font: 700 0.58rem/1.2 "JetBrains Mono", monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.btc-page .snapshot-refresh:hover,
+.btc-page .snapshot-refresh:focus-visible {
+  border-color: var(--spy-orange);
+  outline: none;
+}
+
+.btc-page .model-snapshot-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+
+.btc-page .model-snapshot-grid > div {
+  min-width: 0;
+  padding: 0.7rem;
+  border: 1px solid var(--spy-border);
+  background: color-mix(in srgb, var(--spy-canvas) 88%, transparent);
+}
+
+.btc-page .model-snapshot-grid span,
+.btc-page .model-snapshot-grid strong {
+  display: block;
+}
+
+.btc-page .model-snapshot-grid span {
+  color: var(--spy-faint);
+  font-size: 0.5rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.btc-page .model-snapshot-grid strong {
+  margin-top: 0.35rem;
+  overflow-wrap: anywhere;
+  color: var(--spy-text);
+  font-size: 0.82rem;
+}
+
+.btc-page .model-backtest-scroll {
+  margin-top: 0.8rem;
+  overflow-x: auto;
+  border: 1px solid var(--spy-border);
+}
+
+.btc-page .model-backtest-table {
+  min-width: 720px;
+}
+
+.btc-page .backtest-range {
+  display: block;
+  margin-top: 0.18rem;
+  color: var(--spy-faint);
+  font-size: 0.5rem;
+}
+
+.btc-page .model-snapshot-note {
+  margin: 0.65rem 0 0;
+  color: var(--spy-faint);
+  font-size: 0.56rem;
+  line-height: 1.5;
+}
+
 .btc-page .market-cap-meta {
   display: flex;
   flex-wrap: wrap;
@@ -496,6 +591,10 @@
   .btc-page .moving-averages-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
+  .btc-page .model-snapshot-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 1200px) and (max-width: 1399px) {
@@ -547,6 +646,18 @@
   .btc-page .dashboard .bear-card {
     margin-inline: auto;
   }
+
+  .btc-page .risk-table {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .btc-page .model-snapshot-head {
+    flex-direction: column;
+  }
+
+  .btc-page .snapshot-refresh {
+    width: 100%;
+  }
 }
 
 @media (max-width: 620px) {
@@ -561,6 +672,10 @@
   .btc-page .moving-averages-head {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .btc-page .model-snapshot-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

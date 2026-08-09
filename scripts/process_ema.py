@@ -799,13 +799,12 @@ def build_index_context():
 
 GENESIS_MS = datetime(2009, 1, 3).timestamp() * 1000  # BTC genesis date
 RISK_WINDOW = 1460  # 4-year rolling window (days)
+MIN_REGRESSION_OBSERVATIONS = 30
 ENV_UPPER_A = 4.6
 ENV_UPPER_B = -1.10
 ENV_LOWER = -0.45
 ENV_MIN_MAX = 0.05
-STRUCTURAL_SOFT_FLOOR_SCALE = 0.15
-STRUCTURAL_SOFT_FLOOR_MAX = 0.02
-STRUCTURAL_SOFT_FLOOR_MIN = 0.005
+STRUCTURAL_RISK_FLOOR = 0.005
 
 
 def _norm_cdf(z):
@@ -856,21 +855,14 @@ def _calc_btc_risk(daily):
 
     # Calculate residuals and structural risk (decaying envelope)
     for i, p in enumerate(pts):
-        asof_slope, asof_intercept = fit_regression(i + 1) if i >= 365 else (slope, intercept)
+        asof_slope, asof_intercept = fit_regression(max(MIN_REGRESSION_OBSERVATIONS, i + 1))
         p["reg_log_price"] = asof_slope * p["log_days"] + asof_intercept
         p["reg_price"] = 10 ** p["reg_log_price"]
         p["residual"] = p["log_price"] - p["reg_log_price"]
         env_max = max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * p["log_days"])
         env_range = env_max - ENV_LOWER
         structural_raw = (p["residual"] - ENV_LOWER) / env_range
-        if structural_raw < 0:
-            floor_depth = ENV_LOWER - p["residual"]
-            p["risk_mm"] = max(
-                STRUCTURAL_SOFT_FLOOR_MIN,
-                STRUCTURAL_SOFT_FLOOR_MAX * math.exp(-floor_depth / STRUCTURAL_SOFT_FLOOR_SCALE),
-            )
-        else:
-            p["risk_mm"] = min(1, structural_raw)
+        p["risk_mm"] = min(1, max(STRUCTURAL_RISK_FLOOR, structural_raw))
 
     # Momentum risk: compare each point to the prior rolling window.
     residuals = [p["residual"] for p in pts]
@@ -888,9 +880,9 @@ def _calc_btc_risk(daily):
             pts[i]["risk_zs"] = 0.5
         r_sum += residuals[i]
         r_sum_sq += residuals[i] * residuals[i]
-        if i >= RISK_WINDOW - 1:
-            r_sum -= residuals[i - RISK_WINDOW + 1]
-            r_sum_sq -= residuals[i - RISK_WINDOW + 1] * residuals[i - RISK_WINDOW + 1]
+        if i >= RISK_WINDOW:
+            r_sum -= residuals[i - RISK_WINDOW]
+            r_sum_sq -= residuals[i - RISK_WINDOW] * residuals[i - RISK_WINDOW]
 
     # Combined risk (geometric mean)
     for p in pts:
