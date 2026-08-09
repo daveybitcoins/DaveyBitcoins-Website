@@ -1,8 +1,8 @@
 {
   "meta": {
-    "date": "2026-08-08",
+    "date": "2026-08-09",
     "total_stocks": 300,
-    "generated_at": "2026-08-08T21:26:44.222906",
+    "generated_at": "2026-08-09T15:28:43.042247",
     "index_etfs": [
       "SPY",
       "QQQ",
@@ -57,26 +57,26 @@
     {
       "symbol": "BTC",
       "name": "Bitcoin",
-      "price": 64995.0,
-      "ema8": 64776.62,
-      "ema13": 66275.72,
-      "ema21": 69162.54,
+      "price": 65195.0,
+      "ema8": 64821.06,
+      "ema13": 66304.29,
+      "ema21": 69180.73,
       "signal": "Bear Rally \u2192 13W",
-      "price_vs_8w": 0.34,
-      "price_vs_13w": -1.93,
-      "price_vs_21w": -6.03,
-      "ema8_vs_13": -2.26,
-      "ema13_vs_21": -4.17,
-      "spread_score": -6.43,
-      "chg_1d": 1.1,
-      "chg_1w": 3.34,
-      "chg_1m": 4.41,
+      "price_vs_8w": 0.58,
+      "price_vs_13w": -1.67,
+      "price_vs_21w": -5.76,
+      "ema8_vs_13": -2.24,
+      "ema13_vs_21": -4.16,
+      "spread_score": -6.4,
+      "chg_1d": 0.5,
+      "chg_1w": 3.81,
+      "chg_1m": 3.12,
       "crossover_alert": null,
-      "risk_combo": 0.124,
-      "risk_mm": 0.131,
-      "risk_zs": 0.117,
-      "fair_value": 141316.25,
-      "dev_pct": -54.0,
+      "risk_combo": 0.125,
+      "risk_mm": 0.132,
+      "risk_zs": 0.119,
+      "fair_value": 141394.37,
+      "dev_pct": -53.9,
       "zone": "Accumulate",
       "zone_color": "#2563eb"
     }
@@ -26855,11 +26855,11 @@
           "hist_max": 99.2,
           "hist_avg": 53.4,
           "hist_median": 55.3,
-          "p10": 21.0,
+          "p10": 21.3,
           "p20": 32.9,
           "p80": 74.3,
           "p90": 81.9,
-          "data_points": 2399
+          "data_points": 2400
         },
         {
           "field": "above_20d",
@@ -26875,7 +26875,7 @@
           "p20": 34.5,
           "p80": 76.4,
           "p90": 82.6,
-          "data_points": 4941
+          "data_points": 4942
         },
         {
           "field": "above_50d",
@@ -26891,7 +26891,7 @@
           "p20": 38.8,
           "p80": 76.1,
           "p90": 82.0,
-          "data_points": 4941
+          "data_points": 4942
         },
         {
           "field": "above_200d",
@@ -26907,12 +26907,12 @@
           "p20": 44.7,
           "p80": 79.1,
           "p90": 86.7,
-          "data_points": 4941
+          "data_points": 4942
         }
       ],
       "composite_score": 67.1,
       "composite_zone": "Healthy",
-      "history_days": 4941,
+      "history_days": 4942,
       "forward_returns": [
         {
           "field": "above_200d",
