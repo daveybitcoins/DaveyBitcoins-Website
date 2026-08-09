@@ -412,10 +412,9 @@
         try {
             const BTC_GENESIS = new Date('2009-01-03T00:00:00Z').getTime();
             const WINDOW = 1460;
+            const MIN_REGRESSION_OBSERVATIONS = 30;
             const ENV_UPPER_A = 4.6, ENV_UPPER_B = -1.10, ENV_LOWER = -0.45, ENV_MIN_MAX = 0.05;
-            const STRUCTURAL_SOFT_FLOOR_SCALE = 0.15;
-            const STRUCTURAL_SOFT_FLOOR_MAX = 0.02;
-            const STRUCTURAL_SOFT_FLOOR_MIN = 0.005;
+            const STRUCTURAL_RISK_FLOOR = 0.005;
 
             // Load historical CSV
             const resp = await fetch('data.csv?v=' + Date.now());
@@ -460,21 +459,13 @@
             const fullFit = fitRegression(n);
 
             pts.forEach((p, i) => {
-                const asOf = i >= 365 ? fitRegression(i + 1) : fullFit;
+                const asOf = fitRegression(Math.max(MIN_REGRESSION_OBSERVATIONS, i + 1));
                 p.regLogPrice = asOf.slope * p.logDays + asOf.intercept;
                 p.residual = p.logPrice - p.regLogPrice;
                 const envMax = Math.max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * p.logDays);
                 const envRange = envMax - ENV_LOWER;
                 const structuralRaw = (p.residual - ENV_LOWER) / envRange;
-                if (structuralRaw < 0) {
-                    const floorDepth = ENV_LOWER - p.residual;
-                    p.riskMM = Math.max(
-                        STRUCTURAL_SOFT_FLOOR_MIN,
-                        STRUCTURAL_SOFT_FLOOR_MAX * Math.exp(-floorDepth / STRUCTURAL_SOFT_FLOOR_SCALE)
-                    );
-                } else {
-                    p.riskMM = Math.min(1, structuralRaw);
-                }
+                p.riskMM = Math.min(1, Math.max(STRUCTURAL_RISK_FLOOR, structuralRaw));
             });
 
             const residuals = pts.map(p => p.residual);
@@ -491,7 +482,7 @@
                     pts[i].riskZS = 0.5;
                 }
                 rSum += residuals[i]; rSumSq += residuals[i] * residuals[i];
-                if (i >= WINDOW - 1) { rSum -= residuals[i - WINDOW + 1]; rSumSq -= residuals[i - WINDOW + 1] * residuals[i - WINDOW + 1]; }
+                if (i >= WINDOW) { rSum -= residuals[i - WINDOW]; rSumSq -= residuals[i - WINDOW] * residuals[i - WINDOW]; }
             }
 
             pts.forEach(p => { p.riskCombo = Math.sqrt(p.riskMM * p.riskZS); });
