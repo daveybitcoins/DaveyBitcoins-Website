@@ -149,18 +149,14 @@ export default function BitcoinRiskMetricPage() {
             </div>
             <div className="card-sub" id="vPriceTime" />
           </article>
-          <article className="card risk-stage-card" id="riskStageCard">
-            <div className="card-label">Combined Risk Stage</div>
-            <div className="risk-stage-value" id="vRiskStage">
+          <article className="card risk-card" id="riskCard">
+            <div className="card-label">Combined Risk</div>
+            <div className="card-value risk-value" id="vRisk">
               —
-            </div>
-            <div className="risk-stage-meta">
-              <span id="vRisk">Score —</span>
-              <span id="vRiskStageCount">Stage — of 4</span>
             </div>
             <div
               className="risk-bar-wrap"
-              id="riskStageBar"
+              id="riskBar"
               role="meter"
               aria-label="Current Bitcoin combined risk"
               aria-valuemin={0}

@@ -103,22 +103,21 @@ const checks = [
       await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length >= 10, null, { timeout: 20000 });
       await expectText(page, 'Bitcoin Risk Metric');
       await expectText(page, 'Combined Risk');
-      const riskStage = await page.locator('#vRiskStage').innerText();
-      const validRiskStages = ['Accumulate', 'Neutral', 'Caution', 'Euphoria'];
-      if (!validRiskStages.includes(riskStage)) {
-        throw new Error(`unexpected BTC combined-risk stage: ${riskStage}`);
+      const riskValue = await page.locator('#vRisk').innerText();
+      if (!/^0\.\d{3}$|^1\.000$/.test(riskValue)) {
+        throw new Error(`unexpected BTC combined-risk value: ${riskValue}`);
       }
-      const activeStageLabels = await page.locator('#riskStageCard [data-risk-zone].is-active').allTextContents();
-      if (activeStageLabels.length !== 1 || activeStageLabels[0] !== riskStage) {
-        throw new Error(`BTC combined-risk stage label is not active: ${activeStageLabels.join(',')}`);
+      const activeZoneLabels = await page.locator('#riskCard [data-risk-zone].is-active').allTextContents();
+      if (activeZoneLabels.length !== 1) {
+        throw new Error(`BTC combined-risk zone label is not active: ${activeZoneLabels.join(',')}`);
       }
-      const riskStageText = await page.locator('#riskStageCard').innerText();
-      if (!riskStageText.includes('Stage ') || !riskStageText.includes('Score ')) {
-        throw new Error(`BTC combined-risk card is missing stage context: ${riskStageText}`);
+      const riskCardText = await page.locator('#riskCard').innerText();
+      if (/stage/i.test(riskCardText)) {
+        throw new Error(`BTC combined-risk card still uses stage language: ${riskCardText}`);
       }
-      const meterValueText = await page.locator('#riskStageBar').getAttribute('aria-valuetext');
-      if (!meterValueText?.startsWith(riskStage)) {
-        throw new Error(`BTC combined-risk meter does not announce its stage: ${meterValueText}`);
+      const meterValueText = await page.locator('#riskBar').getAttribute('aria-valuetext');
+      if (!meterValueText?.includes(`${activeZoneLabels[0]} risk zone`)) {
+        throw new Error(`BTC combined-risk meter does not announce its zone: ${meterValueText}`);
       }
       await expectText(page, 'Major Weekly Moving Averages');
       await assertSectionNavigation(page, 11, 'BTC');
