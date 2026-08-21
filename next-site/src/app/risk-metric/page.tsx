@@ -591,7 +591,7 @@ export default function BitcoinRiskMetricPage() {
 
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20260820-bear-card-restore" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20260821-risk-zone-color" strategy="afterInteractive" />
     </main>
   );
 }
