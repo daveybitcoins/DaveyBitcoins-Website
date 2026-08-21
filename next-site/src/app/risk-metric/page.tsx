@@ -149,19 +149,32 @@ export default function BitcoinRiskMetricPage() {
             </div>
             <div className="card-sub" id="vPriceTime" />
           </article>
-          <article className="card">
-            <div className="card-label">Combined Risk</div>
-            <div className="card-value" id="vRisk">
+          <article className="card risk-stage-card" id="riskStageCard">
+            <div className="card-label">Combined Risk Stage</div>
+            <div className="risk-stage-value" id="vRiskStage">
               —
             </div>
-            <div className="risk-bar-wrap">
+            <div className="risk-stage-meta">
+              <span id="vRisk">Score —</span>
+              <span id="vRiskStageCount">Stage — of 4</span>
+            </div>
+            <div
+              className="risk-bar-wrap"
+              id="riskStageBar"
+              role="meter"
+              aria-label="Current Bitcoin combined risk"
+              aria-valuemin={0}
+              aria-valuemax={1}
+              aria-valuenow={0}
+            >
               <div className="risk-bar-bg" />
               <div className="risk-bar-needle" id="needle" />
             </div>
             <div className="zone-labels">
-              <span>Accumulate</span>
-              <span>Neutral</span>
-              <span>Caution</span>
+              <span data-risk-zone="Accumulate">Accumulate</span>
+              <span data-risk-zone="Neutral">Neutral</span>
+              <span data-risk-zone="Caution">Caution</span>
+              <span data-risk-zone="Euphoria">Euphoria</span>
             </div>
           </article>
           <article className="card">

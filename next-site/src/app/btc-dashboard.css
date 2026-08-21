@@ -180,6 +180,63 @@
   font-size: clamp(1.5rem, 2vw, 1.9rem);
 }
 
+.btc-page .risk-stage-value {
+  margin-top: 0.3rem;
+  color: var(--val-color, var(--spy-text));
+  font-size: clamp(1rem, 1.4vw, 1.3rem);
+  font-weight: 750;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+.btc-page .risk-stage-meta {
+  display: flex;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-top: 0.28rem;
+  color: var(--spy-muted);
+  font-size: 0.48rem;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.btc-page .risk-stage-meta span + span::before {
+  margin-right: 0.35rem;
+  color: var(--spy-faint);
+  content: "·";
+}
+
+.btc-page .risk-stage-card .risk-bar-bg {
+  background: linear-gradient(
+    90deg,
+    #58c56f 0 20%,
+    #ffbf63 20% 50%,
+    #f7931a 50% 80%,
+    #ef5d4f 80% 100%
+  );
+  opacity: 0.72;
+}
+
+.btc-page .risk-stage-card .zone-labels {
+  display: grid;
+  grid-template-columns: 2fr 3fr 3fr 2fr;
+  align-items: start;
+  gap: 0;
+  margin-top: 0.38rem;
+  font-size: 0.38rem;
+  letter-spacing: -0.02em;
+}
+
+.btc-page .risk-stage-card .zone-labels span {
+  min-width: 0;
+  text-align: center;
+}
+
+.btc-page .risk-stage-card .zone-labels span.is-active {
+  color: var(--risk-stage-color, var(--spy-text));
+  font-weight: 800;
+}
+
 .btc-page #vFair {
   color: var(--spy-orange);
 }

@@ -103,6 +103,23 @@ const checks = [
       await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length >= 10, null, { timeout: 20000 });
       await expectText(page, 'Bitcoin Risk Metric');
       await expectText(page, 'Combined Risk');
+      const riskStage = await page.locator('#vRiskStage').innerText();
+      const validRiskStages = ['Accumulate', 'Neutral', 'Caution', 'Euphoria'];
+      if (!validRiskStages.includes(riskStage)) {
+        throw new Error(`unexpected BTC combined-risk stage: ${riskStage}`);
+      }
+      const activeStageLabels = await page.locator('#riskStageCard [data-risk-zone].is-active').allTextContents();
+      if (activeStageLabels.length !== 1 || activeStageLabels[0] !== riskStage) {
+        throw new Error(`BTC combined-risk stage label is not active: ${activeStageLabels.join(',')}`);
+      }
+      const riskStageText = await page.locator('#riskStageCard').innerText();
+      if (!riskStageText.includes('Stage ') || !riskStageText.includes('Score ')) {
+        throw new Error(`BTC combined-risk card is missing stage context: ${riskStageText}`);
+      }
+      const meterValueText = await page.locator('#riskStageBar').getAttribute('aria-valuetext');
+      if (!meterValueText?.startsWith(riskStage)) {
+        throw new Error(`BTC combined-risk meter does not announce its stage: ${meterValueText}`);
+      }
       await expectText(page, 'Major Weekly Moving Averages');
       await assertSectionNavigation(page, 11, 'BTC');
       const movingAveragePeriods = await page.locator('#movingAveragesCard .moving-average-period').allTextContents();

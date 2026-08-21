@@ -748,8 +748,25 @@ async function main() {
     : last.date + ' · daily dataset';
   const hd = document.getElementById('headerDate');
   hd.innerHTML = '<span style="width:6px;height:6px;background:#58c56f;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> coherent snapshot as of ' + last.date + (isLive ? ' · ' + isLive.source : ' · daily dataset');
-  document.getElementById('vRisk').textContent = last.riskCombo.toFixed(3);
-  document.getElementById('vRisk').style.setProperty('--val-color', riskColor(last.riskCombo));
+  const currentRiskZone = riskZoneForScore(last.riskCombo);
+  const currentRiskStage = RISK_ZONES.indexOf(currentRiskZone) + 1;
+  const currentRiskColor = riskColor(last.riskCombo);
+  const riskStageCard = document.getElementById('riskStageCard');
+  const riskStageBar = document.getElementById('riskStageBar');
+  document.getElementById('vRiskStage').textContent = currentRiskZone.name;
+  document.getElementById('vRiskStage').style.setProperty('--val-color', currentRiskColor);
+  document.getElementById('vRisk').textContent = 'Score ' + last.riskCombo.toFixed(3);
+  document.getElementById('vRiskStageCount').textContent = 'Stage ' + currentRiskStage + ' of ' + RISK_ZONES.length;
+  riskStageCard.style.setProperty('--risk-stage-color', currentRiskColor);
+  riskStageCard.dataset.riskStage = currentRiskZone.name;
+  riskStageBar.setAttribute('aria-valuenow', last.riskCombo.toFixed(3));
+  riskStageBar.setAttribute('aria-valuetext', currentRiskZone.name + ', stage ' + currentRiskStage + ' of ' + RISK_ZONES.length);
+  riskStageCard.querySelectorAll('[data-risk-zone]').forEach(function(label) {
+    const isActive = label.dataset.riskZone === currentRiskZone.name;
+    label.classList.toggle('is-active', isActive);
+    if (isActive) label.setAttribute('aria-current', 'true');
+    else label.removeAttribute('aria-current');
+  });
   document.getElementById('vFair').textContent = '$' + last.trendPrice.toLocaleString(undefined,{maximumFractionDigits:0});
   document.getElementById('vGrowth').textContent = 'Power-law regression fair value';
   const devPct = ((last.price/last.trendPrice-1)*100).toFixed(1);
