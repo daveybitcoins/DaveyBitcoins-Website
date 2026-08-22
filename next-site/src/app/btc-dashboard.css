@@ -183,10 +183,10 @@
 .btc-page .risk-card .risk-bar-bg {
   background: linear-gradient(
     90deg,
-    #58c56f 0 20%,
-    #ffbf63 20% 50%,
-    #f7931a 50% 80%,
-    #ef5d4f 80% 100%
+    #599284 0 20%,
+    #77c46d 20% 50%,
+    #f68f1d 50% 80%,
+    #ef5d50 80% 100%
   );
   opacity: 0.72;
 }
@@ -204,6 +204,22 @@
 .btc-page .risk-card .zone-labels span {
   min-width: 0;
   text-align: center;
+}
+
+.btc-page .risk-card .zone-labels [data-risk-zone="Accumulate"] {
+  color: #599284;
+}
+
+.btc-page .risk-card .zone-labels [data-risk-zone="Neutral"] {
+  color: #77c46d;
+}
+
+.btc-page .risk-card .zone-labels [data-risk-zone="Caution"] {
+  color: #f68f1d;
+}
+
+.btc-page .risk-card .zone-labels [data-risk-zone="Euphoria"] {
+  color: #ef5d50;
 }
 
 .btc-page .risk-card .zone-labels span.is-active {

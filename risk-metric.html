@@ -1236,10 +1236,10 @@ async function main() {
   hd.innerHTML = '<span style="width:6px;height:6px;background:#58c56f;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> coherent snapshot as of ' + last.date + (isLive ? ' · ' + isLive.source : ' · daily dataset');
   const currentRiskZone = riskZoneForScore(last.riskCombo);
   const currentRiskColor = {
-    Accumulate: '#58c56f',
-    Neutral: '#ffbf63',
-    Caution: '#f7931a',
-    Euphoria: '#ef5d4f'
+    Accumulate: '#599284',
+    Neutral: '#77c46d',
+    Caution: '#f68f1d',
+    Euphoria: '#ef5d50'
   }[currentRiskZone.name];
   const riskCard = document.getElementById('riskCard');
   const riskBar = document.getElementById('riskBar');
