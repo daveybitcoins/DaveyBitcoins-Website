@@ -45,6 +45,7 @@ MONTHLY_FALLBACK = {
     "MFIC", "CCAP", "TRIN", "ADIT", "LTC", "EPR", "SLG", "LAND",
     "GOOD", "ADC", "BTCI", "KSLV", "MLPI", "KGLD", "STRC",
     "QDVO", "GPIX", "ROCQ", "ROCY", "SGOV", "XBCI", "AIPI", "BITA",
+    "TDAQ",
 }
 
 WEEKLY_FALLBACK = {
@@ -375,6 +376,13 @@ FALLBACK_TICKERS = {
         "dividend_rate": None,
         "frequency": "monthly",
     },
+    "TDAQ": {
+        "name": "TappAlpha Innovation 100 Growth & Daily Income ETF",
+        "sector": "Miscellaneous",
+        "dividend_yield": None,
+        "dividend_rate": None,
+        "frequency": "monthly",
+    },
 }
 
 
@@ -641,7 +649,7 @@ def main():
 
     print(f"\n{len(tickers)} tickers with dividend data")
 
-    for check in ["QQQI", "SCHD", "JEPI", "O", "SPY", "AAPL", "T", "BITA"]:
+    for check in ["QQQI", "SCHD", "JEPI", "O", "SPY", "AAPL", "T", "BITA", "TDAQ"]:
         status = "FOUND" if check in tickers else "MISSING"
         print(f"  {check}: {status}")
 

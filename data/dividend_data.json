@@ -2,9 +2,32 @@
   "meta": {
     "date": "2026-08-17",
     "generated_at": "2026-08-17T10:26:10.240872",
-    "total_tickers": 5458
+    "total_tickers": 5459
   },
   "tickers": {
+    "TDAQ": {
+      "name": "TappAlpha Innovation 100 Growth & Daily Income ETF",
+      "sector": "Miscellaneous",
+      "close": 26.81,
+      "dividend_yield": 16.78,
+      "dividend_rate": 4.4986,
+      "payout_ratio": null,
+      "frequency": "monthly",
+      "ex_dividend_date": null,
+      "last_payments": [
+        { "ex_date": "2025-10-21", "amount": 0.3814, "pay_date": "2025-10-22", "record_date": "2025-10-21", "declaration_date": "2025-09-09" },
+        { "ex_date": "2025-11-18", "amount": 0.3702, "pay_date": "2025-11-19", "record_date": "2025-11-18", "declaration_date": "2025-09-09" },
+        { "ex_date": "2025-12-16", "amount": 0.3741, "pay_date": "2025-12-17", "record_date": "2025-12-16", "declaration_date": "2025-09-09" },
+        { "ex_date": "2026-01-20", "amount": 0.3762, "pay_date": "2026-01-21", "record_date": "2026-01-20", "declaration_date": "2025-12-19" },
+        { "ex_date": "2026-02-17", "amount": 0.3572, "pay_date": "2026-02-18", "record_date": "2026-02-17", "declaration_date": "2025-12-19" },
+        { "ex_date": "2026-03-17", "amount": 0.3537, "pay_date": "2026-03-18", "record_date": "2026-03-17", "declaration_date": "2025-12-19" },
+        { "ex_date": "2026-04-14", "amount": 0.3502, "pay_date": "2026-04-15", "record_date": "2026-04-14", "declaration_date": "2025-12-19" },
+        { "ex_date": "2026-05-19", "amount": 0.3825, "pay_date": "2026-05-20", "record_date": "2026-05-19", "declaration_date": "2025-12-19" },
+        { "ex_date": "2026-06-16", "amount": 0.3955, "pay_date": "2026-06-17", "record_date": "2026-06-16", "declaration_date": "2025-12-19" },
+        { "ex_date": "2026-07-14", "amount": 0.39, "pay_date": "2026-07-15", "record_date": "2026-07-14", "declaration_date": "2025-12-19" },
+        { "ex_date": "2026-08-18", "amount": 0.3927, "pay_date": "2026-08-19", "record_date": "2026-08-18", "declaration_date": "2025-12-19" }
+      ]
+    },
     "HTCR": {
       "name": "Heartcore Enterprises, Inc.",
       "sector": "Technology Services",

@@ -192,7 +192,7 @@ def validate_dividends():
         fail("dividend meta.total_tickers does not match ticker count")
 
     required = ["name", "dividend_yield", "dividend_rate", "frequency", "last_payments"]
-    for symbol in ["AAPL", "T", "O", "SCHD", "JEPI"]:
+    for symbol in ["AAPL", "T", "O", "SCHD", "JEPI", "TDAQ"]:
         if symbol not in tickers:
             fail(f"expected dividend ticker {symbol} is missing")
 
