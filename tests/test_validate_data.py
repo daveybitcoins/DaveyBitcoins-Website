@@ -74,8 +74,8 @@ class ValidateDataTests(unittest.TestCase):
             root = Path(directory)
             (root / "data").mkdir()
             today = datetime.now(timezone.utc).date()
-            required_symbols = ["AAPL", "T", "O", "SCHD", "JEPI", "TDAQ"]
-            symbols = required_symbols + [f"S{index}" for index in range(94)]
+            required_symbols = ["AAPL", "T", "O", "SCHD", "JEPI", "TDAQ", "IAUI"]
+            symbols = required_symbols + [f"S{index}" for index in range(93)]
             tickers = {
                 symbol: {
                     "name": f"Company {symbol}",

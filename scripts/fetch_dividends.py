@@ -16,6 +16,7 @@ import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
+from statistics import median
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(SCRIPT_DIR)
@@ -28,10 +29,11 @@ MASSIVE_MAX_PAGES = int(os.environ.get("MASSIVE_MAX_PAGES", "20"))
 TV_FIELDS = [
     "name",
     "description",
+    "exchange",
     "close",
     "sector",
     "market_cap_basic",
-    "dividend_yield_recent",
+    "dividends_yield",
     "dividends_per_share_fq",
     "dividend_payout_ratio_ttm",
     "dps_common_stock_prim_issue_fy",
@@ -45,7 +47,7 @@ MONTHLY_FALLBACK = {
     "MFIC", "CCAP", "TRIN", "ADIT", "LTC", "EPR", "SLG", "LAND",
     "GOOD", "ADC", "BTCI", "KSLV", "MLPI", "KGLD", "STRC",
     "QDVO", "GPIX", "ROCQ", "ROCY", "SGOV", "XBCI", "AIPI", "BITA",
-    "TDAQ",
+    "TDAQ", "IAUI",
 }
 
 WEEKLY_FALLBACK = {
@@ -75,6 +77,25 @@ WEEKLY_FALLBACK = {
 }
 
 FREQ_WORKERS = 20
+
+
+def frequency_from_payment_dates(dates):
+    """Infer payment cadence from date spacing, including funds with short histories."""
+    normalized = sorted({date.to_pydatetime() if hasattr(date, "to_pydatetime") else date for date in dates})
+    if len(normalized) < 2:
+        return "annual" if normalized else None
+
+    gaps = [(current - previous).days for previous, current in zip(normalized, normalized[1:])]
+    typical_gap = median(gaps[-12:])
+    if typical_gap <= 14:
+        return "weekly"
+    if typical_gap <= 45:
+        return "monthly"
+    if typical_gap <= 120:
+        return "quarterly"
+    if typical_gap <= 220:
+        return "semi-annual"
+    return "annual"
 
 
 def payments_per_year(frequency):
@@ -259,18 +280,7 @@ def _fetch_yahoo_data(symbol):
         if divs is not None and len(divs) > 0:
             cutoff = datetime.now() - timedelta(days=730)
             recent = divs[divs.index >= str(cutoff.date())]
-            count = len(recent)
-
-            if count >= 40:
-                freq = "weekly"
-            elif count >= 18:
-                freq = "monthly"
-            elif count >= 6:
-                freq = "quarterly"
-            elif count >= 3:
-                freq = "semi-annual"
-            elif count >= 1:
-                freq = "annual"
+            freq = frequency_from_payment_dates(recent.index)
 
             one_year_cutoff = datetime.now() - timedelta(days=365)
             last_year = divs[divs.index >= str(one_year_cutoff.date())]
@@ -383,6 +393,13 @@ FALLBACK_TICKERS = {
         "dividend_rate": None,
         "frequency": "monthly",
     },
+    "IAUI": {
+        "name": "NEOS Gold High Income ETF",
+        "sector": "Miscellaneous",
+        "dividend_yield": None,
+        "dividend_rate": None,
+        "frequency": "monthly",
+    },
 }
 
 
@@ -398,12 +415,12 @@ def fetch_tv_data():
         Query()
         .select(*TV_FIELDS)
         .where(
-            col("dividend_yield_recent") > 0,
+            col("dividends_yield") > 0,
             col("is_primary") == True,
-            col("exchange").isin(["NYSE", "NASDAQ", "AMEX"]),
+            col("exchange").isin(["NYSE", "NASDAQ", "AMEX", "CBOE"]),
             col("type") == "stock",
         )
-        .order_by("dividend_yield_recent", ascending=False)
+        .order_by("dividends_yield", ascending=False)
         .limit(5000)
         .get_scanner_data()
     )
@@ -416,11 +433,11 @@ def fetch_tv_data():
             Query()
             .select(*TV_FIELDS)
             .where(
-                col("dividend_yield_recent") > 0,
-                col("exchange").isin(["NYSE", "NASDAQ", "AMEX"]),
+                col("dividends_yield") > 0,
+                col("exchange").isin(["NYSE", "NASDAQ", "AMEX", "CBOE"]),
                 col("type") == "fund",
             )
-            .order_by("dividend_yield_recent", ascending=False)
+            .order_by("dividends_yield", ascending=False)
             .limit(5000)
             .get_scanner_data()
         )
@@ -445,13 +462,14 @@ def build_ticker_data(df):
             continue
 
         price = row.get("close")
-        yld = row.get("dividend_yield_recent")
+        yld = row.get("dividends_yield")
         dps_fq = row.get("dividends_per_share_fq")
         dps_fy = row.get("dps_common_stock_prim_issue_fy")
         payout = row.get("dividend_payout_ratio_ttm")
         desc = row.get("description", symbol)
 
-        if not yld or (isinstance(yld, float) and math.isnan(yld)):
+        missing_yield = not yld or (isinstance(yld, float) and math.isnan(yld))
+        if missing_yield:
             continue
 
         dividend_yield = round(yld, 2)
@@ -649,7 +667,7 @@ def main():
 
     print(f"\n{len(tickers)} tickers with dividend data")
 
-    for check in ["QQQI", "SCHD", "JEPI", "O", "SPY", "AAPL", "T", "BITA", "TDAQ"]:
+    for check in ["QQQI", "SCHD", "JEPI", "O", "SPY", "AAPL", "T", "BITA", "TDAQ", "IAUI"]:
         status = "FOUND" if check in tickers else "MISSING"
         print(f"  {check}: {status}")
 
