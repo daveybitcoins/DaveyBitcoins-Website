@@ -183,7 +183,7 @@
 .btc-page .risk-card .risk-bar-bg {
   background: linear-gradient(
     90deg,
-    #599284 0 20%,
+    #6aa9ff 0 20%,
     #77c46d 20% 50%,
     #f68f1d 50% 80%,
     #ef5d50 80% 100%
@@ -207,7 +207,7 @@
 }
 
 .btc-page .risk-card .zone-labels [data-risk-zone="Accumulate"] {
-  color: #599284;
+  color: #6aa9ff;
 }
 
 .btc-page .risk-card .zone-labels [data-risk-zone="Neutral"] {
