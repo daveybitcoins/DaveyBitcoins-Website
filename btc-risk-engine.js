@@ -14,7 +14,7 @@ function themeColors() {
     axisText: light ? '#6d6a5f' : '#a59a88',
     regressionLine: light ? 'rgba(184,101,11,0.46)' : 'rgba(247,147,26,0.46)',
     zoneLabels: light ? '#837765' : '#a59a88',
-    zoneA: light ? 'rgba(114,192,106,0.06)' : 'rgba(114,192,106,0.07)',
+    zoneA: light ? 'rgba(22,137,255,0.07)' : 'rgba(22,137,255,0.09)',
     zoneB: light ? 'rgba(132,204,22,0.03)' : 'rgba(132,204,22,0.035)',
     zoneC: light ? 'rgba(247,147,26,0.04)' : 'rgba(247,147,26,0.05)',
     zoneD: light ? 'rgba(230,109,96,0.06)' : 'rgba(230,109,96,0.07)',
@@ -22,7 +22,7 @@ function themeColors() {
     barValueText: light ? '#211b12' : '#f8f2e6',
     areaGrad0: light ? 'rgba(230,109,96,0.14)' : 'rgba(230,109,96,0.18)',
     areaGrad5: light ? 'rgba(247,147,26,0.08)' : 'rgba(247,147,26,0.10)',
-    areaGrad1: light ? 'rgba(114,192,106,0.04)' : 'rgba(114,192,106,0.05)',
+    areaGrad1: light ? 'rgba(22,137,255,0.05)' : 'rgba(22,137,255,0.07)',
   };
 }
 
@@ -241,6 +241,7 @@ function normCdf(z) {
 
 function riskColor(r, a) {
   a = a || 1;
+  if (r < RISK_ZONES[0].max) return `rgba(22,137,255,${a})`;
   const stops = [[0,[104,130,156]],[0.16,[80,155,118]],[0.32,[88,197,111]],[0.48,[255,191,99]],[0.64,[247,147,26]],[0.78,[228,96,69]],[0.90,[239,93,79]],[1,[122,32,25]]];
   let lo=stops[0], hi=stops[stops.length-1];
   for (let i=0;i<stops.length-1;i++) { if(r>=stops[i][0]&&r<=stops[i+1][0]){lo=stops[i];hi=stops[i+1];break;} }
@@ -750,7 +751,7 @@ async function main() {
   hd.innerHTML = '<span style="width:6px;height:6px;background:#58c56f;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> coherent snapshot as of ' + last.date + (isLive ? ' · ' + isLive.source : ' · daily dataset');
   const currentRiskZone = riskZoneForScore(last.riskCombo);
   const currentRiskColor = {
-    Accumulate: '#6aa9ff',
+    Accumulate: '#1689ff',
     Neutral: '#77c46d',
     Caution: '#f68f1d',
     Euphoria: '#ef5d50'

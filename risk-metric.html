@@ -116,9 +116,13 @@
   [data-theme="light"] .risk-bar-needle{background:#211b12;box-shadow:0 0 10px rgba(0,0,0,0.3)}
   .zone-labels{display:flex;justify-content:space-between;margin-top:6px}
   .zone-labels span{font-size:0.5rem;color:var(--text-dimmer)}
-  .risk-card .risk-bar-bg{background:linear-gradient(90deg,#58c56f 0 20%,#ffbf63 20% 50%,#f7931a 50% 80%,#ef5d4f 80% 100%);opacity:.78}
+  .risk-card .risk-bar-bg{background:linear-gradient(90deg,#1689ff 0 20%,#77c46d 20% 50%,#f68f1d 50% 80%,#ef5d50 80% 100%);opacity:.78}
   .risk-card .zone-labels{display:grid;grid-template-columns:2fr 3fr 3fr 2fr;gap:0}
   .risk-card .zone-labels span{text-align:center;font-size:0.44rem}
+  .risk-card .zone-labels [data-risk-zone="Accumulate"]{color:#1689ff}
+  .risk-card .zone-labels [data-risk-zone="Neutral"]{color:#77c46d}
+  .risk-card .zone-labels [data-risk-zone="Caution"]{color:#f68f1d}
+  .risk-card .zone-labels [data-risk-zone="Euphoria"]{color:#ef5d50}
   .risk-card .zone-labels span.is-active{color:var(--risk-zone-color,var(--text-heading));font-weight:700}
   .chart-panel{background:rgba(20,19,15,0.74);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:28px;margin-bottom:24px;position:relative;transition:background 0.3s,border-color 0.3s}
   .chart-panel:hover{border-color:rgba(255,255,255,0.1)}
@@ -500,7 +504,7 @@ function themeColors() {
     axisText: light ? '#6d6a5f' : '#a59a88',
     regressionLine: light ? 'rgba(184,101,11,0.46)' : 'rgba(247,147,26,0.46)',
     zoneLabels: light ? '#837765' : '#a59a88',
-    zoneA: light ? 'rgba(114,192,106,0.06)' : 'rgba(114,192,106,0.07)',
+    zoneA: light ? 'rgba(22,137,255,0.07)' : 'rgba(22,137,255,0.09)',
     zoneB: light ? 'rgba(132,204,22,0.03)' : 'rgba(132,204,22,0.035)',
     zoneC: light ? 'rgba(247,147,26,0.04)' : 'rgba(247,147,26,0.05)',
     zoneD: light ? 'rgba(230,109,96,0.06)' : 'rgba(230,109,96,0.07)',
@@ -508,7 +512,7 @@ function themeColors() {
     barValueText: light ? '#211b12' : '#f8f2e6',
     areaGrad0: light ? 'rgba(230,109,96,0.14)' : 'rgba(230,109,96,0.18)',
     areaGrad5: light ? 'rgba(247,147,26,0.08)' : 'rgba(247,147,26,0.10)',
-    areaGrad1: light ? 'rgba(114,192,106,0.04)' : 'rgba(114,192,106,0.05)',
+    areaGrad1: light ? 'rgba(22,137,255,0.05)' : 'rgba(22,137,255,0.07)',
   };
 }
 
@@ -727,6 +731,7 @@ function normCdf(z) {
 
 function riskColor(r, a) {
   a = a || 1;
+  if (r < RISK_ZONES[0].max) return `rgba(22,137,255,${a})`;
   const stops = [[0,[104,130,156]],[0.16,[80,155,118]],[0.32,[88,197,111]],[0.48,[255,191,99]],[0.64,[247,147,26]],[0.78,[228,96,69]],[0.90,[239,93,79]],[1,[122,32,25]]];
   let lo=stops[0], hi=stops[stops.length-1];
   for (let i=0;i<stops.length-1;i++) { if(r>=stops[i][0]&&r<=stops[i+1][0]){lo=stops[i];hi=stops[i+1];break;} }
@@ -1236,7 +1241,7 @@ async function main() {
   hd.innerHTML = '<span style="width:6px;height:6px;background:#58c56f;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> coherent snapshot as of ' + last.date + (isLive ? ' · ' + isLive.source : ' · daily dataset');
   const currentRiskZone = riskZoneForScore(last.riskCombo);
   const currentRiskColor = {
-    Accumulate: '#6aa9ff',
+    Accumulate: '#1689ff',
     Neutral: '#77c46d',
     Caution: '#f68f1d',
     Euphoria: '#ef5d50'
