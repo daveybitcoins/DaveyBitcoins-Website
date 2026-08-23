@@ -1,8 +1,8 @@
 {
   "meta": {
-    "date": "2026-08-22",
+    "date": "2026-08-23",
     "total_stocks": 300,
-    "generated_at": "2026-08-22T21:18:14.297623",
+    "generated_at": "2026-08-23T15:19:34.527231",
     "index_etfs": [
       "SPY",
       "QQQ",
@@ -57,25 +57,25 @@
     {
       "symbol": "BTC",
       "name": "Bitcoin",
-      "price": 77075.0,
-      "ema8": 67194.85,
-      "ema13": 67411.16,
-      "ema21": 69368.03,
+      "price": 77123.0,
+      "ema8": 67205.52,
+      "ema13": 67418.02,
+      "ema21": 69372.4,
       "signal": "Bear Rally above 13W",
-      "price_vs_8w": 14.7,
-      "price_vs_13w": 14.34,
-      "price_vs_21w": 11.11,
+      "price_vs_8w": 14.76,
+      "price_vs_13w": 14.4,
+      "price_vs_21w": 11.17,
       "ema8_vs_13": -0.32,
       "ema13_vs_21": -2.82,
       "spread_score": -3.14,
-      "chg_1d": 5.44,
-      "chg_1w": 22.35,
-      "chg_1m": 16.64,
+      "chg_1d": -1.66,
+      "chg_1w": 22.38,
+      "chg_1m": 18.59,
       "crossover_alert": "8W just below 13W (0.32%) \u2014 bullish cross potential",
       "risk_combo": 0.227,
       "risk_mm": 0.213,
       "risk_zs": 0.242,
-      "fair_value": 142417.55,
+      "fair_value": 142507.05,
       "dev_pct": -45.9,
       "zone": "Neutral",
       "zone_color": "#10b981"
@@ -28429,7 +28429,7 @@
           "p20": 33.0,
           "p80": 74.1,
           "p90": 81.8,
-          "data_points": 2413
+          "data_points": 2414
         },
         {
           "field": "above_20d",
@@ -28445,7 +28445,7 @@
           "p20": 34.6,
           "p80": 76.4,
           "p90": 82.6,
-          "data_points": 4955
+          "data_points": 4956
         },
         {
           "field": "above_50d",
@@ -28461,7 +28461,7 @@
           "p20": 39.0,
           "p80": 76.1,
           "p90": 82.0,
-          "data_points": 4955
+          "data_points": 4956
         },
         {
           "field": "above_200d",
@@ -28477,12 +28477,12 @@
           "p20": 44.7,
           "p80": 79.1,
           "p90": 86.7,
-          "data_points": 4955
+          "data_points": 4956
         }
       ],
       "composite_score": 52.1,
       "composite_zone": "Neutral",
-      "history_days": 4955,
+      "history_days": 4956,
       "forward_returns": []
     }
   },
