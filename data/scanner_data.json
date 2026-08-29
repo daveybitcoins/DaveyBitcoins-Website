@@ -1,8 +1,8 @@
 {
   "meta": {
-    "date": "2026-08-28",
+    "date": "2026-08-29",
     "total_stocks": 300,
-    "generated_at": "2026-08-28T23:51:24.271018",
+    "generated_at": "2026-08-29T03:03:58.540200",
     "index_etfs": [
       "SPY",
       "QQQ",
@@ -57,25 +57,25 @@
     {
       "symbol": "BTC",
       "name": "Bitcoin",
-      "price": 77639.0,
-      "ema8": 69521.68,
-      "ema13": 68876.47,
-      "ema21": 70122.76,
+      "price": 77704.0,
+      "ema8": 69536.12,
+      "ema13": 68885.75,
+      "ema21": 70128.67,
       "signal": "Bullish (unstacked)",
-      "price_vs_8w": 11.68,
-      "price_vs_13w": 12.72,
-      "price_vs_21w": 10.72,
+      "price_vs_8w": 11.75,
+      "price_vs_13w": 12.8,
+      "price_vs_21w": 10.8,
       "ema8_vs_13": 0.94,
-      "ema13_vs_21": -1.78,
-      "spread_score": -0.84,
-      "chg_1d": -1.75,
-      "chg_1w": 6.21,
-      "chg_1m": 21.39,
+      "ema13_vs_21": -1.77,
+      "spread_score": -0.83,
+      "chg_1d": -3.19,
+      "chg_1w": -0.92,
+      "chg_1m": 21.54,
       "crossover_alert": "8W just above 13W (0.94%) \u2014 bearish cross risk",
       "risk_combo": 0.229,
       "risk_mm": 0.215,
       "risk_zs": 0.245,
-      "fair_value": 142954.1,
+      "fair_value": 143045.04,
       "dev_pct": -45.7,
       "zone": "Neutral",
       "zone_color": "#10b981"
@@ -4847,7 +4847,7 @@
       "chg_1w": 1.05,
       "chg_1m": 10.58,
       "chg_ytd": -1.85,
-      "rel_vol": 1.23,
+      "rel_vol": 1.24,
       "signal": "Bullish (unstacked)",
       "price_vs_8w": 4.31,
       "price_vs_13w": 4.75,
@@ -5727,7 +5727,7 @@
       "chg_1w": 1.32,
       "chg_1m": -1.19,
       "chg_ytd": 1.06,
-      "rel_vol": 1.19,
+      "rel_vol": 1.18,
       "signal": "Full Bull",
       "price_vs_8w": 0.69,
       "price_vs_13w": 1.28,
@@ -15684,7 +15684,7 @@
       "chg_1w": 1.32,
       "chg_1m": -1.19,
       "chg_ytd": 1.06,
-      "rel_vol": 1.19,
+      "rel_vol": 1.18,
       "signal": "Full Bull",
       "price_vs_8w": 0.69,
       "price_vs_13w": 1.28,
@@ -19582,7 +19582,7 @@
       "chg_1w": 1.32,
       "chg_1m": -1.19,
       "chg_ytd": 1.06,
-      "rel_vol": 1.19,
+      "rel_vol": 1.18,
       "signal": "Full Bull",
       "price_vs_8w": 0.69,
       "price_vs_13w": 1.28,
@@ -25558,7 +25558,7 @@
       "chg_1w": 1.05,
       "chg_1m": 10.58,
       "chg_ytd": -1.85,
-      "rel_vol": 1.23,
+      "rel_vol": 1.24,
       "signal": "Bullish (unstacked)",
       "price_vs_8w": 4.31,
       "price_vs_13w": 4.75,
@@ -26176,7 +26176,7 @@
       "chg_1w": 1.32,
       "chg_1m": -1.19,
       "chg_ytd": 1.06,
-      "rel_vol": 1.19,
+      "rel_vol": 1.18,
       "signal": "Full Bull",
       "price_vs_8w": 0.69,
       "price_vs_13w": 1.28,
@@ -27761,7 +27761,7 @@
           "p20": 33.0,
           "p80": 74.0,
           "p90": 81.8,
-          "data_points": 2419
+          "data_points": 2420
         },
         {
           "field": "above_20d",
@@ -27777,7 +27777,7 @@
           "p20": 34.6,
           "p80": 76.4,
           "p90": 82.6,
-          "data_points": 4961
+          "data_points": 4962
         },
         {
           "field": "above_50d",
@@ -27793,7 +27793,7 @@
           "p20": 39.0,
           "p80": 76.1,
           "p90": 82.0,
-          "data_points": 4961
+          "data_points": 4962
         },
         {
           "field": "above_200d",
@@ -27809,12 +27809,12 @@
           "p20": 44.8,
           "p80": 79.2,
           "p90": 86.7,
-          "data_points": 4961
+          "data_points": 4962
         }
       ],
       "composite_score": 45.8,
       "composite_zone": "Neutral",
-      "history_days": 4961,
+      "history_days": 4962,
       "forward_returns": []
     }
   },
