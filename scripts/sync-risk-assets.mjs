@@ -92,13 +92,12 @@ function syncBitcoinDashboard() {
       if (!document.querySelector('[data-risk-dashboard="btc"]')) return;`,
     )
     .replace(
-      /  \/\/ ====== THEME TOGGLE ======\n  \(function\(\)\{\n    if \(!window\.DaveyTheme\) return;\n    window\.DaveyTheme\.init\(\{ onChange: function\(\) \{\n      renderAll\(\);\n      renderMidtermChart\(\);\n      if \(window\._renderMa200d\) window\._renderMa200d\(\);\n    \}\}\);\n  \}\)\(\);/,
+      /  \/\/ ====== THEME TOGGLE ======\n  \(function\(\)\{\n    if \(!window\.DaveyTheme\) return;\n    window\.DaveyTheme\.init\(\{ onChange: function\(\) \{\n      renderAll\(\);\n      renderMidtermChart\(\);\n    \}\}\);\n  \}\)\(\);/,
       `  // Repaint canvas charts when the shared Next.js theme changes.
   window.addEventListener('davey-theme-change', function() {
     if (!document.querySelector('[data-risk-dashboard="btc"]')) return;
     renderAll();
     renderMidtermChart();
-    if (window._renderMa200d) window._renderMa200d();
   });`,
     );
 

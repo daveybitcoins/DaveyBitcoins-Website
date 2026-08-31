@@ -104,23 +104,11 @@
   .moving-average-item{background:color-mix(in srgb,var(--bg) 66%,transparent);border:1px solid var(--border-light);padding:14px 12px;text-align:center}
   .moving-average-period{font-size:0.62rem;color:var(--accent-blue);font-weight:600;letter-spacing:1px;margin-bottom:7px}
   .moving-average-value{font-family:'IBM Plex Mono','JetBrains Mono',monospace;font-size:1rem;color:var(--text-heading);font-weight:600}
-  .ma200d-analysis{margin-bottom:24px;text-align:left}
-  .ma200d-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:32px}
-  .ma200d-heading h2,.ma200d-heading p{margin:0}.ma200d-heading>p{max-width:650px;color:var(--text-dim);font-size:.66rem;line-height:1.65}
-  .ma200d-stat-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-top:16px}
-  .ma200d-stat-grid>div{min-width:0;padding:12px;border:1px solid var(--border-light);background:color-mix(in srgb,var(--bg) 66%,transparent)}
-  .ma200d-stat-grid span,.ma200d-stat-grid strong{display:block}.ma200d-stat-grid span{color:var(--text-dimmer);font-size:.5rem;letter-spacing:.06em;text-transform:uppercase}
-  .ma200d-stat-grid strong{margin-top:6px;color:var(--text-heading);font-size:.88rem;line-height:1.25}.ma200d-regime-card strong{color:var(--ma200d-regime-color,var(--accent))}
-  .ma200d-chart-wrap{margin-top:16px;padding:14px;border:1px solid var(--border-light);background:var(--canvas-bg)}
-  #ma200dCanvas{display:block;width:100%;height:auto;margin-top:12px}.ma200d-turns-scroll{margin-top:16px;overflow-x:auto}
-  .ma200d-turns-table{width:100%;min-width:680px;border-collapse:collapse}.ma200d-note{margin:12px 0 0;color:var(--text-dimmer);font-size:.56rem;line-height:1.6}
   @media(max-width:900px){.moving-averages-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-  @media(max-width:900px){.ma200d-stat-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
   @media(max-width:520px){
     .moving-averages-head{align-items:flex-start;flex-direction:column;gap:5px}
     .moving-averages-head .card-sub{text-align:left}
     .moving-averages-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .ma200d-heading{align-items:flex-start;flex-direction:column;gap:10px}.ma200d-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   }
   .risk-bar-wrap{margin-top:14px;position:relative;height:8px;border-radius:4px;overflow:visible}
   .risk-bar-bg{position:absolute;top:0;left:0;right:0;bottom:0;border-radius:4px;background:linear-gradient(90deg,#9fb4c7 0%,#ffbf63 15%,#58c56f 30%,#58c56f 45%,#ffbf63 60%,#f7931a 75%,#ef5d4f 90%,#7a2019 100%)}
@@ -279,7 +267,7 @@
   table th,.proj-table th,.risk-lows-table th,.pe-proj-table th,.trade-table th{color:var(--accent-blue);font-family:'IBM Plex Mono','JetBrains Mono',monospace}
   table td,.proj-table td,.risk-lows-table td,.pe-proj-table td,.trade-table td{border-bottom-color:var(--border-light)}
   #headerDate{border-color:rgba(247,147,26,0.24)!important;background:rgba(247,147,26,0.07)!important;font-family:'IBM Plex Mono','JetBrains Mono',monospace!important}
-  #summary,#movingAveragesCard,#ma200d-analysis,#model-snapshot,#risk-levels,#market-caps,#fair-value,#historical-lows,#price-chart,#risk-oscillator,#midterm-cycles,#methodology{scroll-margin-top:92px}
+  #summary,#movingAveragesCard,#model-snapshot,#risk-levels,#market-caps,#fair-value,#historical-lows,#price-chart,#risk-oscillator,#midterm-cycles,#methodology{scroll-margin-top:92px}
   .risk-section-nav{display:none;position:fixed;top:24px;left:24px;z-index:40;width:160px;padding:14px;border:1px solid var(--border);background:color-mix(in srgb,var(--bg-card) 92%,transparent);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
   .risk-section-nav__label{display:block;padding:0 7px 10px;border-bottom:1px solid var(--border);color:var(--text-dimmer);font-size:0.52rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
   .risk-section-nav__links{display:grid;gap:2px;padding-top:9px}
@@ -304,16 +292,15 @@
   <nav class="risk-section-nav__links">
     <a href="#summary"><span aria-hidden="true">01</span>Summary</a>
     <a href="#movingAveragesCard"><span aria-hidden="true">02</span>Moving averages</a>
-    <a href="#ma200d-analysis"><span aria-hidden="true">03</span>200D trend</a>
-    <a href="#model-snapshot"><span aria-hidden="true">04</span>Model snapshot</a>
-    <a href="#risk-levels"><span aria-hidden="true">05</span>Risk levels</a>
-    <a href="#market-caps"><span aria-hidden="true">06</span>Market caps</a>
-    <a href="#fair-value"><span aria-hidden="true">07</span>Fair value</a>
-    <a href="#historical-lows"><span aria-hidden="true">08</span>Historical lows</a>
-    <a href="#price-chart"><span aria-hidden="true">09</span>Price chart</a>
-    <a href="#risk-oscillator"><span aria-hidden="true">10</span>Risk oscillator</a>
-    <a href="#midterm-cycles"><span aria-hidden="true">11</span>Midterm cycles</a>
-    <a href="#methodology"><span aria-hidden="true">12</span>Methodology</a>
+    <a href="#model-snapshot"><span aria-hidden="true">03</span>Model snapshot</a>
+    <a href="#risk-levels"><span aria-hidden="true">04</span>Risk levels</a>
+    <a href="#fair-value"><span aria-hidden="true">05</span>Fair value</a>
+    <a href="#historical-lows"><span aria-hidden="true">06</span>Historical lows</a>
+    <a href="#price-chart"><span aria-hidden="true">07</span>Price chart</a>
+    <a href="#risk-oscillator"><span aria-hidden="true">08</span>Risk oscillator</a>
+    <a href="#midterm-cycles"><span aria-hidden="true">09</span>Midterm cycles</a>
+    <a href="#methodology"><span aria-hidden="true">10</span>Methodology</a>
+    <a href="#market-caps"><span aria-hidden="true">11</span>Market caps</a>
   </nav>
 </aside>
 <div class="container" style="position:relative;z-index:2;">
@@ -375,28 +362,6 @@
       <div class="moving-average-item"><div class="moving-average-period">300W</div><div class="moving-average-value" id="vMa300W">—</div></div>
     </div>
   </div>
-  <section class="chart-card ma200d-analysis" id="ma200d-analysis">
-    <div class="ma200d-heading">
-      <div><div class="card-label">Daily Trend Regime</div><h2>200-Day Average: Bear Reset &amp; Turn</h2></div>
-      <p>Annual momentum identifies whether the 200D is emerging from a bear-market reset. The 30-day change provides the turn trigger.</p>
-    </div>
-    <div class="ma200d-stat-grid">
-      <div><span>200D average</span><strong id="vMa200D">—</strong></div>
-      <div><span>Price vs 200D</span><strong id="vMa200DPriceGap">—</strong></div>
-      <div><span>12-month MA change</span><strong id="vMa200DAnnualChange">—</strong></div>
-      <div><span>30-day turn trigger</span><strong id="vMa200DSlope30">—</strong></div>
-      <div class="ma200d-regime-card"><span>Current regime</span><strong id="vMa200DRegime">—</strong></div>
-      <div><span>Last post-bear turn</span><strong id="vMa200DLastTurn">—</strong></div>
-    </div>
-    <div class="ma200d-chart-wrap">
-      <div class="chart-header"><div><div class="chart-label">12-Month Change in the 200D Average</div></div><div class="chart-note">Below −25% = bear reset · blue dots = post-bear turns · orange = reaccelerations</div></div>
-      <canvas id="ma200dCanvas" width="1380" height="360"></canvas>
-    </div>
-    <div class="ma200d-turns-scroll">
-      <table class="ma200d-turns-table"><thead><tr><th>Upward Turn</th><th>Type</th><th>12M MA Change</th><th>Price vs 200D</th><th>6M Return</th><th>1Y Return</th></tr></thead><tbody id="ma200dTurnsBody"></tbody></table>
-    </div>
-    <p class="ma200d-note">A post-bear turn requires annual 200D momentum at or below −25% when the 30-day change crosses above zero. Crossings outside that reset zone are labeled bull reaccelerations. Historical returns are descriptive, not forecasts or entry signals.</p>
-  </section>
   <div class="model-snapshot" id="model-snapshot">
     <div class="model-snapshot-head">
       <div>
@@ -424,21 +389,6 @@
   <div class="risk-table-wrap" id="risk-levels">
     <h4>Price at Each Risk Level (Combined)</h4>
     <div class="risk-table" id="riskTable"></div>
-  </div>
-  <div class="proj-table-wrap" id="market-caps">
-    <h4>BTC Price at Market Caps</h4>
-    <div class="market-cap-meta">
-      <div>Mined Supply Estimate: <span id="currentSupply">—</span></div>
-      <div>Block Height: <span id="currentSupplyHeight">—</span></div>
-    </div>
-    <div class="market-cap-scroll">
-      <table class="proj-table" id="marketCapTable">
-        <thead>
-          <tr><th>Market Cap</th><th>BTC Price</th><th>Move from Today</th></tr>
-        </thead>
-        <tbody id="marketCapBody"></tbody>
-      </table>
-    </div>
   </div>
   <div class="proj-table-wrap" id="fair-value">
     <h4>Bitcoin Market-Cap-Adjusted Power-Law Fair Value</h4>
@@ -515,11 +465,25 @@
     <p><span class="hl">Power-Law Regression:</span> <code>log₁₀(price)</code> vs <code>log₁₀(days since Jan 3 2009)</code>. The smooth chart line uses the fixed full-history curve. Readings begin after a 30-observation warm-up, then historical risk uses an as-of regression at each date so past readings are not calibrated with future prices.</p>
     <p><span class="hl">Structural Risk (Decaying Envelope):</span> Normalizes the residual against a time-decaying upper envelope fitted from cycle peaks, with a continuous 0.005 floor. The max deviation capacity shrinks as Bitcoin matures.</p>
     <p><span class="hl">Momentum Risk (Rolling Z-Score → CDF):</span> 4-year rolling z-score mapped through Gaussian CDF. Cycle-sensitive, adapts to declining volatility.</p>
-    <p><span class="hl">200D Trend:</span> Uses the arithmetic mean of the latest 200 daily closes. The 12-month change identifies a bear reset at −25% or lower; the 30-day change crossing above zero marks a turn. Crossings inside and outside the reset zone are labeled post-bear turns and bull reaccelerations, respectively.</p>
     <p><span class="hl">Combined:</span> Geometric mean √(S × M) of both. Zones are Accumulate 0.00–0.20, Neutral 0.20–0.50, Caution 0.50–0.80, and Euphoria 0.80–1.00 everywhere on the site.</p>
     <p><span class="hl">Halving Countdown:</span> Uses the current Bitcoin block height when available, targets the next 210,000-block subsidy epoch, and estimates the date at 10 minutes per block. If the height API is unavailable, it falls back to a clock-based estimate from block 840,000.</p>
     <p><span class="hl">Bear Market Progress:</span> Starts from the latest all-time high, compares elapsed days with the average duration of Bitcoin's four completed bear markets, and estimates a downside range from the model's lower boundary on the average-duration target date to the lowest close since the current cycle high.</p>
     <p><span class="hl">Updates:</span> The source price dataset is refreshed daily by automation. On page load, the page fetches a current BTC quote and recalculates every card, chart, table, and projection as one coherent snapshot. Use the snapshot refresh control for a new quote; the price is never updated independently from its dependent metrics. Tabs left open reload after a new UTC day begins.</p>
+  </div>
+  <div class="proj-table-wrap" id="market-caps">
+    <h4>BTC Price at Market Caps</h4>
+    <div class="market-cap-meta">
+      <div>Mined Supply Estimate: <span id="currentSupply">—</span></div>
+      <div>Block Height: <span id="currentSupplyHeight">—</span></div>
+    </div>
+    <div class="market-cap-scroll">
+      <table class="proj-table" id="marketCapTable">
+        <thead>
+          <tr><th>Market Cap</th><th>BTC Price</th><th>Move from Today</th></tr>
+        </thead>
+        <tbody id="marketCapBody"></tbody>
+      </table>
+    </div>
   </div>
   <footer>
     Not financial advice
@@ -603,186 +567,6 @@ function renderWeeklyMovingAverages(rawData) {
     card.dataset.weeklyObservations = String(weeklyCloses.length);
     card.dataset.latestWeeklyClose = latest ? latest.date : '';
   }
-}
-
-function calculate200DayAnalysis(rawData) {
-  const daily = rawData
-    .map(([date, price]) => ({ date, price }))
-    .filter(point => Number.isFinite(point.price) && point.price > 0);
-  const averages = new Array(daily.length).fill(null);
-  let rollingSum = 0;
-  for (let i = 0; i < daily.length; i++) {
-    rollingSum += daily[i].price;
-    if (i >= 200) rollingSum -= daily[i - 200].price;
-    if (i >= 199) averages[i] = rollingSum / 200;
-  }
-
-  const points = [];
-  for (let i = 199; i < daily.length; i++) {
-    const average = averages[i];
-    const slope30 = i >= 229 && averages[i - 30]
-      ? (average / averages[i - 30] - 1) * 100
-      : null;
-    const slope90 = i >= 289 && averages[i - 90]
-      ? (average / averages[i - 90] - 1) * 100
-      : null;
-    const annualChange = i >= 564 && averages[i - 365]
-      ? (average / averages[i - 365] - 1) * 100
-      : null;
-    points.push({
-      date: daily[i].date,
-      price: daily[i].price,
-      average,
-      priceGap: (daily[i].price / average - 1) * 100,
-      slope30,
-      slope90,
-      annualChange,
-      sourceIndex: i,
-    });
-  }
-
-  const turns = [];
-  let priorTurnSourceIndex = -Infinity;
-  for (let i = 1; i < points.length; i++) {
-    const previous = points[i - 1];
-    const current = points[i];
-    if (!Number.isFinite(previous.slope30) || !Number.isFinite(current.slope30)) continue;
-    if (previous.slope30 <= 0 && current.slope30 > 0 && current.sourceIndex - priorTurnSourceIndex >= 120) {
-      const returnAt = offset => {
-        const future = daily[current.sourceIndex + offset];
-        return future ? (future.price / current.price - 1) * 100 : null;
-      };
-      turns.push(Object.assign({}, current, {
-        type: current.annualChange <= -25 ? 'Post-bear turn' : 'Bull reacceleration',
-        return6m: returnAt(182),
-        return1y: returnAt(365),
-      }));
-      priorTurnSourceIndex = current.sourceIndex;
-    }
-  }
-  return { daily, points, turns };
-}
-
-function signedPercent(value, digits) {
-  if (!Number.isFinite(value)) return '—';
-  return (value >= 0 ? '+' : '') + value.toFixed(digits == null ? 1 : digits) + '%';
-}
-
-function render200DayAnalysis(rawData) {
-  const analysis = calculate200DayAnalysis(rawData);
-  const latest = analysis.points[analysis.points.length - 1];
-  const section = document.getElementById('ma200d-analysis');
-  if (!latest || !section) return;
-
-  const rising = latest.slope30 >= 0;
-  const reset = latest.annualChange <= -25;
-  const latestPointIndex = analysis.points.length - 1;
-  const annualChange30DaysAgo = analysis.points[Math.max(0, latestPointIndex - 30)].annualChange;
-  const annualImproving = Number.isFinite(annualChange30DaysAgo) && latest.annualChange > annualChange30DaysAgo;
-  let positiveDays = 0;
-  for (let i = latestPointIndex; i >= 0 && analysis.points[i].slope30 > 0; i--) positiveDays++;
-  const regime = reset
-    ? rising
-      ? positiveDays >= 30
-        ? { name: 'Confirmed post-bear turn', color: '#58c56f' }
-        : { name: 'Post-bear candidate', color: '#6aa9ff' }
-      : annualImproving
-        ? { name: 'Bottoming watch', color: '#6aa9ff' }
-        : { name: 'Bear reset', color: '#ef5d4f' }
-    : rising
-      ? { name: 'Bull reacceleration', color: '#58c56f' }
-      : { name: 'Cycle cooling', color: '#ffbf63' };
-  const latestTurn = analysis.turns.filter(turn => turn.type === 'Post-bear turn').at(-1);
-  const valueMap = {
-    vMa200D: '$' + latest.average.toLocaleString(undefined, { maximumFractionDigits: 0 }),
-    vMa200DPriceGap: signedPercent(latest.priceGap, 1),
-    vMa200DAnnualChange: signedPercent(latest.annualChange, 1),
-    vMa200DSlope30: signedPercent(latest.slope30, 2),
-    vMa200DRegime: regime.name,
-    vMa200DLastTurn: latestTurn ? latestTurn.date : '—',
-  };
-  Object.keys(valueMap).forEach(id => {
-    const element = document.getElementById(id);
-    if (element) element.textContent = valueMap[id];
-  });
-  const regimeCard = section.querySelector('.ma200d-regime-card');
-  if (regimeCard) regimeCard.style.setProperty('--ma200d-regime-color', regime.color);
-  section.dataset.slope30 = latest.slope30.toFixed(6);
-  section.dataset.annualChange = latest.annualChange.toFixed(6);
-  section.dataset.priceGap = latest.priceGap.toFixed(6);
-  section.dataset.regime = regime.name.toLowerCase().replace(/\s+/g, '-');
-  section.dataset.turns = String(analysis.turns.length);
-
-  const body = document.getElementById('ma200dTurnsBody');
-  if (body) {
-    body.innerHTML = analysis.turns.slice(-6).reverse().map(turn =>
-      '<tr><td>' + turn.date + '</td>' +
-      '<td>' + turn.type + '</td>' +
-      '<td>' + signedPercent(turn.annualChange, 1) + '</td>' +
-      '<td>' + signedPercent(turn.priceGap, 1) + '</td>' +
-      '<td>' + signedPercent(turn.return6m, 1) + '</td>' +
-      '<td>' + signedPercent(turn.return1y, 1) + '</td></tr>'
-    ).join('');
-  }
-
-  window._renderMa200d = function() {
-    const canvas = document.getElementById('ma200dCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const series = analysis.points.filter(point => point.date >= '2014-01-01' && Number.isFinite(point.annualChange));
-    if (series.length < 2) return;
-    const W = canvas.width, H = canvas.height;
-    const P = { t: 24, r: 28, b: 42, l: 72 };
-    const cw = W - P.l - P.r, ch = H - P.t - P.b;
-    const tc = themeColors();
-    const scaleMin = -75, scaleMax = 175;
-    const clipped = value => Math.max(scaleMin, Math.min(scaleMax, value));
-    const xOf = index => P.l + index / (series.length - 1) * cw;
-    const yOf = value => P.t + (scaleMax - clipped(value)) / (scaleMax - scaleMin) * ch;
-    ctx.fillStyle = tc.canvasBg;
-    ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = tc.zoneA;
-    ctx.fillRect(P.l, yOf(-25), cw, yOf(scaleMin) - yOf(-25));
-    [-75, -25, 0, 75, 175].forEach(value => {
-      const y = yOf(value);
-      ctx.strokeStyle = value === 0 || value === -25 ? tc.gridZero : tc.gridLine;
-      ctx.lineWidth = value === 0 || value === -25 ? 1.5 : 1;
-      ctx.beginPath(); ctx.moveTo(P.l, y); ctx.lineTo(W - P.r, y); ctx.stroke();
-      ctx.fillStyle = tc.axisText; ctx.font = '10px JetBrains Mono'; ctx.textAlign = 'right';
-      ctx.fillText((value > 0 ? '+' : '') + value.toFixed(0) + '%', P.l - 8, y + 3);
-    });
-    let priorYear = '';
-    series.forEach((point, index) => {
-      const year = point.date.slice(0, 4);
-      if (year !== priorYear && point.date.slice(5, 7) === '01') {
-        const x = xOf(index);
-        ctx.strokeStyle = tc.gridLine; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(x, P.t); ctx.lineTo(x, H - P.b); ctx.stroke();
-        ctx.fillStyle = tc.axisText; ctx.textAlign = 'center'; ctx.font = '10px JetBrains Mono';
-        ctx.fillText(year, x, H - P.b + 18);
-        priorYear = year;
-      }
-    });
-    for (let i = 1; i < series.length; i++) {
-      ctx.strokeStyle = series[i].annualChange <= -25 ? '#6aa9ff' : series[i].annualChange >= 0 ? '#f7931a' : '#ffbf63';
-      ctx.lineWidth = 1.8;
-      ctx.beginPath(); ctx.moveTo(xOf(i - 1), yOf(series[i - 1].annualChange));
-      ctx.lineTo(xOf(i), yOf(series[i].annualChange)); ctx.stroke();
-    }
-    const indexByDate = new Map(series.map((point, index) => [point.date, index]));
-    analysis.turns.forEach(turn => {
-      const index = indexByDate.get(turn.date);
-      if (index == null) return;
-      ctx.fillStyle = turn.type === 'Post-bear turn' ? '#6aa9ff' : '#f7931a';
-      ctx.strokeStyle = tc.canvasBg; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.arc(xOf(index), yOf(turn.annualChange), 4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    });
-    canvas.dataset.seriesPoints = String(series.length);
-    canvas.dataset.turnCount = String(analysis.turns.length);
-    canvas.dataset.latestSlope = latest.slope30.toFixed(6);
-    canvas.dataset.latestAnnualChange = latest.annualChange.toFixed(6);
-  };
-  window._renderMa200d();
 }
 
 async function fetchWithTimeout(url, options, timeoutMs) {
@@ -1482,7 +1266,6 @@ async function main() {
   document.getElementById('vDev').textContent = (devPct>0?'+':'') + devPct + '%';
   document.getElementById('needle').style.left = (last.riskCombo*100)+'%';
   renderWeeklyMovingAverages(rawData);
-  render200DayAnalysis(rawData);
   renderModelSnapshot(pts, slope, last, live);
   renderBearMarketProgress(pts, slope, intercept);
   const fallbackSupplyHeight = fallbackBlockHeight(Date.now());
@@ -2374,7 +2157,6 @@ async function main() {
     window.DaveyTheme.init({ onChange: function() {
       renderAll();
       renderMidtermChart();
-      if (window._renderMa200d) window._renderMa200d();
     }});
   })();
 }

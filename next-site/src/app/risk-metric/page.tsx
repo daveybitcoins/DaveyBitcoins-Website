@@ -95,16 +95,15 @@ const movingAverages = [8, 13, 21, 50, 200, 300];
 const sectionLinks = [
   ["summary", "Summary"],
   ["movingAveragesCard", "Moving averages"],
-  ["ma200d-analysis", "200D trend"],
   ["model-snapshot", "Model snapshot"],
   ["risk-levels", "Risk levels"],
-  ["market-caps", "Market caps"],
   ["fair-value", "Fair value"],
   ["historical-lows", "Historical lows"],
   ["price-chart", "Price chart"],
   ["risk-oscillator", "Risk oscillator"],
   ["midterm-cycles", "Midterm cycles"],
   ["methodology", "Methodology"],
+  ["market-caps", "Market caps"],
 ] as const;
 
 export default function BitcoinRiskMetricPage() {
@@ -248,48 +247,6 @@ export default function BitcoinRiskMetricPage() {
           </div>
         </section>
 
-        <section className="spy-panel ma200d-analysis" id="ma200d-analysis">
-          <div className="ma200d-heading">
-            <div>
-              <p className="spy-kicker">Daily trend regime</p>
-              <h2>200-Day Average: Bear Reset &amp; Turn</h2>
-            </div>
-            <p>
-              Annual momentum identifies whether the 200D is emerging from a
-              bear-market reset. The 30-day change provides the turn trigger.
-            </p>
-          </div>
-          <div className="ma200d-stat-grid">
-            <div><span>200D average</span><strong id="vMa200D">—</strong></div>
-            <div><span>Price vs 200D</span><strong id="vMa200DPriceGap">—</strong></div>
-            <div><span>12-month MA change</span><strong id="vMa200DAnnualChange">—</strong></div>
-            <div><span>30-day turn trigger</span><strong id="vMa200DSlope30">—</strong></div>
-            <div className="ma200d-regime-card">
-              <span>Current regime</span><strong id="vMa200DRegime">—</strong>
-            </div>
-            <div><span>Last post-bear turn</span><strong id="vMa200DLastTurn">—</strong></div>
-          </div>
-          <div className="ma200d-chart-wrap">
-            <div className="chart-header">
-              <div><h3 className="chart-label">12-Month Change in the 200D Average</h3></div>
-              <div className="chart-note">Below −25% = bear reset · blue dots = post-bear turns · orange = reaccelerations</div>
-            </div>
-            <canvas id="ma200dCanvas" width="1380" height="360" />
-          </div>
-          <div className="spy-table-scroll ma200d-turns-scroll">
-            <table className="ma200d-turns-table">
-              <thead><tr><th>Upward Turn</th><th>Type</th><th>12M MA Change</th><th>Price vs 200D</th><th>6M Return</th><th>1Y Return</th></tr></thead>
-              <tbody id="ma200dTurnsBody" />
-            </table>
-          </div>
-          <p className="ma200d-note">
-            A post-bear turn requires annual 200D momentum at or below −25%
-            when the 30-day change crosses above zero. Crossings outside that
-            reset zone are labeled bull reaccelerations. Historical returns are
-            descriptive, not forecasts or entry signals.
-          </p>
-        </section>
-
         <section className="spy-panel model-snapshot" id="model-snapshot">
           <div className="model-snapshot-head">
             <div>
@@ -364,38 +321,6 @@ export default function BitcoinRiskMetricPage() {
             </p>
           </div>
           <div className="risk-table" id="riskTable" />
-        </section>
-
-        <section className="spy-panel proj-table-wrap" id="market-caps">
-          <div className="spy-section-heading">
-            <div>
-              <h2>BTC Price at Market Caps</h2>
-            </div>
-            <p>
-              Converts market-cap milestones into a per-Bitcoin price using the
-              current circulating supply.
-            </p>
-          </div>
-          <div className="market-cap-meta">
-            <div>
-              Mined Supply Estimate: <span id="currentSupply">—</span>
-            </div>
-            <div>
-              Block Height: <span id="currentSupplyHeight">—</span>
-            </div>
-          </div>
-          <div className="market-cap-scroll">
-            <table className="proj-table" id="marketCapTable">
-              <thead>
-                <tr>
-                  <th>Market Cap</th>
-                  <th>BTC Price</th>
-                  <th>Move from Today</th>
-                </tr>
-              </thead>
-              <tbody id="marketCapBody" />
-            </table>
-          </div>
         </section>
 
         <section className="spy-panel proj-table-wrap" id="fair-value">
@@ -605,13 +530,6 @@ export default function BitcoinRiskMetricPage() {
               volatility.
             </p>
             <p>
-              <span className="hl">200D Trend:</span> Uses the arithmetic mean
-              of the latest 200 daily closes. The 12-month change identifies a
-              bear reset at −25% or lower; the 30-day change crossing above zero
-              marks a turn. Crossings inside and outside the reset zone are
-              labeled post-bear turns and bull reaccelerations, respectively.
-            </p>
-            <p>
               <span className="hl">Combined:</span> Geometric mean √(S × M).
               When either frame indicates low risk, the combined reading is
               pulled lower. Zones are Accumulate 0.00–0.20, Neutral 0.20–0.50,
@@ -639,9 +557,41 @@ export default function BitcoinRiskMetricPage() {
           </div>
         </section>
 
+        <section className="spy-panel proj-table-wrap" id="market-caps">
+          <div className="spy-section-heading">
+            <div>
+              <h2>BTC Price at Market Caps</h2>
+            </div>
+            <p>
+              Converts market-cap milestones into a per-Bitcoin price using the
+              current circulating supply.
+            </p>
+          </div>
+          <div className="market-cap-meta">
+            <div>
+              Mined Supply Estimate: <span id="currentSupply">—</span>
+            </div>
+            <div>
+              Block Height: <span id="currentSupplyHeight">—</span>
+            </div>
+          </div>
+          <div className="market-cap-scroll">
+            <table className="proj-table" id="marketCapTable">
+              <thead>
+                <tr>
+                  <th>Market Cap</th>
+                  <th>BTC Price</th>
+                  <th>Move from Today</th>
+                </tr>
+              </thead>
+              <tbody id="marketCapBody" />
+            </table>
+          </div>
+        </section>
+
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20260831-200d-annual" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20260831-market-caps-bottom" strategy="afterInteractive" />
     </main>
   );
 }

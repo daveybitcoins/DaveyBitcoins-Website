@@ -342,97 +342,6 @@
   font-weight: 700;
 }
 
-.btc-page .ma200d-analysis {
-  margin-top: 1rem;
-}
-
-.btc-page .ma200d-heading {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 2rem;
-}
-
-.btc-page .ma200d-heading h2,
-.btc-page .ma200d-heading p {
-  margin: 0;
-}
-
-.btc-page .ma200d-heading > p {
-  max-width: 650px;
-  color: var(--spy-muted);
-  font-size: 0.66rem;
-  line-height: 1.65;
-}
-
-.btc-page .ma200d-stat-grid {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 0.6rem;
-  margin-top: 1rem;
-}
-
-.btc-page .ma200d-stat-grid > div {
-  min-width: 0;
-  padding: 0.75rem;
-  border: 1px solid var(--spy-border);
-  background: color-mix(in srgb, var(--spy-canvas) 82%, transparent);
-}
-
-.btc-page .ma200d-stat-grid span,
-.btc-page .ma200d-stat-grid strong {
-  display: block;
-}
-
-.btc-page .ma200d-stat-grid span {
-  color: var(--spy-faint);
-  font-size: 0.5rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.btc-page .ma200d-stat-grid strong {
-  margin-top: 0.4rem;
-  color: var(--spy-text);
-  font-size: 0.88rem;
-  line-height: 1.25;
-}
-
-.btc-page .ma200d-regime-card strong {
-  color: var(--ma200d-regime-color, var(--spy-orange));
-}
-
-.btc-page .ma200d-chart-wrap {
-  margin-top: 1rem;
-  padding: 0.9rem;
-  border: 1px solid var(--spy-border);
-  background: var(--spy-canvas);
-}
-
-.btc-page #ma200dCanvas {
-  display: block;
-  width: 100%;
-  height: auto;
-  margin-top: 0.75rem;
-}
-
-.btc-page .ma200d-turns-scroll {
-  margin-top: 1rem;
-}
-
-.btc-page .ma200d-turns-table {
-  width: 100%;
-  min-width: 680px;
-  border-collapse: collapse;
-}
-
-.btc-page .ma200d-note {
-  margin: 0.75rem 0 0;
-  color: var(--spy-faint);
-  font-size: 0.56rem;
-  line-height: 1.6;
-}
-
 .btc-page .risk-table {
   grid-template-columns: repeat(8, minmax(90px, 1fr));
 }
@@ -747,10 +656,6 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .btc-page .ma200d-stat-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
   .btc-page .model-snapshot-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -831,16 +736,6 @@
   .btc-page .moving-averages-head {
     align-items: flex-start;
     flex-direction: column;
-  }
-
-  .btc-page .ma200d-heading {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 0.65rem;
-  }
-
-  .btc-page .ma200d-stat-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .btc-page .model-snapshot-grid {

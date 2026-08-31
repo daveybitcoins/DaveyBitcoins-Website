@@ -142,7 +142,7 @@ const checks = [
         throw new Error(`BTC combined-risk meter does not announce its zone: ${meterValueText}`);
       }
       await expectText(page, 'Major Weekly Moving Averages');
-      await assertSectionNavigation(page, 12, 'BTC');
+      await assertSectionNavigation(page, 11, 'BTC');
       const movingAveragePeriods = await page.locator('#movingAveragesCard .moving-average-period').allTextContents();
       if (movingAveragePeriods.join(',') !== '8W,13W,21W,50W,200W,300W') {
         throw new Error(`unexpected BTC moving-average periods: ${movingAveragePeriods.join(',')}`);
@@ -155,26 +155,15 @@ const checks = [
       }
       const weeklyObservations = Number(await page.locator('#movingAveragesCard').getAttribute('data-weekly-observations'));
       if (weeklyObservations < 300) throw new Error(`insufficient BTC weekly history: ${weeklyObservations}`);
-      await expectText(page, '200-Day Average: Bear Reset & Turn');
-      const ma200dSection = page.locator('#ma200d-analysis');
-      const ma200dSlope30 = Number(await ma200dSection.getAttribute('data-slope30'));
-      const ma200dAnnualChange = Number(await ma200dSection.getAttribute('data-annual-change'));
-      const ma200dPriceGap = Number(await ma200dSection.getAttribute('data-price-gap'));
-      if (![ma200dSlope30, ma200dAnnualChange, ma200dPriceGap].every(Number.isFinite)) {
-        throw new Error(`invalid BTC 200D analysis: ${ma200dSlope30}, ${ma200dAnnualChange}, ${ma200dPriceGap}`);
+      if (await page.locator('#ma200d-analysis').count()) {
+        throw new Error('BTC 200D analysis section should be removed');
       }
-      const ma200dRegime = await ma200dSection.getAttribute('data-regime');
-      if (!['confirmed-post-bear-turn', 'post-bear-candidate', 'bottoming-watch', 'bear-reset', 'bull-reacceleration', 'cycle-cooling'].includes(ma200dRegime)) {
-        throw new Error(`unexpected BTC 200D regime: ${ma200dRegime}`);
+      const bottomSectionOrder = await page.locator('#midterm-cycles, #methodology, #market-caps').evaluateAll(
+        (elements) => elements.map((element) => element.id)
+      );
+      if (bottomSectionOrder.join(',') !== 'midterm-cycles,methodology,market-caps') {
+        throw new Error(`unexpected BTC bottom section order: ${bottomSectionOrder.join(',')}`);
       }
-      const ma200dCanvas = page.locator('#ma200dCanvas');
-      const ma200dSeriesPoints = Number(await ma200dCanvas.getAttribute('data-series-points'));
-      const ma200dTurnCount = Number(await ma200dCanvas.getAttribute('data-turn-count'));
-      if (ma200dSeriesPoints < 4000 || ma200dTurnCount < 5) {
-        throw new Error(`insufficient BTC 200D history: ${ma200dSeriesPoints} points, ${ma200dTurnCount} turns`);
-      }
-      const ma200dRows = await page.locator('#ma200dTurnsBody tr').count();
-      if (ma200dRows !== 6) throw new Error(`expected six recent BTC 200D upward turns, got ${ma200dRows}`);
       await expectText(page, 'Price at Each Risk Level');
       await expectText(page, 'Bitcoin Market-Cap-Adjusted Power-Law Fair Value');
       await expectText(page, 'Model Snapshot & Historical Check');
