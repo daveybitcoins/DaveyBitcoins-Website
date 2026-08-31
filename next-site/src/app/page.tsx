@@ -29,15 +29,6 @@ const tools = [
     preview: "spy",
   },
   {
-    title: "QQQ Risk Metric",
-    description:
-      "Nasdaq-100 cycle risk viewed through its long-term trend, volatility, and historical drawdowns.",
-    status: "Updated daily",
-    href: "/qqq-risk-metric/",
-    accent: "violet",
-    preview: "qqq",
-  },
-  {
     title: "Dividend Portfolio Tracker",
     description:
       "Plan dividend income, yields, upcoming payouts, and monthly cash flow using your own holdings.",
@@ -129,11 +120,6 @@ function ToolPreview({ type }: { type: string }) {
       symbol: "SPY",
       label: "200-week cycle",
       bars: [28, 38, 34, 55, 49, 68, 62, 82],
-    },
-    qqq: {
-      symbol: "QQQ",
-      label: "Nasdaq-100 cycle",
-      bars: [24, 31, 45, 39, 58, 73, 66, 88],
     },
     dividend: {
       symbol: "$",

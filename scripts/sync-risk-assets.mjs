@@ -2,6 +2,7 @@ import {
   copyFileSync,
   mkdirSync,
   readFileSync,
+  rmSync,
   writeFileSync,
 } from "node:fs";
 import { resolve } from "node:path";
@@ -9,6 +10,8 @@ import postcss from "../next-site/node_modules/postcss/lib/postcss.mjs";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const publicDirectory = resolve(repositoryRoot, "next-site/public");
+
+rmSync(resolve(publicDirectory, "qqq-risk-engine.js"), { force: true });
 
 function syncDashboard({ symbol, sourceFile, dataFile }) {
   const source = readFileSync(resolve(repositoryRoot, sourceFile), "utf8");
@@ -167,7 +170,6 @@ function syncEmaScanner() {
     .replaceAll("'data_spy.csv'", "'/data_spy.csv'")
     .replaceAll("'data_qqq.csv'", "'/data_qqq.csv'")
     .replaceAll("spy-risk-metric.html", "/spy-risk-metric/")
-    .replaceAll("qqq-risk-metric.html", "/qqq-risk-metric/")
     .replaceAll("risk-metric.html", "/risk-metric/")
     .replace(
       '    document.addEventListener("DOMContentLoaded", init);',
@@ -264,12 +266,6 @@ syncDashboard({
   symbol: "SPY",
   sourceFile: "spy-risk-metric.html",
   dataFile: "data_spy.csv",
-});
-
-syncDashboard({
-  symbol: "QQQ",
-  sourceFile: "qqq-risk-metric.html",
-  dataFile: "data_qqq.csv",
 });
 
 syncBitcoinDashboard();

@@ -293,54 +293,10 @@ const checks = [
       }
     },
   },
-  {
-    path: dashboardPath('qqq-risk-metric'),
-    name: 'QQQ risk metric',
-    assert: async (page) => {
-      await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length === 10, null, { timeout: 20000 });
-      await expectText(page, 'Risk Price Scenarios');
-      await expectText(page, 'Market Cycle Risk');
-      await assertSectionNavigation(page, 8, 'QQQ');
-      const riskLevels = await page.locator('#riskTable .rc-risk').allTextContents();
-      if (riskLevels.join(',') !== '0.10,0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.00') {
-        throw new Error(`unexpected QQQ risk scenario intervals: ${riskLevels.join(',')}`);
-      }
-      await expectText(page, 'Risk · 200-Week Trend-Deviation Percentile');
-      await expectText(page, 'Weekly risk only');
-      await expectText(page, '200-Week Trend');
-      await expectText(page, 'shaded = ≥10% drawdown windows');
-      if (await page.locator('#returnsCanvas').count() !== 0) {
-        throw new Error('forward-return-by-risk-decile panel should be removed');
-      }
-      if (await page.locator('#riskTable').getAttribute('data-model') !== '200w-trailing20y-weekly') {
-        throw new Error('QQQ risk scenarios are not using the weekly 200W model');
-      }
-      const currentRisk = Number(await page.locator('#vRisk').innerText());
-      const risk200W = Number(await page.locator('#vRisk').getAttribute('data-risk200w'));
-      if (!Number.isFinite(currentRisk) || currentRisk < 0 || currentRisk > 1) {
-        throw new Error(`invalid QQQ 200W risk ${currentRisk}`);
-      }
-      if (Math.abs(currentRisk - risk200W) > 0.002) {
-        throw new Error('QQQ headline risk does not match the 200W percentile');
-      }
-      if (await page.locator('#vRisk').getAttribute('data-risk200d') !== null) {
-        throw new Error('QQQ 200D risk should not be present');
-      }
-      if (await page.locator('#riskCanvas').getAttribute('data-model') !== '200W trailing-20-year weekly percentile') {
-        throw new Error('QQQ risk oscillator is not using the weekly-only model');
-      }
-      const riskStart = await page.locator('#riskCanvas').getAttribute('data-comparison-start');
-      const vixStart = await page.locator('#vixCanvas').getAttribute('data-comparison-start');
-      if (!riskStart?.startsWith('2003') || riskStart !== vixStart) {
-        throw new Error(`QQQ risk/VIX comparison ranges are not aligned: ${riskStart} vs ${vixStart}`);
-      }
-      const riskDrawdownBands = Number(await page.locator('#riskCanvas').getAttribute('data-drawdown-bands'));
-      const vixDrawdownBands = Number(await page.locator('#vixCanvas').getAttribute('data-drawdown-bands'));
-      if (riskDrawdownBands < 5 || riskDrawdownBands !== vixDrawdownBands) {
-        throw new Error(`QQQ risk/VIX drawdown bands are not aligned: ${riskDrawdownBands} vs ${vixDrawdownBands}`);
-      }
-    },
-  },
+];
+
+const removedPaths = [
+  { path: dashboardPath('qqq-risk-metric'), name: 'QQQ risk metric' },
 ];
 
 function startServer() {
@@ -390,6 +346,15 @@ async function run() {
   console.log(`Testing ${isNextExport ? 'Next.js static export' : 'legacy HTML'} from ${rootDir}`);
 
   try {
+    for (const removed of removedPaths) {
+      const response = await fetch(baseUrl + removed.path);
+      if (response.status !== 404) {
+        failures.push(`${removed.name}: expected removed route to return 404, got ${response.status}`);
+      } else {
+        console.log(`OK removed ${removed.name}`);
+      }
+    }
+
     for (const check of checks) {
       const page = await browser.newPage();
       const pageErrors = [];

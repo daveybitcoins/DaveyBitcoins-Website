@@ -8,7 +8,6 @@ import { ThemeToggle } from "@/components/theme-toggle";
 const navigationItems = [
   { href: "/risk-metric/", label: "BTC Risk" },
   { href: "/spy-risk-metric/", label: "SPY Risk" },
-  { href: "/qqq-risk-metric/", label: "QQQ Risk" },
   { href: "/ema-scanner/", label: "EMA Scanner" },
   { href: "/dividend-tracker/", label: "Dividend Tracker" },
 ];

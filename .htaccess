@@ -12,7 +12,6 @@
     RewriteEngine On
     RewriteRule ^risk-metric\.html$ /risk-metric/ [R=301,L]
     RewriteRule ^spy-risk-metric\.html$ /spy-risk-metric/ [R=301,L]
-    RewriteRule ^qqq-risk-metric\.html$ /qqq-risk-metric/ [R=301,L]
     RewriteRule ^ema-scanner\.html$ /ema-scanner/ [R=301,L]
     RewriteRule ^dividend-tracker\.html$ /dividend-tracker/ [R=301,L]
 </IfModule>

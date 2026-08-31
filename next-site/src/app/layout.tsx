@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://daveybitcoins.com"),
   title: "DaveyBitcoins | Market Risk & Investing Tools",
   description:
-    "Bitcoin, SPY, and QQQ risk metrics, a weekly EMA scanner, and a dividend portfolio tracker for long-term investors.",
+    "Bitcoin and SPY risk metrics, a weekly EMA scanner, and a dividend portfolio tracker for long-term investors.",
   openGraph: {
     title: "DaveyBitcoins",
     description:
