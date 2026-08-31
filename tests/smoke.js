@@ -1,6 +1,20 @@
 const express = require('express');
 const path = require('path');
 const { chromium } = require('@playwright/test');
+const dividendData = require('../data/dividend_data.json');
+
+const btciLatestPayment = dividendData.tickers.BTCI.last_payments.reduce((latest, payment) =>
+  payment.ex_date > latest.ex_date ? payment : latest
+);
+const btciShares = 6000;
+const btciMonthlyIncome = btciLatestPayment.amount * btciShares;
+const btciAnnualIncome = btciMonthlyIncome * 12;
+const formatCurrency = (value) => value.toLocaleString('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 
 const isNextExport = process.argv.includes('--next-export');
 const rootDir = isNextExport
@@ -80,16 +94,24 @@ const checks = [
         localStorage.removeItem('dividend_history_cache');
       });
       await page.reload();
-      await page.waitForFunction(() => document.querySelector('#monthly-income')?.textContent === '$3,874.80', null, { timeout: 10000 });
+      await page.waitForFunction(
+        (expected) => document.querySelector('#monthly-income')?.textContent === expected,
+        formatCurrency(btciMonthlyIncome),
+        { timeout: 10000 },
+      );
 
-      if (await page.locator('#annual-income').innerText() !== '$46,497.60') {
+      if (await page.locator('#annual-income').innerText() !== formatCurrency(btciAnnualIncome)) {
         throw new Error('BTCI annual income is not based on the latest dividend payment');
       }
-      if (await page.locator('#monthly-income').innerText() !== '$3,874.80') {
+      if (await page.locator('#monthly-income').innerText() !== formatCurrency(btciMonthlyIncome)) {
         throw new Error('BTCI monthly income is not based on the latest dividend payment');
       }
       const btciRow = await page.locator('#holdings-table tbody tr').innerText();
-      if (!btciRow.includes('$0.6458') || !btciRow.includes('$46,497.60') || !btciRow.includes('$3,874.80')) {
+      if (
+        !btciRow.includes(`$${btciLatestPayment.amount.toFixed(4)}`) ||
+        !btciRow.includes(formatCurrency(btciAnnualIncome)) ||
+        !btciRow.includes(formatCurrency(btciMonthlyIncome))
+      ) {
         throw new Error(`BTCI holding math does not tie to the latest payment: ${btciRow}`);
       }
       await expectText(page, 'Latest Div / Share');
