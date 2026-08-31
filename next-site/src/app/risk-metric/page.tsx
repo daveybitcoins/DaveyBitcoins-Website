@@ -101,9 +101,8 @@ const sectionLinks = [
   ["historical-lows", "Historical lows"],
   ["price-chart", "Price chart"],
   ["risk-oscillator", "Risk oscillator"],
-  ["midterm-cycles", "Midterm cycles"],
-  ["methodology", "Methodology"],
   ["market-caps", "Market caps"],
+  ["methodology", "Methodology"],
 ] as const;
 
 export default function BitcoinRiskMetricPage() {
@@ -483,20 +482,36 @@ export default function BitcoinRiskMetricPage() {
           <Tooltip id="riskTip" valueLabel="Risk" showPrice={false} />
         </section>
 
-        <section className="spy-panel chart-panel" id="midterm-cycles">
-          <div className="chart-header">
+        <section className="spy-panel proj-table-wrap" id="market-caps">
+          <div className="spy-section-heading">
             <div>
-              <h2 className="chart-label">
-                BTC Year-To-Date ROI — Midterm Election Years
-              </h2>
+              <h2>BTC Price at Market Caps</h2>
             </div>
-            <div className="chart-note">
-              Historical paths, range, and average by calendar day
+            <p>
+              Converts market-cap milestones into a per-Bitcoin price using the
+              current circulating supply.
+            </p>
+          </div>
+          <div className="market-cap-meta">
+            <div>
+              Mined Supply Estimate: <span id="currentSupply">—</span>
+            </div>
+            <div>
+              Block Height: <span id="currentSupplyHeight">—</span>
             </div>
           </div>
-          <canvas id="midtermCanvas" width="1380" height="480" />
-          <Tooltip id="midtermTip" />
-          <div id="midtermLegend" />
+          <div className="market-cap-scroll">
+            <table className="proj-table" id="marketCapTable">
+              <thead>
+                <tr>
+                  <th>Market Cap</th>
+                  <th>BTC Price</th>
+                  <th>Move from Today</th>
+                </tr>
+              </thead>
+              <tbody id="marketCapBody" />
+            </table>
+          </div>
         </section>
 
         <div className="update-status" id="updateStatus" />
@@ -557,41 +572,9 @@ export default function BitcoinRiskMetricPage() {
           </div>
         </section>
 
-        <section className="spy-panel proj-table-wrap" id="market-caps">
-          <div className="spy-section-heading">
-            <div>
-              <h2>BTC Price at Market Caps</h2>
-            </div>
-            <p>
-              Converts market-cap milestones into a per-Bitcoin price using the
-              current circulating supply.
-            </p>
-          </div>
-          <div className="market-cap-meta">
-            <div>
-              Mined Supply Estimate: <span id="currentSupply">—</span>
-            </div>
-            <div>
-              Block Height: <span id="currentSupplyHeight">—</span>
-            </div>
-          </div>
-          <div className="market-cap-scroll">
-            <table className="proj-table" id="marketCapTable">
-              <thead>
-                <tr>
-                  <th>Market Cap</th>
-                  <th>BTC Price</th>
-                  <th>Move from Today</th>
-                </tr>
-              </thead>
-              <tbody id="marketCapBody" />
-            </table>
-          </div>
-        </section>
-
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20260831-market-caps-bottom" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20260831-market-caps-replace-midterm" strategy="afterInteractive" />
     </main>
   );
 }

@@ -142,7 +142,7 @@ const checks = [
         throw new Error(`BTC combined-risk meter does not announce its zone: ${meterValueText}`);
       }
       await expectText(page, 'Major Weekly Moving Averages');
-      await assertSectionNavigation(page, 11, 'BTC');
+      await assertSectionNavigation(page, 10, 'BTC');
       const movingAveragePeriods = await page.locator('#movingAveragesCard .moving-average-period').allTextContents();
       if (movingAveragePeriods.join(',') !== '8W,13W,21W,50W,200W,300W') {
         throw new Error(`unexpected BTC moving-average periods: ${movingAveragePeriods.join(',')}`);
@@ -158,10 +158,13 @@ const checks = [
       if (await page.locator('#ma200d-analysis').count()) {
         throw new Error('BTC 200D analysis section should be removed');
       }
-      const bottomSectionOrder = await page.locator('#midterm-cycles, #methodology, #market-caps').evaluateAll(
+      if (await page.locator('#midterm-cycles').count()) {
+        throw new Error('BTC midterm-election ROI section should be removed');
+      }
+      const bottomSectionOrder = await page.locator('#market-caps, #methodology').evaluateAll(
         (elements) => elements.map((element) => element.id)
       );
-      if (bottomSectionOrder.join(',') !== 'midterm-cycles,methodology,market-caps') {
+      if (bottomSectionOrder.join(',') !== 'market-caps,methodology') {
         throw new Error(`unexpected BTC bottom section order: ${bottomSectionOrder.join(',')}`);
       }
       await expectText(page, 'Price at Each Risk Level');

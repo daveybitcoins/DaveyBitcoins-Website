@@ -624,14 +624,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.btc-page #midtermLegend {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1.2rem;
-  margin-top: 0.8rem;
-}
-
 .btc-page .update-status {
   margin-top: 0.5rem;
   color: var(--spy-faint);
