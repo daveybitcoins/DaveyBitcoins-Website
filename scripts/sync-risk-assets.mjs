@@ -276,3 +276,7 @@ copyFileSync(
   resolve(repositoryRoot, "data_vix.csv"),
   resolve(publicDirectory, "data_vix.csv"),
 );
+copyFileSync(
+  resolve(repositoryRoot, "data_qqq.csv"),
+  resolve(publicDirectory, "data_qqq.csv"),
+);
