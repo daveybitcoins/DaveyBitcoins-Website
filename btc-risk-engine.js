@@ -79,6 +79,186 @@ function renderWeeklyMovingAverages(rawData) {
   }
 }
 
+function calculate200DayAnalysis(rawData) {
+  const daily = rawData
+    .map(([date, price]) => ({ date, price }))
+    .filter(point => Number.isFinite(point.price) && point.price > 0);
+  const averages = new Array(daily.length).fill(null);
+  let rollingSum = 0;
+  for (let i = 0; i < daily.length; i++) {
+    rollingSum += daily[i].price;
+    if (i >= 200) rollingSum -= daily[i - 200].price;
+    if (i >= 199) averages[i] = rollingSum / 200;
+  }
+
+  const points = [];
+  for (let i = 199; i < daily.length; i++) {
+    const average = averages[i];
+    const slope30 = i >= 229 && averages[i - 30]
+      ? (average / averages[i - 30] - 1) * 100
+      : null;
+    const slope90 = i >= 289 && averages[i - 90]
+      ? (average / averages[i - 90] - 1) * 100
+      : null;
+    const annualChange = i >= 564 && averages[i - 365]
+      ? (average / averages[i - 365] - 1) * 100
+      : null;
+    points.push({
+      date: daily[i].date,
+      price: daily[i].price,
+      average,
+      priceGap: (daily[i].price / average - 1) * 100,
+      slope30,
+      slope90,
+      annualChange,
+      sourceIndex: i,
+    });
+  }
+
+  const turns = [];
+  let priorTurnSourceIndex = -Infinity;
+  for (let i = 1; i < points.length; i++) {
+    const previous = points[i - 1];
+    const current = points[i];
+    if (!Number.isFinite(previous.slope30) || !Number.isFinite(current.slope30)) continue;
+    if (previous.slope30 <= 0 && current.slope30 > 0 && current.sourceIndex - priorTurnSourceIndex >= 120) {
+      const returnAt = offset => {
+        const future = daily[current.sourceIndex + offset];
+        return future ? (future.price / current.price - 1) * 100 : null;
+      };
+      turns.push(Object.assign({}, current, {
+        type: current.annualChange <= -25 ? 'Post-bear turn' : 'Bull reacceleration',
+        return6m: returnAt(182),
+        return1y: returnAt(365),
+      }));
+      priorTurnSourceIndex = current.sourceIndex;
+    }
+  }
+  return { daily, points, turns };
+}
+
+function signedPercent(value, digits) {
+  if (!Number.isFinite(value)) return '—';
+  return (value >= 0 ? '+' : '') + value.toFixed(digits == null ? 1 : digits) + '%';
+}
+
+function render200DayAnalysis(rawData) {
+  const analysis = calculate200DayAnalysis(rawData);
+  const latest = analysis.points[analysis.points.length - 1];
+  const section = document.getElementById('ma200d-analysis');
+  if (!latest || !section) return;
+
+  const rising = latest.slope30 >= 0;
+  const reset = latest.annualChange <= -25;
+  const latestPointIndex = analysis.points.length - 1;
+  const annualChange30DaysAgo = analysis.points[Math.max(0, latestPointIndex - 30)].annualChange;
+  const annualImproving = Number.isFinite(annualChange30DaysAgo) && latest.annualChange > annualChange30DaysAgo;
+  let positiveDays = 0;
+  for (let i = latestPointIndex; i >= 0 && analysis.points[i].slope30 > 0; i--) positiveDays++;
+  const regime = reset
+    ? rising
+      ? positiveDays >= 30
+        ? { name: 'Confirmed post-bear turn', color: '#58c56f' }
+        : { name: 'Post-bear candidate', color: '#6aa9ff' }
+      : annualImproving
+        ? { name: 'Bottoming watch', color: '#6aa9ff' }
+        : { name: 'Bear reset', color: '#ef5d4f' }
+    : rising
+      ? { name: 'Bull reacceleration', color: '#58c56f' }
+      : { name: 'Cycle cooling', color: '#ffbf63' };
+  const latestTurn = analysis.turns.filter(turn => turn.type === 'Post-bear turn').at(-1);
+  const valueMap = {
+    vMa200D: '$' + latest.average.toLocaleString(undefined, { maximumFractionDigits: 0 }),
+    vMa200DPriceGap: signedPercent(latest.priceGap, 1),
+    vMa200DAnnualChange: signedPercent(latest.annualChange, 1),
+    vMa200DSlope30: signedPercent(latest.slope30, 2),
+    vMa200DRegime: regime.name,
+    vMa200DLastTurn: latestTurn ? latestTurn.date : '—',
+  };
+  Object.keys(valueMap).forEach(id => {
+    const element = document.getElementById(id);
+    if (element) element.textContent = valueMap[id];
+  });
+  const regimeCard = section.querySelector('.ma200d-regime-card');
+  if (regimeCard) regimeCard.style.setProperty('--ma200d-regime-color', regime.color);
+  section.dataset.slope30 = latest.slope30.toFixed(6);
+  section.dataset.annualChange = latest.annualChange.toFixed(6);
+  section.dataset.priceGap = latest.priceGap.toFixed(6);
+  section.dataset.regime = regime.name.toLowerCase().replace(/\s+/g, '-');
+  section.dataset.turns = String(analysis.turns.length);
+
+  const body = document.getElementById('ma200dTurnsBody');
+  if (body) {
+    body.innerHTML = analysis.turns.slice(-6).reverse().map(turn =>
+      '<tr><td>' + turn.date + '</td>' +
+      '<td>' + turn.type + '</td>' +
+      '<td>' + signedPercent(turn.annualChange, 1) + '</td>' +
+      '<td>' + signedPercent(turn.priceGap, 1) + '</td>' +
+      '<td>' + signedPercent(turn.return6m, 1) + '</td>' +
+      '<td>' + signedPercent(turn.return1y, 1) + '</td></tr>'
+    ).join('');
+  }
+
+  window._renderMa200d = function() {
+    const canvas = document.getElementById('ma200dCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const series = analysis.points.filter(point => point.date >= '2014-01-01' && Number.isFinite(point.annualChange));
+    if (series.length < 2) return;
+    const W = canvas.width, H = canvas.height;
+    const P = { t: 24, r: 28, b: 42, l: 72 };
+    const cw = W - P.l - P.r, ch = H - P.t - P.b;
+    const tc = themeColors();
+    const scaleMin = -75, scaleMax = 175;
+    const clipped = value => Math.max(scaleMin, Math.min(scaleMax, value));
+    const xOf = index => P.l + index / (series.length - 1) * cw;
+    const yOf = value => P.t + (scaleMax - clipped(value)) / (scaleMax - scaleMin) * ch;
+    ctx.fillStyle = tc.canvasBg;
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = tc.zoneA;
+    ctx.fillRect(P.l, yOf(-25), cw, yOf(scaleMin) - yOf(-25));
+    [-75, -25, 0, 75, 175].forEach(value => {
+      const y = yOf(value);
+      ctx.strokeStyle = value === 0 || value === -25 ? tc.gridZero : tc.gridLine;
+      ctx.lineWidth = value === 0 || value === -25 ? 1.5 : 1;
+      ctx.beginPath(); ctx.moveTo(P.l, y); ctx.lineTo(W - P.r, y); ctx.stroke();
+      ctx.fillStyle = tc.axisText; ctx.font = '10px JetBrains Mono'; ctx.textAlign = 'right';
+      ctx.fillText((value > 0 ? '+' : '') + value.toFixed(0) + '%', P.l - 8, y + 3);
+    });
+    let priorYear = '';
+    series.forEach((point, index) => {
+      const year = point.date.slice(0, 4);
+      if (year !== priorYear && point.date.slice(5, 7) === '01') {
+        const x = xOf(index);
+        ctx.strokeStyle = tc.gridLine; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(x, P.t); ctx.lineTo(x, H - P.b); ctx.stroke();
+        ctx.fillStyle = tc.axisText; ctx.textAlign = 'center'; ctx.font = '10px JetBrains Mono';
+        ctx.fillText(year, x, H - P.b + 18);
+        priorYear = year;
+      }
+    });
+    for (let i = 1; i < series.length; i++) {
+      ctx.strokeStyle = series[i].annualChange <= -25 ? '#6aa9ff' : series[i].annualChange >= 0 ? '#f7931a' : '#ffbf63';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath(); ctx.moveTo(xOf(i - 1), yOf(series[i - 1].annualChange));
+      ctx.lineTo(xOf(i), yOf(series[i].annualChange)); ctx.stroke();
+    }
+    const indexByDate = new Map(series.map((point, index) => [point.date, index]));
+    analysis.turns.forEach(turn => {
+      const index = indexByDate.get(turn.date);
+      if (index == null) return;
+      ctx.fillStyle = turn.type === 'Post-bear turn' ? '#6aa9ff' : '#f7931a';
+      ctx.strokeStyle = tc.canvasBg; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(xOf(index), yOf(turn.annualChange), 4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    });
+    canvas.dataset.seriesPoints = String(series.length);
+    canvas.dataset.turnCount = String(analysis.turns.length);
+    canvas.dataset.latestSlope = latest.slope30.toFixed(6);
+    canvas.dataset.latestAnnualChange = latest.annualChange.toFixed(6);
+  };
+  window._renderMa200d();
+}
+
 async function fetchWithTimeout(url, options, timeoutMs) {
   const controller = new AbortController();
   const timer = setTimeout(function() { controller.abort(); }, timeoutMs || 3500);
@@ -776,6 +956,7 @@ async function main() {
   document.getElementById('vDev').textContent = (devPct>0?'+':'') + devPct + '%';
   document.getElementById('needle').style.left = (last.riskCombo*100)+'%';
   renderWeeklyMovingAverages(rawData);
+  render200DayAnalysis(rawData);
   renderModelSnapshot(pts, slope, last, live);
   renderBearMarketProgress(pts, slope, intercept);
   const fallbackSupplyHeight = fallbackBlockHeight(Date.now());
@@ -1668,6 +1849,7 @@ async function main() {
     if (!document.querySelector('[data-risk-dashboard="btc"]')) return;
     renderAll();
     renderMidtermChart();
+    if (window._renderMa200d) window._renderMa200d();
   });
 }
 
