@@ -161,6 +161,9 @@ const checks = [
       if (await page.locator('#midterm-cycles').count()) {
         throw new Error('BTC midterm-election ROI section should be removed');
       }
+      if (await page.locator('#vBearPct, #bearProgressBar').count()) {
+        throw new Error('BTC bear-market progress card should be removed');
+      }
       const bottomSectionOrder = await page.locator('#market-caps, #methodology').evaluateAll(
         (elements) => elements.map((element) => element.id)
       );

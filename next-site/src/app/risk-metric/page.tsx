@@ -212,19 +212,6 @@ export default function BitcoinRiskMetricPage() {
             rightId="vDifficultyAth"
             rightText="ATH —"
           />
-          <ProgressCard
-            className="bear-card"
-            label="Bear Market Progress"
-            valueId="vBearPct"
-            subId="vBearSub"
-            initialSub="Cycle timing estimate"
-            progressClass="bear"
-            progressId="bearProgressBar"
-            leftId="vBearTarget"
-            leftText="—"
-            rightId="vBearRange"
-            rightText="—"
-          />
         </section>
 
         <section className="card moving-averages-card" id="movingAveragesCard">
@@ -556,14 +543,6 @@ export default function BitcoinRiskMetricPage() {
               at ten minutes per block.
             </p>
             <p>
-              <span className="hl">Bear Market Progress:</span> Starts from the
-              latest all-time high, compares elapsed days with the average
-              duration of Bitcoin&apos;s four completed bear markets, and
-              estimates a downside range from the model&apos;s lower boundary on
-              the average-duration target date to the lowest close since the
-              current cycle high.
-            </p>
-            <p>
               <span className="hl">Coherent Updates:</span> On page load, one
               current quote recalculates every card, table, and chart. Use the
               snapshot refresh control for a new quote; price is never updated
@@ -574,7 +553,7 @@ export default function BitcoinRiskMetricPage() {
 
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20260831-market-caps-replace-midterm" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20260901-remove-bear-progress" strategy="afterInteractive" />
     </main>
   );
 }
