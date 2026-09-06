@@ -1,8 +1,8 @@
 {
   "meta": {
-    "date": "2026-09-05",
+    "date": "2026-09-06",
     "total_stocks": 300,
-    "generated_at": "2026-09-05T22:37:52.452030",
+    "generated_at": "2026-09-06T17:30:16.708077",
     "index_etfs": [
       "SPY",
       "QQQ",
@@ -26,7 +26,7 @@
       "spread_score": 2.64,
       "chg_1d": -0.39,
       "chg_1w": 0.37,
-      "chg_1m": -0.73,
+      "chg_1m": -0.0,
       "chg_ytd": 12.32,
       "rel_vol": 0.98,
       "vol_quality": "Normal Vol",
@@ -48,7 +48,7 @@
       "spread_score": 2.54,
       "chg_1d": 0.18,
       "chg_1w": 0.53,
-      "chg_1m": -1.0,
+      "chg_1m": 1.15,
       "chg_ytd": 15.95,
       "rel_vol": 1.1,
       "vol_quality": "Normal Vol",
@@ -57,26 +57,26 @@
     {
       "symbol": "BTC",
       "name": "Bitcoin",
-      "price": 79825.0,
-      "ema8": 71912.61,
-      "ema13": 70512.32,
-      "ema21": 71053.22,
+      "price": 79705.0,
+      "ema8": 71885.95,
+      "ema13": 70495.17,
+      "ema21": 71042.32,
       "signal": "Bullish (unstacked)",
-      "price_vs_8w": 11.0,
-      "price_vs_13w": 13.21,
-      "price_vs_21w": 12.35,
-      "ema8_vs_13": 1.99,
-      "ema13_vs_21": -0.76,
-      "spread_score": 1.23,
-      "chg_1d": -1.77,
-      "chg_1w": 2.58,
-      "chg_1m": 23.62,
-      "crossover_alert": "13W just below 21W (0.76%) \u2014 bullish cross potential",
-      "risk_combo": 0.245,
-      "risk_mm": 0.227,
-      "risk_zs": 0.265,
-      "fair_value": 143672.35,
-      "dev_pct": -44.4,
+      "price_vs_8w": 10.88,
+      "price_vs_13w": 13.06,
+      "price_vs_21w": 12.19,
+      "ema8_vs_13": 1.97,
+      "ema13_vs_21": -0.77,
+      "spread_score": 1.2,
+      "chg_1d": 0.04,
+      "chg_1w": 1.89,
+      "chg_1m": 23.98,
+      "crossover_alert": "13W just below 21W (0.77%) \u2014 bullish cross potential",
+      "risk_combo": 0.243,
+      "risk_mm": 0.226,
+      "risk_zs": 0.262,
+      "fair_value": 143762.7,
+      "dev_pct": -44.6,
       "zone": "Neutral",
       "zone_color": "#10b981"
     }
@@ -29177,7 +29177,7 @@
           "field": "above_5d",
           "label": "% > 5D MA",
           "current": 53.0,
-          "percentile": 45.5,
+          "percentile": 45.6,
           "zone": "Neutral",
           "hist_min": 0.2,
           "hist_max": 99.2,
@@ -29187,7 +29187,7 @@
           "p20": 33.0,
           "p80": 74.0,
           "p90": 81.8,
-          "data_points": 2427
+          "data_points": 2428
         },
         {
           "field": "above_20d",
@@ -29199,11 +29199,11 @@
           "hist_max": 99.0,
           "hist_avg": 55.4,
           "hist_median": 58.6,
-          "p10": 20.6,
-          "p20": 34.6,
+          "p10": 20.7,
+          "p20": 34.7,
           "p80": 76.4,
           "p90": 82.6,
-          "data_points": 4969
+          "data_points": 4970
         },
         {
           "field": "above_50d",
@@ -29219,7 +29219,7 @@
           "p20": 39.0,
           "p80": 76.1,
           "p90": 82.0,
-          "data_points": 4969
+          "data_points": 4970
         },
         {
           "field": "above_200d",
@@ -29231,16 +29231,16 @@
           "hist_max": 96.8,
           "hist_avg": 61.5,
           "hist_median": 65.3,
-          "p10": 30.1,
+          "p10": 30.2,
           "p20": 44.8,
           "p80": 79.2,
           "p90": 86.7,
-          "data_points": 4969
+          "data_points": 4970
         }
       ],
-      "composite_score": 48.7,
+      "composite_score": 48.8,
       "composite_zone": "Neutral",
-      "history_days": 4969,
+      "history_days": 4970,
       "forward_returns": []
     }
   },
