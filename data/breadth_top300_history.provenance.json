@@ -642,6 +642,11 @@
       "date": "2026-09-11",
       "snapshot": "csv/Weekly EMA Values_2026-09-11.csv",
       "sha256": "e4cf881b0ea3b02ea0ca12df33f7ba118d929aaf13511b832393b3582f47738c"
+    },
+    {
+      "date": "2026-09-14",
+      "snapshot": "csv/Weekly EMA Values_2026-09-14.csv",
+      "sha256": "12c250d1b44c5dc28cd3b416394864f305281fc5241748b086939784c6d997d2"
     }
   ]
 }
