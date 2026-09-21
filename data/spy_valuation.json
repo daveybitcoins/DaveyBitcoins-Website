@@ -1,20 +1,20 @@
 {
-  "as_of": "2026-09-11",
+  "as_of": "2026-09-18",
   "source": "FactSet Earnings Insight",
-  "source_url": "https://advantage.factset.com/hubfs/Website/Resources%20Section/Research%20Desk/Earnings%20Insight/EarningsInsight_091126.pdf",
+  "source_url": "https://advantage.factset.com/hubfs/Website/Resources%20Section/Research%20Desk/Earnings%20Insight/EarningsInsight_091826.pdf",
   "reported_forward_pe": 19.1,
   "reference_close_date": null,
   "reference_close_basis": "Explicit closing price in report target-price comparison; trading date not inferred",
   "forward_eps_basis": "Approximate: report reference close divided by rounded reported forward P/E",
   "calendar_eps_basis": "Illustrative growth roll-forward from a maintained 2025 EPS assumption; not extracted current bottom-up dollar estimates",
-  "reference_spx_close": 7591.7,
-  "forward_12m_eps": 397.47,
+  "reference_spx_close": 7637.76,
+  "forward_12m_eps": 399.88,
   "actual_year": 2025,
   "actual_eps": 271.23,
   "current_year": 2026,
-  "current_year_growth_pct": 31.6,
-  "current_year_eps": 356.94,
+  "current_year_growth_pct": 31.8,
+  "current_year_eps": 357.48,
   "next_year": 2027,
-  "next_year_growth_pct": 15.1,
-  "next_year_eps": 410.84
+  "next_year_growth_pct": 15.2,
+  "next_year_eps": 411.82
 }
