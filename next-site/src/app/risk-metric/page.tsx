@@ -168,6 +168,7 @@ export default function BitcoinRiskMetricPage() {
             <div className="zone-labels">
               <span data-risk-zone="Accumulate">Accumulate</span>
               <span data-risk-zone="Neutral">Neutral</span>
+              <span data-risk-zone="Watch">Watch</span>
               <span data-risk-zone="Caution">Caution</span>
               <span data-risk-zone="Euphoria">Euphoria</span>
             </div>
@@ -538,7 +539,7 @@ export default function BitcoinRiskMetricPage() {
             <p>
               <span className="hl">Combined:</span> Geometric mean √(S × M).
               When either frame indicates low risk, the combined reading is
-              pulled lower. Zones are Accumulate 0.00–0.20, Neutral 0.20–0.50,
+              pulled lower. Zones are Accumulate 0.00–0.20, Neutral 0.20–0.40, Watch 0.40–0.50,
               Caution 0.50–0.80, and Euphoria 0.80–1.00 everywhere on the site.
             </p>
             <p>

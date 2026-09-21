@@ -84,6 +84,7 @@ function themeColors() {
     zoneLabels: light ? '#837765' : '#a59a88',
     zoneA: light ? 'rgba(22,137,255,0.07)' : 'rgba(22,137,255,0.09)',
     zoneB: light ? 'rgba(132,204,22,0.03)' : 'rgba(132,204,22,0.035)',
+    zoneWatch: light ? 'rgba(230,191,80,0.10)' : 'rgba(230,191,80,0.09)',
     zoneC: light ? 'rgba(247,147,26,0.04)' : 'rgba(247,147,26,0.05)',
     zoneD: light ? 'rgba(230,109,96,0.06)' : 'rgba(230,109,96,0.07)',
     zoneDash: light ? '#d6c7ad' : '#6c6558',
@@ -174,7 +175,8 @@ const FAIR_VALUE_DAYS_PER_YEAR = 365.2425;
 const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);
 const RISK_ZONES = [
   { name: 'Accumulate', min: 0.00, max: 0.20, colorRisk: 0.10 },
-  { name: 'Neutral', min: 0.20, max: 0.50, colorRisk: 0.35 },
+  { name: 'Neutral', min: 0.20, max: 0.40, colorRisk: 0.30 },
+  { name: 'Watch', min: 0.40, max: 0.50, colorRisk: 0.45 },
   { name: 'Caution', min: 0.50, max: 0.80, colorRisk: 0.65 },
   { name: 'Euphoria', min: 0.80, max: 1.00, colorRisk: 0.90 }
 ];
@@ -311,7 +313,7 @@ function normCdf(z) {
 function riskColor(r, a) {
   a = a || 1;
   if (r < RISK_ZONES[0].max) return `rgba(22,137,255,${a})`;
-  const stops = [[0,[104,130,156]],[0.16,[80,155,118]],[0.32,[88,197,111]],[0.48,[255,191,99]],[0.64,[247,147,26]],[0.78,[228,96,69]],[0.90,[239,93,79]],[1,[122,32,25]]];
+  const stops = [[0,[104,130,156]],[0.16,[80,155,118]],[0.32,[88,197,111]],[0.45,[230,191,80]],[0.50,[255,191,99]],[0.64,[247,147,26]],[0.78,[228,96,69]],[0.90,[239,93,79]],[1,[122,32,25]]];
   let lo=stops[0], hi=stops[stops.length-1];
   for (let i=0;i<stops.length-1;i++) { if(r>=stops[i][0]&&r<=stops[i+1][0]){lo=stops[i];hi=stops[i+1];break;} }
   const t=(r-lo[0])/(hi[0]-lo[0]||1);
@@ -766,6 +768,7 @@ async function main() {
   const currentRiskColor = {
     Accumulate: '#1689ff',
     Neutral: '#77c46d',
+    Watch: '#e6bf50',
     Caution: '#f68f1d',
     Euphoria: '#ef5d50'
   }[currentRiskZone.name];
@@ -1005,7 +1008,8 @@ async function main() {
         if (score < 0.05) return 'Extreme low';
         if (score < 0.15) return 'Very low';
         if (score < 0.30) return 'Low';
-        if (score < 0.50) return 'Neutral';
+        if (score < 0.40) return 'Neutral';
+        if (score < 0.50) return 'Watch';
         return 'Elevated';
       }
       function riskLowDisplay(point) {
@@ -1219,7 +1223,7 @@ async function main() {
     const yOf=r=>P.t+ch*(1-r);
 
     // Zone fills
-    const zoneColors=[tc.zoneA,tc.zoneB,tc.zoneC,tc.zoneD];
+    const zoneColors=[tc.zoneA,tc.zoneB,tc.zoneWatch,tc.zoneC,tc.zoneD];
     RISK_ZONES.forEach((zone,index)=>{
       const lo=zone.min,hi=zone.max,c=zoneColors[index];
       ctx.fillStyle=c;ctx.fillRect(P.l,yOf(hi),cw,yOf(lo)-yOf(hi));

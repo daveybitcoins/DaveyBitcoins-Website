@@ -111,11 +111,12 @@
   [data-theme="light"] .risk-bar-needle{background:#211b12;box-shadow:0 0 10px rgba(0,0,0,0.3)}
   .zone-labels{display:flex;justify-content:space-between;margin-top:6px}
   .zone-labels span{font-size:0.5rem;color:var(--text-dimmer)}
-  .risk-card .risk-bar-bg{background:linear-gradient(90deg,#1689ff 0 20%,#77c46d 20% 50%,#f68f1d 50% 80%,#ef5d50 80% 100%);opacity:.78}
-  .risk-card .zone-labels{display:grid;grid-template-columns:2fr 3fr 3fr 2fr;gap:0}
+  .risk-card .risk-bar-bg{background:linear-gradient(90deg,#1689ff 0 20%,#77c46d 20% 40%,#e6bf50 40% 50%,#f68f1d 50% 80%,#ef5d50 80% 100%);opacity:.78}
+  .risk-card .zone-labels{display:grid;grid-template-columns:2fr 2fr 1fr 3fr 2fr;gap:0}
   .risk-card .zone-labels span{text-align:center;font-size:0.44rem}
   .risk-card .zone-labels [data-risk-zone="Accumulate"]{color:#1689ff}
   .risk-card .zone-labels [data-risk-zone="Neutral"]{color:#77c46d}
+  .risk-card .zone-labels [data-risk-zone="Watch"]{color:#e6bf50}
   .risk-card .zone-labels [data-risk-zone="Caution"]{color:#f68f1d}
   .risk-card .zone-labels [data-risk-zone="Euphoria"]{color:#ef5d50}
   .risk-card .zone-labels span.is-active{color:var(--risk-zone-color,var(--text-heading));font-weight:700}
@@ -320,7 +321,7 @@
     </div>
     <div class="card risk-card" id="riskCard" style="--glow:#f7931a"><div class="card-label">Combined Risk</div><div class="card-value" id="vRisk">—</div>
       <div class="risk-bar-wrap" id="riskBar" role="meter" aria-label="Current Bitcoin combined risk" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0"><div class="risk-bar-bg"></div><div class="risk-bar-needle" id="needle"></div></div>
-      <div class="zone-labels"><span data-risk-zone="Accumulate">Accumulate</span><span data-risk-zone="Neutral">Neutral</span><span data-risk-zone="Caution">Caution</span><span data-risk-zone="Euphoria">Euphoria</span></div></div>
+      <div class="zone-labels"><span data-risk-zone="Accumulate">Accumulate</span><span data-risk-zone="Neutral">Neutral</span><span data-risk-zone="Watch">Watch</span><span data-risk-zone="Caution">Caution</span><span data-risk-zone="Euphoria">Euphoria</span></div></div>
     <div class="card" style="--glow:#58c56f"><div class="card-label">Fair Value</div><div class="card-value" id="vFair" style="--val-color:#58c56f">—</div><div class="card-sub" id="vGrowth"></div></div>
     <div class="card" style="--glow:#ffbf63"><div class="card-label">Deviation</div><div class="card-value" id="vDev" style="--val-color:#ffbf63">—</div><div class="card-sub" id="vPoints"></div></div>
     <div class="card halving-card" style="--glow:rgba(247,147,26,0.28)">
@@ -461,7 +462,7 @@
     <p><span class="hl">Power-Law Regression:</span> <code>log₁₀(price)</code> vs <code>log₁₀(days since Jan 3 2009)</code>. The smooth chart line uses the fixed full-history curve. Readings begin after a 30-observation warm-up, then historical risk uses an as-of regression at each date so past readings are not calibrated with future prices.</p>
     <p><span class="hl">Structural Risk (Decaying Envelope):</span> Normalizes the residual against a time-decaying upper envelope fitted from cycle peaks, with a continuous 0.005 floor. The max deviation capacity shrinks as Bitcoin matures.</p>
     <p><span class="hl">Momentum Risk (Rolling Z-Score → CDF):</span> 4-year rolling z-score mapped through Gaussian CDF. Cycle-sensitive, adapts to declining volatility.</p>
-    <p><span class="hl">Combined:</span> Geometric mean √(S × M) of two related measures. This is relative market positioning, not a probability of loss. Zones are Accumulate 0.00–0.20, Neutral 0.20–0.50, Caution 0.50–0.80, and Euphoria 0.80–1.00 everywhere on the site.</p>
+    <p><span class="hl">Combined:</span> Geometric mean √(S × M) of two related measures. This is relative market positioning, not a probability of loss. Zones are Accumulate 0.00–0.20, Neutral 0.20–0.40, Watch 0.40–0.50, Caution 0.50–0.80, and Euphoria 0.80–1.00 everywhere on the site.</p>
     <p><span class="hl">Halving Countdown:</span> Uses the current Bitcoin block height when available, targets the next 210,000-block subsidy epoch, and estimates the date at 10 minutes per block. If the height API is unavailable, it falls back to a clock-based estimate from block 840,000.</p>
     <p><span class="hl">Updates:</span> The source price dataset is refreshed daily by automation. On page load, the page fetches a current BTC quote and recalculates every card, chart, table, and projection as one coherent snapshot. Use the snapshot refresh control for a new quote; the price is never updated independently from its dependent metrics. Tabs left open reload after a new UTC day begins.</p>
   </div>
@@ -487,6 +488,7 @@ function themeColors() {
     zoneLabels: light ? '#837765' : '#a59a88',
     zoneA: light ? 'rgba(22,137,255,0.07)' : 'rgba(22,137,255,0.09)',
     zoneB: light ? 'rgba(132,204,22,0.03)' : 'rgba(132,204,22,0.035)',
+    zoneWatch: light ? 'rgba(230,191,80,0.10)' : 'rgba(230,191,80,0.09)',
     zoneC: light ? 'rgba(247,147,26,0.04)' : 'rgba(247,147,26,0.05)',
     zoneD: light ? 'rgba(230,109,96,0.06)' : 'rgba(230,109,96,0.07)',
     zoneDash: light ? '#d6c7ad' : '#6c6558',
@@ -577,7 +579,8 @@ const FAIR_VALUE_DAYS_PER_YEAR = 365.2425;
 const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);
 const RISK_ZONES = [
   { name: 'Accumulate', min: 0.00, max: 0.20, colorRisk: 0.10 },
-  { name: 'Neutral', min: 0.20, max: 0.50, colorRisk: 0.35 },
+  { name: 'Neutral', min: 0.20, max: 0.40, colorRisk: 0.30 },
+  { name: 'Watch', min: 0.40, max: 0.50, colorRisk: 0.45 },
   { name: 'Caution', min: 0.50, max: 0.80, colorRisk: 0.65 },
   { name: 'Euphoria', min: 0.80, max: 1.00, colorRisk: 0.90 }
 ];
@@ -714,7 +717,7 @@ function normCdf(z) {
 function riskColor(r, a) {
   a = a || 1;
   if (r < RISK_ZONES[0].max) return `rgba(22,137,255,${a})`;
-  const stops = [[0,[104,130,156]],[0.16,[80,155,118]],[0.32,[88,197,111]],[0.48,[255,191,99]],[0.64,[247,147,26]],[0.78,[228,96,69]],[0.90,[239,93,79]],[1,[122,32,25]]];
+  const stops = [[0,[104,130,156]],[0.16,[80,155,118]],[0.32,[88,197,111]],[0.45,[230,191,80]],[0.50,[255,191,99]],[0.64,[247,147,26]],[0.78,[228,96,69]],[0.90,[239,93,79]],[1,[122,32,25]]];
   let lo=stops[0], hi=stops[stops.length-1];
   for (let i=0;i<stops.length-1;i++) { if(r>=stops[i][0]&&r<=stops[i+1][0]){lo=stops[i];hi=stops[i+1];break;} }
   const t=(r-lo[0])/(hi[0]-lo[0]||1);
@@ -1169,6 +1172,7 @@ async function main() {
   const currentRiskColor = {
     Accumulate: '#1689ff',
     Neutral: '#77c46d',
+    Watch: '#e6bf50',
     Caution: '#f68f1d',
     Euphoria: '#ef5d50'
   }[currentRiskZone.name];
@@ -1408,7 +1412,8 @@ async function main() {
         if (score < 0.05) return 'Extreme low';
         if (score < 0.15) return 'Very low';
         if (score < 0.30) return 'Low';
-        if (score < 0.50) return 'Neutral';
+        if (score < 0.40) return 'Neutral';
+        if (score < 0.50) return 'Watch';
         return 'Elevated';
       }
       function riskLowDisplay(point) {
@@ -1622,7 +1627,7 @@ async function main() {
     const yOf=r=>P.t+ch*(1-r);
 
     // Zone fills
-    const zoneColors=[tc.zoneA,tc.zoneB,tc.zoneC,tc.zoneD];
+    const zoneColors=[tc.zoneA,tc.zoneB,tc.zoneWatch,tc.zoneC,tc.zoneD];
     RISK_ZONES.forEach((zone,index)=>{
       const lo=zone.min,hi=zone.max,c=zoneColors[index];
       ctx.fillStyle=c;ctx.fillRect(P.l,yOf(hi),cw,yOf(lo)-yOf(hi));
