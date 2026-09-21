@@ -755,3 +755,24 @@
   .spy-page .spy-intro { padding-top: 1.5rem; }
   .spy-page .chart-header { flex-wrap: wrap; gap: .5rem; }
 }
+
+.btc-page #marketCapTable .market-cap-current td {
+  background: color-mix(in srgb, var(--spy-orange) 12%, var(--spy-card));
+  font-weight: 700;
+}
+
+.btc-page #marketCapTable .market-cap-current td:first-child {
+  box-shadow: inset 3px 0 var(--spy-orange);
+}
+
+.btc-page .market-cap-current-label {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  color: var(--spy-text);
+  font-size: 0.6rem;
+  font-weight: 700;
+  vertical-align: middle;
+}

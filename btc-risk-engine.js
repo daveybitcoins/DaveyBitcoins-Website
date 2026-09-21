@@ -560,14 +560,26 @@ function renderMarketCapTable(supply, height, currentPrice) {
   body.innerHTML = '';
 
   const fragment = document.createDocumentFragment();
+  const currentMarketCap = Number.isFinite(currentPrice) && currentPrice > 0 ? currentPrice * supply : null;
+  const marketCaps = [];
   for (let marketCap = 500000000000; marketCap <= 10000000000000; marketCap += 500000000000) {
-    const price = marketCap / supply;
+    marketCaps.push(marketCap);
+  }
+  if (Number.isFinite(currentMarketCap) && !marketCaps.includes(currentMarketCap)) {
+    marketCaps.push(currentMarketCap);
+  }
+  marketCaps.sort((a, b) => a - b);
+  for (const marketCap of marketCaps) {
+    const isCurrent = marketCap === currentMarketCap;
+    const price = isCurrent ? currentPrice : marketCap / supply;
     const movePct = Number.isFinite(currentPrice) && currentPrice > 0 ? ((price / currentPrice - 1) * 100) : null;
     const moveColor = movePct == null ? 'var(--text-dimmer)' : movePct >= 0 ? '#58c56f' : '#ef5d4f';
     const tr = document.createElement('tr');
-    tr.innerHTML = '<td class="pj-date">' + formatMarketCap(marketCap) + '</td>' +
+    if (isCurrent) tr.className = 'market-cap-current';
+    tr.innerHTML = '<td class="pj-date">' + formatMarketCap(marketCap) +
+      (isCurrent ? ' <span class="market-cap-current-label">Current</span>' : '') + '</td>' +
       '<td class="pj-price">$' + price.toLocaleString(undefined, { maximumFractionDigits: price >= 1000 ? 0 : 2 }) + '</td>' +
-      '<td class="pj-growth" style="color:' + moveColor + '">' + (movePct == null ? '—' : (movePct >= 0 ? '+' : '') + movePct.toFixed(1) + '%') + '</td>';
+      '<td class="pj-growth" style="color:' + moveColor + '">' + (isCurrent ? '0.0%' : movePct == null ? '—' : (movePct >= 0 ? '+' : '') + movePct.toFixed(1) + '%') + '</td>';
     fragment.appendChild(tr);
   }
   body.appendChild(fragment);
