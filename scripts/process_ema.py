@@ -956,14 +956,14 @@ def _calc_btc_risk(daily):
     fair_value = round(last["reg_price"], 2)
     dev_pct = round((last["price"] / last["reg_price"] - 1) * 100, 1)
 
-    # Zone classification — must match risk-metric.html chart bands (0.20/0.40/0.50/0.70/0.80)
+    # Zone classification — must match risk-metric.html chart bands (0.20/0.40/0.50/0.60/0.80)
     if risk_combo < 0.20:
         zone, zone_color = "Accumulate", "#2563eb"
     elif risk_combo < 0.40:
         zone, zone_color = "Neutral", "#10b981"
     elif risk_combo < 0.50:
         zone, zone_color = "HODL", "#e6bf50"
-    elif risk_combo < 0.70:
+    elif risk_combo < 0.60:
         zone, zone_color = "Caution", "#f68f1d"
     elif risk_combo < 0.80:
         zone, zone_color = "Overvalued", "#eb713a"

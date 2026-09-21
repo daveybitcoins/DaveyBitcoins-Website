@@ -82,12 +82,6 @@ function themeColors() {
     axisText: light ? '#6d6a5f' : '#a59a88',
     regressionLine: light ? 'rgba(184,101,11,0.46)' : 'rgba(247,147,26,0.46)',
     zoneLabels: light ? '#837765' : '#a59a88',
-    zoneA: light ? 'rgba(22,137,255,0.07)' : 'rgba(22,137,255,0.09)',
-    zoneB: light ? 'rgba(132,204,22,0.03)' : 'rgba(132,204,22,0.035)',
-    zoneHODL: light ? 'rgba(230,191,80,0.10)' : 'rgba(230,191,80,0.09)',
-    zoneOvervalued: light ? 'rgba(235,113,58,0.08)' : 'rgba(235,113,58,0.08)',
-    zoneC: light ? 'rgba(247,147,26,0.04)' : 'rgba(247,147,26,0.05)',
-    zoneD: light ? 'rgba(230,109,96,0.06)' : 'rgba(230,109,96,0.07)',
     zoneDash: light ? '#d6c7ad' : '#6c6558',
     barValueText: light ? '#211b12' : '#f8f2e6',
     areaGrad0: light ? 'rgba(230,109,96,0.14)' : 'rgba(230,109,96,0.18)',
@@ -175,12 +169,12 @@ const FAIR_VALUE_DAMPENING_POWER = 2;
 const FAIR_VALUE_DAYS_PER_YEAR = 365.2425;
 const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);
 const RISK_ZONES = [
-  { name: 'Accumulate', min: 0.00, max: 0.20, colorRisk: 0.10 },
-  { name: 'Neutral', min: 0.20, max: 0.40, colorRisk: 0.30 },
-  { name: 'HODL', min: 0.40, max: 0.50, colorRisk: 0.45 },
-  { name: 'Caution', min: 0.50, max: 0.70, colorRisk: 0.60 },
-  { name: 'Overvalued', min: 0.70, max: 0.80, colorRisk: 0.75 },
-  { name: 'Euphoria', min: 0.80, max: 1.00, colorRisk: 0.90 }
+  { name: 'Accumulate', min: 0.00, max: 0.20, colorRisk: 0.10, color: '#1689ff' },
+  { name: 'Neutral', min: 0.20, max: 0.40, colorRisk: 0.30, color: '#77c46d' },
+  { name: 'HODL', min: 0.40, max: 0.50, colorRisk: 0.45, color: '#e6bf50' },
+  { name: 'Caution', min: 0.50, max: 0.60, colorRisk: 0.55, color: '#f68f1d' },
+  { name: 'Overvalued', min: 0.60, max: 0.80, colorRisk: 0.70, color: '#eb713a' },
+  { name: 'Euphoria', min: 0.80, max: 1.00, colorRisk: 0.90, color: '#ef5d50' }
 ];
 const PROJECTED_RISK_BOUNDARIES = RISK_ZONES.slice(0, -1).map(zone => zone.max);
 const DISPLAY_RISK_BOUNDARIES = [...PROJECTED_RISK_BOUNDARIES].reverse();
@@ -312,15 +306,10 @@ function normCdf(z) {
   return z > 0 ? 1-p : p;
 }
 
-function riskColor(r, a) {
-  a = a || 1;
-  if (r < RISK_ZONES[0].max) return `rgba(22,137,255,${a})`;
-  const stops = [[0,[104,130,156]],[0.16,[80,155,118]],[0.32,[88,197,111]],[0.45,[230,191,80]],[0.50,[255,191,99]],[0.64,[247,147,26]],[0.78,[228,96,69]],[0.90,[239,93,79]],[1,[122,32,25]]];
-  let lo=stops[0], hi=stops[stops.length-1];
-  for (let i=0;i<stops.length-1;i++) { if(r>=stops[i][0]&&r<=stops[i+1][0]){lo=stops[i];hi=stops[i+1];break;} }
-  const t=(r-lo[0])/(hi[0]-lo[0]||1);
-  const c=lo[1].map((v,j)=>Math.round(v+t*(hi[1][j]-v)));
-  return `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+function riskColor(r, a = 1) {
+  const hex = riskZoneForScore(r).color.slice(1);
+  const rgb = [0, 2, 4].map(offset => parseInt(hex.slice(offset, offset + 2), 16));
+  return `rgba(${rgb.join(',')},${a})`;
 }
 
 // ====== FETCH LIVE PRICE ======
@@ -767,14 +756,7 @@ async function main() {
   const hd = document.getElementById('headerDate');
   hd.innerHTML = '<span style="width:6px;height:6px;background:#58c56f;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> coherent snapshot as of ' + last.date + (isLive ? ' · ' + isLive.source : ' · daily dataset');
   const currentRiskZone = riskZoneForScore(last.riskCombo);
-  const currentRiskColor = {
-    Accumulate: '#1689ff',
-    Neutral: '#77c46d',
-    HODL: '#e6bf50',
-    Caution: '#f68f1d',
-    Overvalued: '#eb713a',
-    Euphoria: '#ef5d50'
-  }[currentRiskZone.name];
+  const currentRiskColor = currentRiskZone.color;
   const riskCard = document.getElementById('riskCard');
   const riskBar = document.getElementById('riskBar');
   document.getElementById('vRisk').textContent = last.riskCombo.toFixed(3);
@@ -1008,12 +990,7 @@ async function main() {
         return point.riskCombo;
       }
       function riskBand(score) {
-        if (score < 0.05) return 'Extreme low';
-        if (score < 0.15) return 'Very low';
-        if (score < 0.30) return 'Low';
-        if (score < 0.40) return 'Neutral';
-        if (score < 0.50) return 'HODL';
-        return 'Elevated';
+        return riskZoneForScore(score).name;
       }
       function riskLowDisplay(point) {
         const score = calibratedLowRisk(point);
@@ -1225,9 +1202,8 @@ async function main() {
     const yOf=r=>P.t+ch*(1-r);
 
     // Zone fills
-    const zoneColors=[tc.zoneA,tc.zoneB,tc.zoneHODL,tc.zoneC,tc.zoneOvervalued,tc.zoneD];
-    RISK_ZONES.forEach((zone,index)=>{
-      const lo=zone.min,hi=zone.max,c=zoneColors[index];
+    RISK_ZONES.forEach(zone=>{
+      const lo=zone.min,hi=zone.max,c=riskColor(zone.colorRisk,0.10);
       ctx.fillStyle=c;ctx.fillRect(P.l,yOf(hi),cw,yOf(lo)-yOf(hi));
     });
     PROJECTED_RISK_BOUNDARIES.forEach(v=>{

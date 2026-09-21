@@ -541,7 +541,7 @@ export default function BitcoinRiskMetricPage() {
               <span className="hl">Combined:</span> Geometric mean √(S × M).
               When either frame indicates low risk, the combined reading is
               pulled lower. Zones are Accumulate 0.00–0.20, Neutral 0.20–0.40, HODL 0.40–0.50,
-              Caution 0.50–0.70, Overvalued 0.70–0.80, and Euphoria 0.80–1.00 everywhere on the site.
+              Caution 0.50–0.60, Overvalued 0.60–0.80, and Euphoria 0.80–1.00 everywhere on the site.
             </p>
             <p>
               <span className="hl">Halving Countdown:</span> Uses current block

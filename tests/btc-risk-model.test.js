@@ -369,8 +369,29 @@ return projectedZones;`)();
     { lower: null, upper: 0, color: 0.10 },
     { lower: 0, upper: 1, color: 0.30 },
     { lower: 1, upper: 2, color: 0.45 },
-    { lower: 2, upper: 3, color: 0.60 },
-    { lower: 3, upper: 4, color: 0.75 },
+    { lower: 2, upper: 3, color: 0.55 },
+    { lower: 3, upper: 4, color: 0.70 },
     { lower: 4, upper: null, color: 0.90 },
   ]);
+});
+
+
+test('risk names and colors change together at every shared boundary', () => {
+  const source = readFileSync(ENGINE_PATH, 'utf8');
+  const zones = source.match(/const RISK_ZONES = \[[^]*?\n\];/)[0];
+  const { classify, color } = new Function(`${zones}
+${extractFunction(source, 'riskZoneForScore')}
+${extractFunction(source, 'riskColor')}
+return { classify: riskZoneForScore, color: riskColor };`)();
+  const cases = [[0, 'Accumulate'], [0.2, 'Neutral'], [0.4, 'HODL'], [0.5, 'Caution'], [0.6, 'Overvalued'], [0.8, 'Euphoria']];
+  cases.forEach(([risk, name], index) => {
+    assert.equal(classify(risk).name, name);
+    assert.equal(classify(risk + 0.001).name, name);
+    assert.equal(color(risk), color(risk + 0.001));
+    if (index) {
+      assert.equal(classify(risk - 0.001).name, cases[index - 1][1]);
+      assert.notEqual(color(risk), color(risk - 0.001));
+    }
+  });
+  assert.equal(classify(1).name, 'Euphoria');
 });
