@@ -242,7 +242,7 @@ const checks = [
       await expectText(page, 'Momentum Window');
       await expectText(page, 'Monthly Samples');
       const backtestRows = await page.locator('#modelBacktestBody tr').count();
-      if (backtestRows !== 5) throw new Error(`expected 5 BTC backtest rows, got ${backtestRows}`);
+      if (backtestRows !== 6) throw new Error(`expected 6 BTC backtest rows, got ${backtestRows}`);
       await expectText(page, 'Long-run scenario, not a short-term price target');
       await expectText(page, 'at the growing gold-linked threshold the power-law growth above a 6% long-run nominal rate is reduced by half');
       await expectText(page, 'World Gold Council');

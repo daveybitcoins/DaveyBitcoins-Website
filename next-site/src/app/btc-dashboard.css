@@ -194,7 +194,8 @@
     #1689ff 0 20%,
     #77c46d 20% 40%,
     #e6bf50 40% 50%,
-    #f68f1d 50% 80%,
+    #f68f1d 50% 70%,
+    #eb713a 70% 80%,
     #ef5d50 80% 100%
   );
   opacity: 0.72;
@@ -202,7 +203,7 @@
 
 .btc-page .risk-card .zone-labels {
   display: grid;
-  grid-template-columns: 2fr 2fr 1fr 3fr 2fr;
+  grid-template-columns: 2fr 2fr 1fr 2fr 1fr 2fr;
   align-items: start;
   gap: 0;
   margin-top: 0.38rem;
@@ -223,12 +224,16 @@
   color: #77c46d;
 }
 
-.btc-page .risk-card .zone-labels [data-risk-zone="Watch"] {
+.btc-page .risk-card .zone-labels [data-risk-zone="HODL"] {
   color: #e6bf50;
 }
 
 .btc-page .risk-card .zone-labels [data-risk-zone="Caution"] {
   color: #f68f1d;
+}
+
+.btc-page .risk-card .zone-labels [data-risk-zone="Overvalued"] {
+  color: #eb713a;
 }
 
 .btc-page .risk-card .zone-labels [data-risk-zone="Euphoria"] {

@@ -11,7 +11,8 @@ const definitions = [
   { key: "breadth", title: "Market breadth", detail: "Stocks above their 200-day average", href: "/ema-scanner/" },
 ] as const;
 function zone(value: number, bitcoin = false) {
-  if (bitcoin && value >= 0.4 && value < 0.5) return "Watch";
+  if (bitcoin && value >= 0.7 && value < 0.8) return "Overvalued";
+  if (bitcoin && value >= 0.4 && value < 0.5) return "HODL";
   return value < 0.2 ? "Accumulate" : value < 0.5 ? "Neutral" : value < 0.8 ? "Caution" : "Euphoria";
 }
 function parsePrices(text: string): [string, number][] {

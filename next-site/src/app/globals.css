@@ -1295,5 +1295,8 @@ html[data-theme="light"] { color-scheme: light; }
 [data-theme="light"] .tool-card--green { --card-accent: #267a38; }
 [data-theme="light"] .tool-card--amber { --card-accent: #9b630a; }
 
-.snapshot-card[data-tone="Watch"] { --snapshot-tint: #e6bf50; --snapshot-accent: #e6bf50; }
-[data-theme="light"] .snapshot-card[data-tone="Watch"] { --snapshot-accent: #846511; }
+.snapshot-card[data-tone="HODL"] { --snapshot-tint: #e6bf50; --snapshot-accent: #e6bf50; }
+[data-theme="light"] .snapshot-card[data-tone="HODL"] { --snapshot-accent: #846511; }
+
+.snapshot-card[data-tone="Overvalued"] { --snapshot-tint: #eb713a; --snapshot-accent: #ff9c6e; }
+[data-theme="light"] .snapshot-card[data-tone="Overvalued"] { --snapshot-accent: #a64419; }

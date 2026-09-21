@@ -84,7 +84,8 @@ function themeColors() {
     zoneLabels: light ? '#837765' : '#a59a88',
     zoneA: light ? 'rgba(22,137,255,0.07)' : 'rgba(22,137,255,0.09)',
     zoneB: light ? 'rgba(132,204,22,0.03)' : 'rgba(132,204,22,0.035)',
-    zoneWatch: light ? 'rgba(230,191,80,0.10)' : 'rgba(230,191,80,0.09)',
+    zoneHODL: light ? 'rgba(230,191,80,0.10)' : 'rgba(230,191,80,0.09)',
+    zoneOvervalued: light ? 'rgba(235,113,58,0.08)' : 'rgba(235,113,58,0.08)',
     zoneC: light ? 'rgba(247,147,26,0.04)' : 'rgba(247,147,26,0.05)',
     zoneD: light ? 'rgba(230,109,96,0.06)' : 'rgba(230,109,96,0.07)',
     zoneDash: light ? '#d6c7ad' : '#6c6558',
@@ -176,8 +177,9 @@ const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);
 const RISK_ZONES = [
   { name: 'Accumulate', min: 0.00, max: 0.20, colorRisk: 0.10 },
   { name: 'Neutral', min: 0.20, max: 0.40, colorRisk: 0.30 },
-  { name: 'Watch', min: 0.40, max: 0.50, colorRisk: 0.45 },
-  { name: 'Caution', min: 0.50, max: 0.80, colorRisk: 0.65 },
+  { name: 'HODL', min: 0.40, max: 0.50, colorRisk: 0.45 },
+  { name: 'Caution', min: 0.50, max: 0.70, colorRisk: 0.60 },
+  { name: 'Overvalued', min: 0.70, max: 0.80, colorRisk: 0.75 },
   { name: 'Euphoria', min: 0.80, max: 1.00, colorRisk: 0.90 }
 ];
 const PROJECTED_RISK_BOUNDARIES = RISK_ZONES.slice(0, -1).map(zone => zone.max);
@@ -768,8 +770,9 @@ async function main() {
   const currentRiskColor = {
     Accumulate: '#1689ff',
     Neutral: '#77c46d',
-    Watch: '#e6bf50',
+    HODL: '#e6bf50',
     Caution: '#f68f1d',
+    Overvalued: '#eb713a',
     Euphoria: '#ef5d50'
   }[currentRiskZone.name];
   const riskCard = document.getElementById('riskCard');
@@ -1009,7 +1012,7 @@ async function main() {
         if (score < 0.15) return 'Very low';
         if (score < 0.30) return 'Low';
         if (score < 0.40) return 'Neutral';
-        if (score < 0.50) return 'Watch';
+        if (score < 0.50) return 'HODL';
         return 'Elevated';
       }
       function riskLowDisplay(point) {
@@ -1222,7 +1225,7 @@ async function main() {
     const yOf=r=>P.t+ch*(1-r);
 
     // Zone fills
-    const zoneColors=[tc.zoneA,tc.zoneB,tc.zoneWatch,tc.zoneC,tc.zoneD];
+    const zoneColors=[tc.zoneA,tc.zoneB,tc.zoneHODL,tc.zoneC,tc.zoneOvervalued,tc.zoneD];
     RISK_ZONES.forEach((zone,index)=>{
       const lo=zone.min,hi=zone.max,c=zoneColors[index];
       ctx.fillStyle=c;ctx.fillRect(P.l,yOf(hi),cw,yOf(lo)-yOf(hi));
@@ -1272,10 +1275,9 @@ async function main() {
 
     // Zone labels
     ctx.fillStyle=tc.zoneLabels;ctx.font='9px JetBrains Mono';ctx.textAlign='right';
-    ctx.fillText('EUPHORIA',W-P.r-4,yOf(0.90));
-    ctx.fillText('ELEVATED',W-P.r-4,yOf(0.65));
-    ctx.fillText('NEUTRAL',W-P.r-4,yOf(0.35));
-    ctx.fillText('ACCUMULATE',W-P.r-4,yOf(0.10));
+    RISK_ZONES.forEach(zone=>{
+      ctx.fillText(zone.name.toUpperCase(),W-P.r-4,yOf((zone.min+zone.max)/2));
+    });
   }
 
   // ====== RENDER ALL ======

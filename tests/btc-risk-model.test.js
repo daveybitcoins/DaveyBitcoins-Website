@@ -369,7 +369,8 @@ return projectedZones;`)();
     { lower: null, upper: 0, color: 0.10 },
     { lower: 0, upper: 1, color: 0.30 },
     { lower: 1, upper: 2, color: 0.45 },
-    { lower: 2, upper: 3, color: 0.65 },
-    { lower: 3, upper: null, color: 0.90 },
+    { lower: 2, upper: 3, color: 0.60 },
+    { lower: 3, upper: 4, color: 0.75 },
+    { lower: 4, upper: null, color: 0.90 },
   ]);
 });
