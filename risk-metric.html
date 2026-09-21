@@ -1550,12 +1550,11 @@ async function main() {
     // fair-value path, so scenario changes move the full forecast coherently.
     if(fullProjectionView) {
       const forecastX=xOfTime(lastDateMs);
-      const projectedZones=[
-        {lower:null,upper:0,color:riskColor(0.12,0.10)},
-        {lower:0,upper:1,color:riskColor(0.37,0.10)},
-        {lower:1,upper:2,color:riskColor(0.62,0.10)},
-        {lower:2,upper:null,color:riskColor(0.88,0.10)}
-      ];
+      const projectedZones=RISK_ZONES.map((zone,index)=>({
+        lower:index===0?null:index-1,
+        upper:index===RISK_ZONES.length-1?null:index,
+        color:riskColor(zone.colorRisk,0.10)
+      }));
       projectedZones.forEach(zone=>{
         ctx.beginPath();
         if(zone.upper===null) {

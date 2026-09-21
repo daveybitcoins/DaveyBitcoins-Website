@@ -355,3 +355,21 @@ test('risk-price inversion reproduces the production combined score', () => {
     );
   }
 });
+
+
+test('price-chart fills cover every risk zone with matching boundaries and colors', () => {
+  const source = readFileSync(ENGINE_PATH, 'utf8');
+  const zones = source.match(/const RISK_ZONES = \[[^]*?\n\];/)[0];
+  const fills = source.match(/const projectedZones=RISK_ZONES\.map[^]*?\}\)\);/)[0];
+  const actual = new Function(`${zones}
+const riskColor = risk => risk;
+${fills}
+return projectedZones;`)();
+  assert.deepEqual(actual, [
+    { lower: null, upper: 0, color: 0.10 },
+    { lower: 0, upper: 1, color: 0.30 },
+    { lower: 1, upper: 2, color: 0.45 },
+    { lower: 2, upper: 3, color: 0.65 },
+    { lower: 3, upper: null, color: 0.90 },
+  ]);
+});
