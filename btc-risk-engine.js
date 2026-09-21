@@ -766,6 +766,8 @@ async function main() {
   riskBar.setAttribute('aria-valuenow', last.riskCombo.toFixed(3));
   riskBar.setAttribute('aria-valuetext', last.riskCombo.toFixed(3) + ', ' + currentRiskZone.name + ' risk zone');
   riskCard.querySelectorAll('[data-risk-zone]').forEach(function(label) {
+    const zone = RISK_ZONES.find(zone => zone.name === label.dataset.riskZone);
+    label.innerHTML = zone.name + '<small>' + zone.min.toFixed(2) + '–' + zone.max.toFixed(2) + '</small>';
     const isActive = label.dataset.riskZone === currentRiskZone.name;
     label.classList.toggle('is-active', isActive);
     if (isActive) label.setAttribute('aria-current', 'true');
@@ -1393,12 +1395,14 @@ async function main() {
     const segments=RISK_ZONES.map(zone=>({
       name:zone.name,
       range:zone.min.toFixed(2)+'–'+zone.max.toFixed(2),
-      risk:zone.colorRisk
+      risk:zone.colorRisk,
+      width:zone.max-zone.min
     }));
     el.innerHTML='';
     segments.forEach(s=>{
       const d=document.createElement('div');
       d.className='legend-seg';
+      d.style.setProperty('--zone-width',s.width);
       d.style.background=riskColor(s.risk,0.2);
       d.style.color=riskColor(s.risk);
       d.innerHTML=s.name+'<span class="seg-label">'+s.range+'</span>';

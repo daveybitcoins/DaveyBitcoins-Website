@@ -559,7 +559,7 @@ export default function BitcoinRiskMetricPage() {
 
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20260921-historical-low" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20260921-six-band-layout" strategy="afterInteractive" />
     </main>
   );
 }

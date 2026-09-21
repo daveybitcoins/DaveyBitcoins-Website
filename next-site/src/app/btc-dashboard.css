@@ -203,11 +203,13 @@
 
 .btc-page .risk-card .zone-labels {
   display: grid;
-  grid-template-columns: 2fr 2fr 1fr 1fr 2fr 2fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: start;
   gap: 0;
-  margin-top: 0.38rem;
-  font-size: 0.38rem;
+  margin-top: 0.65rem;
+  row-gap: 0.45rem;
+  column-gap: 0.3rem;
+  font-size: 0.5rem;
   letter-spacing: -0.02em;
 }
 
@@ -793,4 +795,40 @@
   font-size: 0.6rem;
   font-weight: 700;
   vertical-align: middle;
+}
+
+/* Keep the six risk labels readable independently of narrow gauge segments. */
+.btc-page .risk-card .zone-labels span {
+  font-size: 0.5rem;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.btc-page .risk-card .zone-labels small {
+  display: block;
+  color: var(--spy-muted);
+  font-size: 0.42rem;
+  font-weight: 400;
+}
+.btc-page .legend-bar {
+  grid-template-columns: 2fr 2fr 1fr 1fr 2fr 2fr;
+}
+.btc-page .legend-seg {
+  min-width: 0;
+  padding: 0.55rem 0.25rem;
+}
+@media (max-width: 700px) {
+  .btc-page .legend-bar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.btc-page .dashboard > .risk-card {
+  aspect-ratio: auto;
+  min-height: 190px;
+}
+.btc-page .risk-card .risk-bar-wrap {
+  flex-shrink: 0;
+  margin-top: 1rem;
+}
+.btc-page .risk-card .zone-labels {
+  flex-shrink: 0;
 }

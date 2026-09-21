@@ -195,10 +195,20 @@ const checks = [
       if (!/^0\.\d{3}$|^1\.000$/.test(riskValue)) {
         throw new Error(`unexpected BTC combined-risk value: ${riskValue}`);
       }
-      const activeZoneLabels = await page.locator('#riskCard [data-risk-zone].is-active').allTextContents();
+      const activeZoneLabels = await page.locator('#riskCard [data-risk-zone].is-active').evaluateAll(labels => labels.map(label => label.dataset.riskZone));
       if (activeZoneLabels.length !== 1) {
         throw new Error(`BTC combined-risk zone label is not active: ${activeZoneLabels.join(',')}`);
       }
+      const riskLegend = await page.locator('#legendBar .legend-seg').allTextContents();
+      const expectedRiskLegend = ['Accumulate0.00–0.20', 'Neutral0.20–0.40', 'HODL0.40–0.50', 'Caution0.50–0.60', 'Overvalued0.60–0.80', 'Euphoria0.80–1.00'];
+      if (JSON.stringify(riskLegend) !== JSON.stringify(expectedRiskLegend)) {
+        throw new Error(`BTC price legend has incorrect risk ranges: ${riskLegend.join(', ')}`);
+      }
+      const clippedRiskLabels = await page.locator('#riskCard [data-risk-zone]').evaluateAll(labels => labels.filter(label => {
+        const card = label.closest('#riskCard').getBoundingClientRect();
+        return label.scrollWidth > label.clientWidth + 1 || label.getBoundingClientRect().bottom > card.bottom;
+      }).map(label => label.textContent));
+      if (clippedRiskLabels.length) throw new Error(`BTC gauge labels overflow: ${clippedRiskLabels.join(', ')}`);
       const riskCardText = await page.locator('#riskCard').innerText();
       if (/stage/i.test(riskCardText)) {
         throw new Error(`BTC combined-risk card still uses stage language: ${riskCardText}`);
