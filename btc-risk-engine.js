@@ -903,7 +903,7 @@ async function main() {
       "2020-03": { label: "COVID-19 crash", lowPrice: 4860.35, info: "Global pandemic liquidity crisis. Bitcoin crashed 50% in 2 days to $3,800 as all assets were sold. Fed stimulus ignited the bull run to $69K." },
       "2022-11": { label: "FTX collapse / bear bottom", lowPrice: 15599.05, info: "FTX exchange and Alameda Research collapsed, $8B in customer funds lost. Contagion spread across crypto. Bitcoin fell to $15,500." },
       "2022-12": { label: "FTX collapse / bear bottom", lowPrice: 16256.25, info: "Post-FTX capitulation bottom. Genesis/DCG concerns lingered but selling exhausted. Set the floor for the 2023-24 recovery and ETF approvals." },
-      "2026-06": { label: "2026 bear market bottom - in progress", lowPrice: 61540, info: "Potential bottoming setup still in progress: BTC is down roughly 50% from the 2025 cycle high, combined risk is back in the low-risk zone, and selling has accelerated into the model's estimated bottom window. Pressure appears tied to risk-asset de-risking, tariff/trade uncertainty, stretched equity valuations, labor-market worries, AI disruption concerns, and fading post-ETF momentum." }
+      "2026-06": { label: "2026 Bear Market Low", lowPrice: 61540, info: "A low-risk reading during the 2026 drawdown. The latest table entry uses the lowest daily close in the trailing 52 weeks and updates with new daily data." }
     };
 
     function getEventMeta(dateStr) {
@@ -982,7 +982,7 @@ async function main() {
     lows.forEach(low => {
       const tr = document.createElement('tr');
       const meta = low._latest52WeekLow ? {
-        label: '2026 Bear Market Low - in progress',
+        label: low.date.slice(0, 4) + ' Bear Market Low',
         info: 'Latest row is anchored to the lowest BTC daily close over the trailing 52 weeks, rather than the lowest model-risk reading. This keeps the current-cycle event tied to the actual recent closing-price low as new daily data arrives.'
       } : getEventMeta(low.date);
       const price = low.price;
