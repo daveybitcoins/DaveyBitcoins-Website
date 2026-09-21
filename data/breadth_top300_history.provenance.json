@@ -646,7 +646,27 @@
     {
       "date": "2026-09-14",
       "snapshot": "csv/Weekly EMA Values_2026-09-14.csv",
-      "sha256": "12c250d1b44c5dc28cd3b416394864f305281fc5241748b086939784c6d997d2"
+      "sha256": "15276c16694b8578fda3ccd42654e0c64d64b2dc72ea833a3c9f01b19f1a81ed"
+    },
+    {
+      "date": "2026-09-15",
+      "snapshot": "csv/Weekly EMA Values_2026-09-15.csv",
+      "sha256": "ace9ff508d639e1b16bb6647f68c5ea11a48b36f5ccebd0f9651fe362cc7df60"
+    },
+    {
+      "date": "2026-09-16",
+      "snapshot": "csv/Weekly EMA Values_2026-09-16.csv",
+      "sha256": "b2ebe89e6f927941b196bbfc8eeb8eb4bf1a84c4c8dab702bbb7132b494ad55a"
+    },
+    {
+      "date": "2026-09-17",
+      "snapshot": "csv/Weekly EMA Values_2026-09-17.csv",
+      "sha256": "61537c64368ec9c0b1016cd05bf015420e744af13698e1185b6fdb2c6cb6bac6"
+    },
+    {
+      "date": "2026-09-18",
+      "snapshot": "csv/Weekly EMA Values_2026-09-18.csv",
+      "sha256": "4ef0bb176cbc54ca958ff38e3ef88cb9d0c6e49089f149f30900a278a1028b00"
     }
   ]
 }
