@@ -58,6 +58,14 @@
   outline: none;
 }
 
+.risk-section-nav a[aria-current="location"] {
+  border-color: var(--spy-orange);
+  background: color-mix(in srgb, var(--spy-orange) 12%, var(--spy-card));
+  color: var(--spy-text);
+  box-shadow: inset 3px 0 var(--spy-orange);
+  font-weight: 700;
+}
+
 @media (min-width: 900px) {
   .risk-page-with-sections {
     display: grid;

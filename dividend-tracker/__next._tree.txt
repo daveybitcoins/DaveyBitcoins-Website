@@ -1,3 +1,3 @@
-:HL["/_next/static/chunks/2vusxpqpresr8.css","style"]
+:HL["/_next/static/chunks/1nbjbh0ui_vcd.css","style"]
 :HL["/dividend-tracker.css?v=20260908-refinement","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"dividend-tracker","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"QMZZZMmqF0SzpV9_qHduM"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"dividend-tracker","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"5fgcbFx4DY3-J9AIOZ7tg"}
