@@ -750,8 +750,9 @@
 }
 
 .spy-page[data-risk-dashboard="spy"] .zone-labels small {
-  color: var(--spy-muted);
-  font-weight: 400;
+  color: var(--spy-text);
+  font-size: 0.5rem;
+  font-weight: 700;
 }
 
 .spy-page[data-risk-dashboard="spy"] .zone-labels > .is-active {

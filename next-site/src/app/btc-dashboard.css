@@ -198,7 +198,7 @@
     #eb713a 60% 80%,
     #ef5d50 80% 100%
   );
-  opacity: 0.72;
+  opacity: 1;
 }
 
 .btc-page .risk-card .zone-labels {
@@ -805,9 +805,9 @@
 }
 .btc-page .risk-card .zone-labels small {
   display: block;
-  color: var(--spy-muted);
-  font-size: 0.42rem;
-  font-weight: 400;
+  color: var(--spy-text);
+  font-size: 0.5rem;
+  font-weight: 700;
 }
 .btc-page .legend-bar {
   grid-template-columns: 2fr 2fr 1fr 1fr 2fr 2fr;
@@ -831,4 +831,10 @@
 }
 .btc-page .risk-card .zone-labels {
   flex-shrink: 0;
+}
+
+/* Use the same colored dividers as the SPY summary card. */
+.btc-page .risk-card .zone-labels > span {
+  border-top: 3px solid currentColor;
+  padding-top: 0.3rem;
 }
