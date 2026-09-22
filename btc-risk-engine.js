@@ -307,9 +307,16 @@ function normCdf(z) {
 }
 
 function riskColor(r, a = 1) {
-  const hex = riskZoneForScore(r).color.slice(1);
+  const zone = riskZoneForScore(r);
+  const light = typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'light';
+  const hex = (zone.name === 'HODL' && light ? '#756800' : zone.color).slice(1);
   const rgb = [0, 2, 4].map(offset => parseInt(hex.slice(offset, offset + 2), 16));
   return `rgba(${rgb.join(',')},${a})`;
+}
+
+// CSS variables keep text colors in sync when the theme changes.
+function riskTextColor(r) {
+  return riskZoneForScore(r).name === 'HODL' ? 'var(--hodl-color)' : riskColor(r);
 }
 
 // ====== FETCH LIVE PRICE ======
@@ -653,7 +660,7 @@ function renderModelSnapshot(pts, slope, last, live) {
   structuralEl.textContent = last.riskMM.toFixed(3);
   momentumEl.textContent = last.riskZS.toFixed(3);
   combinedEl.textContent = last.riskCombo.toFixed(3) + ' · ' + currentZone.name;
-  combinedEl.style.color = riskColor(last.riskCombo);
+  combinedEl.style.color = riskTextColor(last.riskCombo);
   windowEl.textContent = WINDOW.toLocaleString() + ' prior days';
   slopeEl.textContent = slope.toFixed(3);
 
@@ -661,7 +668,7 @@ function renderModelSnapshot(pts, slope, last, live) {
   buildRiskBacktest(pts).forEach(result => {
     const tr = document.createElement('tr');
     const formatPct = value => value == null ? '—' : (value >= 0 ? '+' : '') + value.toFixed(1) + '%';
-    tr.innerHTML = '<td style="color:' + riskColor(result.zone.colorRisk) + '">' + result.zone.name +
+    tr.innerHTML = '<td style="color:' + riskTextColor(result.zone.colorRisk) + '">' + result.zone.name +
       '<span class="backtest-range">' + result.zone.min.toFixed(2) + '–' + result.zone.max.toFixed(2) + '</span></td>' +
       '<td>' + result.observations.toLocaleString() + '</td>' +
       '<td>' + formatPct(result.medianReturn) + '</td>' +
@@ -758,7 +765,7 @@ async function main() {
   const hd = document.getElementById('headerDate');
   hd.innerHTML = '<span style="width:6px;height:6px;background:#58c56f;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> coherent snapshot as of ' + last.date + (isLive ? ' · ' + isLive.source : ' · daily dataset');
   const currentRiskZone = riskZoneForScore(last.riskCombo);
-  const currentRiskColor = currentRiskZone.color;
+  const currentRiskColor = riskTextColor(last.riskCombo);
   const riskCard = document.getElementById('riskCard');
   const riskBar = document.getElementById('riskBar');
   document.getElementById('vRisk').textContent = last.riskCombo.toFixed(3);
@@ -805,7 +812,7 @@ async function main() {
       const pctStr=pctMove>=0?'+'+pctMove+'%':pctMove+'%';
       const pctColor=pctMove>=0?'#58c56f':'#ef5d4f';
       const rLabel=r.toFixed(2);
-      cell.innerHTML='<div class="rc-risk" style="color:'+riskColor(r)+'">'+rLabel+'</div><div class="rc-price">'+pStr+'</div><div style="font-size:0.62rem;margin-top:3px;color:'+pctColor+';letter-spacing:0.3px">'+pctStr+'</div>';
+      cell.innerHTML='<div class="rc-risk" style="color:'+riskTextColor(r)+'">'+rLabel+'</div><div class="rc-price">'+pStr+'</div><div style="font-size:0.62rem;margin-top:3px;color:'+pctColor+';letter-spacing:0.3px">'+pctStr+'</div>';
       tbl.appendChild(cell);
     }
   }
@@ -1005,7 +1012,7 @@ async function main() {
       tr.innerHTML = '<td>' + low.date + '</td>' +
         '<td class="rl-event">' + eventLabel + infoHtml + '</td>' +
         '<td class="rl-price">' + pStr + '</td>' +
-        '<td class="rl-risk" style="color:' + riskColor(calibratedLowRisk(low)) + '">' + riskLowDisplay(low) + '</td>' +
+        '<td class="rl-risk" style="color:' + riskTextColor(calibratedLowRisk(low)) + '">' + riskLowDisplay(low) + '</td>' +
         fwdCell(low._idx, 1) + fwdCell(low._idx, 2) + fwdCell(low._idx, 3);
       tbody.appendChild(tr);
     });
@@ -1330,7 +1337,7 @@ async function main() {
           const riskEl=tip.querySelector('.tt-risk');
           riskEl.classList.add('tt-band-list');
           riskEl.innerHTML=boundaryValues.map(point=>
-            '<span class="tt-band-row"><span style="color:'+riskColor(point.risk)+'">Risk '+point.risk.toFixed(2)+'</span><span>$'+point.price.toLocaleString(undefined,{maximumFractionDigits:0})+'</span></span>'
+            '<span class="tt-band-row"><span style="color:'+riskTextColor(point.risk)+'">Risk '+point.risk.toFixed(2)+'</span><span>$'+point.price.toLocaleString(undefined,{maximumFractionDigits:0})+'</span></span>'
           ).join('');
           riskEl.style.color='';
           tip.style.display='block';
@@ -1358,16 +1365,16 @@ async function main() {
           )
         }));
         riskEl.classList.add('tt-band-list');
-        riskEl.innerHTML='<span class="tt-band-row"><span>Actual risk</span><span style="color:'+riskColor(p.riskCombo)+'">'+p.riskCombo.toFixed(3)+'</span></span>'+
+        riskEl.innerHTML='<span class="tt-band-row"><span>Actual risk</span><span style="color:'+riskTextColor(p.riskCombo)+'">'+p.riskCombo.toFixed(3)+'</span></span>'+
           boundaryValues.map(point=>
-            '<span class="tt-band-row"><span style="color:'+riskColor(point.risk)+'">Risk '+point.risk.toFixed(2)+'</span><span>$'+point.price.toLocaleString(undefined,{maximumFractionDigits:0})+'</span></span>'
+            '<span class="tt-band-row"><span style="color:'+riskTextColor(point.risk)+'">Risk '+point.risk.toFixed(2)+'</span><span>$'+point.price.toLocaleString(undefined,{maximumFractionDigits:0})+'</span></span>'
           ).join('');
         riskEl.style.color='';
       } else {
         if(riskLabel) riskLabel.textContent='Risk:';
         riskEl.classList.remove('tt-band-list');
         riskEl.textContent = 'C:'+p.riskCombo.toFixed(3)+' S:'+p.riskMM.toFixed(3)+' M:'+p.riskZS.toFixed(3);
-        riskEl.style.color = riskColor(p.riskCombo);
+        riskEl.style.color = riskTextColor(p.riskCombo);
       }
       tip.style.display = 'block';
       const tipX = e.clientX - rect.left + 16;
@@ -1406,7 +1413,7 @@ async function main() {
       d.className='legend-seg';
       d.style.setProperty('--zone-width',s.width);
       d.style.background=riskColor(s.risk,0.2);
-      d.style.color=riskColor(s.risk);
+      d.style.color=riskTextColor(s.risk);
       d.innerHTML=s.name+'<span class="seg-label">'+s.range+'</span>';
       el.appendChild(d);
     });
