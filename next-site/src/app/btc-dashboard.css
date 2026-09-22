@@ -1,5 +1,5 @@
-.btc-page { --hodl-color: #ffeb00; }
-[data-theme="light"] .btc-page { --hodl-color: #756800; }
+.btc-page { --hodl-color: #b388ff; }
+[data-theme="light"] .btc-page { --hodl-color: #7030b8; }
 
 .risk-section-nav + .spy-container > [id] {
   scroll-margin-top: 1.5rem;

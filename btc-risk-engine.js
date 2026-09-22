@@ -171,7 +171,7 @@ const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);
 const RISK_ZONES = [
   { name: 'Accumulate', min: 0.00, max: 0.20, colorRisk: 0.10, color: '#1689ff' },
   { name: 'Neutral', min: 0.20, max: 0.40, colorRisk: 0.30, color: '#77c46d' },
-  { name: 'HODL', min: 0.40, max: 0.50, colorRisk: 0.45, color: '#ffeb00' },
+  { name: 'HODL', min: 0.40, max: 0.50, colorRisk: 0.45, color: '#b388ff' },
   { name: 'Caution', min: 0.50, max: 0.60, colorRisk: 0.55, color: '#f68f1d' },
   { name: 'Overvalued', min: 0.60, max: 0.80, colorRisk: 0.70, color: '#eb713a' },
   { name: 'Euphoria', min: 0.80, max: 1.00, colorRisk: 0.90, color: '#ef5d50' }
@@ -309,7 +309,7 @@ function normCdf(z) {
 function riskColor(r, a = 1) {
   const zone = riskZoneForScore(r);
   const light = typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'light';
-  const hex = (zone.name === 'HODL' && light ? '#756800' : zone.color).slice(1);
+  const hex = (zone.name === 'HODL' && light ? '#7030b8' : zone.color).slice(1);
   const rgb = [0, 2, 4].map(offset => parseInt(hex.slice(offset, offset + 2), 16));
   return `rgba(${rgb.join(',')},${a})`;
 }
