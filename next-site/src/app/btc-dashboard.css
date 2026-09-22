@@ -193,7 +193,7 @@
     90deg,
     #1689ff 0 20%,
     #77c46d 20% 40%,
-    #e6bf50 40% 50%,
+    #ffeb00 40% 50%,
     #f68f1d 50% 60%,
     #eb713a 60% 80%,
     #ef5d50 80% 100%
@@ -227,7 +227,7 @@
 }
 
 .btc-page .risk-card .zone-labels [data-risk-zone="HODL"] {
-  color: #e6bf50;
+  color: #ffeb00;
 }
 
 .btc-page .risk-card .zone-labels [data-risk-zone="Caution"] {

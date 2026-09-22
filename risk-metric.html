@@ -111,13 +111,13 @@
   [data-theme="light"] .risk-bar-needle{background:#211b12;box-shadow:0 0 10px rgba(0,0,0,0.3)}
   .zone-labels{display:flex;justify-content:space-between;margin-top:6px}
   .zone-labels span{font-size:0.5rem;color:var(--text-dimmer)}
-  .risk-card .risk-bar-bg{background:linear-gradient(90deg,#1689ff 0 20%,#77c46d 20% 40%,#e6bf50 40% 50%,#f68f1d 50% 60%,#eb713a 60% 80%,#ef5d50 80% 100%);opacity:.78}
+  .risk-card .risk-bar-bg{background:linear-gradient(90deg,#1689ff 0 20%,#77c46d 20% 40%,#ffeb00 40% 50%,#f68f1d 50% 60%,#eb713a 60% 80%,#ef5d50 80% 100%);opacity:.78}
   .risk-card .zone-labels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 6px;margin-top:12px}
   .risk-card .zone-labels span{min-width:0;text-align:center;font-size:0.5rem;line-height:1.5;border-top:3px solid currentColor;padding-top:0.3rem}
   .risk-card .zone-labels small{display:block;font-size:0.5rem;color:var(--text-heading);font-weight:700}
   .risk-card .zone-labels [data-risk-zone="Accumulate"]{color:#1689ff}
   .risk-card .zone-labels [data-risk-zone="Neutral"]{color:#77c46d}
-  .risk-card .zone-labels [data-risk-zone="HODL"]{color:#e6bf50}
+  .risk-card .zone-labels [data-risk-zone="HODL"]{color:#ffeb00}
   .risk-card .zone-labels [data-risk-zone="Caution"]{color:#f68f1d}
   .risk-card .zone-labels [data-risk-zone="Overvalued"]{color:#eb713a}
   .risk-card .zone-labels [data-risk-zone="Euphoria"]{color:#ef5d50}
@@ -579,7 +579,7 @@ const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);
 const RISK_ZONES = [
   { name: 'Accumulate', min: 0.00, max: 0.20, colorRisk: 0.10, color: '#1689ff' },
   { name: 'Neutral', min: 0.20, max: 0.40, colorRisk: 0.30, color: '#77c46d' },
-  { name: 'HODL', min: 0.40, max: 0.50, colorRisk: 0.45, color: '#e6bf50' },
+  { name: 'HODL', min: 0.40, max: 0.50, colorRisk: 0.45, color: '#ffeb00' },
   { name: 'Caution', min: 0.50, max: 0.60, colorRisk: 0.55, color: '#f68f1d' },
   { name: 'Overvalued', min: 0.60, max: 0.80, colorRisk: 0.70, color: '#eb713a' },
   { name: 'Euphoria', min: 0.80, max: 1.00, colorRisk: 0.90, color: '#ef5d50' }
