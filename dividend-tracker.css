@@ -1439,6 +1439,10 @@
     margin-top: 0.3rem;
     font-weight: 600;
 }
+.dividend-page .index-context-card .index-ma-label {
+    color: #000;
+    font-weight: 800;
+}
 .dividend-page .index-context-card .index-performance {
     display: flex;
     flex-wrap: wrap;

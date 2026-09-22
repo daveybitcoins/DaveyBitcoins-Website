@@ -610,7 +610,7 @@
                 <h2>Market Index Context</h2>
                 <p class="index-data-note" style="color:var(--text-dim);font-size:0.75rem;margin:0 0 1rem;">Data as of ${escapeHtml(DATA.meta.date)} · Prices and EMA comparisons use this snapshot. Header quotes refresh live when available.</p>
                 <div class="stats-row">
-                    ${DATA.index_context.map(idx => `
+                    ${DATA.index_context.filter(idx => idx.symbol !== 'QQQ').map(idx => `
                         <div class="stat-box">
                             <div class="value" style="font-size:1.2rem;">
                                 ${idx.symbol === 'BTC' ? `<a href="/risk-metric/" style="color:inherit;text-decoration:none;">${idx.symbol}</a>` : idx.symbol === 'SPY' ? `<a href="/spy-risk-metric/" style="color:inherit;text-decoration:none;">${idx.symbol}</a>` : idx.symbol} ${signalBadge(idx.signal)} ${idx.vol_quality ? volBadge(idx.vol_quality) : ''}
@@ -619,7 +619,7 @@
                             <div class="index-ma-grid">
                                 ${[[8, idx.ema8, idx.price_vs_8w], [13, idx.ema13, idx.price_vs_13w], [21, idx.ema21, idx.price_vs_21w]].map(([weeks, average, change]) => `
                                     <div class="index-ma ${colorClass(change)}">
-                                        <strong class="index-ma-value">${weeks}W: ${fmtPrice(average)}</strong>
+                                        <strong class="index-ma-value"><span class="index-ma-label">${weeks}W:</span> ${fmtPrice(average)}</strong>
                                         <span class="index-ma-change">${fmtPct(change)} vs ${weeks}W</span>
                                     </div>
                                 `).join('')}

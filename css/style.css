@@ -1503,6 +1503,10 @@ footer { font-size: .8125rem; }
     margin-top: 0.3rem;
     font-weight: 600;
 }
+.index-context-card .index-ma-label {
+    color: #000;
+    font-weight: 800;
+}
 .index-context-card .index-performance {
     display: flex;
     flex-wrap: wrap;
