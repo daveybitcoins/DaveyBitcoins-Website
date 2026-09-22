@@ -249,12 +249,12 @@ function simulateFundedDCA(simPts, buyIndices, amount, threshold, strategy) {
 
 // One scale for the summary gauge, price lines, oscillator, and DCA risk charts.
 const SPY_RISK_ZONES = [
-  { name: 'Generational', min: 0.00, max: 0.10, color: '#55b7ff', lightColor: '#0868ad' },
-  { name: 'Accumulate', min: 0.10, max: 0.30, color: '#58d68d', lightColor: '#19733c' },
-  { name: 'Neutral', min: 0.30, max: 0.50, color: '#ffe04b', lightColor: '#806900' },
-  { name: 'Elevated', min: 0.50, max: 0.70, color: '#ffa13e', lightColor: '#a65300' },
-  { name: 'Caution', min: 0.70, max: 0.90, color: '#ff7547', lightColor: '#b33e19' },
-  { name: 'Euphoria', min: 0.90, max: 1.00, color: '#ff4d57', lightColor: '#bb2030' },
+  { name: 'Generational', min: 0.00, max: 0.10, color: '#55b7ff' },
+  { name: 'Accumulate', min: 0.10, max: 0.30, color: '#58d68d' },
+  { name: 'Neutral', min: 0.30, max: 0.50, color: '#ffe04b' },
+  { name: 'Elevated', min: 0.50, max: 0.70, color: '#ffa13e' },
+  { name: 'Caution', min: 0.70, max: 0.90, color: '#ff7547' },
+  { name: 'Euphoria', min: 0.90, max: 1.00, color: '#ff4d57' },
 ];
 
 function riskZoneForScore(score) {
@@ -263,8 +263,7 @@ function riskZoneForScore(score) {
 
 function riskColor(r, a = 1) {
   const zone = riskZoneForScore(r);
-  const light = typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'light';
-  const hex = (light ? zone.lightColor : zone.color).slice(1);
+  const hex = zone.color.slice(1);
   const rgb = [0, 2, 4].map(offset => parseInt(hex.slice(offset, offset + 2), 16));
   return 'rgba('+rgb.join(',')+','+a+')';
 }
