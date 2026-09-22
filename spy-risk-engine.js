@@ -81,10 +81,6 @@ function themeColors() {
     axisText: light ? '#6d6a5f' : '#a59a88',
     trendLine: light ? 'rgba(184,101,11,0.52)' : 'rgba(247,147,26,0.52)',
     zoneLabels: light ? '#837765' : '#a59a88',
-    zoneA: light ? 'rgba(114,192,106,0.06)' : 'rgba(114,192,106,0.07)',
-    zoneB: light ? 'rgba(132,204,22,0.03)' : 'rgba(132,204,22,0.035)',
-    zoneC: light ? 'rgba(247,147,26,0.04)' : 'rgba(247,147,26,0.05)',
-    zoneD: light ? 'rgba(230,109,96,0.06)' : 'rgba(230,109,96,0.07)',
     zoneDash: light ? '#d6c7ad' : '#6c6558',
     barValueText: light ? '#211b12' : '#f8f2e6',
     areaGrad0: light ? 'rgba(230,109,96,0.14)' : 'rgba(230,109,96,0.18)',
@@ -251,14 +247,46 @@ function simulateFundedDCA(simPts, buyIndices, amount, threshold, strategy) {
     lumpSumValue: last.lumpSumValue, cash, buyCount: trades.length, totalPeriods: buyIndices.length };
 }
 
-function riskColor(r, a) {
-  a = a || 1;
-  const stops = [[0,[104,130,156]],[0.16,[80,155,118]],[0.32,[88,197,111]],[0.48,[255,191,99]],[0.64,[247,147,26]],[0.78,[228,96,69]],[0.90,[239,93,79]],[1,[122,32,25]]];
-  let lo=stops[0], hi=stops[stops.length-1];
-  for (let i=0;i<stops.length-1;i++) { if(r>=stops[i][0]&&r<=stops[i+1][0]){lo=stops[i];hi=stops[i+1];break;} }
-  const t=(r-lo[0])/(hi[0]-lo[0]||1);
-  const c=lo[1].map((v,j)=>Math.round(v+t*(hi[1][j]-v)));
-  return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')';
+// One scale for the summary gauge, price lines, oscillator, and DCA risk charts.
+const SPY_RISK_ZONES = [
+  { name: 'Accumulate', min: 0, max: 0.20, color: '#68829c' },
+  { name: 'Neutral', min: 0.20, max: 0.50, color: '#58c56f' },
+  { name: 'Elevated', min: 0.50, max: 0.80, color: '#f7931a' },
+  { name: 'Euphoria', min: 0.80, max: 1, color: '#ef5d4f' },
+];
+
+function riskZoneForScore(score) {
+  return SPY_RISK_ZONES.find((zone, index) => score < zone.max || index === SPY_RISK_ZONES.length - 1);
+}
+
+function riskColor(r, a = 1) {
+  const hex = riskZoneForScore(r).color.slice(1);
+  const rgb = [0, 2, 4].map(offset => parseInt(hex.slice(offset, offset + 2), 16));
+  return 'rgba('+rgb.join(',')+','+a+')';
+}
+
+function renderRiskScale(score) {
+  const labels = document.querySelector('.zone-labels');
+  const legend = document.getElementById('legendBar');
+  labels.replaceChildren();
+  legend.replaceChildren();
+  SPY_RISK_ZONES.forEach(zone => {
+    const range = zone.min.toFixed(2) + '–' + zone.max.toFixed(2);
+    const label = document.createElement('span');
+    label.style.setProperty('--risk-band-color', zone.color);
+    label.innerHTML = zone.name + '<small>' + range + '</small>';
+    labels.appendChild(label);
+    const segment = document.createElement('div');
+    segment.className = 'legend-seg';
+    segment.style.flex = String(zone.max - zone.min);
+    segment.style.setProperty('--risk-band-color', zone.color);
+    segment.style.background = riskColor(zone.min, 0.12);
+    segment.innerHTML = zone.name + '<span class="seg-label">' + range + '</span>';
+    legend.appendChild(segment);
+  });
+  document.querySelector('.risk-bar-bg').style.background = 'linear-gradient(90deg,' +
+    SPY_RISK_ZONES.map(zone => zone.color + ' ' + (zone.min * 100) + '% ' + (zone.max * 100) + '%').join(',') + ')';
+  document.getElementById('vRisk').setAttribute('aria-label', score.toFixed(3) + ' · ' + riskZoneForScore(score).name);
 }
 
 function vixColor(v) {
@@ -343,6 +371,7 @@ async function main() {
   riskValue.dataset.risk200w = last.risk200W.toFixed(3);
   riskValue.dataset.model = '200W trailing-20-year weekly percentile';
   riskValue.style.setProperty('--val-color', riskColor(last.riskCombo));
+  renderRiskScale(last.riskCombo);
   document.getElementById('vFair').textContent = '$' + last.ma200W.toLocaleString(undefined,{maximumFractionDigits:2});
   document.getElementById('vGrowth').textContent = 'Trailing 20Y weekly percentile';
   const devPct = ((last.price/last.ma200W-1)*100).toFixed(1);
@@ -715,14 +744,14 @@ async function main() {
     const xOf=i=>P.l+((i-s)/(e-s))*cw;
     const yOf=r=>P.t+ch*(1-r);
     // Zone fills
-    [[0,0.20,tc.zoneA],[0.20,0.50,tc.zoneB],[0.50,0.80,tc.zoneC],[0.80,1,tc.zoneD]].forEach(([lo,hi,c])=>{
-      ctx.fillStyle=c;ctx.fillRect(P.l,yOf(hi),cw,yOf(lo)-yOf(hi));
+    SPY_RISK_ZONES.forEach(zone=>{
+      ctx.fillStyle=riskColor(zone.min,0.10);ctx.fillRect(P.l,yOf(zone.max),cw,yOf(zone.min)-yOf(zone.max));
     });
     const riskDrawdownBands = shadeDrawdowns(ctx, xOf, P.t, H-P.b, s, e);
     cv.dataset.comparisonStart = pts[s].date;
     cv.dataset.drawdownBands = String(riskDrawdownBands);
     cv.dataset.model = '200W trailing-20-year weekly percentile';
-    [0.20,0.50,0.80].forEach(v=>{
+    SPY_RISK_ZONES.slice(0,-1).map(zone=>zone.max).forEach(v=>{
       ctx.strokeStyle=tc.zoneDash;ctx.lineWidth=1;ctx.setLineDash([4,4]);
       ctx.beginPath();ctx.moveTo(P.l,yOf(v));ctx.lineTo(W-P.r,yOf(v));ctx.stroke();ctx.setLineDash([]);
     });
@@ -765,10 +794,7 @@ async function main() {
     }
     // Zone labels
     ctx.fillStyle=tc.zoneLabels;ctx.font='9px JetBrains Mono';ctx.textAlign='right';
-    ctx.fillText('EUPHORIA',W-P.r-4,yOf(0.90));
-    ctx.fillText('ELEVATED',W-P.r-4,yOf(0.65));
-    ctx.fillText('NEUTRAL',W-P.r-4,yOf(0.35));
-    ctx.fillText('ACCUMULATE',W-P.r-4,yOf(0.10));
+    SPY_RISK_ZONES.forEach(zone => ctx.fillText(zone.name.toUpperCase(),W-P.r-4,yOf((zone.min+zone.max)/2)));
   }
 
   // VIX chart
@@ -1238,8 +1264,8 @@ async function main() {
       var yOf = function(rr){ return P.t + ch * (1 - rr); };
 
       // Zone fills (same as main risk chart)
-      [[0,0.20,tc.zoneA],[0.20,0.50,tc.zoneB],[0.50,0.80,tc.zoneC],[0.80,1,tc.zoneD]].forEach(function(z){
-        ctx.fillStyle=z[2];ctx.fillRect(P.l,yOf(z[1]),cw,yOf(z[0])-yOf(z[1]));
+      SPY_RISK_ZONES.forEach(function(zone){
+        ctx.fillStyle=riskColor(zone.min,0.10);ctx.fillRect(P.l,yOf(zone.max),cw,yOf(zone.min)-yOf(zone.max));
       });
 
       // Buy zone shading
@@ -1327,10 +1353,7 @@ async function main() {
 
       // Zone labels
       ctx.fillStyle=tc.zoneLabels;ctx.font='9px JetBrains Mono';ctx.textAlign='right';
-      ctx.fillText('EUPHORIA',W-P.r-4,yOf(0.90));
-      ctx.fillText('ELEVATED',W-P.r-4,yOf(0.65));
-      ctx.fillText('NEUTRAL',W-P.r-4,yOf(0.35));
-      ctx.fillText('ACCUMULATE',W-P.r-4,yOf(0.10));
+      SPY_RISK_ZONES.forEach(zone => ctx.fillText(zone.name.toUpperCase(),W-P.r-4,yOf((zone.min+zone.max)/2)));
 
       // Tooltip
       attachDCATooltip(cv, 'dcaStrategyTip', tl, function(p, tip){
@@ -1389,16 +1412,6 @@ async function main() {
         renderDCAStrategyChart(dcaResults);
       }
     };
-  })();
-
-  // Legend bar
-  (function(){
-    const el=document.getElementById('legendBar');
-    [{name:'Accumulate',range:'0.00–0.25',risk:0.12},{name:'Neutral',range:'0.25–0.50',risk:0.37},{name:'Caution',range:'0.50–0.75',risk:0.62},{name:'Euphoria',range:'0.75–1.00',risk:0.88}].forEach(s=>{
-      const d=document.createElement('div');d.className='legend-seg';
-      d.style.background=riskColor(s.risk,0.2);d.style.color=riskColor(s.risk);
-      d.innerHTML=s.name+'<span class="seg-label">'+s.range+'</span>';el.appendChild(d);
-    });
   })();
 
   // Repaint canvas charts when the shared Next.js theme changes.

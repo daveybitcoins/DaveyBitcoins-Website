@@ -77,3 +77,24 @@ test('fixed DCA matches benchmark exactly and counts distributions once through 
   assert.equal(r.portfolioValue,r.lumpSumValue);
   assert.equal(r.cash,0);
 });
+
+test('SPY risk colors switch at the displayed band boundaries', () => {
+  const scale = source.match(/const SPY_RISK_ZONES = \[[\s\S]*?\n\];/);
+  assert.ok(scale, 'shared SPY display scale');
+  const colors = vm.createContext({});
+  vm.runInContext(scale[0] + '\n' + extract('riskZoneForScore') + '\n' + extract('riskColor'), colors);
+  for (const [score, name, rgb] of [
+    [0, 'Accumulate', '104,130,156'],
+    [0.199999, 'Accumulate', '104,130,156'],
+    [0.20, 'Neutral', '88,197,111'],
+    [0.499999, 'Neutral', '88,197,111'],
+    [0.50, 'Elevated', '247,147,26'],
+    [0.799999, 'Elevated', '247,147,26'],
+    [0.80, 'Euphoria', '239,93,79'],
+    [1, 'Euphoria', '239,93,79'],
+  ]) {
+    assert.equal(colors.riskZoneForScore(score).name, name);
+    assert.equal(colors.riskColor(score), `rgba(${rgb},1)`);
+    assert.equal(colors.riskColor(score, 0.1), `rgba(${rgb},0.1)`);
+  }
+});
