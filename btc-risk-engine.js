@@ -750,8 +750,10 @@ async function main() {
 
   // Dashboard
   document.getElementById('vPrice').textContent = '$' + last.price.toLocaleString(undefined,{maximumFractionDigits:0});
+  const satoshiPrice = document.getElementById('vSatoshiPrice');
+  if (satoshiPrice) satoshiPrice.textContent = '$' + (last.price / 100000000).toFixed(8) + ' USD per satoshi';
   document.getElementById('vPriceTime').textContent = isLive
-    ? 'Coherent snapshot · ' + isLive.updatedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' via ' + isLive.source
+    ? isLive.updatedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' via ' + isLive.source
     : last.date + ' · daily dataset';
   const hd = document.getElementById('headerDate');
   hd.innerHTML = '<span style="width:6px;height:6px;background:#58c56f;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> coherent snapshot as of ' + last.date + (isLive ? ' · ' + isLive.source : ' · daily dataset');
