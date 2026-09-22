@@ -1410,6 +1410,53 @@
 .dividend-page .data-error p { margin: .5rem 0 1rem; font-size: 1rem; }
 .dividend-page .data-error button { min-height: 44px; padding: .5rem 1rem; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; color: var(--text); background: var(--bg-hover); }
 
+/* Market-context cards: stronger text and paired, color-matched EMA readings. */
+.dividend-page .index-context-card .stat-box .label {
+    font-weight: 600;
+}
+.dividend-page .index-context-card .index-price {
+    color: var(--text);
+    font-size: 1rem;
+    font-weight: 800;
+}
+.dividend-page .index-context-card .index-ma-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.3rem;
+    margin-top: 0.7rem;
+}
+.dividend-page .index-context-card .index-ma {
+    min-width: 0;
+    font-size: 0.75rem;
+}
+.dividend-page .index-context-card .index-ma-value {
+    display: block;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-weight: 750;
+}
+.dividend-page .index-context-card .index-ma-change {
+    display: block;
+    margin-top: 0.3rem;
+    font-weight: 600;
+}
+.dividend-page .index-context-card .index-performance {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.3rem 0.65rem;
+    margin-top: 0.6rem;
+    color: var(--text);
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+.dividend-page .index-context-card .index-risk-label {
+    color: var(--text);
+    font-weight: 700;
+}
+.dividend-page .index-context-card .risk-bar-wrap a {
+    font-weight: 650;
+}
+
 /* === PORTFOLIO CONTROLS === */
 .dividend-page .holdings-header {
     display: flex;

@@ -135,8 +135,7 @@
             const [scannerResp] = await Promise.all([
                 fetch("/data/scanner_data.json?v=" + Date.now()),
                 computeBtcRisk(),
-                computeSpyRisk(),
-                computeQqqRisk()
+                computeSpyRisk()
             ]);
             DATA = await scannerResp.json();
             document.getElementById("loading").style.display = "none";
@@ -351,7 +350,7 @@
     }
 
     function classifyRisk(risk) {
-        // Shared risk zones used by the BTC, SPY, and QQQ metric charts.
+        // Risk zone labels for the market context gauges.
         if (risk < 0.20) return { zone: "Accumulate", zone_color: "#58c56f" };
         if (risk < 0.50) return { zone: "Neutral", zone_color: "#80b883" };
         if (risk < 0.80) return { zone: "Caution", zone_color: "#f7931a" };
@@ -367,7 +366,7 @@
         return `
             <div class="risk-bar-wrap" data-risk-asset="${label}" data-risk-model="${model}" data-risk-value="${r.toFixed(6)}" style="margin-top:0.5rem;padding:0.4rem 0.5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);">
                 <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;">
-                    <span style="color:var(--text-dim);">${riskLabel}${riskLabel === "200W Risk" ? " · prior week" : ""}</span>
+                    <span class="index-risk-label">${riskLabel}${riskLabel === "200W Risk" ? " · prior week" : ""}</span>
                     <strong style="color:${color};font-family:'JetBrains Mono',monospace;font-size:0.85rem;">${r.toFixed(3)}</strong>
                 </div>
                 <div style="position:relative;height:6px;margin:0.3rem 0;border-radius:3px;background:${barGrad};">
@@ -483,10 +482,9 @@
         }
     }
 
-    // SPY / QQQ 200-week risk — computed from weekly closes and ranked against
+    // SPY 200-week risk — computed from weekly closes and ranked against
     // the trailing 20-year history, matching their dedicated metric pages.
     let spyRiskData = null;
-    let qqqRiskData = null;
 
     function upperBound(values, target) {
         let lo = 0, hi = values.length;
@@ -605,46 +603,34 @@
         return renderRiskBar(spyRiskData.risk_combo, spyRiskData.zone, spyRiskData.zone_color, "/spy-risk-metric/", "SPY", "200W Risk");
     }
 
-    async function computeQqqRisk() {
-        try {
-            qqqRiskData = await computeEquityRisk('QQQ', '/data_qqq.csv');
-        } catch (e) {
-            console.warn('QQQ risk computation failed:', e);
-        }
-    }
-
-    function renderQqqRisk() {
-        if (!qqqRiskData) return "";
-        return renderRiskBar(qqqRiskData.risk_combo, qqqRiskData.zone, qqqRiskData.zone_color, null, "QQQ", "200W Risk");
-    }
-
     function renderIndexCard() {
         if (!DATA.index_context || DATA.index_context.length === 0) return "";
         return `
             <div class="card index-context-card">
                 <h2>Market Index Context</h2>
+                <p class="index-data-note" style="color:var(--text-dim);font-size:0.75rem;margin:0 0 1rem;">Data as of ${escapeHtml(DATA.meta.date)} · Prices and EMA comparisons use this snapshot. Header quotes refresh live when available.</p>
                 <div class="stats-row">
                     ${DATA.index_context.map(idx => `
                         <div class="stat-box">
                             <div class="value" style="font-size:1.2rem;">
                                 ${idx.symbol === 'BTC' ? `<a href="/risk-metric/" style="color:inherit;text-decoration:none;">${idx.symbol}</a>` : idx.symbol === 'SPY' ? `<a href="/spy-risk-metric/" style="color:inherit;text-decoration:none;">${idx.symbol}</a>` : idx.symbol} ${signalBadge(idx.signal)} ${idx.vol_quality ? volBadge(idx.vol_quality) : ''}
                             </div>
-                            <div class="label">Saved ${fmtPrice(idx.price)} <span class="${colorClass(idx.chg_1d)}">${fmtPct(idx.chg_1d)}</span> <span style="font-size:0.7rem;color:var(--text-dim);">${idx.rel_vol ? idx.rel_vol.toFixed(2) + 'x vol' : ''}</span></div>
-                            <div style="font-size:0.75rem;margin-top:0.4rem;color:var(--text-dim);font-family:'JetBrains Mono',monospace;">
-                                8W: ${fmtPrice(idx.ema8)} | 13W: ${fmtPrice(idx.ema13)} | 21W: ${fmtPrice(idx.ema21)}
+                            <div class="label index-price-row"><strong class="index-price">${fmtPrice(idx.price)}</strong> <span class="${colorClass(idx.chg_1d)}">${fmtPct(idx.chg_1d)}</span> <span style="font-size:0.7rem;color:var(--text-dim);">${idx.rel_vol ? idx.rel_vol.toFixed(2) + 'x vol' : ''}</span></div>
+                            <div class="index-ma-grid">
+                                ${[[8, idx.ema8, idx.price_vs_8w], [13, idx.ema13, idx.price_vs_13w], [21, idx.ema21, idx.price_vs_21w]].map(([weeks, average, change]) => `
+                                    <div class="index-ma ${colorClass(change)}">
+                                        <strong class="index-ma-value">${weeks}W: ${fmtPrice(average)}</strong>
+                                        <span class="index-ma-change">${fmtPct(change)} vs ${weeks}W</span>
+                                    </div>
+                                `).join('')}
                             </div>
-                            <div style="font-size:0.75rem;margin-top:0.25rem;">
-                                <span class="${colorClass(idx.price_vs_8w)}">${fmtPct(idx.price_vs_8w)} vs 8W</span> |
-                                <span class="${colorClass(idx.price_vs_13w)}">${fmtPct(idx.price_vs_13w)} vs 13W</span> |
-                                <span class="${colorClass(idx.price_vs_21w)}">${fmtPct(idx.price_vs_21w)} vs 21W</span>
-                            </div>
-                            <div style="font-size:0.72rem;margin-top:0.2rem;color:var(--text-dim);">
-                                1D: <span class="${colorClass(idx.chg_1d)}">${fmtPct(idx.chg_1d)}</span> |
-                                1W: <span class="${colorClass(idx.chg_1w)}">${fmtPct(idx.chg_1w)}</span> |
-                                1M: <span class="${colorClass(idx.chg_1m)}">${fmtPct(idx.chg_1m)}</span>
+                            <div class="index-performance">
+                                <span><strong>1D:</strong> <span class="${colorClass(idx.chg_1d)}">${fmtPct(idx.chg_1d)}</span></span>
+                                <span><strong>1W:</strong> <span class="${colorClass(idx.chg_1w)}">${fmtPct(idx.chg_1w)}</span></span>
+                                <span><strong>1M:</strong> <span class="${colorClass(idx.chg_1m)}">${fmtPct(idx.chg_1m)}</span></span>
                             </div>
                             ${idx.crossover_alert && !['SPY','QQQ','BTC'].includes(idx.symbol) ? `<div class="alert-text" style="font-size:0.72rem;margin:0.4rem auto 0;padding:0.35rem 0.5rem;text-align:center;border:1px solid var(--border);border-radius:4px;background:var(--bg);">${formatAlert(idx.crossover_alert)}</div>` : ''}
-                            ${idx.symbol === 'BTC' ? renderBtcRisk(idx) : idx.symbol === 'SPY' ? renderSpyRisk() : idx.symbol === 'QQQ' ? renderQqqRisk() : ''}
+                            ${idx.symbol === 'BTC' ? renderBtcRisk(idx) : idx.symbol === 'SPY' ? renderSpyRisk() : ''}
                         </div>
                     `).join("")}
                 </div>

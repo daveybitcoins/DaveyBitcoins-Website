@@ -88,7 +88,10 @@
   .zone-labels span{border-top:3px solid var(--risk-band-color,transparent);padding-top:4px}
   .legend-seg{border-top:3px solid var(--risk-band-color,transparent)}
   .zone-labels small{display:block;font-size:0.45rem;margin-top:2px}
-  .zone-labels span{font-size:0.5rem;color:var(--text-dimmer)}
+  .zone-labels span{font-size:0.5rem;color:var(--risk-band-color,var(--text-dimmer))}
+  .zone-labels small{color:var(--text-dimmer);font-weight:400}
+  .zone-labels span.is-active{font-weight:800}
+  .legend-seg{color:var(--risk-band-color)}
   .chart-panel{background:rgba(20,19,15,0.74);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:28px;margin-bottom:24px;position:relative;transition:background 0.3s,border-color 0.3s}
   .chart-panel:hover{border-color:rgba(255,255,255,0.1)}
   [data-theme="light"] .chart-panel{background:rgba(255,255,255,0.7);border-color:var(--border)}
@@ -656,6 +659,7 @@ function renderRiskScale(score) {
     const range = zone.min.toFixed(2) + '–' + zone.max.toFixed(2);
     const label = document.createElement('span');
     label.style.setProperty('--risk-band-color', zone.color);
+    label.classList.toggle('is-active', zone === riskZoneForScore(score));
     label.innerHTML = zone.name + '<small>' + range + '</small>';
     labels.appendChild(label);
     const segment = document.createElement('div');

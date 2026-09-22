@@ -741,9 +741,19 @@
   }
 }
 
-/* Swatches keep labels readable in either theme while matching the plotted bands. */
+/* Match risk labels and swatches to the shared chart palette. */
 .spy-page[data-risk-dashboard="spy"] .zone-labels > span,
 .spy-page[data-risk-dashboard="spy"] .legend-seg {
+  color: var(--risk-band-color, var(--spy-text));
   border-top: 3px solid var(--risk-band-color, transparent);
   padding-top: 0.3rem;
+}
+
+.spy-page[data-risk-dashboard="spy"] .zone-labels small {
+  color: var(--spy-muted);
+  font-weight: 400;
+}
+
+.spy-page[data-risk-dashboard="spy"] .zone-labels > .is-active {
+  font-weight: 800;
 }

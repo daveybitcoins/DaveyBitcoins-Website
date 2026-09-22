@@ -85,7 +85,11 @@ const checks = [
       if (!renderedValuationRow?.includes(valuationRow.fwd_pe.toFixed(1))) {
         throw new Error(`${valuationRow.symbol} next-FY P/E is not rendered from the reconciled scanner value`);
       }
-      for (const symbol of ['SPY', 'QQQ']) {
+      if (await page.locator('.risk-bar-wrap[data-risk-asset="QQQ"]').count()) {
+        throw new Error('QQQ risk gauge should not appear in market context');
+      }
+      await expectText(page, 'Data as of ' + scannerData.meta.date);
+      for (const symbol of ['SPY']) {
         const gauge = page.locator(`.risk-bar-wrap[data-risk-asset="${symbol}"]`);
         if (await gauge.getAttribute('data-risk-model') !== '200w-trailing20y-weekly') {
           throw new Error(`${symbol} scanner gauge is not using the weekly 200W model`);

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { spyRiskEngineSrc } from "@/lib/spy-risk-asset";
 import { RiskSectionNav } from "@/components/risk-section-nav";
 
 export const metadata: Metadata = {
@@ -503,7 +504,7 @@ export default function SpyRiskMetricPage() {
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
       <Script
-        src="/spy-risk-engine.js?v=20260908-refinement"
+        src={spyRiskEngineSrc}
         strategy="afterInteractive"
       />
     </main>

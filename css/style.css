@@ -1473,3 +1473,50 @@ footer { font-size: .8125rem; }
 .data-error { padding: 1.5rem; border: 1px solid var(--border); border-radius: 8px; color: var(--text); background: var(--bg-card); text-align: left; }
 .data-error p { margin: .5rem 0 1rem; font-size: 1rem; }
 .data-error button { min-height: 44px; padding: .5rem 1rem; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; color: var(--text); background: var(--bg-hover); }
+
+/* Market-context cards: stronger text and paired, color-matched EMA readings. */
+.index-context-card .stat-box .label {
+    font-weight: 600;
+}
+.index-context-card .index-price {
+    color: var(--text);
+    font-size: 1rem;
+    font-weight: 800;
+}
+.index-context-card .index-ma-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.3rem;
+    margin-top: 0.7rem;
+}
+.index-context-card .index-ma {
+    min-width: 0;
+    font-size: 0.75rem;
+}
+.index-context-card .index-ma-value {
+    display: block;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-weight: 750;
+}
+.index-context-card .index-ma-change {
+    display: block;
+    margin-top: 0.3rem;
+    font-weight: 600;
+}
+.index-context-card .index-performance {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.3rem 0.65rem;
+    margin-top: 0.6rem;
+    color: var(--text);
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+.index-context-card .index-risk-label {
+    color: var(--text);
+    font-weight: 700;
+}
+.index-context-card .risk-bar-wrap a {
+    font-weight: 650;
+}

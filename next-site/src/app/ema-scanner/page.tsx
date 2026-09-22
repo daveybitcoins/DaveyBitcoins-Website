@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { scannerEngineSrc } from "@/lib/scanner-asset";
 import "./ema-scanner.css";
 
 export const metadata: Metadata = {
@@ -91,7 +92,7 @@ export default function EmaScannerPage() {
       </footer>
 
       <Script
-        src="/ema-scanner-engine.js?v=20260908-refinement"
+        src={scannerEngineSrc}
         strategy="afterInteractive"
       />
     </div>

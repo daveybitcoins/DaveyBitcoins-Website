@@ -274,6 +274,7 @@ function renderRiskScale(score) {
     const range = zone.min.toFixed(2) + '–' + zone.max.toFixed(2);
     const label = document.createElement('span');
     label.style.setProperty('--risk-band-color', zone.color);
+    label.classList.toggle('is-active', zone === riskZoneForScore(score));
     label.innerHTML = zone.name + '<small>' + range + '</small>';
     labels.appendChild(label);
     const segment = document.createElement('div');
