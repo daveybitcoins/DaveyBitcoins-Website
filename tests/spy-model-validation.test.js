@@ -88,14 +88,14 @@ test('SPY risk colors switch at the displayed band boundaries', () => {
     [0.099999, 'Generational', '85,183,255'],
     [0.10, 'Accumulate', '88,214,141'],
     [0.299999, 'Accumulate', '88,214,141'],
-    [0.30, 'Neutral', '179,136,255'],
-    [0.499999, 'Neutral', '179,136,255'],
-    [0.50, 'Elevated', '255,209,102'],
-    [0.699999, 'Elevated', '255,209,102'],
-    [0.70, 'Caution', '255,150,62'],
-    [0.899999, 'Caution', '255,150,62'],
-    [0.90, 'Euphoria', '255,98,110'],
-    [1, 'Euphoria', '255,98,110'],
+    [0.30, 'Neutral', '255,224,75'],
+    [0.499999, 'Neutral', '255,224,75'],
+    [0.50, 'Elevated', '255,161,62'],
+    [0.699999, 'Elevated', '255,161,62'],
+    [0.70, 'Caution', '255,117,71'],
+    [0.899999, 'Caution', '255,117,71'],
+    [0.90, 'Euphoria', '255,77,87'],
+    [1, 'Euphoria', '255,77,87'],
   ]) {
     assert.equal(colors.riskZoneForScore(score).name, name);
     assert.equal(colors.riskColor(score), `rgba(${rgb},1)`);

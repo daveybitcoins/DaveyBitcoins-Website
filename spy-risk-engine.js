@@ -251,10 +251,10 @@ function simulateFundedDCA(simPts, buyIndices, amount, threshold, strategy) {
 const SPY_RISK_ZONES = [
   { name: 'Generational', min: 0.00, max: 0.10, color: '#55b7ff', lightColor: '#0868ad' },
   { name: 'Accumulate', min: 0.10, max: 0.30, color: '#58d68d', lightColor: '#19733c' },
-  { name: 'Neutral', min: 0.30, max: 0.50, color: '#b388ff', lightColor: '#7030b8' },
-  { name: 'Elevated', min: 0.50, max: 0.70, color: '#ffd166', lightColor: '#806000' },
-  { name: 'Caution', min: 0.70, max: 0.90, color: '#ff963e', lightColor: '#ad4c08' },
-  { name: 'Euphoria', min: 0.90, max: 1.00, color: '#ff626e', lightColor: '#b7283b' },
+  { name: 'Neutral', min: 0.30, max: 0.50, color: '#ffe04b', lightColor: '#806900' },
+  { name: 'Elevated', min: 0.50, max: 0.70, color: '#ffa13e', lightColor: '#a65300' },
+  { name: 'Caution', min: 0.70, max: 0.90, color: '#ff7547', lightColor: '#b33e19' },
+  { name: 'Euphoria', min: 0.90, max: 1.00, color: '#ff4d57', lightColor: '#bb2030' },
 ];
 
 function riskZoneForScore(score) {

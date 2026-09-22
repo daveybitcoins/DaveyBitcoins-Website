@@ -552,7 +552,7 @@ export default function BitcoinRiskMetricPage() {
 
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20260922-six-zone-gradient" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20260922-blue-green-yellow-red" strategy="afterInteractive" />
     </main>
   );
 }

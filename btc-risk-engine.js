@@ -171,10 +171,10 @@ const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);
 const RISK_ZONES = [
   { name: 'Generational', min: 0.00, max: 0.10, colorRisk: 0.05, color: '#55b7ff', lightColor: '#0868ad' },
   { name: 'Accumulate', min: 0.10, max: 0.30, colorRisk: 0.20, color: '#58d68d', lightColor: '#19733c' },
-  { name: 'Neutral', min: 0.30, max: 0.50, colorRisk: 0.40, color: '#b388ff', lightColor: '#7030b8' },
-  { name: 'Elevated', min: 0.50, max: 0.70, colorRisk: 0.60, color: '#ffd166', lightColor: '#806000' },
-  { name: 'Caution', min: 0.70, max: 0.90, colorRisk: 0.80, color: '#ff963e', lightColor: '#ad4c08' },
-  { name: 'Euphoria', min: 0.90, max: 1.00, colorRisk: 0.95, color: '#ff626e', lightColor: '#b7283b' },
+  { name: 'Neutral', min: 0.30, max: 0.50, colorRisk: 0.40, color: '#ffe04b', lightColor: '#806900' },
+  { name: 'Elevated', min: 0.50, max: 0.70, colorRisk: 0.60, color: '#ffa13e', lightColor: '#a65300' },
+  { name: 'Caution', min: 0.70, max: 0.90, colorRisk: 0.80, color: '#ff7547', lightColor: '#b33e19' },
+  { name: 'Euphoria', min: 0.90, max: 1.00, colorRisk: 0.95, color: '#ff4d57', lightColor: '#bb2030' },
 ];
 const PROJECTED_RISK_BOUNDARIES = RISK_ZONES.slice(0, -1).map(zone => zone.max);
 const DISPLAY_RISK_BOUNDARIES = [...PROJECTED_RISK_BOUNDARIES].reverse();

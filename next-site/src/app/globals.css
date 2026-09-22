@@ -1295,8 +1295,8 @@ html[data-theme="light"] { color-scheme: light; }
 [data-theme="light"] .tool-card--green { --card-accent: #267a38; }
 [data-theme="light"] .tool-card--amber { --card-accent: #9b630a; }
 
-.snapshot-card[data-tone="HODL"] { --snapshot-tint: #b388ff; --snapshot-accent: #b388ff; }
-[data-theme="light"] .snapshot-card[data-tone="HODL"] { --snapshot-accent: #7030b8; }
+.snapshot-card[data-tone="HODL"] { --snapshot-tint: #ffe04b; --snapshot-accent: #ffe04b; }
+[data-theme="light"] .snapshot-card[data-tone="HODL"] { --snapshot-accent: #806900; }
 
 .snapshot-card[data-tone="Overvalued"] { --snapshot-tint: #eb713a; --snapshot-accent: #ff9c6e; }
 [data-theme="light"] .snapshot-card[data-tone="Overvalued"] { --snapshot-accent: #a64419; }
@@ -1307,14 +1307,14 @@ html[data-theme="light"] { color-scheme: light; }
 .snapshot-card[data-tone="Accumulate"]{--snapshot-tint:#58d68d;--snapshot-accent:#58d68d}
 [data-theme="light"] .snapshot-card[data-tone="Accumulate"]{--snapshot-accent:#19733c}
 
-.snapshot-card[data-tone="Neutral"]{--snapshot-tint:#b388ff;--snapshot-accent:#b388ff}
-[data-theme="light"] .snapshot-card[data-tone="Neutral"]{--snapshot-accent:#7030b8}
+.snapshot-card[data-tone="Neutral"]{--snapshot-tint:#ffe04b;--snapshot-accent:#ffe04b}
+[data-theme="light"] .snapshot-card[data-tone="Neutral"]{--snapshot-accent:#806900}
 
-.snapshot-card[data-tone="Elevated"]{--snapshot-tint:#ffd166;--snapshot-accent:#ffd166}
-[data-theme="light"] .snapshot-card[data-tone="Elevated"]{--snapshot-accent:#806000}
+.snapshot-card[data-tone="Elevated"]{--snapshot-tint:#ffa13e;--snapshot-accent:#ffa13e}
+[data-theme="light"] .snapshot-card[data-tone="Elevated"]{--snapshot-accent:#a65300}
 
-.snapshot-card[data-tone="Caution"]{--snapshot-tint:#ff963e;--snapshot-accent:#ff963e}
-[data-theme="light"] .snapshot-card[data-tone="Caution"]{--snapshot-accent:#ad4c08}
+.snapshot-card[data-tone="Caution"]{--snapshot-tint:#ff7547;--snapshot-accent:#ff7547}
+[data-theme="light"] .snapshot-card[data-tone="Caution"]{--snapshot-accent:#b33e19}
 
-.snapshot-card[data-tone="Euphoria"]{--snapshot-tint:#ff626e;--snapshot-accent:#ff626e}
-[data-theme="light"] .snapshot-card[data-tone="Euphoria"]{--snapshot-accent:#b7283b}
+.snapshot-card[data-tone="Euphoria"]{--snapshot-tint:#ff4d57;--snapshot-accent:#ff4d57}
+[data-theme="light"] .snapshot-card[data-tone="Euphoria"]{--snapshot-accent:#bb2030}
