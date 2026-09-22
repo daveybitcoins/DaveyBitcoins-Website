@@ -321,7 +321,7 @@
       <div class="card-label">BTC Price</div>
       <div class="card-value" id="vPrice" style="--val-color:#f7931a;font-size:2.4rem;letter-spacing:-2px;font-weight:700">—</div>
       <div class="card-sub" id="vPriceTime"></div>
-      <div class="card-sub" id="vSatoshiPrice" style="font-weight:700">— USD per satoshi</div>
+      <div class="card-sub" id="vSatoshiPrice" style="font-weight:700">$1 USD ≈ — sats</div>
     </div>
     <div class="card risk-card" id="riskCard" style="--glow:#f7931a"><div class="card-label">Combined Risk</div><div class="card-value" id="vRisk">—</div>
       <div class="risk-bar-wrap" id="riskBar" role="meter" aria-label="Current Bitcoin combined risk" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0"><div class="risk-bar-bg"></div><div class="risk-bar-needle" id="needle"></div></div>
@@ -1159,7 +1159,7 @@ async function main() {
   // Dashboard
   document.getElementById('vPrice').textContent = '$' + last.price.toLocaleString(undefined,{maximumFractionDigits:0});
   const satoshiPrice = document.getElementById('vSatoshiPrice');
-  if (satoshiPrice) satoshiPrice.textContent = '$' + (last.price / 100000000).toFixed(8) + ' USD per satoshi';
+  if (satoshiPrice) satoshiPrice.textContent = '$1 USD ≈ ' + (100000000 / last.price).toLocaleString('en-US', { maximumFractionDigits: 0 }) + ' sats';
   document.getElementById('vPriceTime').textContent = isLive
     ? isLive.updatedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' via ' + isLive.source
     : last.date + ' · daily dataset';

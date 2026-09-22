@@ -147,7 +147,7 @@ export default function BitcoinRiskMetricPage() {
               —
             </div>
             <div className="card-sub" id="vPriceTime" />
-            <div className="card-sub" id="vSatoshiPrice" style={{ fontWeight: 700 }}>— USD per satoshi</div>
+            <div className="card-sub" id="vSatoshiPrice" style={{ fontWeight: 700 }}>$1 USD ≈ — sats</div>
           </article>
           <article className="card risk-card" id="riskCard">
             <div className="card-label">Combined Risk</div>
@@ -560,7 +560,7 @@ export default function BitcoinRiskMetricPage() {
 
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20260922-satoshi-price" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20260922-sats-per-dollar" strategy="afterInteractive" />
     </main>
   );
 }

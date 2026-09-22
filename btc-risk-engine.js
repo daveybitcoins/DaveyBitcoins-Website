@@ -751,7 +751,7 @@ async function main() {
   // Dashboard
   document.getElementById('vPrice').textContent = '$' + last.price.toLocaleString(undefined,{maximumFractionDigits:0});
   const satoshiPrice = document.getElementById('vSatoshiPrice');
-  if (satoshiPrice) satoshiPrice.textContent = '$' + (last.price / 100000000).toFixed(8) + ' USD per satoshi';
+  if (satoshiPrice) satoshiPrice.textContent = '$1 USD ≈ ' + (100000000 / last.price).toLocaleString('en-US', { maximumFractionDigits: 0 }) + ' sats';
   document.getElementById('vPriceTime').textContent = isLive
     ? isLive.updatedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' via ' + isLive.source
     : last.date + ' · daily dataset';
