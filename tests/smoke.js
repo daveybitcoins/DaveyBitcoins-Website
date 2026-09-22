@@ -199,12 +199,12 @@ const checks = [
       if (!/^0\.\d{3}$|^1\.000$/.test(riskValue)) {
         throw new Error(`unexpected BTC combined-risk value: ${riskValue}`);
       }
-      const activeZoneLabels = await page.locator('#riskCard [data-risk-zone].is-active').evaluateAll(labels => labels.map(label => label.dataset.riskZone));
+      const activeZoneLabels = await page.locator('#riskCard #vRiskZone[data-risk-zone]').evaluateAll(labels => labels.map(label => label.dataset.riskZone));
       if (activeZoneLabels.length !== 1) {
         throw new Error(`BTC combined-risk zone label is not active: ${activeZoneLabels.join(',')}`);
       }
       const riskLegend = await page.locator('#legendBar .legend-seg').allTextContents();
-      const expectedRiskLegend = ['Accumulate0.00–0.20', 'Neutral0.20–0.40', 'HODL0.40–0.50', 'Caution0.50–0.60', 'Overvalued0.60–0.80', 'Euphoria0.80–1.00'];
+      const expectedRiskLegend = ['Generational0.00–0.10', 'Accumulate0.10–0.30', 'Neutral0.30–0.50', 'Elevated0.50–0.70', 'Caution0.70–0.90', 'Euphoria0.90–1.00'];
       if (JSON.stringify(riskLegend) !== JSON.stringify(expectedRiskLegend)) {
         throw new Error(`BTC price legend has incorrect risk ranges: ${riskLegend.join(', ')}`);
       }

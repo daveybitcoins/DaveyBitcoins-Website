@@ -77,20 +77,15 @@ export default function SpyRiskMetricPage() {
             </div>
             <div id="vFwdPE" className="card-detail card-detail--gold" />
           </article>
-          <article className="card">
+          <article className="card risk-card" id="riskCard">
             <div className="card-label">Market Cycle Risk</div>
             <div className="card-value" id="vRisk">
               —
             </div>
-            <div className="risk-bar-wrap">
+            <div className="current-risk-zone" id="vRiskZone">—</div>
+            <div className="risk-bar-wrap" id="riskBar" role="meter" aria-label="Current SPY risk" aria-valuemin={0} aria-valuemax={1}>
               <div className="risk-bar-bg" />
               <div className="risk-bar-needle" id="needle" />
-            </div>
-            <div className="zone-labels">
-              <span>Accumulate<small>0.00–0.20</small></span>
-              <span>Neutral<small>0.20–0.50</small></span>
-              <span>Elevated<small>0.50–0.80</small></span>
-              <span>Euphoria<small>0.80–1.00</small></span>
             </div>
           </article>
           <article className="card">

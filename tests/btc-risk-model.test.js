@@ -105,11 +105,11 @@ test('backtest captures a crash from an interim peak even above the entry price'
     { date: '2024-09-01', price: 150, riskCombo: 0.3 },
     { date: '2025-01-01', price: 200, riskCombo: 0.3 },
   ];
-  const result = buildRiskBacktest(points)[0];
+  const result = buildRiskBacktest(points).find(result => result.zone.name === 'Accumulate');
   assert.equal(result.observations, 1);
   assert.equal(result.medianReturn, 100);
   assert.equal(result.medianDrawdown, -50);
-  assert.equal(buildRiskBacktest(points.slice(0, -1))[0].observations, 0);
+  assert.equal(buildRiskBacktest(points.slice(0, -1)).find(result => result.zone.name === 'Accumulate').observations, 0);
 });
 
 test('gold damping keeps a fixed end-2025 anchor when projection start moves', () => {
@@ -330,8 +330,8 @@ test('projected risk bands remain ordered around their independent 0.50-risk pat
   assert.match(source, /const DISPLAY_RISK_BOUNDARIES = \[\.\.\.PROJECTED_RISK_BOUNDARIES\]\.reverse/);
   assert.match(source, /boundaryValues=DISPLAY_RISK_BOUNDARIES\.map/);
   assert.match(source, /Actual risk/);
-  assert.match(source, /name: 'Accumulate', min: 0\.00, max: 0\.20/);
-  assert.match(source, /name: 'Euphoria', min: 0\.80, max: 1\.00/);
+  assert.match(source, /name: 'Generational', min: 0\.00, max: 0\.10/);
+  assert.match(source, /name: 'Euphoria', min: 0\.90, max: 1\.00/);
   assert.doesNotMatch(source, /Auto-refresh BTC price every 60 seconds/);
   assert.match(source, /refreshRiskSnapshot/);
 });
@@ -366,12 +366,12 @@ const riskColor = risk => risk;
 ${fills}
 return projectedZones;`)();
   assert.deepEqual(actual, [
-    { lower: null, upper: 0, color: 0.10 },
-    { lower: 0, upper: 1, color: 0.30 },
-    { lower: 1, upper: 2, color: 0.45 },
-    { lower: 2, upper: 3, color: 0.55 },
-    { lower: 3, upper: 4, color: 0.70 },
-    { lower: 4, upper: null, color: 0.90 },
+    { lower: null, upper: 0, color: 0.05 },
+    { lower: 0, upper: 1, color: 0.20 },
+    { lower: 1, upper: 2, color: 0.40 },
+    { lower: 2, upper: 3, color: 0.60 },
+    { lower: 3, upper: 4, color: 0.80 },
+    { lower: 4, upper: null, color: 0.95 },
   ]);
 });
 
@@ -383,7 +383,7 @@ test('risk names and colors change together at every shared boundary', () => {
 ${extractFunction(source, 'riskZoneForScore')}
 ${extractFunction(source, 'riskColor')}
 return { classify: riskZoneForScore, color: riskColor };`)();
-  const cases = [[0, 'Accumulate'], [0.2, 'Neutral'], [0.4, 'HODL'], [0.5, 'Caution'], [0.6, 'Overvalued'], [0.8, 'Euphoria']];
+  const cases = [[0, 'Generational'], [0.1, 'Accumulate'], [0.3, 'Neutral'], [0.5, 'Elevated'], [0.7, 'Caution'], [0.9, 'Euphoria']];
   cases.forEach(([risk, name], index) => {
     assert.equal(classify(risk).name, name);
     assert.equal(classify(risk + 0.001).name, name);

@@ -286,6 +286,11 @@
   .model-backtest-scroll{margin-top:12px;overflow-x:auto}.model-backtest-table{width:100%;min-width:720px;border-collapse:collapse}.backtest-range{display:block;color:var(--text-dimmer);font-size:.5rem}.model-snapshot-note{color:var(--text-dimmer);font-size:.56rem}
   @media(max-width:760px){.risk-table{grid-template-columns:repeat(2,minmax(0,1fr))!important}.model-snapshot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.model-snapshot-head{flex-direction:column}.snapshot-refresh{width:100%}}
   @media(max-width:640px){header{text-align:left}.header-nav{justify-content:flex-start}}
+
+:root{--risk-generational:#55b7ff;--risk-accumulate:#58d68d;--risk-neutral:#b388ff;--risk-elevated:#ffd166;--risk-caution:#ff963e;--risk-euphoria:#ff626e}
+[data-theme="light"]{--risk-generational:#0868ad;--risk-accumulate:#19733c;--risk-neutral:#7030b8;--risk-elevated:#806000;--risk-caution:#ad4c08;--risk-euphoria:#b7283b}
+.risk-card .risk-bar-bg{background:linear-gradient(90deg,var(--risk-generational) 5%,var(--risk-accumulate) 20%,var(--risk-neutral) 40%,var(--risk-elevated) 60%,var(--risk-caution) 80%,var(--risk-euphoria) 95%);opacity:1}
+.current-risk-zone{font-size:0.85rem;font-weight:800;line-height:1.4;margin:0.2rem 0 0.7rem;color:var(--risk-zone-color);letter-spacing:0.02em}
 </style>
 </head>
 <body>
@@ -326,8 +331,9 @@
       <div class="card-sub" id="vSatoshiPrice" style="font-weight:700">$1 USD ≈ — sats</div>
     </div>
     <div class="card risk-card" id="riskCard" style="--glow:#f7931a"><div class="card-label">Combined Risk</div><div class="card-value" id="vRisk">—</div>
+      <div class="current-risk-zone" id="vRiskZone">—</div>
       <div class="risk-bar-wrap" id="riskBar" role="meter" aria-label="Current Bitcoin combined risk" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0"><div class="risk-bar-bg"></div><div class="risk-bar-needle" id="needle"></div></div>
-      <div class="zone-labels"><span data-risk-zone="Accumulate">Accumulate</span><span data-risk-zone="Neutral">Neutral</span><span data-risk-zone="HODL">HODL</span><span data-risk-zone="Caution">Caution</span><span data-risk-zone="Overvalued">Overvalued</span><span data-risk-zone="Euphoria">Euphoria</span></div></div>
+</div>
     <div class="card" style="--glow:#58c56f"><div class="card-label">Fair Value</div><div class="card-value" id="vFair" style="--val-color:#58c56f">—</div><div class="card-sub" id="vGrowth"></div></div>
     <div class="card" style="--glow:#ffbf63"><div class="card-label">Deviation</div><div class="card-value" id="vDev" style="--val-color:#ffbf63">—</div><div class="card-sub" id="vPoints"></div></div>
     <div class="card halving-card" style="--glow:rgba(247,147,26,0.28)">
@@ -468,7 +474,7 @@
     <p><span class="hl">Power-Law Regression:</span> <code>log₁₀(price)</code> vs <code>log₁₀(days since Jan 3 2009)</code>. The smooth chart line uses the fixed full-history curve. Readings begin after a 30-observation warm-up, then historical risk uses an as-of regression at each date so past readings are not calibrated with future prices.</p>
     <p><span class="hl">Structural Risk (Decaying Envelope):</span> Normalizes the residual against a time-decaying upper envelope fitted from cycle peaks, with a continuous 0.005 floor. The max deviation capacity shrinks as Bitcoin matures.</p>
     <p><span class="hl">Momentum Risk (Rolling Z-Score → CDF):</span> 4-year rolling z-score mapped through Gaussian CDF. Cycle-sensitive, adapts to declining volatility.</p>
-    <p><span class="hl">Combined:</span> Geometric mean √(S × M) of two related measures. This is relative market positioning, not a probability of loss. Zones are Accumulate 0.00–0.20, Neutral 0.20–0.40, HODL 0.40–0.50, Caution 0.50–0.60, Overvalued 0.60–0.80, and Euphoria 0.80–1.00 everywhere on the site.</p>
+    <p><span class="hl">Combined:</span> Geometric mean √(S × M) of two related measures. This is relative market positioning, not a probability of loss. Zones are Generational below 0.10, Accumulate from 0.10, Neutral from 0.30, Elevated from 0.50, Caution from 0.70, and Euphoria from 0.90 through 1.00.</p>
     <p><span class="hl">Halving Countdown:</span> Uses the current Bitcoin block height when available, targets the next 210,000-block subsidy epoch, and estimates the date at 10 minutes per block. If the height API is unavailable, it falls back to a clock-based estimate from block 840,000.</p>
     <p><span class="hl">Updates:</span> The source price dataset is refreshed daily by automation. On page load, the page fetches a current BTC quote and recalculates every card, chart, table, and projection as one coherent snapshot. Use the snapshot refresh control for a new quote; the price is never updated independently from its dependent metrics. Tabs left open reload after a new UTC day begins.</p>
   </div>
@@ -579,12 +585,12 @@ const FAIR_VALUE_DAMPENING_POWER = 2;
 const FAIR_VALUE_DAYS_PER_YEAR = 365.2425;
 const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);
 const RISK_ZONES = [
-  { name: 'Accumulate', min: 0.00, max: 0.20, colorRisk: 0.10, color: '#1689ff' },
-  { name: 'Neutral', min: 0.20, max: 0.40, colorRisk: 0.30, color: '#77c46d' },
-  { name: 'HODL', min: 0.40, max: 0.50, colorRisk: 0.45, color: '#b388ff' },
-  { name: 'Caution', min: 0.50, max: 0.60, colorRisk: 0.55, color: '#f68f1d' },
-  { name: 'Overvalued', min: 0.60, max: 0.80, colorRisk: 0.70, color: '#eb713a' },
-  { name: 'Euphoria', min: 0.80, max: 1.00, colorRisk: 0.90, color: '#ef5d50' }
+  { name: 'Generational', min: 0.00, max: 0.10, colorRisk: 0.05, color: '#55b7ff', lightColor: '#0868ad' },
+  { name: 'Accumulate', min: 0.10, max: 0.30, colorRisk: 0.20, color: '#58d68d', lightColor: '#19733c' },
+  { name: 'Neutral', min: 0.30, max: 0.50, colorRisk: 0.40, color: '#b388ff', lightColor: '#7030b8' },
+  { name: 'Elevated', min: 0.50, max: 0.70, colorRisk: 0.60, color: '#ffd166', lightColor: '#806000' },
+  { name: 'Caution', min: 0.70, max: 0.90, colorRisk: 0.80, color: '#ff963e', lightColor: '#ad4c08' },
+  { name: 'Euphoria', min: 0.90, max: 1.00, colorRisk: 0.95, color: '#ff626e', lightColor: '#b7283b' },
 ];
 const PROJECTED_RISK_BOUNDARIES = RISK_ZONES.slice(0, -1).map(zone => zone.max);
 const DISPLAY_RISK_BOUNDARIES = [...PROJECTED_RISK_BOUNDARIES].reverse();
@@ -719,14 +725,14 @@ function normCdf(z) {
 function riskColor(r, a = 1) {
   const zone = riskZoneForScore(r);
   const light = typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'light';
-  const hex = (zone.name === 'HODL' && light ? '#7030b8' : zone.color).slice(1);
+  const hex = (light ? zone.lightColor : zone.color).slice(1);
   const rgb = [0, 2, 4].map(offset => parseInt(hex.slice(offset, offset + 2), 16));
   return `rgba(${rgb.join(',')},${a})`;
 }
 
 // CSS variables keep text colors in sync when the theme changes.
 function riskTextColor(r) {
-  return riskZoneForScore(r).name === 'HODL' ? 'var(--hodl-color)' : riskColor(r);
+  return 'var(--risk-' + riskZoneForScore(r).name.toLowerCase() + ')';
 }
 
 // ====== FETCH LIVE PRICE ======
@@ -1184,14 +1190,9 @@ async function main() {
   riskCard.dataset.riskZone = currentRiskZone.name;
   riskBar.setAttribute('aria-valuenow', last.riskCombo.toFixed(3));
   riskBar.setAttribute('aria-valuetext', last.riskCombo.toFixed(3) + ', ' + currentRiskZone.name + ' risk zone');
-  riskCard.querySelectorAll('[data-risk-zone]').forEach(function(label) {
-    const zone = RISK_ZONES.find(zone => zone.name === label.dataset.riskZone);
-    label.innerHTML = zone.name + '<small>' + zone.min.toFixed(2) + '–' + zone.max.toFixed(2) + '</small>';
-    const isActive = label.dataset.riskZone === currentRiskZone.name;
-    label.classList.toggle('is-active', isActive);
-    if (isActive) label.setAttribute('aria-current', 'true');
-    else label.removeAttribute('aria-current');
-  });
+  const currentZoneLabel = document.getElementById('vRiskZone');
+  currentZoneLabel.textContent = currentRiskZone.name;
+  currentZoneLabel.dataset.riskZone = currentRiskZone.name;
   document.getElementById('vFair').textContent = '$' + last.trendPrice.toLocaleString(undefined,{maximumFractionDigits:0});
   document.getElementById('vGrowth').textContent = 'Power-law regression fair value';
   const devPct = ((last.price/last.trendPrice-1)*100).toFixed(1);

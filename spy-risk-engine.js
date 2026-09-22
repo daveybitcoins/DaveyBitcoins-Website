@@ -249,10 +249,12 @@ function simulateFundedDCA(simPts, buyIndices, amount, threshold, strategy) {
 
 // One scale for the summary gauge, price lines, oscillator, and DCA risk charts.
 const SPY_RISK_ZONES = [
-  { name: 'Accumulate', min: 0, max: 0.20, color: '#68829c' },
-  { name: 'Neutral', min: 0.20, max: 0.50, color: '#58c56f' },
-  { name: 'Elevated', min: 0.50, max: 0.80, color: '#f7931a' },
-  { name: 'Euphoria', min: 0.80, max: 1, color: '#ef5d4f' },
+  { name: 'Generational', min: 0.00, max: 0.10, color: '#55b7ff', lightColor: '#0868ad' },
+  { name: 'Accumulate', min: 0.10, max: 0.30, color: '#58d68d', lightColor: '#19733c' },
+  { name: 'Neutral', min: 0.30, max: 0.50, color: '#b388ff', lightColor: '#7030b8' },
+  { name: 'Elevated', min: 0.50, max: 0.70, color: '#ffd166', lightColor: '#806000' },
+  { name: 'Caution', min: 0.70, max: 0.90, color: '#ff963e', lightColor: '#ad4c08' },
+  { name: 'Euphoria', min: 0.90, max: 1.00, color: '#ff626e', lightColor: '#b7283b' },
 ];
 
 function riskZoneForScore(score) {
@@ -260,33 +262,40 @@ function riskZoneForScore(score) {
 }
 
 function riskColor(r, a = 1) {
-  const hex = riskZoneForScore(r).color.slice(1);
+  const zone = riskZoneForScore(r);
+  const light = typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'light';
+  const hex = (light ? zone.lightColor : zone.color).slice(1);
   const rgb = [0, 2, 4].map(offset => parseInt(hex.slice(offset, offset + 2), 16));
   return 'rgba('+rgb.join(',')+','+a+')';
 }
 
+function riskTextColor(r) {
+  return 'var(--risk-' + riskZoneForScore(r).name.toLowerCase() + ')';
+}
+
 function renderRiskScale(score) {
-  const labels = document.querySelector('.zone-labels');
   const legend = document.getElementById('legendBar');
-  labels.replaceChildren();
   legend.replaceChildren();
   SPY_RISK_ZONES.forEach(zone => {
     const range = zone.min.toFixed(2) + '–' + zone.max.toFixed(2);
-    const label = document.createElement('span');
-    label.style.setProperty('--risk-band-color', zone.color);
-    label.classList.toggle('is-active', zone === riskZoneForScore(score));
-    label.innerHTML = zone.name + '<small>' + range + '</small>';
-    labels.appendChild(label);
     const segment = document.createElement('div');
     segment.className = 'legend-seg';
     segment.style.flex = String(zone.max - zone.min);
-    segment.style.setProperty('--risk-band-color', zone.color);
+    segment.style.setProperty('--risk-band-color', riskTextColor(zone.min));
     segment.style.background = riskColor(zone.min, 0.12);
     segment.innerHTML = zone.name + '<span class="seg-label">' + range + '</span>';
     legend.appendChild(segment);
   });
-  document.querySelector('.risk-bar-bg').style.background = 'linear-gradient(90deg,' +
-    SPY_RISK_ZONES.map(zone => zone.color + ' ' + (zone.min * 100) + '% ' + (zone.max * 100) + '%').join(',') + ')';
+  const zone = riskZoneForScore(score);
+  const card = document.getElementById('riskCard');
+  card.style.setProperty('--risk-zone-color', riskTextColor(score));
+  card.dataset.riskZone = zone.name;
+  const label = document.getElementById('vRiskZone');
+  label.textContent = zone.name;
+  label.dataset.riskZone = zone.name;
+  const meter = document.getElementById('riskBar');
+  meter.setAttribute('aria-valuenow', score.toFixed(3));
+  meter.setAttribute('aria-valuetext', score.toFixed(3) + ', ' + zone.name + ' risk zone');
   document.getElementById('vRisk').setAttribute('aria-label', score.toFixed(3) + ' · ' + riskZoneForScore(score).name);
 }
 
@@ -371,7 +380,7 @@ async function main() {
   riskValue.textContent = last.riskCombo.toFixed(3);
   riskValue.dataset.risk200w = last.risk200W.toFixed(3);
   riskValue.dataset.model = '200W trailing-20-year weekly percentile';
-  riskValue.style.setProperty('--val-color', riskColor(last.riskCombo));
+  riskValue.style.setProperty('--val-color', riskTextColor(last.riskCombo));
   renderRiskScale(last.riskCombo);
   document.getElementById('vFair').textContent = '$' + last.ma200W.toLocaleString(undefined,{maximumFractionDigits:2});
   document.getElementById('vGrowth').textContent = 'Trailing 20Y weekly percentile';
@@ -417,7 +426,7 @@ async function main() {
       const pctMove = ((price / last.price - 1) * 100).toFixed(1);
       const pctStr = pctMove >= 0 ? '+'+pctMove+'%' : pctMove+'%';
       const pctColor = pctMove >= 0 ? '#58c56f' : '#ef5d4f';
-      cell.innerHTML='<div class="rc-risk" style="color:'+riskColor(r)+'">'+r.toFixed(2)+'</div><div class="rc-price">'+pStr+'</div><div style="font-size:0.62rem;margin-top:2px;color:'+pctColor+';letter-spacing:0.3px">'+pctStr+'</div>';
+      cell.innerHTML='<div class="rc-risk" style="color:'+riskTextColor(r)+'">'+r.toFixed(2)+'</div><div class="rc-price">'+pStr+'</div><div style="font-size:0.62rem;margin-top:2px;color:'+pctColor+';letter-spacing:0.3px">'+pctStr+'</div>';
       tbl.appendChild(cell);
     });
   }
@@ -600,7 +609,7 @@ async function main() {
       tr.innerHTML = '<td>' + low.date + '</td>' +
         '<td class="rl-event">' + b.event + infoHtml + '</td>' +
         '<td class="rl-price">' + pStr + '</td>' +
-        '<td class="rl-risk" style="color:' + riskColor(low.riskCombo) + '">' + (low.modelWarmup ? 'Warmup' : low.riskCombo.toFixed(3)) + '</td>' +
+        '<td class="rl-risk" style="color:' + riskTextColor(low.riskCombo) + '">' + (low.modelWarmup ? 'Warmup' : low.riskCombo.toFixed(3)) + '</td>' +
         '<td>' + vixVal + '</td>' +
         fwdCell(idx, 1) + fwdCell(idx, 2) + fwdCell(idx, 3);
       tbody.appendChild(tr);
@@ -936,7 +945,7 @@ async function main() {
       if (tipId === 'riskTip') riskEl.textContent = p.modelWarmup ? 'Warmup' : p.riskCombo.toFixed(3);
       else if (tipId === 'vixTip') riskEl.textContent = (p.vix != null ? p.vix.toFixed(2) : '—');
       else riskEl.textContent = p.modelWarmup ? 'Warmup' : p.riskCombo.toFixed(3);
-      riskEl.style.color = tipId === 'vixTip' ? (p.vix != null ? vixColor(p.vix) : '') : riskColor(p.riskCombo);
+      riskEl.style.color = tipId === 'vixTip' ? (p.vix != null ? vixColor(p.vix) : '') : riskTextColor(p.riskCombo);
       tip.style.display = 'block';
       const rect = cv.getBoundingClientRect();
       const tipX = e.clientX - rect.left + 16;const tipY = e.clientY - rect.top - 10;
@@ -1360,7 +1369,7 @@ async function main() {
       attachDCATooltip(cv, 'dcaStrategyTip', tl, function(p, tip){
         tip.querySelector('.tt-date').textContent = p.date;
         tip.querySelector('.tt-risk').textContent = 'Prior risk: ' + p.risk.toFixed(3) + (p.isBuy ? ' · BUY' : '');
-        tip.querySelector('.tt-risk').style.color = riskColor(p.risk);
+        tip.querySelector('.tt-risk').style.color = riskTextColor(p.risk);
       });
     }
 
@@ -1397,7 +1406,7 @@ async function main() {
           '<td>' + t.num + '</td>' +
           '<td>' + t.date + '</td>' +
           '<td class="rl-price">$' + t.price.toLocaleString(undefined,{maximumFractionDigits:2}) + '</td>' +
-          '<td class="rl-risk" style="color:' + riskColor(t.risk) + '">' + t.risk.toFixed(3) + '</td>' +
+          '<td class="rl-risk" style="color:' + riskTextColor(t.risk) + '">' + t.risk.toFixed(3) + '</td>' +
           '<td style="color:#58c56f;font-weight:600">' + Number(t.mult.toFixed(2)) + 'x</td>' +
           '<td>$' + t.usd.toLocaleString(undefined,{maximumFractionDigits:0}) + '</td>' +
           '<td>$' + cumulativeInvested.toLocaleString(undefined,{maximumFractionDigits:0}) + '</td>' +

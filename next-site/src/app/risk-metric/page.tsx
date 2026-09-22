@@ -154,6 +154,7 @@ export default function BitcoinRiskMetricPage() {
             <div className="card-value risk-value" id="vRisk">
               —
             </div>
+            <div className="current-risk-zone" id="vRiskZone">—</div>
             <div
               className="risk-bar-wrap"
               id="riskBar"
@@ -165,14 +166,6 @@ export default function BitcoinRiskMetricPage() {
             >
               <div className="risk-bar-bg" />
               <div className="risk-bar-needle" id="needle" />
-            </div>
-            <div className="zone-labels">
-              <span data-risk-zone="Accumulate">Accumulate</span>
-              <span data-risk-zone="Neutral">Neutral</span>
-              <span data-risk-zone="HODL">HODL</span>
-              <span data-risk-zone="Caution">Caution</span>
-              <span data-risk-zone="Overvalued">Overvalued</span>
-              <span data-risk-zone="Euphoria">Euphoria</span>
             </div>
           </article>
           <article className="card">
@@ -541,8 +534,7 @@ export default function BitcoinRiskMetricPage() {
             <p>
               <span className="hl">Combined:</span> Geometric mean √(S × M).
               When either frame indicates low risk, the combined reading is
-              pulled lower. Zones are Accumulate 0.00–0.20, Neutral 0.20–0.40, HODL 0.40–0.50,
-              Caution 0.50–0.60, Overvalued 0.60–0.80, and Euphoria 0.80–1.00 everywhere on the site.
+              pulled lower. Zones are Generational below 0.10, Accumulate from 0.10, Neutral from 0.30, Elevated from 0.50, Caution from 0.70, and Euphoria from 0.90 through 1.00.
             </p>
             <p>
               <span className="hl">Halving Countdown:</span> Uses current block
@@ -560,7 +552,7 @@ export default function BitcoinRiskMetricPage() {
 
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20260922-hodl-purple" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20260922-six-zone-gradient" strategy="afterInteractive" />
     </main>
   );
 }

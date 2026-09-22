@@ -10,10 +10,8 @@ const definitions = [
   { key: "spy", title: "SPY cycle risk", detail: "200-week trend percentile · Weekly signal", href: "/spy-risk-metric/" },
   { key: "breadth", title: "Market breadth", detail: "Stocks above their 200-day average", href: "/ema-scanner/" },
 ] as const;
-function zone(value: number, bitcoin = false) {
-  if (bitcoin && value >= 0.6 && value < 0.8) return "Overvalued";
-  if (bitcoin && value >= 0.4 && value < 0.5) return "HODL";
-  return value < 0.2 ? "Accumulate" : value < 0.5 ? "Neutral" : value < 0.8 ? "Caution" : "Euphoria";
+function zone(value: number) {
+  return value < 0.1 ? "Generational" : value < 0.3 ? "Accumulate" : value < 0.5 ? "Neutral" : value < 0.7 ? "Elevated" : value < 0.9 ? "Caution" : "Euphoria";
 }
 function parsePrices(text: string): [string, number][] {
   const rows = text.trim().split(/\r?\n/).slice(1).map(row => {
@@ -111,10 +109,10 @@ export function MarketSnapshot() {
         {definitions.map(({ key, title, detail, href }) => {
           const reading = snapshot[key];
           return <a className="snapshot-card" href={href} key={key}
-            data-tone={reading ? (key === "breadth" ? "Breadth" : zone(reading.value, key === "btc")) : undefined}>
+            data-tone={reading ? (key === "breadth" ? "Breadth" : zone(reading.value)) : undefined}>
             <span className="snapshot-card__title">{title}<span aria-hidden="true">↗</span></span>
             <div className="snapshot-card__reading"><strong>{reading ? (key === "breadth" ? `${reading.value.toFixed(1)}%` : reading.value.toFixed(3)) : "—"}</strong>
-              {reading && key !== "breadth" && <span className="snapshot-zone">{zone(reading.value, key === "btc")}</span>}
+              {reading && key !== "breadth" && <span className="snapshot-zone">{zone(reading.value)}</span>}
             </div>
             <span className="snapshot-card__detail">{detail}</span>
             {reading ? <span className="snapshot-card__date">{reading.live ? "Latest quote · " : "Saved data · "}<time dateTime={reading.date}>{reading.date}</time></span> : <span className="snapshot-card__date">{loading ? "Loading reading…" : "Reading unavailable"}</span>}

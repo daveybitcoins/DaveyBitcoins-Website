@@ -169,12 +169,12 @@ const FAIR_VALUE_DAMPENING_POWER = 2;
 const FAIR_VALUE_DAYS_PER_YEAR = 365.2425;
 const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);
 const RISK_ZONES = [
-  { name: 'Accumulate', min: 0.00, max: 0.20, colorRisk: 0.10, color: '#1689ff' },
-  { name: 'Neutral', min: 0.20, max: 0.40, colorRisk: 0.30, color: '#77c46d' },
-  { name: 'HODL', min: 0.40, max: 0.50, colorRisk: 0.45, color: '#b388ff' },
-  { name: 'Caution', min: 0.50, max: 0.60, colorRisk: 0.55, color: '#f68f1d' },
-  { name: 'Overvalued', min: 0.60, max: 0.80, colorRisk: 0.70, color: '#eb713a' },
-  { name: 'Euphoria', min: 0.80, max: 1.00, colorRisk: 0.90, color: '#ef5d50' }
+  { name: 'Generational', min: 0.00, max: 0.10, colorRisk: 0.05, color: '#55b7ff', lightColor: '#0868ad' },
+  { name: 'Accumulate', min: 0.10, max: 0.30, colorRisk: 0.20, color: '#58d68d', lightColor: '#19733c' },
+  { name: 'Neutral', min: 0.30, max: 0.50, colorRisk: 0.40, color: '#b388ff', lightColor: '#7030b8' },
+  { name: 'Elevated', min: 0.50, max: 0.70, colorRisk: 0.60, color: '#ffd166', lightColor: '#806000' },
+  { name: 'Caution', min: 0.70, max: 0.90, colorRisk: 0.80, color: '#ff963e', lightColor: '#ad4c08' },
+  { name: 'Euphoria', min: 0.90, max: 1.00, colorRisk: 0.95, color: '#ff626e', lightColor: '#b7283b' },
 ];
 const PROJECTED_RISK_BOUNDARIES = RISK_ZONES.slice(0, -1).map(zone => zone.max);
 const DISPLAY_RISK_BOUNDARIES = [...PROJECTED_RISK_BOUNDARIES].reverse();
@@ -309,14 +309,14 @@ function normCdf(z) {
 function riskColor(r, a = 1) {
   const zone = riskZoneForScore(r);
   const light = typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'light';
-  const hex = (zone.name === 'HODL' && light ? '#7030b8' : zone.color).slice(1);
+  const hex = (light ? zone.lightColor : zone.color).slice(1);
   const rgb = [0, 2, 4].map(offset => parseInt(hex.slice(offset, offset + 2), 16));
   return `rgba(${rgb.join(',')},${a})`;
 }
 
 // CSS variables keep text colors in sync when the theme changes.
 function riskTextColor(r) {
-  return riskZoneForScore(r).name === 'HODL' ? 'var(--hodl-color)' : riskColor(r);
+  return 'var(--risk-' + riskZoneForScore(r).name.toLowerCase() + ')';
 }
 
 // ====== FETCH LIVE PRICE ======
@@ -774,14 +774,9 @@ async function main() {
   riskCard.dataset.riskZone = currentRiskZone.name;
   riskBar.setAttribute('aria-valuenow', last.riskCombo.toFixed(3));
   riskBar.setAttribute('aria-valuetext', last.riskCombo.toFixed(3) + ', ' + currentRiskZone.name + ' risk zone');
-  riskCard.querySelectorAll('[data-risk-zone]').forEach(function(label) {
-    const zone = RISK_ZONES.find(zone => zone.name === label.dataset.riskZone);
-    label.innerHTML = zone.name + '<small>' + zone.min.toFixed(2) + '–' + zone.max.toFixed(2) + '</small>';
-    const isActive = label.dataset.riskZone === currentRiskZone.name;
-    label.classList.toggle('is-active', isActive);
-    if (isActive) label.setAttribute('aria-current', 'true');
-    else label.removeAttribute('aria-current');
-  });
+  const currentZoneLabel = document.getElementById('vRiskZone');
+  currentZoneLabel.textContent = currentRiskZone.name;
+  currentZoneLabel.dataset.riskZone = currentRiskZone.name;
   document.getElementById('vFair').textContent = '$' + last.trendPrice.toLocaleString(undefined,{maximumFractionDigits:0});
   document.getElementById('vGrowth').textContent = 'Power-law regression fair value';
   const devPct = ((last.price/last.trendPrice-1)*100).toFixed(1);
