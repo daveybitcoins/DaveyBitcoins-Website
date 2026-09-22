@@ -111,7 +111,7 @@
   [data-theme="light"] .risk-bar-needle{background:#211b12;box-shadow:0 0 10px rgba(0,0,0,0.3)}
   .zone-labels{display:flex;justify-content:space-between;margin-top:6px}
   .zone-labels span{font-size:0.5rem;color:var(--text-dimmer)}
-  :root{--hodl-color:#ffe04b}
+  :root{--hodl-color:#d4b94f}
   [data-theme="light"]{--hodl-color:#806900}
   .risk-card .risk-bar-bg{background:linear-gradient(90deg,#1689ff 0 20%,#77c46d 20% 40%,var(--hodl-color) 40% 50%,#f68f1d 50% 60%,#eb713a 60% 80%,#ef5d50 80% 100%);opacity:.78}
   .risk-card .zone-labels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 6px;margin-top:12px}
@@ -287,7 +287,7 @@
   @media(max-width:760px){.risk-table{grid-template-columns:repeat(2,minmax(0,1fr))!important}.model-snapshot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.model-snapshot-head{flex-direction:column}.snapshot-refresh{width:100%}}
   @media(max-width:640px){header{text-align:left}.header-nav{justify-content:flex-start}}
 
-:root{--risk-generational:#55b7ff;--risk-accumulate:#58d68d;--risk-neutral:#ffe04b;--risk-elevated:#ffa13e;--risk-caution:#ff7547;--risk-euphoria:#ff4d57}
+:root{--risk-generational:#5b9ed1;--risk-accumulate:#62b582;--risk-neutral:#d4b94f;--risk-elevated:#d99048;--risk-caution:#d57350;--risk-euphoria:#d65d65}
 .risk-card .risk-bar-bg{background:linear-gradient(90deg,var(--risk-generational) 5%,var(--risk-accumulate) 20%,var(--risk-neutral) 40%,var(--risk-elevated) 60%,var(--risk-caution) 80%,var(--risk-euphoria) 95%);opacity:1}
 .current-risk-zone{font-size:0.85rem;font-weight:800;line-height:1.4;margin:0.2rem 0 0.7rem;color:var(--risk-zone-color);letter-spacing:0.02em}
 </style>
@@ -584,12 +584,12 @@ const FAIR_VALUE_DAMPENING_POWER = 2;
 const FAIR_VALUE_DAYS_PER_YEAR = 365.2425;
 const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);
 const RISK_ZONES = [
-  { name: 'Generational', min: 0.00, max: 0.10, colorRisk: 0.05, color: '#55b7ff' },
-  { name: 'Accumulate', min: 0.10, max: 0.30, colorRisk: 0.20, color: '#58d68d' },
-  { name: 'Neutral', min: 0.30, max: 0.50, colorRisk: 0.40, color: '#ffe04b' },
-  { name: 'Elevated', min: 0.50, max: 0.70, colorRisk: 0.60, color: '#ffa13e' },
-  { name: 'Caution', min: 0.70, max: 0.90, colorRisk: 0.80, color: '#ff7547' },
-  { name: 'Euphoria', min: 0.90, max: 1.00, colorRisk: 0.95, color: '#ff4d57' },
+  { name: 'Generational', min: 0.00, max: 0.10, colorRisk: 0.05, color: '#5b9ed1' },
+  { name: 'Accumulate', min: 0.10, max: 0.30, colorRisk: 0.20, color: '#62b582' },
+  { name: 'Neutral', min: 0.30, max: 0.50, colorRisk: 0.40, color: '#d4b94f' },
+  { name: 'Elevated', min: 0.50, max: 0.70, colorRisk: 0.60, color: '#d99048' },
+  { name: 'Caution', min: 0.70, max: 0.90, colorRisk: 0.80, color: '#d57350' },
+  { name: 'Euphoria', min: 0.90, max: 1.00, colorRisk: 0.95, color: '#d65d65' },
 ];
 const PROJECTED_RISK_BOUNDARIES = RISK_ZONES.slice(0, -1).map(zone => zone.max);
 const DISPLAY_RISK_BOUNDARIES = [...PROJECTED_RISK_BOUNDARIES].reverse();

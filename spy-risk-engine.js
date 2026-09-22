@@ -249,12 +249,12 @@ function simulateFundedDCA(simPts, buyIndices, amount, threshold, strategy) {
 
 // One scale for the summary gauge, price lines, oscillator, and DCA risk charts.
 const SPY_RISK_ZONES = [
-  { name: 'Generational', min: 0.00, max: 0.10, color: '#55b7ff' },
-  { name: 'Accumulate', min: 0.10, max: 0.30, color: '#58d68d' },
-  { name: 'Neutral', min: 0.30, max: 0.50, color: '#ffe04b' },
-  { name: 'Elevated', min: 0.50, max: 0.70, color: '#ffa13e' },
-  { name: 'Caution', min: 0.70, max: 0.90, color: '#ff7547' },
-  { name: 'Euphoria', min: 0.90, max: 1.00, color: '#ff4d57' },
+  { name: 'Generational', min: 0.00, max: 0.10, color: '#5b9ed1' },
+  { name: 'Accumulate', min: 0.10, max: 0.30, color: '#62b582' },
+  { name: 'Neutral', min: 0.30, max: 0.50, color: '#d4b94f' },
+  { name: 'Elevated', min: 0.50, max: 0.70, color: '#d99048' },
+  { name: 'Caution', min: 0.70, max: 0.90, color: '#d57350' },
+  { name: 'Euphoria', min: 0.90, max: 1.00, color: '#d65d65' },
 ];
 
 function riskZoneForScore(score) {

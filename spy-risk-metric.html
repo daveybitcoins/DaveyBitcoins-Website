@@ -248,7 +248,7 @@
   @media(min-width:900px){.risk-section-nav{display:block}.risk-section-nav a{width:100%}.container{max-width:none;margin-left:200px;margin-right:24px}}
   @media(max-width:640px){header{text-align:left}.header-nav{justify-content:flex-start}}
 
-:root{--risk-generational:#55b7ff;--risk-accumulate:#58d68d;--risk-neutral:#ffe04b;--risk-elevated:#ffa13e;--risk-caution:#ff7547;--risk-euphoria:#ff4d57}
+:root{--risk-generational:#5b9ed1;--risk-accumulate:#62b582;--risk-neutral:#d4b94f;--risk-elevated:#d99048;--risk-caution:#d57350;--risk-euphoria:#d65d65}
 .risk-card .risk-bar-bg{background:linear-gradient(90deg,var(--risk-generational) 5%,var(--risk-accumulate) 20%,var(--risk-neutral) 40%,var(--risk-elevated) 60%,var(--risk-caution) 80%,var(--risk-euphoria) 95%);opacity:1}
 .current-risk-zone{font-size:0.85rem;font-weight:800;line-height:1.4;margin:0.2rem 0 0.7rem;color:var(--risk-zone-color);letter-spacing:0.02em}
 </style>
@@ -639,12 +639,12 @@ function simulateFundedDCA(simPts, buyIndices, amount, threshold, strategy) {
 
 // One scale for the summary gauge, price lines, oscillator, and DCA risk charts.
 const SPY_RISK_ZONES = [
-  { name: 'Generational', min: 0.00, max: 0.10, color: '#55b7ff' },
-  { name: 'Accumulate', min: 0.10, max: 0.30, color: '#58d68d' },
-  { name: 'Neutral', min: 0.30, max: 0.50, color: '#ffe04b' },
-  { name: 'Elevated', min: 0.50, max: 0.70, color: '#ffa13e' },
-  { name: 'Caution', min: 0.70, max: 0.90, color: '#ff7547' },
-  { name: 'Euphoria', min: 0.90, max: 1.00, color: '#ff4d57' },
+  { name: 'Generational', min: 0.00, max: 0.10, color: '#5b9ed1' },
+  { name: 'Accumulate', min: 0.10, max: 0.30, color: '#62b582' },
+  { name: 'Neutral', min: 0.30, max: 0.50, color: '#d4b94f' },
+  { name: 'Elevated', min: 0.50, max: 0.70, color: '#d99048' },
+  { name: 'Caution', min: 0.70, max: 0.90, color: '#d57350' },
+  { name: 'Euphoria', min: 0.90, max: 1.00, color: '#d65d65' },
 ];
 
 function riskZoneForScore(score) {
