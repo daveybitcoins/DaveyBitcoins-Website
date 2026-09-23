@@ -534,7 +534,7 @@ export default function BitcoinRiskMetricPage() {
             <p>
               <span className="hl">Combined:</span> Geometric mean √(S × M).
               When either frame indicates low risk, the combined reading is
-              pulled lower. Zones are Generational below 0.10, Accumulate from 0.10, Neutral from 0.30, Elevated from 0.50, Caution from 0.70, and Euphoria from 0.90 through 1.00.
+              pulled lower. Zones are Generational below 0.10, Accumulate from 0.10–0.2499, Neutral from 0.25, Elevated from 0.50, Caution from 0.70, and Euphoria from 0.90 through 1.00.
             </p>
             <p>
               <span className="hl">Halving Countdown:</span> Uses current block

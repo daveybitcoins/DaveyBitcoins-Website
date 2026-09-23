@@ -170,8 +170,8 @@ const FAIR_VALUE_DAYS_PER_YEAR = 365.2425;
 const FAIR_VALUE_PROJECTION_END_MS = Date.UTC(2040, 11, 1);
 const RISK_ZONES = [
   { name: 'Generational', min: 0.00, max: 0.10, colorRisk: 0.05, color: '#5b9ed1' },
-  { name: 'Accumulate', min: 0.10, max: 0.30, colorRisk: 0.20, color: '#62b582' },
-  { name: 'Neutral', min: 0.30, max: 0.50, colorRisk: 0.40, color: '#d4b94f' },
+  { name: 'Accumulate', min: 0.10, max: 0.25, colorRisk: 0.20, color: '#62b582' },
+  { name: 'Neutral', min: 0.25, max: 0.50, colorRisk: 0.40, color: '#d4b94f' },
   { name: 'Elevated', min: 0.50, max: 0.70, colorRisk: 0.60, color: '#d99048' },
   { name: 'Caution', min: 0.70, max: 0.90, colorRisk: 0.80, color: '#d57350' },
   { name: 'Euphoria', min: 0.90, max: 1.00, colorRisk: 0.95, color: '#d65d65' },
@@ -668,7 +668,7 @@ function renderModelSnapshot(pts, slope, last, live) {
     const tr = document.createElement('tr');
     const formatPct = value => value == null ? '—' : (value >= 0 ? '+' : '') + value.toFixed(1) + '%';
     tr.innerHTML = '<td style="color:' + riskTextColor(result.zone.colorRisk) + '">' + result.zone.name +
-      '<span class="backtest-range">' + result.zone.min.toFixed(2) + '–' + result.zone.max.toFixed(2) + '</span></td>' +
+      '<span class="backtest-range">' + result.zone.min.toFixed(2) + '–' + (result.zone.name === 'Accumulate' ? '0.2499' : result.zone.max.toFixed(2)) + '</span></td>' +
       '<td>' + result.observations.toLocaleString() + '</td>' +
       '<td>' + formatPct(result.medianReturn) + '</td>' +
       '<td>' + (result.positiveRate == null ? '—' : result.positiveRate.toFixed(0) + '%') + '</td>' +
@@ -1397,7 +1397,7 @@ async function main() {
     const el=document.getElementById('legendBar');
     const segments=RISK_ZONES.map(zone=>({
       name:zone.name,
-      range:zone.min.toFixed(2)+'–'+zone.max.toFixed(2),
+      range:zone.min.toFixed(2)+'–'+(zone.name === 'Accumulate' ? '0.2499' : zone.max.toFixed(2)),
       risk:zone.colorRisk,
       width:zone.max-zone.min
     }));
