@@ -668,7 +668,7 @@ function renderModelSnapshot(pts, slope, last, live) {
     const tr = document.createElement('tr');
     const formatPct = value => value == null ? '—' : (value >= 0 ? '+' : '') + value.toFixed(1) + '%';
     tr.innerHTML = '<td style="color:' + riskTextColor(result.zone.colorRisk) + '">' + result.zone.name +
-      '<span class="backtest-range">' + result.zone.min.toFixed(2) + '–' + (result.zone.name === 'Accumulate' ? '0.2499' : result.zone.max.toFixed(2)) + '</span></td>' +
+      '<span class="backtest-range">' + result.zone.min.toFixed(2) + '–' + result.zone.max.toFixed(2) + '</span></td>' +
       '<td>' + result.observations.toLocaleString() + '</td>' +
       '<td>' + formatPct(result.medianReturn) + '</td>' +
       '<td>' + (result.positiveRate == null ? '—' : result.positiveRate.toFixed(0) + '%') + '</td>' +
@@ -1397,7 +1397,7 @@ async function main() {
     const el=document.getElementById('legendBar');
     const segments=RISK_ZONES.map(zone=>({
       name:zone.name,
-      range:zone.min.toFixed(2)+'–'+(zone.name === 'Accumulate' ? '0.2499' : zone.max.toFixed(2)),
+      range:zone.min.toFixed(2)+'–'+zone.max.toFixed(2),
       risk:zone.colorRisk,
       width:zone.max-zone.min
     }));
