@@ -734,6 +734,22 @@ function riskTextColor(r) {
   return 'var(--risk-' + riskZoneForScore(r).name.toLowerCase() + ')';
 }
 
+// Match the score's exact position on the summary card's continuous gradient.
+// Keep CSS variables so the number, label, and scale share the card palette.
+function riskGradientColor(score) {
+  const color = zone => 'var(--risk-' + zone.name.toLowerCase() + ')';
+  if (score <= RISK_ZONES[0].colorRisk) return color(RISK_ZONES[0]);
+  for (let i = 1; i < RISK_ZONES.length; i++) {
+    const lower = RISK_ZONES[i - 1];
+    const upper = RISK_ZONES[i];
+    if (score <= upper.colorRisk) {
+      const weight = (score - lower.colorRisk) / (upper.colorRisk - lower.colorRisk) * 100;
+      return `color-mix(in srgb, ${color(lower)}, ${color(upper)} ${weight}%)`;
+    }
+  }
+  return color(RISK_ZONES[RISK_ZONES.length - 1]);
+}
+
 // ====== FETCH LIVE PRICE ======
 async function fetchCurrentBtcPrice() {
   const providers = [
@@ -1180,9 +1196,14 @@ async function main() {
   const hd = document.getElementById('headerDate');
   hd.innerHTML = '<span style="width:6px;height:6px;background:#58c56f;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;display:inline-block"></span> coherent snapshot as of ' + last.date + (isLive ? ' · ' + isLive.source : ' · daily dataset');
   const currentRiskZone = riskZoneForScore(last.riskCombo);
-  const currentRiskColor = riskTextColor(last.riskCombo);
+  const currentRiskColor = riskGradientColor(last.riskCombo);
   const riskCard = document.getElementById('riskCard');
   const riskBar = document.getElementById('riskBar');
+  const gradientStops = RISK_ZONES.map(zone =>
+    `var(--risk-${zone.name.toLowerCase()}) ${zone.colorRisk * 100}%`
+  );
+  riskBar.querySelector('.risk-bar-bg').style.background =
+    `linear-gradient(90deg in srgb, ${gradientStops.join(', ')})`;
   document.getElementById('vRisk').textContent = last.riskCombo.toFixed(3);
   document.getElementById('vRisk').style.setProperty('--val-color', currentRiskColor);
   riskCard.style.setProperty('--risk-zone-color', currentRiskColor);

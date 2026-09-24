@@ -640,12 +640,12 @@ function simulateFundedDCA(simPts, buyIndices, amount, threshold, strategy) {
 
 // One scale for the summary gauge, price lines, oscillator, and DCA risk charts.
 const SPY_RISK_ZONES = [
-  { name: 'Generational', min: 0.00, max: 0.10, color: '#5b9ed1' },
-  { name: 'Accumulate', min: 0.10, max: 0.30, color: '#62b582' },
-  { name: 'Neutral', min: 0.30, max: 0.50, color: '#d4b94f' },
-  { name: 'Elevated', min: 0.50, max: 0.70, color: '#d99048' },
-  { name: 'Caution', min: 0.70, max: 0.90, color: '#d57350' },
-  { name: 'Euphoria', min: 0.90, max: 1.00, color: '#d65d65' },
+  { name: 'Generational', min: 0.00, max: 0.10, colorRisk: 0.05, color: '#5b9ed1' },
+  { name: 'Accumulate', min: 0.10, max: 0.30, colorRisk: 0.20, color: '#62b582' },
+  { name: 'Neutral', min: 0.30, max: 0.50, colorRisk: 0.40, color: '#d4b94f' },
+  { name: 'Elevated', min: 0.50, max: 0.70, colorRisk: 0.60, color: '#d99048' },
+  { name: 'Caution', min: 0.70, max: 0.90, colorRisk: 0.80, color: '#d57350' },
+  { name: 'Euphoria', min: 0.90, max: 1.00, colorRisk: 0.95, color: '#d65d65' },
 ];
 
 function riskZoneForScore(score) {
@@ -663,6 +663,22 @@ function riskTextColor(r) {
   return 'var(--risk-' + riskZoneForScore(r).name.toLowerCase() + ')';
 }
 
+// Match the score's exact position on the summary card's continuous gradient.
+// Keep CSS variables so the number, label, and scale share the card palette.
+function riskGradientColor(score) {
+  const color = zone => 'var(--risk-' + zone.name.toLowerCase() + ')';
+  if (score <= SPY_RISK_ZONES[0].colorRisk) return color(SPY_RISK_ZONES[0]);
+  for (let i = 1; i < SPY_RISK_ZONES.length; i++) {
+    const lower = SPY_RISK_ZONES[i - 1];
+    const upper = SPY_RISK_ZONES[i];
+    if (score <= upper.colorRisk) {
+      const weight = (score - lower.colorRisk) / (upper.colorRisk - lower.colorRisk) * 100;
+      return `color-mix(in srgb, ${color(lower)}, ${color(upper)} ${weight}%)`;
+    }
+  }
+  return color(SPY_RISK_ZONES[SPY_RISK_ZONES.length - 1]);
+}
+
 function renderRiskScale(score) {
   const legend = document.getElementById('legendBar');
   legend.replaceChildren();
@@ -678,12 +694,17 @@ function renderRiskScale(score) {
   });
   const zone = riskZoneForScore(score);
   const card = document.getElementById('riskCard');
-  card.style.setProperty('--risk-zone-color', riskTextColor(score));
+  card.style.setProperty('--risk-zone-color', riskGradientColor(score));
   card.dataset.riskZone = zone.name;
   const label = document.getElementById('vRiskZone');
   label.textContent = zone.name;
   label.dataset.riskZone = zone.name;
   const meter = document.getElementById('riskBar');
+  const gradientStops = SPY_RISK_ZONES.map(zone =>
+    `var(--risk-${zone.name.toLowerCase()}) ${zone.colorRisk * 100}%`
+  );
+  meter.querySelector('.risk-bar-bg').style.background =
+    `linear-gradient(90deg in srgb, ${gradientStops.join(', ')})`;
   meter.setAttribute('aria-valuenow', score.toFixed(3));
   meter.setAttribute('aria-valuetext', score.toFixed(3) + ', ' + zone.name + ' risk zone');
   document.getElementById('vRisk').setAttribute('aria-label', score.toFixed(3) + ' · ' + riskZoneForScore(score).name);
@@ -770,7 +791,7 @@ async function main() {
   riskValue.textContent = last.riskCombo.toFixed(3);
   riskValue.dataset.risk200w = last.risk200W.toFixed(3);
   riskValue.dataset.model = '200W trailing-20-year weekly percentile';
-  riskValue.style.setProperty('--val-color', riskTextColor(last.riskCombo));
+  riskValue.style.setProperty('--val-color', riskGradientColor(last.riskCombo));
   renderRiskScale(last.riskCombo);
   document.getElementById('vFair').textContent = '$' + last.ma200W.toLocaleString(undefined,{maximumFractionDigits:2});
   document.getElementById('vGrowth').textContent = 'Trailing 20Y weekly percentile';
