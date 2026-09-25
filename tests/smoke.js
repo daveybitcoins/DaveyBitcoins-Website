@@ -329,7 +329,7 @@ const checks = [
       await expectText(page, 'Risk Price Scenarios');
       await expectText(page, 'Market Cycle Risk');
       await assertSectionNavigation(page, 10, 'SPY');
-      const riskLevels = await page.locator('#riskTable .rc-risk').allTextContents();
+      const riskLevels = (await page.locator('#riskTable .rc-risk').allTextContents()).map(label => label.replace(/^Risk\s+/, ''));
       if (riskLevels.join(',') !== '0.10,0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.00') {
         throw new Error(`unexpected SPY risk scenario intervals: ${riskLevels.join(',')}`);
       }

@@ -149,6 +149,7 @@ export default function SpyRiskMetricPage() {
               trend and trailing 20-year weekly deviation distribution.
             </p>
           </div>
+          <p className="risk-scenario-context" id="riskScenarioContext" />
           <div className="risk-table" id="riskTable" />
           <p className="spy-disclosure">
             Statistical scenarios—not price targets.

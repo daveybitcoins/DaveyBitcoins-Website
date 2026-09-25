@@ -758,3 +758,27 @@
 .spy-page[data-risk-dashboard="spy"] .zone-labels > .is-active {
   font-weight: 800;
 }
+
+/* Give SPY scenario prices enough room to read and identify their reference. */
+.spy-page[data-risk-dashboard="spy"] .risk-table {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.spy-page[data-risk-dashboard="spy"] .rc-price {
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.spy-page[data-risk-dashboard="spy"] .rc-risk { font-size: 0.8rem; }
+.spy-page[data-risk-dashboard="spy"] .rc-label { font-size: 0.65rem; font-weight: 500; }
+.spy-page[data-risk-dashboard="spy"] .rc-move { margin-top: 0.4rem; font-size: 0.75rem; }
+.spy-page[data-risk-dashboard="spy"] .risk-scenario-context {
+  color: var(--spy-muted);
+  font-size: 0.7rem;
+  line-height: 1.7;
+  margin: 1rem 0 0;
+}
+@media (max-width: 760px) {
+  .spy-page[data-risk-dashboard="spy"] .risk-table {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

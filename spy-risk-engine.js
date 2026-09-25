@@ -438,6 +438,8 @@ async function main() {
     };
     const tbl = document.getElementById('riskTable');
     tbl.dataset.model = '200w-trailing20y-weekly';
+    const scenarioContext = document.getElementById('riskScenarioContext');
+    if (scenarioContext) scenarioContext.textContent = 'Change vs. saved close: $' + last.price.toFixed(2) + ' (' + last.date + '). Trend and weekly distribution as of ' + new Date(last.signalWeekMs).toISOString().slice(0, 10) + '.';
     const riskLevels = [0.10,0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.00];
     riskLevels.forEach(r => {
       const price = priceAtRisk(r);
@@ -447,7 +449,7 @@ async function main() {
       const pctMove = ((price / last.price - 1) * 100).toFixed(1);
       const pctStr = pctMove >= 0 ? '+'+pctMove+'%' : pctMove+'%';
       const pctColor = pctMove >= 0 ? '#58c56f' : '#ef5d4f';
-      cell.innerHTML='<div class="rc-risk" style="color:'+riskTextColor(r)+'">'+r.toFixed(2)+'</div><div class="rc-price">'+pStr+'</div><div style="font-size:0.62rem;margin-top:2px;color:'+pctColor+';letter-spacing:0.3px">'+pctStr+'</div>';
+      cell.innerHTML='<div class="rc-risk" style="color:'+riskTextColor(r)+'"><span class="rc-label">Risk </span>'+r.toFixed(2)+'</div><div class="rc-price">'+pStr+'</div><div class="rc-move" style="color:'+pctColor+'">'+pctStr+'<span class="rc-label"> vs. close</span></div>';
       tbl.appendChild(cell);
     });
   }
