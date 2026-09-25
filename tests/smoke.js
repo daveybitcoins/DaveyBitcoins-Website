@@ -204,7 +204,7 @@ const checks = [
         throw new Error(`BTC combined-risk zone label is not active: ${activeZoneLabels.join(',')}`);
       }
       const riskLegend = await page.locator('#legendBar .legend-seg').allTextContents();
-      const expectedRiskLegend = ['Generational0.00–0.10', 'Accumulate0.10–0.25', 'Neutral0.25–0.50', 'Elevated0.50–0.70', 'Caution0.70–0.90', 'Euphoria0.90–1.00'];
+      const expectedRiskLegend = ['Generational0.00–0.10', 'Accumulate0.10–0.25', 'Neutral0.25–0.50', 'Elevated0.50–0.75', 'Caution0.75–0.90', 'Euphoria0.90–1.00'];
       if (JSON.stringify(riskLegend) !== JSON.stringify(expectedRiskLegend)) {
         throw new Error(`BTC price legend has incorrect risk ranges: ${riskLegend.join(', ')}`);
       }

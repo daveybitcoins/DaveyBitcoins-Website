@@ -383,7 +383,7 @@ test('risk names and colors change together at every shared boundary', () => {
 ${extractFunction(source, 'riskZoneForScore')}
 ${extractFunction(source, 'riskColor')}
 return { classify: riskZoneForScore, color: riskColor };`)();
-  const cases = [[0, 'Generational'], [0.1, 'Accumulate'], [0.25, 'Neutral'], [0.5, 'Elevated'], [0.7, 'Caution'], [0.9, 'Euphoria']];
+  const cases = [[0, 'Generational'], [0.1, 'Accumulate'], [0.25, 'Neutral'], [0.5, 'Elevated'], [0.75, 'Caution'], [0.9, 'Euphoria']];
   cases.forEach(([risk, name], index) => {
     assert.equal(classify(risk).name, name);
     assert.equal(classify(risk + 0.001).name, name);

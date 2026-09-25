@@ -252,8 +252,8 @@ const SPY_RISK_ZONES = [
   { name: 'Generational', min: 0.00, max: 0.10, colorRisk: 0.05, color: '#5b9ed1' },
   { name: 'Accumulate', min: 0.10, max: 0.30, colorRisk: 0.20, color: '#62b582' },
   { name: 'Neutral', min: 0.30, max: 0.50, colorRisk: 0.40, color: '#d4b94f' },
-  { name: 'Elevated', min: 0.50, max: 0.70, colorRisk: 0.60, color: '#d99048' },
-  { name: 'Caution', min: 0.70, max: 0.90, colorRisk: 0.80, color: '#d57350' },
+  { name: 'Elevated', min: 0.50, max: 0.75, colorRisk: 0.60, color: '#d99048' },
+  { name: 'Caution', min: 0.75, max: 0.90, colorRisk: 0.80, color: '#d57350' },
   { name: 'Euphoria', min: 0.90, max: 1.00, colorRisk: 0.95, color: '#d65d65' },
 ];
 
@@ -290,6 +290,7 @@ function riskGradientColor(score) {
 
 function renderRiskScale(score) {
   const legend = document.getElementById('legendBar');
+  legend.style.setProperty('--risk-zone-columns', SPY_RISK_ZONES.map(zone => `minmax(0, ${zone.max - zone.min}fr)`).join(' '));
   legend.replaceChildren();
   SPY_RISK_ZONES.forEach(zone => {
     const range = zone.min.toFixed(2) + '–' + zone.max.toFixed(2);

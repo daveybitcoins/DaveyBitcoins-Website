@@ -812,9 +812,6 @@
   font-size: 0.5rem;
   font-weight: 700;
 }
-.btc-page .legend-bar {
-  grid-template-columns: 2fr 2fr 1fr 1fr 2fr 2fr;
-}
 .btc-page .legend-seg {
   min-width: 0;
   padding: 0.55rem 0.25rem;

@@ -518,7 +518,7 @@
 
 .spy-page .legend-bar {
   display: grid;
-  grid-template-columns: 2fr 3fr 3fr 2fr;
+  grid-template-columns: var(--risk-zone-columns);
   margin-top: 0.75rem;
   overflow: hidden;
   border: 1px solid var(--spy-border);

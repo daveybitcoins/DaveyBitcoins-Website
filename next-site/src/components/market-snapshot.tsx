@@ -11,7 +11,7 @@ const definitions = [
   { key: "breadth", title: "Market breadth", detail: "Stocks above their 200-day average", href: "/ema-scanner/" },
 ] as const;
 function zone(value: number, symbol: "btc" | "spy") {
-  return value < 0.1 ? "Generational" : value < (symbol === "btc" ? 0.25 : 0.3) ? "Accumulate" : value < 0.5 ? "Neutral" : value < 0.7 ? "Elevated" : value < 0.9 ? "Caution" : "Euphoria";
+  return value < 0.1 ? "Generational" : value < (symbol === "btc" ? 0.25 : 0.3) ? "Accumulate" : value < 0.5 ? "Neutral" : value < 0.75 ? "Elevated" : value < 0.9 ? "Caution" : "Euphoria";
 }
 function parsePrices(text: string): [string, number][] {
   const rows = text.trim().split(/\r?\n/).slice(1).map(row => {
