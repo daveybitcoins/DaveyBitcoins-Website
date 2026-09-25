@@ -29791,6 +29791,15 @@
           ]
         }
       ]
+    },
+    "guidance": {
+      "condition": "caution",
+      "consecutive_sessions": 13,
+      "change_5_sessions": {
+        "above_50d": 2.7,
+        "above_200d": -1.7
+      },
+      "as_of": "2026-09-25"
     }
   },
   "vix_context": {

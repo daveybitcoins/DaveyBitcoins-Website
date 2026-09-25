@@ -1460,6 +1460,15 @@
 .dividend-page .index-context-card .risk-bar-wrap a {
     font-weight: 650;
 }
+.dividend-page .breadth-guidance { margin: 20px 0; padding: 20px; border: 1px solid var(--border); border-radius: 8px; }
+.dividend-page .breadth-guidance h3 { margin: 0 0 10px; }
+.dividend-page .breadth-guidance p { line-height: 1.6; margin: 10px 0; }
+.dividend-page .breadth-guidance-status { font-size: 1.1rem; font-weight: 700; }
+.dividend-page .breadth-guidance-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 18px 0; }
+.dividend-page .breadth-guidance-metrics strong, .dividend-page .breadth-guidance-metrics span { display: block; }
+.dividend-page .breadth-guidance-metrics span, .dividend-page .breadth-guidance-note { color: var(--text-dim); font-size: .8rem; }
+.dividend-page .breadth-guidance summary { cursor: pointer; font-weight: 600; }
+.dividend-page .breadth-guidance ul { padding-left: 20px; line-height: 1.7; }
 
 /* === PORTFOLIO CONTROLS === */
 .dividend-page .holdings-header {

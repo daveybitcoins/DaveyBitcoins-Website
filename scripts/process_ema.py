@@ -422,7 +422,46 @@ def build_breadth_context(stocks, data_date, snapshot_path=None):
         "valid_counts": {key: t["valid"] for key, t in totals.items()},
         "history_basis": "Retained top-300 snapshot universe; legacy mixed-universe history excluded. Dates are snapshot dates, not independently verified vendor close timestamps.",
         "stats": stats,
+        "guidance": _compute_breadth_guidance(history, current, data_date),
     }
+
+
+def _breadth_condition(row):
+    values = [row.get(field) for field in ("above_50d", "above_200d")]
+    if any(not isinstance(v, (int, float)) or not math.isfinite(v) or not 0 <= v <= 100 for v in values):
+        return "unavailable"
+    short, long = values
+    if short == 50 or long == 50:
+        return "midpoint"
+    if short > 50:
+        return "broad" if long > 50 else "recovery"
+    return "caution" if long > 50 else "concern"
+
+
+def _compute_breadth_guidance(history, current, data_date):
+    """Descriptive state with calendar-aware persistence and five-session changes."""
+    condition = _breadth_condition(current)
+    start = min([data_date] + [row["date"] for row in history])
+    sessions = _exchange_sessions(start, data_date)
+    rows = {row["date"]: row for row in history if row["date"] <= data_date}
+    count = 0
+    changes = {field: None for field in ("above_50d", "above_200d")}
+    # A snapshot on a closed exchange day cannot extend a session streak.
+    if sessions and sessions[-1] == data_date:
+        rows[data_date] = current
+        if condition != "unavailable":
+            for date in reversed(sessions):
+                if date not in rows or _breadth_condition(rows[date]) != condition:
+                    break
+                count += 1
+        if len(sessions) >= 6:
+            previous = rows.get(sessions[-6], {})
+            for field in changes:
+                old, new = previous.get(field), current.get(field)
+                if all(isinstance(v, (int, float)) and math.isfinite(v) and 0 <= v <= 100 for v in (old, new)):
+                    changes[field] = round(new - old, 1)
+    return {"condition": condition, "consecutive_sessions": count,
+            "change_5_sessions": changes, "as_of": data_date}
 
 
 def _compute_breadth_stats(history, current):

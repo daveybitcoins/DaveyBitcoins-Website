@@ -1088,6 +1088,44 @@
     }
 
     // === MARKET BREADTH ===
+    function renderBreadthGuidance(bc) {
+        const short = bc.above_50d, long = bc.above_200d;
+        const valid = [short, long].every(v => Number.isFinite(v) && v >= 0 && v <= 100);
+        const condition = !valid ? "unavailable" : short === 50 || long === 50 ? "midpoint"
+            : short > 50 ? (long > 50 ? "broad" : "recovery") : (long > 50 ? "caution" : "concern");
+        const states = {
+            broad: ["Broad participation", "Most stocks are above both their medium- and long-term averages.", "var(--green)"],
+            caution: ["Caution — weak short-term participation", "Most stocks are below their 50-day average, while a majority remain above their 200-day average.", "var(--yellow)"],
+            concern: ["Elevated concern — widespread weakness", "Most stocks are below both their 50-day and 200-day averages. Persistence would strengthen this warning.", "var(--red)"],
+            recovery: ["Recovery attempt", "A majority are above their 50-day average, but longer-term participation remains weak. This describes the current mix, not a confirmed upward trend.", "var(--yellow)"],
+            midpoint: ["At the 50% boundary", "At least one measure is evenly split. Watch which side of 50% participation holds over subsequent sessions.", "var(--text-dim)"],
+            unavailable: ["Guidance unavailable", "Valid 50-day and 200-day breadth readings are needed to assess participation.", "var(--text-dim)"],
+        };
+        const [label, description, color] = states[condition];
+        const g = bc.guidance?.as_of === DATA.meta.date && bc.guidance.condition === condition ? bc.guidance : null;
+        const change = field => {
+            const value = g?.change_5_sessions?.[field];
+            return Number.isFinite(value) ? `${value > 0 ? "+" : ""}${value.toFixed(1)} pp` : "Unavailable";
+        };
+        return `<section class="breadth-guidance" aria-labelledby="breadth-guidance-heading">
+            <h3 id="breadth-guidance-heading">Breadth guidance</h3>
+            <p class="breadth-guidance-status" style="color:${color}">${label}</p>
+            <p>${description}</p>
+            <div class="breadth-guidance-metrics">
+                <div><strong>${g?.consecutive_sessions > 0 ? `${g.consecutive_sessions} recorded session${g.consecutive_sessions === 1 ? "" : "s"}` : "History unavailable"}</strong><span>Consecutive sessions in this condition</span></div>
+                <div><strong>${change("above_50d")}</strong><span>50-day breadth · five-session change</span></div>
+                <div><strong>${change("above_200d")}</strong><span>200-day breadth · five-session change</span></div>
+            </div>
+            <p><strong>Watch for deterioration:</strong> 200-day breadth holds below 50% while 50-day breadth remains below 50%; rallies fail to broaden participation.</p>
+            <p><strong>Watch for improvement:</strong> 50-day breadth holds above 50% and 200-day participation stabilizes or improves.</p>
+            <details><summary>How to read this guidance</summary>
+                <ul><li>Broad participation: both readings above 50%.</li><li>Caution: 50-day below 50%, 200-day above 50%.</li><li>Elevated concern: both below 50%.</li><li>Recovery attempt: 50-day above 50%, 200-day below 50%.</li></ul>
+                <p>Exactly 50% is a boundary. Persistence uses NYSE sessions; missing observations break the count. Changes compare with exactly five sessions earlier, in percentage points (pp); missing endpoints are unavailable. Snapshot dates are not independently verified close timestamps.</p>
+            </details>
+            <p class="breadth-guidance-note">Top ${bc.total_stocks} stocks by market cap, not S&amp;P 500 breadth. Descriptive rules, not backtested buy/sell signals. “Oversold” means low relative to recent history; it does not confirm a bottom.</p>
+        </section>`;
+    }
+
     function renderBreadthCard() {
         const bc = DATA.breadth_context;
         if (!bc) return "";
@@ -1247,6 +1285,7 @@
                 <h2>Market Breadth — % Above Moving Averages</h2>
                 <p style="color:var(--text-dim);font-size:0.8rem">Computed from top ${bc.total_stocks} stocks by market cap. This custom universe differs from S&amp;P 500 breadth indexes. Weekly indicators may include the unfinished week. <strong>Last updated: ${DATA.meta.date}</strong>${(() => { const today = new Date().toISOString().slice(0,10); const diff = Math.floor((new Date(today) - new Date(DATA.meta.date)) / 864e5); return diff > 1 ? ` <span style="color:var(--red);font-weight:700">⚠ ${diff} days old</span>` : ''; })()}</p>
                 <div class="stats-row">${statBoxes}</div>
+                ${renderBreadthGuidance(bc)}
                 <p style="color:var(--text-dim);font-size:0.78rem">${escapeHtml(bc.history_basis || '')} ${stats ? `${stats.history_days} observations, ${stats.history_start} through ${stats.history_end}. Descriptive percentiles from a short sample; no validated forecast.` : 'Insufficient comparable history for historical statistics.'}</p>
                 ${statsHtml}
             </div>
