@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 
-const DIVIDEND_ENGINE_VERSION = "20260908-refinement";
+const DIVIDEND_ENGINE_VERSION = "20261006-calendar";
 
 export const metadata: Metadata = {
   title: "Dividend Portfolio Tracker | DaveyBitcoins",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 export default function DividendTrackerPage() {
   return (
     <>
-      <link rel="stylesheet" href="/dividend-tracker.css?v=20260908-refinement" />
+      <link rel="stylesheet" href="/dividend-tracker.css?v=20261006-calendar" />
       <div className="dividend-page" data-dashboard="dividend-tracker">
       <div className="bg-mesh" aria-hidden="true">
         <div className="orb orb-1" />
@@ -130,7 +130,7 @@ export default function DividendTrackerPage() {
 
           <section className="card" id="calendar-card">
             <h2>Payment Calendar</h2>
-            <p>Amounts assume current shares were eligible on the ex-date; they do not confirm cash received. (est.) marks a projected date or amount. Estimated dates use past payment dates, not issuer schedules; holidays may differ. Payments without a known pay date are omitted.</p>
+            <p>Amounts assume current shares were eligible on the ex-date; they do not confirm cash received. (est.) marks a projected date or amount. Estimated dates use past payment dates, not issuer schedules; holidays may differ. Past estimates remain visible as unconfirmed until newer payment data arrives. Payments without a known pay date are omitted.</p>
             <div className="calendar-nav">
               <button
                 type="button"

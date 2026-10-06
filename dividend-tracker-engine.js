@@ -750,7 +750,9 @@
                 html += '<div class="cal-events">';
                 var total = 0;
                 dayEvents.forEach(function (ev) {
-                    html += '<span class="cal-event ' + escapeHtml(ev.type) + '" title="' + escapeHtml(ev.ticker) + ': ' + fmtUSD(ev.amount) + ' (' + escapeHtml(ev.type) + ')">' + escapeHtml(ev.ticker) + (ev.type === 'est' ? ' (est.)' : '') + '</span>';
+                    var status = ev.unconfirmed ? ' (est.; unconfirmed)' : (ev.type === 'est' ? ' (est.)' : '');
+                    var description = ev.unconfirmed ? 'Estimated date has passed; awaiting published payment data. This does not confirm cash received.' : ev.type;
+                    html += '<span class="cal-event ' + escapeHtml(ev.type) + '" title="' + escapeHtml(ev.ticker) + ': ' + fmtUSD(ev.amount) + ' (' + escapeHtml(description) + ')">' + escapeHtml(ev.ticker) + status + '</span>';
                     total += ev.amount;
                 });
                 html += '</div>';
@@ -766,13 +768,14 @@
 
     function buildCalendarEvents(year, month) {
         var events = {};
+        var today = new Date(); today.setHours(0, 0, 0, 0);
         function add(date, ticker, amount, type) {
             var d = new Date(date + "T00:00:00");
             if (d.getFullYear() !== year || d.getMonth() !== month) return;
             if (!events[date]) events[date] = [];
             var prior = events[date].find(function (e) { return e.ticker === ticker && e.type === type; });
             if (prior) prior.amount += amount;
-            else events[date].push({ ticker: ticker, amount: amount, type: type });
+            else events[date].push({ ticker: ticker, amount: amount, type: type, unconfirmed: type === "est" && d < today });
         }
         getHoldings().forEach(function (h) {
             var div = getDividendInfo(h.ticker);
@@ -795,7 +798,6 @@
             // Without a known payment date there is no defensible calendar anchor.
             if (!rate || !count || !payments.length) return;
             var anchor = new Date(payments[payments.length - 1].pay_date + "T00:00:00");
-            var today = new Date(); today.setHours(0, 0, 0, 0);
             for (var i = 1; i <= count * 2; i++) {
                 var d;
                 if (freq === "weekly") d = new Date(anchor.getFullYear(), anchor.getMonth(), anchor.getDate() + i * 7);
@@ -806,7 +808,9 @@
                 // Estimates have no exchange holiday calendar; move weekends to Monday.
                 if (d.getDay() === 6) d.setDate(d.getDate() + 2);
                 if (d.getDay() === 0) d.setDate(d.getDate() + 1);
-                if (d < today) continue;
+                // A guessed date passing is not evidence of a skipped payment.
+                // Retain it as unconfirmed until newer published payment data
+                // replaces the anchor, which also removes the superseded guess.
                 var date = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
                 add(date, h.ticker, h.shares * rate / count, "est");
             }

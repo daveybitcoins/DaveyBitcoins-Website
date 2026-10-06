@@ -1,8 +1,9 @@
 const {test}=require('node:test'); const assert=require('node:assert/strict');const fs=require('fs'),vm=require('vm');
-function harness(data,holdings){
- const elements={};let source=fs.readFileSync('js/dividends.js','utf8');
- source=source.replace('    // === BOOT ===', `renderAll = function () {}; fetchLivePrices = async function () {}; fetchDividendHistory = async function () {}; globalThis.model={rate:getAnnualDividendRate,calendar:buildCalendarEvents,summary:renderSummaryCards,apply:applyDividendHistory,holdings:()=>getHoldings(),add:addHolding,set:(d,h)=>{dividendData=d;portfolios=[{holdings:h}];}};\n    // === BOOT ===`);
- const ctx={location:{hostname:'localhost'},setInterval:()=>{},document:{addEventListener:()=>{},getElementById:id=>elements[id] ||= {value:'',focus:()=>{}}},localStorage:{setItem:()=>{},getItem:()=>null},fetch:async()=>({ok:true,json:async()=>({payments:[]})}),console};vm.createContext(ctx);vm.runInContext(source,ctx);ctx.model.set(data,holdings);return {...ctx.model,elements};
+function harness(data,holdings,options={}){
+ const elements={};let source=fs.readFileSync(options.script || 'js/dividends.js','utf8');
+ source=source.replace('    // === BOOT ===', `renderAll = function () {}; fetchLivePrices = async function () {}; fetchDividendHistory = async function () {}; globalThis.model={rate:getAnnualDividendRate,calendar:buildCalendarEvents,renderCalendar:(y,m)=>{calYear=y;calMonth=m;renderCalendar();},summary:renderSummaryCards,apply:applyDividendHistory,holdings:()=>getHoldings(),add:addHolding,set:(d,h)=>{dividendData=d;portfolios=[{holdings:h}];}};\n    // === BOOT ===`);
+ const Clock=options.today ? class extends Date {constructor(...args){super(...(args.length ? args : [options.today]));} static now(){return new Date(options.today).getTime();}} : Date;
+ const ctx={Date:Clock,location:{hostname:'localhost'},setInterval:()=>{},document:{readyState:'loading',addEventListener:()=>{},getElementById:id=>elements[id] ||= {value:'',focus:()=>{}}},localStorage:{setItem:()=>{},getItem:()=>null},fetch:async()=>({ok:true,json:async()=>({payments:[]})}),console};vm.createContext(ctx);vm.runInContext(source,ctx);ctx.model.set(data,holdings);return {...ctx.model,elements};
 }
 test('all seven verified closed funds retain cash history but have zero recurring income',()=>{
  const d=JSON.parse(fs.readFileSync('data/dividend_data.json'));const m=harness(d,[]);
@@ -39,4 +40,45 @@ test('older cache and date-only fallback cannot erase published pay dates; curre
  m.apply({A:{ts:1,source:'massive',payments:correction}});assert.equal(d.tickers.A.last_payments[0].amount,.5);
  m.apply({A:{ts:Date.parse('2026-09-09'),source:'yahoo',payments:correction}});assert.equal(d.tickers.A.last_payments[0].amount,.5);
  m.apply({A:{ts:Date.parse('2026-09-09'),source:'massive',payments:correction}});assert.equal(d.tickers.A.last_payments[0].amount,.6);
+});
+
+for (const script of ['js/dividends.js', 'dividend-tracker-engine.js', 'next-site/public/dividend-tracker-engine.js']) {
+ test(`${script}: XBCI October estimate survives its projected date and month rollover`, () => {
+  const data = {tickers: {XBCI: {frequency: 'monthly', annualization_method: 'latest_payment', last_payments: [
+   {ex_date: '2026-09-02', pay_date: '2026-09-04', amount: 1.2488}
+  ]}}};
+  for (const today of ['2026-10-04T12:00:00', '2026-10-06T12:00:00', '2026-11-01T12:00:00']) {
+   const m = harness(data, [{ticker: 'XBCI', shares: 2000}], {today, script});
+   const events = m.calendar(2026, 9);
+   assert.deepEqual(Object.keys(events), ['2026-10-05']);
+   assert.equal(events['2026-10-05'][0].amount, 2497.6);
+   assert.equal(events['2026-10-05'][0].type, 'est');
+   assert.equal(events['2026-10-05'][0].unconfirmed, today > '2026-10-05');
+   m.renderCalendar(2026, 9);
+   assert.match(m.elements['dividend-calendar'].innerHTML, today > '2026-10-05' ? /XBCI \(est.; unconfirmed\)/ : /XBCI \(est.\)/);
+  }
+ });
+ test(`${script}: published October date replaces the guess without doubling income`, () => {
+  const data = {tickers: {XBCI: {frequency: 'monthly', dividend_rate: 14.9856, last_payments: [
+   {ex_date: '2026-09-02', pay_date: '2026-09-04', amount: 1.2488},
+   {ex_date: '2026-10-07', pay_date: '2026-10-09', amount: null}
+  ]}}};
+  const m = harness(data, [{ticker: 'XBCI', shares: 2000}], {today: '2026-10-06T12:00:00', script});
+  let events = m.calendar(2026, 9);
+  assert.deepEqual(Object.keys(events), ['2026-10-09']);
+  assert.equal(events['2026-10-09'][0].type, 'est');
+  assert.equal(events['2026-10-09'][0].amount, 2497.6);
+  data.tickers.XBCI.last_payments[1].amount = 1.3;
+  events = m.calendar(2026, 9);
+  assert.deepEqual(Object.keys(events), ['2026-10-09']);
+  assert.equal(events['2026-10-09'][0].type, 'pay');
+  assert.equal(events['2026-10-09'][0].amount, 2600);
+  assert.equal(events['2026-10-09'][0].unconfirmed, false);
+ });
+}
+test('weekly and quarterly estimates also remain visible after their projected dates', () => {
+ for (const [frequency, payDate, projected] of [['weekly', '2026-09-25', '2026-10-02'], ['quarterly', '2026-07-02', '2026-10-02']]) {
+  const m = harness({tickers: {A: {frequency, dividend_rate: 12, last_payments: [{ex_date: payDate, pay_date: payDate, amount: 1}]}}}, [{ticker: 'A', shares: 1}], {today: '2026-10-06T12:00:00'});
+  assert.equal(m.calendar(2026, 9)[projected][0].unconfirmed, true);
+ }
 });
