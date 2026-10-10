@@ -2,12 +2,12 @@
   "source": "Yahoo Finance via yfinance, auto_adjust=False",
   "source_url": "https://finance.yahoo.com/quote/SPY/history/",
   "first_date": "1993-01-29",
-  "last_date": "2026-10-08",
-  "rows": 8481,
+  "last_date": "2026-10-09",
+  "rows": 8482,
   "price_basis": "Close: split-adjusted, not dividend-adjusted",
   "total_return_index": "Adj Close / first Adj Close * 100; distributions reinvested, before taxes and trading costs",
   "completion_policy": "Include sessions through the latest completed NYSE close, including early closes; live quotes never enter history",
   "risk_policy": "Prior calendar week only; first 200 weeks warm up, trailing percentile uses up to 20 years",
   "legacy_proxy": "spy_legacy_proxy.csv: archived scaled SPX before SPY inception, inherited adjustment basis unverified; excluded from all models and simulations",
-  "sha256": "ca2ac0a583a1fdbf1f37482631d3a6a24fa8f9202ee83ea9eaecc0e00d591ab2"
+  "sha256": "a01ab945c69f6d5cb036e0f8223d9cb650827937b31714d5f354cede03a2f19f"
 }
