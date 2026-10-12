@@ -1,8 +1,8 @@
 {
   "meta": {
-    "date": "2026-10-11",
+    "date": "2026-10-12",
     "total_stocks": 300,
-    "generated_at": "2026-10-11T19:19:55.326307",
+    "generated_at": "2026-10-12T00:11:10.689215",
     "index_etfs": [
       "SPY",
       "QQQ",
@@ -57,25 +57,25 @@
     {
       "symbol": "BTC",
       "name": "Bitcoin",
-      "price": 83639.0,
-      "ema8": 79826.63,
-      "ema13": 77074.41,
-      "ema21": 75413.61,
+      "price": 83659.0,
+      "ema8": 80553.63,
+      "ema13": 77926.77,
+      "ema21": 76103.59,
       "signal": "Full Bull",
-      "price_vs_8w": 4.78,
-      "price_vs_13w": 8.52,
-      "price_vs_21w": 10.91,
-      "ema8_vs_13": 3.57,
-      "ema13_vs_21": 2.2,
+      "price_vs_8w": 3.86,
+      "price_vs_13w": 7.36,
+      "price_vs_21w": 9.93,
+      "ema8_vs_13": 3.37,
+      "ema13_vs_21": 2.4,
       "spread_score": 5.77,
-      "chg_1d": 1.3,
-      "chg_1w": -1.3,
-      "chg_1m": 9.25,
+      "chg_1d": 0.89,
+      "chg_1w": -3.27,
+      "chg_1m": 8.36,
       "crossover_alert": null,
-      "risk_combo": 0.259,
-      "risk_mm": 0.24,
-      "risk_zs": 0.28,
-      "fair_value": 146983.49,
+      "risk_combo": 0.258,
+      "risk_mm": 0.239,
+      "risk_zs": 0.279,
+      "fair_value": 147076.48,
       "dev_pct": -43.1,
       "zone": "Neutral",
       "zone_color": "#10b981"
@@ -2180,7 +2180,7 @@
       "pe_ttm": 20.3,
       "fwd_pe": 12.7,
       "peg": 0.37,
-      "next_fy_eps": 16.7371,
+      "next_fy_eps": 16.7287,
       "eps_growth_yoy_ttm": 34.6266,
       "sma5": 208.5460000000001,
       "sma20": 207.78650000000016,
@@ -12842,7 +12842,7 @@
       "pe_ttm": 20.3,
       "fwd_pe": 12.7,
       "peg": 0.37,
-      "next_fy_eps": 16.7371,
+      "next_fy_eps": 16.7287,
       "eps_growth_yoy_ttm": 34.6266,
       "sma5": 208.5460000000001,
       "sma20": 207.78650000000016,
@@ -18740,7 +18740,7 @@
       "pe_ttm": 20.3,
       "fwd_pe": 12.7,
       "peg": 0.37,
-      "next_fy_eps": 16.7371,
+      "next_fy_eps": 16.7287,
       "eps_growth_yoy_ttm": 34.6266,
       "sma5": 208.5460000000001,
       "sma20": 207.78650000000016,
@@ -22063,7 +22063,7 @@
       "pe_ttm": 20.3,
       "fwd_pe": 12.7,
       "peg": 0.37,
-      "next_fy_eps": 16.7371,
+      "next_fy_eps": 16.7287,
       "eps_growth_yoy_ttm": 34.6266,
       "sma5": 208.5460000000001,
       "sma20": 207.78650000000016,
@@ -29836,19 +29836,19 @@
           "zone": "Extreme Overbought",
           "hist_min": 17.0,
           "hist_max": 84.0,
-          "hist_avg": 52.5,
+          "hist_avg": 52.6,
           "hist_median": 52.7,
           "p10": 36.7,
           "p20": 41.3,
           "p80": 64.0,
-          "p90": 68.7,
-          "data_points": 135
+          "p90": 70.3,
+          "data_points": 136
         },
         {
           "field": "above_20d",
           "label": "% > 20D MA",
           "current": 60.3,
-          "percentile": 72.6,
+          "percentile": 72.8,
           "zone": "Neutral",
           "hist_min": 17.3,
           "hist_max": 75.7,
@@ -29858,13 +29858,13 @@
           "p20": 39.7,
           "p80": 62.7,
           "p90": 68.0,
-          "data_points": 135
+          "data_points": 136
         },
         {
           "field": "above_50d",
           "label": "% > 50D MA",
           "current": 45.3,
-          "percentile": 24.4,
+          "percentile": 25.0,
           "zone": "Neutral",
           "hist_min": 24.0,
           "hist_max": 74.7,
@@ -29874,30 +29874,30 @@
           "p20": 39.0,
           "p80": 63.3,
           "p90": 65.3,
-          "data_points": 135
+          "data_points": 136
         },
         {
           "field": "above_200d",
           "label": "% > 200D MA",
           "current": 60.0,
-          "percentile": 19.3,
+          "percentile": 19.9,
           "zone": "Oversold",
           "hist_min": 50.7,
           "hist_max": 81.7,
           "hist_avg": 67.0,
-          "hist_median": 66.3,
+          "hist_median": 66.2,
           "p10": 56.4,
-          "p20": 60.9,
-          "p80": 74.0,
+          "p20": 60.3,
+          "p80": 73.9,
           "p90": 78.0,
-          "data_points": 135
+          "data_points": 136
         }
       ],
-      "composite_score": 52.2,
+      "composite_score": 52.6,
       "composite_zone": "Neutral",
-      "history_days": 135,
+      "history_days": 136,
       "history_start": "2026-03-20",
-      "history_end": "2026-10-09",
+      "history_end": "2026-10-12",
       "horizon_basis": "NYSE sessions; missing target observations excluded; overlapping observations are not independent",
       "forward_returns": [
         {
@@ -29910,10 +29910,10 @@
           "horizons": [
             {
               "days": 5,
-              "occurrences": 8,
-              "avg_change": -15.1,
-              "median_change": -15.0,
-              "pct_revert": 88.0
+              "occurrences": 9,
+              "avg_change": -13.4,
+              "median_change": -10.3,
+              "pct_revert": 78.0
             },
             {
               "days": 10,
@@ -29948,17 +29948,17 @@
           "horizons": [
             {
               "days": 5,
-              "occurrences": 21,
-              "avg_change": 1.3,
-              "median_change": 0.4,
-              "pct_revert": 62.0
+              "occurrences": 22,
+              "avg_change": 1.5,
+              "median_change": 1.2,
+              "pct_revert": 64.0
             },
             {
               "days": 10,
-              "occurrences": 15,
-              "avg_change": 3.8,
-              "median_change": 4.0,
-              "pct_revert": 80.0
+              "occurrences": 16,
+              "avg_change": 3.7,
+              "median_change": 3.8,
+              "pct_revert": 81.0
             },
             {
               "days": 20,
@@ -29980,12 +29980,12 @@
     },
     "guidance": {
       "condition": "caution",
-      "consecutive_sessions": 0,
+      "consecutive_sessions": 24,
       "change_5_sessions": {
-        "above_50d": null,
-        "above_200d": null
+        "above_50d": 7.6,
+        "above_200d": 7.2
       },
-      "as_of": "2026-10-11"
+      "as_of": "2026-10-12"
     }
   },
   "vix_context": {
