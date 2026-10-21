@@ -9,5 +9,5 @@
   "completion_policy": "Include sessions through the latest completed NYSE close, including early closes; live quotes never enter history",
   "risk_policy": "Prior calendar week only; first 200 weeks warm up, trailing percentile uses up to 20 years",
   "legacy_proxy": "spy_legacy_proxy.csv: archived scaled SPX before SPY inception, inherited adjustment basis unverified; excluded from all models and simulations",
-  "sha256": "d3a35eb37d5c2e6a65dc9bd47a2a0c7b94d5abdee43eac690fde1dd83a69f339"
+  "sha256": "f38794779b14e9400cd6599be11f9044da43a40aa1175d2b910a04021244b201"
 }
