@@ -24,9 +24,16 @@ jobs:
           echo "Last date in CSV: $LAST_DATE"
 
           # Fetch recent daily data from CoinGecko (free, no key needed)
-          JSON=$(curl -sf "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=7&interval=daily")
+          # Guard curl explicitly: GitHub's bash -e would otherwise exit before
+          # the fallback. Final validation still rejects stale/invalid CSVs.
+          if ! JSON=$(curl --fail --silent --show-error --retry 3 --retry-delay 10 \
+            --retry-max-time 120 --connect-timeout 10 --max-time 30 \
+            "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=7&interval=daily"); then
+            echo "::warning::CoinGecko history unavailable after retries; retaining existing BTC history and trying the live quote later"
+            exit 0
+          fi
           if [ -z "$JSON" ]; then
-            echo "API call failed, skipping"
+            echo "::warning::CoinGecko returned empty history; retaining existing BTC history"
             exit 0
           fi
 

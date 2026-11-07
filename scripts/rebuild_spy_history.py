@@ -7,12 +7,23 @@ import csv
 import hashlib
 import json
 import math
-from datetime import datetime
+import time
+from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 import exchange_calendars as xcals
 
+if __package__:
+    from . import validate_data
+else:
+    import validate_data
+
 ROOT = Path(__file__).resolve().parents[1]
+
+
+class InvalidHistoryError(RuntimeError):
+    """A provider response is unsafe to publish."""
+
 
 def latest_completed_session(now):
     """Use the exchange close, including holidays, early closes and DST."""
@@ -29,19 +40,31 @@ def latest_completed_session(now):
 
 def write_history(frame, now=None):
     cutoff = latest_completed_session(now or datetime.now(ZoneInfo('America/New_York')))
+    if frame.empty or 'Close' not in frame or 'Adj Close' not in frame:
+        raise InvalidHistoryError('Incomplete SPY download; existing data preserved')
+    if not frame.index.is_monotonic_increasing or not frame.index.is_unique:
+        raise InvalidHistoryError('Unordered or duplicate SPY dates; existing data preserved')
     close, adjusted = frame['Close'], frame['Adj Close']
     if hasattr(close, 'columns'):
         close, adjusted = close.iloc[:, 0], adjusted.iloc[:, 0]
     rows = [(d.date().isoformat(), float(close.loc[d]), float(adjusted.loc[d]))
             for d in frame.index if d.date() <= cutoff]
     if len(rows) < 8000 or rows[0][0] != '1993-01-29':
-        raise RuntimeError('Incomplete SPY download; existing data preserved')
+        raise InvalidHistoryError('Incomplete SPY download; existing data preserved')
     if any(not (math.isfinite(p) and math.isfinite(a) and p > 0 and a > 0) for _, p, a in rows):
-        raise RuntimeError('Invalid SPY price; existing data preserved')
+        raise InvalidHistoryError('Invalid SPY price; existing data preserved')
+    try:
+        validate_data.require_fresh_date(
+            rows[-1][0], 'SPY download latest date',
+            validate_data.PRICE_MAX_AGE_DAYS['data_spy.csv'],
+            (now or datetime.now(timezone.utc)).astimezone(timezone.utc).date())
+    except ValueError as exc:
+        raise InvalidHistoryError(str(exc)) from exc
     path = ROOT / 'data_spy.csv'
     proxy = ROOT / 'data/spy_legacy_proxy.csv'
     if not proxy.exists() and path.exists():
-        legacy = list(csv.DictReader(path.open()))
+        with path.open() as f:
+            legacy = list(csv.DictReader(f))
         with proxy.open('w') as f:
             f.write('date,legacy_scaled_price\n')
             for r in legacy:
@@ -65,11 +88,44 @@ def write_history(frame, now=None):
     (ROOT / 'data/spy_history_metadata.json').write_text(json.dumps(metadata, indent=2) + '\n')
     return metadata
 
+
+def refresh_history(download, now=None):
+    """Retry provider failures, then allow only a valid, fresh cached history."""
+    now = now or datetime.now(ZoneInfo('America/New_York'))
+    for attempt, delay in enumerate((0, 10, 30), start=1):
+        if delay:
+            time.sleep(delay)
+        try:
+            frame = download('SPY', period='max', interval='1d',
+                             auto_adjust=False, progress=False, timeout=30)
+        except Exception as exc:
+            # yfinance can either raise or return an empty frame on throttling.
+            error = f'{type(exc).__name__}: {exc}'
+        else:
+            try:
+                return write_history(frame, now=now)
+            except InvalidHistoryError as exc:
+                error = str(exc)
+        print(f'::warning::SPY download attempt {attempt}/3 failed: {error}')
+
+    # Do not suppress filesystem/programming errors or publish stale data.
+    # The workflow also validates every price CSV before committing.
+    validate_data.validate_price_csv(
+        'data_spy.csv', 8000, validate_data.PRICE_MAX_AGE_DAYS['data_spy.csv'],
+        today=now.astimezone(timezone.utc).date())
+    content = (ROOT / 'data_spy.csv').read_bytes()
+    metadata = json.loads((ROOT / 'data/spy_history_metadata.json').read_text())
+    if hashlib.sha256(content).hexdigest() != metadata.get('sha256'):
+        raise RuntimeError('Cached SPY history does not match its metadata')
+    print(f"::warning::Retaining validated SPY history through {metadata['last_date']}; provider unavailable")
+    return metadata
+
+
 if __name__ == '__main__':
     import yfinance as yf
 
     # Capture the cutoff before downloading so a request crossing the close
     # cannot admit a bar that was fetched while the session was still open.
     now = datetime.now(ZoneInfo('America/New_York'))
-    result = write_history(yf.download('SPY', period='max', interval='1d', auto_adjust=False, progress=False), now=now)
+    result = refresh_history(yf.download, now=now)
     print(json.dumps(result, indent=2))
