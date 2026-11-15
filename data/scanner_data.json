@@ -1,8 +1,8 @@
 {
   "meta": {
-    "date": "2026-11-14",
+    "date": "2026-11-15",
     "total_stocks": 300,
-    "generated_at": "2026-11-14T19:41:50.929152",
+    "generated_at": "2026-11-15T00:42:07.185173",
     "index_etfs": [
       "SPY",
       "QQQ",
@@ -57,26 +57,26 @@
     {
       "symbol": "BTC",
       "name": "Bitcoin",
-      "price": 65588.0,
-      "ema8": 75832.09,
-      "ema13": 75939.15,
-      "ema21": 75405.3,
+      "price": 63672.0,
+      "ema8": 75406.31,
+      "ema13": 75665.43,
+      "ema21": 75231.12,
       "signal": "Bearish (unstacked)",
-      "price_vs_8w": -13.51,
-      "price_vs_13w": -13.63,
-      "price_vs_21w": -13.02,
-      "ema8_vs_13": -0.14,
-      "ema13_vs_21": 0.71,
-      "spread_score": 0.57,
-      "chg_1d": -8.1,
-      "chg_1w": -13.44,
-      "chg_1m": -19.63,
-      "crossover_alert": "8W just below 13W (0.14%) \u2014 bullish cross potential; 13W just above 21W (0.71%) \u2014 bearish cross risk",
-      "risk_combo": 0.091,
-      "risk_mm": 0.106,
-      "risk_zs": 0.079,
-      "fair_value": 150032.0,
-      "dev_pct": -56.3,
+      "price_vs_8w": -15.56,
+      "price_vs_13w": -15.85,
+      "price_vs_21w": -15.36,
+      "ema8_vs_13": -0.34,
+      "ema13_vs_21": 0.58,
+      "spread_score": 0.24,
+      "chg_1d": -6.79,
+      "chg_1w": -15.97,
+      "chg_1m": -22.5,
+      "crossover_alert": "8W just below 13W (0.34%) \u2014 bullish cross potential; 13W just above 21W (0.58%) \u2014 bearish cross risk",
+      "risk_combo": 0.077,
+      "risk_mm": 0.091,
+      "risk_zs": 0.066,
+      "fair_value": 150110.78,
+      "dev_pct": -57.6,
       "zone": "Accumulate",
       "zone_color": "#2563eb"
     }
@@ -31209,7 +31209,7 @@
         "above_50d": null,
         "above_200d": null
       },
-      "as_of": "2026-11-14"
+      "as_of": "2026-11-15"
     }
   },
   "vix_context": {
