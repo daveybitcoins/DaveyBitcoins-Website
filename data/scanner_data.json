@@ -1,8 +1,8 @@
 {
   "meta": {
-    "date": "2026-11-15",
+    "date": "2026-11-16",
     "total_stocks": 300,
-    "generated_at": "2026-11-15T20:08:08.324734",
+    "generated_at": "2026-11-16T00:42:22.425893",
     "index_etfs": [
       "SPY",
       "QQQ",
@@ -57,25 +57,25 @@
     {
       "symbol": "BTC",
       "name": "Bitcoin",
-      "price": 64794.0,
-      "ema8": 75655.64,
-      "ema13": 75825.72,
-      "ema21": 75333.12,
-      "signal": "Bearish (unstacked)",
-      "price_vs_8w": -14.36,
-      "price_vs_13w": -14.55,
-      "price_vs_21w": -13.99,
-      "ema8_vs_13": -0.22,
-      "ema13_vs_21": 0.65,
-      "spread_score": 0.43,
-      "chg_1d": -5.15,
-      "chg_1w": -14.49,
-      "chg_1m": -21.13,
-      "crossover_alert": "8W just below 13W (0.22%) \u2014 bullish cross potential; 13W just above 21W (0.65%) \u2014 bearish cross risk",
+      "price": 64857.0,
+      "ema8": 73139.49,
+      "ema13": 74176.26,
+      "ema21": 74325.06,
+      "signal": "Full Bear",
+      "price_vs_8w": -11.32,
+      "price_vs_13w": -12.56,
+      "price_vs_21w": -12.74,
+      "ema8_vs_13": -1.4,
+      "ema13_vs_21": -0.2,
+      "spread_score": -1.6,
+      "chg_1d": 1.15,
+      "chg_1w": -13.22,
+      "chg_1m": -20.44,
+      "crossover_alert": "13W just below 21W (0.20%) \u2014 bullish cross potential",
       "risk_combo": 0.085,
       "risk_mm": 0.1,
       "risk_zs": 0.073,
-      "fair_value": 150111.89,
+      "fair_value": 150188.58,
       "dev_pct": -56.8,
       "zone": "Accumulate",
       "zone_color": "#2563eb"
@@ -31094,33 +31094,33 @@
           "field": "above_5d",
           "label": "% > 5D MA",
           "current": 50.3,
-          "percentile": 39.0,
+          "percentile": 39.4,
           "zone": "Neutral",
           "hist_min": 17.0,
           "hist_max": 84.0,
           "hist_avg": 53.5,
           "hist_median": 53.0,
-          "p10": 37.0,
-          "p20": 43.0,
+          "p10": 37.3,
+          "p20": 43.7,
           "p80": 65.0,
           "p90": 70.0,
-          "data_points": 159
+          "data_points": 160
         },
         {
           "field": "above_20d",
           "label": "% > 20D MA",
           "current": 64.7,
-          "percentile": 77.4,
+          "percentile": 77.5,
           "zone": "Neutral",
           "hist_min": 17.3,
           "hist_max": 75.7,
-          "hist_avg": 54.0,
+          "hist_avg": 54.1,
           "hist_median": 57.0,
-          "p10": 32.7,
-          "p20": 44.7,
+          "p10": 33.0,
+          "p20": 45.0,
           "p80": 65.7,
           "p90": 68.3,
-          "data_points": 159
+          "data_points": 160
         },
         {
           "field": "above_50d",
@@ -31130,36 +31130,36 @@
           "zone": "Extreme Overbought",
           "hist_min": 24.0,
           "hist_max": 74.7,
-          "hist_avg": 54.6,
+          "hist_avg": 54.7,
           "hist_median": 58.7,
           "p10": 33.7,
-          "p20": 41.7,
+          "p20": 42.3,
           "p80": 63.7,
-          "p90": 66.3,
-          "data_points": 159
+          "p90": 66.7,
+          "data_points": 160
         },
         {
           "field": "above_200d",
           "label": "% > 200D MA",
           "current": 68.5,
-          "percentile": 64.8,
+          "percentile": 65.0,
           "zone": "Neutral",
           "hist_min": 50.7,
           "hist_max": 81.7,
           "hist_avg": 66.5,
           "hist_median": 65.8,
-          "p10": 57.0,
-          "p20": 60.0,
+          "p10": 57.2,
+          "p20": 60.1,
           "p80": 72.9,
           "p90": 77.6,
-          "data_points": 159
+          "data_points": 160
         }
       ],
-      "composite_score": 69.4,
+      "composite_score": 69.5,
       "composite_zone": "Healthy",
-      "history_days": 159,
+      "history_days": 160,
       "history_start": "2026-03-20",
-      "history_end": "2026-11-13",
+      "history_end": "2026-11-16",
       "horizon_basis": "NYSE sessions; missing target observations excluded; overlapping observations are not independent",
       "forward_returns": [
         {
@@ -31204,12 +31204,12 @@
     },
     "guidance": {
       "condition": "broad",
-      "consecutive_sessions": 0,
+      "consecutive_sessions": 14,
       "change_5_sessions": {
-        "above_50d": null,
-        "above_200d": null
+        "above_50d": 3.0,
+        "above_200d": 2.4
       },
-      "as_of": "2026-11-15"
+      "as_of": "2026-11-16"
     }
   },
   "vix_context": {
