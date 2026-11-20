@@ -557,7 +557,7 @@ export default function BitcoinRiskMetricPage() {
 
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20261119-select-zoom" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20261120-low-risk-glow" strategy="afterInteractive" />
     </main>
   );
 }
