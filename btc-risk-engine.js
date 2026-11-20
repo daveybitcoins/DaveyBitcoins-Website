@@ -1033,14 +1033,34 @@ async function main() {
     });
   }
 
-  // These charts intentionally stay on the complete historical view so the
-  // log-price scale and the risk timeline always share one stable context.
-  function getVisibleRange() {
-    return { s: 0, e: n - 1 };
+  let priceRange = { s: 0, e: n - 1 };
+  function getVisibleRange(canvasId) {
+    return canvasId === 'priceCanvas' ? priceRange : { s: 0, e: n - 1 };
   }
 
-  function visibleSample() {
-    const { s, e } = getVisibleRange();
+  function updatePriceZoom(action) {
+    let { s, e } = priceRange;
+    const span = e - s;
+    const minimum = Math.min(30, n - 1);
+    if (action === 'reset') { s = 0; e = n - 1; }
+    else if (action === 'earlier' || action === 'later') {
+      const shift = Math.round(span / 2) * (action === 'earlier' ? -1 : 1);
+      s = Math.max(0, Math.min(n - 1 - span, s + shift));
+      e = s + span;
+    } else {
+      const nextSpan = Math.max(minimum, Math.min(n - 1,
+        Math.round(span * (action === 'in' ? 0.5 : 2))));
+      s = Math.max(0, Math.min(n - 1 - nextSpan, Math.round((s + e - nextSpan) / 2)));
+      e = s + nextSpan;
+    }
+    priceRange = { s, e };
+    document.getElementById('priceTip').style.display = 'none';
+    renderPriceChart();
+  }
+
+
+  function visibleSample(canvasId) {
+    const { s, e } = getVisibleRange(canvasId);
     const visible = e - s;
     return Math.max(1, Math.floor(visible / 1500));
   }
@@ -1052,8 +1072,21 @@ async function main() {
     const W=cv.width, H=cv.height;
     const P={t:24,r:60,b:48,l:80};
     const cw=W-P.l-P.r, ch=H-P.t-P.b;
-    const { s, e } = getVisibleRange();
-    const S = visibleSample();
+    const { s, e } = getVisibleRange('priceCanvas');
+    const S = visibleSample('priceCanvas');
+    const rangeLabel = document.getElementById('priceZoomRange');
+    if (rangeLabel) rangeLabel.textContent = s === 0 && e === n - 1
+      ? 'Full history + projection through 2040'
+      : pts[s].date + ' – ' + pts[e].date;
+    cv.dataset.visibleStart = pts[s].date;
+    cv.dataset.visibleEnd = pts[e].date;
+    document.querySelectorAll('[data-price-zoom]').forEach(button => {
+      const action = button.dataset.priceZoom;
+      button.disabled = action === 'in' ? e - s <= Math.min(30, n - 1)
+        : action === 'earlier' ? s === 0
+        : action === 'later' ? e === n - 1
+        : s === 0 && e === n - 1;
+    });
     const fullProjectionView = s === 0 && e === n - 1;
     const chartStartMs = dateMs(pts[s].date);
     const chartEndMs = fullProjectionView ? FAIR_VALUE_PROJECTION_END_MS : dateMs(pts[e].date);
@@ -1295,7 +1328,7 @@ async function main() {
     const P = { l:80, r: canvasId === 'priceCanvas' ? 60 : 76 };
     const cw = W - P.l - P.r;
     function fullPriceProjectionView() {
-      const { s, e } = getVisibleRange();
+      const { s, e } = getVisibleRange(canvasId);
       return canvasId === 'priceCanvas' && s === 0 && e === n - 1;
     }
     function historicalIndexForMs(ms) {
@@ -1314,7 +1347,7 @@ async function main() {
         const ms=dateMs(pts[0].date)+ratio*(FAIR_VALUE_PROJECTION_END_MS-dateMs(pts[0].date));
         return historicalIndexForMs(ms);
       }
-      const { s, e: end } = getVisibleRange();
+      const { s, e: end } = getVisibleRange(canvasId);
       return Math.round(s + (canvasX - P.l) / cw * (end - s));
     }
 
@@ -1402,6 +1435,9 @@ async function main() {
   }
 
   // ====== INIT ======
+  document.querySelectorAll('[data-price-zoom]').forEach(button => {
+    button.addEventListener('click', () => updatePriceZoom(button.dataset.priceZoom));
+  });
   document.querySelectorAll('[data-fair-value-scenario]').forEach(function(button) {
     button.addEventListener('click', function() {
       setFairValueScenario(button.dataset.fairValueScenario);

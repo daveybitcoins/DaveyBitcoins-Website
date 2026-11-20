@@ -222,6 +222,14 @@ export default function BitcoinRiskMetricPage() {
               value through 2040
             </div>
           </div>
+          <div className="price-zoom-controls" role="group" aria-label="Price chart zoom" style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", marginBottom: 12 }}>
+      <button type="button" className="zoom-btn" data-price-zoom="in">Zoom in</button>
+      <button type="button" className="zoom-btn" data-price-zoom="out">Zoom out</button>
+      <button type="button" className="zoom-btn" data-price-zoom="earlier">Earlier</button>
+      <button type="button" className="zoom-btn" data-price-zoom="later">Later</button>
+      <button type="button" className="zoom-btn" data-price-zoom="reset">Reset zoom</button>
+      <span id="priceZoomRange" className="chart-note" aria-live="polite"></span>
+    </div>
           <canvas aria-label="Price history colored by risk" role="img" id="priceCanvas" width="1380" height="540" />
           <Tooltip id="priceTip" valueLabel="Risk" />
           <div className="legend-bar" id="legendBar" />
@@ -552,7 +560,7 @@ export default function BitcoinRiskMetricPage() {
 
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20260925-proportional-zones" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20261118-price-zoom" strategy="afterInteractive" />
     </main>
   );
 }

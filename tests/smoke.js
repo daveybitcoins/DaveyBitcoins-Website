@@ -297,9 +297,19 @@ const checks = [
       if (minorTickMultipliers !== '2,3,4,5,6,7,8,9' || minorTickCount < 8) {
         throw new Error(`expected logarithmic minor ticks for each decade, got ${minorTickMultipliers} (${minorTickCount})`);
       }
-      const zoomControls = await page.locator('.zoom-btn, .brush-overlay').count();
-      if (zoomControls !== 0) {
-        throw new Error(`expected fixed BTC chart views without zoom controls, found ${zoomControls}`);
+      const zoomControls = page.locator('[data-price-zoom]');
+      if (await zoomControls.count() !== 5) throw new Error('Missing BTC zoom controls');
+      const fullStart = await page.locator('#priceCanvas').getAttribute('data-visible-start');
+      await page.locator('[data-price-zoom="in"]').click();
+      const zoomStart = await page.locator('#priceCanvas').getAttribute('data-visible-start');
+      if (zoomStart === fullStart) throw new Error('Zoom in did not narrow the price range');
+      await page.locator('[data-price-zoom="later"]').click();
+      if (await page.locator('#priceCanvas').getAttribute('data-visible-start') <= zoomStart) {
+        throw new Error('Later did not pan the price chart');
+      }
+      await page.locator('[data-price-zoom="reset"]').click();
+      if (await page.locator('#priceCanvas').getAttribute('data-visible-start') !== fullStart) {
+        throw new Error('Reset did not restore full history');
       }
       await page.locator('#priceCanvas').dispatchEvent('wheel', { deltaY: -120 });
       await page.waitForTimeout(50);
