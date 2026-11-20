@@ -113,6 +113,12 @@
   .zone-labels span{font-size:0.5rem;color:var(--text-dimmer)}
   :root{--hodl-color:#d4b94f}
   [data-theme="light"]{--hodl-color:#806900}
+  .risk-card.is-low-risk {
+    border-color: var(--risk-zone-color);
+    box-shadow: 0 0 0 1px var(--risk-zone-color),
+      0 0 20px color-mix(in srgb, var(--risk-zone-color) 40%, transparent),
+      0 0 40px color-mix(in srgb, var(--risk-zone-color) 20%, transparent);
+  }
   .risk-card .risk-bar-bg{background:linear-gradient(90deg,#1689ff 0 20%,#77c46d 20% 40%,var(--hodl-color) 40% 50%,#f68f1d 50% 60%,#eb713a 60% 80%,#ef5d50 80% 100%);opacity:.78}
   .risk-card .zone-labels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 6px;margin-top:12px}
   .risk-card .zone-labels span{min-width:0;text-align:center;font-size:0.5rem;line-height:1.5;border-top:3px solid currentColor;padding-top:0.3rem}
@@ -1213,6 +1219,7 @@ async function main() {
   document.getElementById('vRisk').style.setProperty('--val-color', currentRiskColor);
   riskCard.style.setProperty('--risk-zone-color', currentRiskColor);
   riskCard.dataset.riskZone = currentRiskZone.name;
+  riskCard.classList.toggle('is-low-risk', Number.isFinite(last.riskCombo) && last.riskCombo < 0.05);
   riskBar.setAttribute('aria-valuenow', last.riskCombo.toFixed(3));
   riskBar.setAttribute('aria-valuetext', last.riskCombo.toFixed(3) + ', ' + currentRiskZone.name + ' risk zone');
   const currentZoneLabel = document.getElementById('vRiskZone');

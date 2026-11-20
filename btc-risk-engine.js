@@ -792,6 +792,7 @@ async function main() {
   document.getElementById('vRisk').style.setProperty('--val-color', currentRiskColor);
   riskCard.style.setProperty('--risk-zone-color', currentRiskColor);
   riskCard.dataset.riskZone = currentRiskZone.name;
+  riskCard.classList.toggle('is-low-risk', Number.isFinite(last.riskCombo) && last.riskCombo < 0.05);
   riskBar.setAttribute('aria-valuenow', last.riskCombo.toFixed(3));
   riskBar.setAttribute('aria-valuetext', last.riskCombo.toFixed(3) + ', ' + currentRiskZone.name + ' risk zone');
   const currentZoneLabel = document.getElementById('vRiskZone');

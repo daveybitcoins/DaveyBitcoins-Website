@@ -191,6 +191,13 @@
   font-size: clamp(1.5rem, 2vw, 1.9rem);
 }
 
+.btc-page .dashboard > .risk-card.is-low-risk {
+    border-color: var(--risk-zone-color);
+    box-shadow: 0 0 0 1px var(--risk-zone-color),
+      0 0 20px color-mix(in srgb, var(--risk-zone-color) 40%, transparent),
+      0 0 40px color-mix(in srgb, var(--risk-zone-color) 20%, transparent);
+  }
+
 .btc-page .risk-card .risk-bar-bg {
   background: linear-gradient(
     90deg,
