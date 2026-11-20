@@ -1038,6 +1038,22 @@ async function main() {
     return canvasId === 'priceCanvas' ? priceRange : { s: 0, e: n - 1 };
   }
 
+  function zoomPriceAt(factor, ratio) {
+    const { s, e } = priceRange;
+    const span = e - s;
+    // The initial chart includes future years; map the cursor to history first.
+    const full = s === 0 && e === n - 1;
+    const historicalRatio = full ? Math.min(1, ratio *
+      (FAIR_VALUE_PROJECTION_END_MS - dateMs(pts[0].date)) /
+      (lastDateMs - dateMs(pts[0].date))) : ratio;
+    const anchor = s + historicalRatio * span;
+    const nextSpan = Math.max(Math.min(30, n - 1), Math.min(n - 1, Math.round(span * factor)));
+    const start = Math.max(0, Math.min(n - 1 - nextSpan, Math.round(anchor - ratio * nextSpan)));
+    priceRange = { s: start, e: start + nextSpan };
+    document.getElementById('priceTip').style.display = 'none';
+    renderPriceChart();
+  }
+
   function updatePriceZoom(action) {
     let { s, e } = priceRange;
     const span = e - s;
@@ -1435,6 +1451,86 @@ async function main() {
   }
 
   // ====== INIT ======
+  const zoomCanvas = document.getElementById('priceCanvas');
+  zoomCanvas.style.touchAction = 'none';
+  zoomCanvas.style.cursor = 'crosshair';
+  const plotRatio = clientX => {
+    const rect = zoomCanvas.getBoundingClientRect();
+    return Math.max(0, Math.min(1, ((clientX - rect.left) * zoomCanvas.width / rect.width - 80) /
+      (zoomCanvas.width - 140)));
+  };
+  zoomCanvas.addEventListener('wheel', event => {
+    event.preventDefault();
+    const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 300 : 1);
+    zoomPriceAt(Math.exp(Math.max(-0.5, Math.min(0.5, delta * 0.003))), plotRatio(event.clientX));
+  }, { passive: false });
+  zoomCanvas.addEventListener('dblclick', () => updatePriceZoom('reset'));
+  const selection = document.createElement('div');
+  selection.setAttribute('aria-hidden', 'true');
+  selection.style.cssText = 'position:absolute;display:none;pointer-events:none;z-index:8;border:1px solid #f7931a;background:rgba(247,147,26,0.2)';
+  zoomCanvas.parentElement.appendChild(selection);
+  let selectionStart = null;
+  const pointers = new Map();
+  zoomCanvas.addEventListener('pointerdown', event => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    pointers.set(event.pointerId, event.clientX);
+    zoomCanvas.setPointerCapture(event.pointerId);
+    selectionStart = pointers.size === 1 ? event.clientX : null;
+    selection.style.display = 'none';
+  });
+  zoomCanvas.addEventListener('pointermove', event => {
+    if (!pointers.has(event.pointerId)) return;
+    const previous = [...pointers.values()];
+    pointers.set(event.pointerId, event.clientX);
+    const current = [...pointers.values()];
+    if (current.length === 2) {
+      const oldDistance = Math.abs(previous[0] - previous[1]);
+      const distance = Math.abs(current[0] - current[1]);
+      if (oldDistance > 5 && distance > 5) zoomPriceAt(oldDistance / distance,
+        plotRatio((current[0] + current[1]) / 2));
+    } else if (current.length === 1 && selectionStart !== null) {
+      const rect = zoomCanvas.getBoundingClientRect();
+      const parentRect = zoomCanvas.parentElement.getBoundingClientRect();
+      const from = plotRatio(selectionStart), to = plotRatio(event.clientX);
+      const scale = rect.width / zoomCanvas.width;
+      selection.style.left = (rect.left - parentRect.left + (80 + Math.min(from, to) * (zoomCanvas.width - 140)) * scale) + 'px';
+      selection.style.top = (rect.top - parentRect.top + 24 * rect.height / zoomCanvas.height) + 'px';
+      selection.style.width = (Math.abs(to - from) * (zoomCanvas.width - 140) * scale) + 'px';
+      selection.style.height = (rect.height * (zoomCanvas.height - 72) / zoomCanvas.height) + 'px';
+      selection.style.display = 'block';
+      document.getElementById('priceTip').style.display = 'none';
+    }
+  });
+  function endPriceGesture(event) {
+    if (event.type === 'pointerup' && pointers.size === 1 && selectionStart !== null &&
+        Math.abs(event.clientX - selectionStart) >= 6) {
+      const from = plotRatio(selectionStart), to = plotRatio(event.clientX);
+      const { s, e } = priceRange;
+      function indexAt(ratio) {
+        if (s !== 0 || e !== n - 1) return Math.round(s + ratio * (e - s));
+        const ms = dateMs(pts[0].date) + ratio * (FAIR_VALUE_PROJECTION_END_MS - dateMs(pts[0].date));
+        let lo = 0, hi = n - 1;
+        while (lo < hi) {
+          const mid = Math.floor((lo + hi) / 2);
+          if (dateMs(pts[mid].date) < ms) lo = mid + 1; else hi = mid;
+        }
+        return lo;
+      }
+      const start = indexAt(Math.min(from, to)), end = indexAt(Math.max(from, to));
+      if (end > start) {
+        const span = Math.max(Math.min(30, n - 1), end - start);
+        const boundedStart = Math.min(start, n - 1 - span);
+        priceRange = { s: boundedStart, e: boundedStart + span };
+        renderPriceChart();
+      }
+    }
+    pointers.delete(event.pointerId);
+    selectionStart = null;
+    selection.style.display = 'none';
+  }
+  zoomCanvas.addEventListener('pointerup', endPriceGesture);
+  zoomCanvas.addEventListener('pointercancel', endPriceGesture);
+  zoomCanvas.addEventListener('lostpointercapture', endPriceGesture);
   document.querySelectorAll('[data-price-zoom]').forEach(button => {
     button.addEventListener('click', () => updatePriceZoom(button.dataset.priceZoom));
   });

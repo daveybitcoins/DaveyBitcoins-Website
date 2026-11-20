@@ -228,6 +228,7 @@ export default function BitcoinRiskMetricPage() {
       <button type="button" className="zoom-btn" data-price-zoom="earlier">Earlier</button>
       <button type="button" className="zoom-btn" data-price-zoom="later">Later</button>
       <button type="button" className="zoom-btn" data-price-zoom="reset">Reset zoom</button>
+      <span className="chart-note">Drag to highlight a date range and zoom · Scroll or pinch to zoom · Double-click to reset</span>
       <span id="priceZoomRange" className="chart-note" aria-live="polite"></span>
     </div>
           <canvas aria-label="Price history colored by risk" role="img" id="priceCanvas" width="1380" height="540" />
@@ -560,7 +561,7 @@ export default function BitcoinRiskMetricPage() {
 
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20261118-price-zoom" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20261119-select-zoom" strategy="afterInteractive" />
     </main>
   );
 }

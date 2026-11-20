@@ -313,9 +313,10 @@ const checks = [
       }
       await page.locator('#priceCanvas').dispatchEvent('wheel', { deltaY: -120 });
       await page.waitForTimeout(50);
-      if (await page.locator('#priceCanvas').getAttribute('data-projection-end') !== '2040-12-01') {
-        throw new Error('BTC price chart changed range after a wheel event');
+      if (await page.locator('#priceCanvas').getAttribute('data-projection-end') === '2040-12-01') {
+        throw new Error('BTC price chart did not zoom after a wheel event');
       }
+      await page.locator('[data-price-zoom="reset"]').click();
       await page.locator('#riskCanvas').dispatchEvent('wheel', { deltaY: -120 });
       await page.waitForTimeout(50);
       if (await page.locator('#priceCanvas').getAttribute('data-projection-end') !== '2040-12-01') {
