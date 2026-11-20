@@ -742,6 +742,36 @@ async function fetchLivePrice(rawData, symbol) {
   }
 }
 
+// Quote overlays never mutate historical weekly signals or backtest inputs.
+let liveRiskContext = null;
+function riskForCurrentPrice(price, last, weekly) {
+  const cutoff = last.signalWeekMs - 20 * 365.25 * 864e5;
+  const deviations = weekly.filter(p => p.ms >= cutoff && p.ms <= last.signalWeekMs)
+    .map(p => p.dev200W).filter(Number.isFinite).sort((a,b) => a-b);
+  if (!(price > 0) || !(last.ma200W > 0) || !deviations.length) return NaN;
+  return upperBound(deviations, Math.log(price / last.ma200W)) / deviations.length;
+}
+function applyCurrentQuote(data) {
+  if (!liveRiskContext) return false;
+  const { last, weekly, fwd12mEPS } = liveRiskContext;
+  if (data.t < liveRiskContext.timestamp || data.t * 1000 < last.ms) return false;
+  const score = riskForCurrentPrice(data.c, last, weekly);
+  if (!Number.isFinite(score)) return false;
+  liveRiskContext.timestamp = data.t;
+  document.getElementById('vPrice').textContent = '$' + data.c.toLocaleString(undefined, {maximumFractionDigits:2});
+  document.getElementById('vFwdPE').textContent = 'Approx. forward 12M P/E: ' + (data.c * 10 / fwd12mEPS).toFixed(1) + '×';
+  const risk = document.getElementById('vRisk');
+  risk.textContent = score.toFixed(3);
+  risk.dataset.risk200w = score.toFixed(3);
+  risk.style.setProperty('--val-color', riskGradientColor(score));
+  renderRiskScale(score);
+  document.getElementById('needle').style.left = (score * 100) + '%';
+  const deviation = (data.c / last.ma200W - 1) * 100;
+  document.getElementById('vDev').textContent = (deviation > 0 ? '+' : '') + deviation.toFixed(1) + '%';
+  document.getElementById('vGrowth').textContent = 'Live price · weekly trend as of ' + new Date(last.signalWeekMs).toISOString().slice(0,10);
+  return true;
+}
+
 // ====== MAIN ======
 async function main() {
   const bust = Date.now();
@@ -784,6 +814,7 @@ async function main() {
   var fwd12mEPS = Number.isFinite(Number(valuation.forward_12m_eps))
     ? Number(valuation.forward_12m_eps)
     : 397.32;
+  liveRiskContext = { last, weekly, fwd12mEPS, timestamp: 0 };
   var spxEstimate = last.price * 10;
   var fwdPE = (spxEstimate / fwd12mEPS).toFixed(1);
   document.getElementById('vFwdPE').textContent = 'Approx. forward 12M P/E: ' + fwdPE + '×';
@@ -1856,10 +1887,13 @@ async function refreshLiveQuote() {
     if (!resp.ok) throw new Error('Quote unavailable');
     const data = await resp.json();
     if (!Number.isFinite(data.c) || data.c <= 0 || !Number.isFinite(data.t) || data.t <= 0) throw new Error('Invalid quote');
+    if (!applyCurrentQuote(data)) throw new Error('Quote predates model data');
     const quoteDate = new Date(data.t * 1000).toISOString();
-    hd.textContent = modelDate + ' · Latest quote: $' + data.c.toLocaleString(undefined, {maximumFractionDigits:2}) + ' at ' + quoteDate.slice(0,10) + ' ' + quoteDate.slice(11,16) + ' UTC';
+    hd.textContent = 'Live price risk · Weekly model: ' + liveRiskContext.last.date + ' · Latest quote: $' + data.c.toLocaleString(undefined, {maximumFractionDigits:2}) + ' at ' + quoteDate.slice(0,10) + ' ' + quoteDate.slice(11,16) + ' UTC';
   } catch {
-    hd.textContent = modelDate + ' · Live quote unavailable; showing last available price';
+    hd.textContent = liveRiskContext && liveRiskContext.timestamp
+      ? 'Quote refresh unavailable · Retaining quote from ' + new Date(liveRiskContext.timestamp * 1000).toISOString()
+      : modelDate + ' · Live quote unavailable; showing last available price';
   }
 }
 main().then(refreshLiveQuote).catch(function () {

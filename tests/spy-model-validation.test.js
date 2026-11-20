@@ -102,3 +102,26 @@ test('SPY risk colors switch at the displayed band boundaries', () => {
     assert.equal(colors.riskColor(score, 0.1), `rgba(${rgb},0.1)`);
   }
 });
+
+test('live quotes update risk and price together without changing historical signals', () => {
+  const elements = new Map();
+  const document = { getElementById(id) {
+    if (!elements.has(id)) elements.set(id, { dataset: {}, style: { setProperty() {} } });
+    return elements.get(id);
+  } };
+  const model = context.buildDataset(rows, {});
+  const last = model.pts.at(-1);
+  const before = JSON.stringify(model);
+  const live = vm.createContext({ document, model, last, riskGradientColor: () => 'orange', renderRiskScale: () => {} });
+  vm.runInContext(extract('upperBound') + '\n' + extract('riskForCurrentPrice') + '\n' + extract('applyCurrentQuote') + '\nlet liveRiskContext = { last, weekly: model.weekly, fwd12mEPS: 397.32, timestamp: 0 };', live);
+  const timestamp = last.ms / 1000 + 3600;
+  assert.equal(live.applyCurrentQuote({ c: last.ma200W * 0.5, t: timestamp }), true);
+  const low = Number(elements.get('vRisk').textContent);
+  assert.equal(live.applyCurrentQuote({ c: last.ma200W * 1.5, t: timestamp + 60 }), true);
+  assert.ok(Number(elements.get('vRisk').textContent) > low);
+  assert.equal(elements.get('vRisk').dataset.risk200w, elements.get('vRisk').textContent);
+  const displayedPrice = elements.get('vPrice').textContent;
+  assert.equal(live.applyCurrentQuote({ c: 1, t: timestamp }), false);
+  assert.equal(elements.get('vPrice').textContent, displayedPrice);
+  assert.equal(JSON.stringify(model), before);
+});
