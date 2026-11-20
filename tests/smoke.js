@@ -298,17 +298,23 @@ const checks = [
         throw new Error(`expected logarithmic minor ticks for each decade, got ${minorTickMultipliers} (${minorTickCount})`);
       }
       const zoomControls = page.locator('[data-price-zoom]');
-      if (await zoomControls.count() !== 5) throw new Error('Missing BTC zoom controls');
+      if (await zoomControls.count() !== 1 ||
+          await zoomControls.getAttribute('data-price-zoom') !== 'reset') {
+        throw new Error('Expected only the Reset zoom button');
+      }
       const fullStart = await page.locator('#priceCanvas').getAttribute('data-visible-start');
-      await page.locator('[data-price-zoom="in"]').click();
-      const zoomStart = await page.locator('#priceCanvas').getAttribute('data-visible-start');
-      if (zoomStart === fullStart) throw new Error('Zoom in did not narrow the price range');
-      await page.locator('[data-price-zoom="later"]').click();
-      if (await page.locator('#priceCanvas').getAttribute('data-visible-start') <= zoomStart) {
-        throw new Error('Later did not pan the price chart');
+      const priceCanvas = page.locator('#priceCanvas');
+      await priceCanvas.scrollIntoViewIfNeeded();
+      const bounds = await priceCanvas.boundingBox();
+      await page.mouse.move(bounds.x + bounds.width * 0.2, bounds.y + bounds.height * 0.4);
+      await page.mouse.down();
+      await page.mouse.move(bounds.x + bounds.width * 0.4, bounds.y + bounds.height * 0.6, { steps: 5 });
+      await page.mouse.up();
+      if (await priceCanvas.getAttribute('data-visible-start') === fullStart) {
+        throw new Error('Drag selection did not zoom the price chart');
       }
       await page.locator('[data-price-zoom="reset"]').click();
-      if (await page.locator('#priceCanvas').getAttribute('data-visible-start') !== fullStart) {
+      if (await priceCanvas.getAttribute('data-visible-start') !== fullStart) {
         throw new Error('Reset did not restore full history');
       }
       await page.locator('#priceCanvas').dispatchEvent('wheel', { deltaY: -120 });

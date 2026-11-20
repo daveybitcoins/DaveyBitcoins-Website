@@ -223,10 +223,6 @@ export default function BitcoinRiskMetricPage() {
             </div>
           </div>
           <div className="price-zoom-controls" role="group" aria-label="Price chart zoom" style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", marginBottom: 12 }}>
-      <button type="button" className="zoom-btn" data-price-zoom="in">Zoom in</button>
-      <button type="button" className="zoom-btn" data-price-zoom="out">Zoom out</button>
-      <button type="button" className="zoom-btn" data-price-zoom="earlier">Earlier</button>
-      <button type="button" className="zoom-btn" data-price-zoom="later">Later</button>
       <button type="button" className="zoom-btn" data-price-zoom="reset">Reset zoom</button>
       <span className="chart-note">Drag to highlight a date range and zoom · Scroll or pinch to zoom · Double-click to reset</span>
       <span id="priceZoomRange" className="chart-note" aria-live="polite"></span>
