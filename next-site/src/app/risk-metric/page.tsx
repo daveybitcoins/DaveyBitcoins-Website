@@ -460,7 +460,7 @@ export default function BitcoinRiskMetricPage() {
                 <tr>
                   <th>Date</th>
                   <th>Event</th>
-                  <th>BTC Close</th>
+                  <th>BTC Price</th>
                   <th>Risk Level</th>
                   <th>1Y Return</th>
                   <th>2Y Return</th>
@@ -557,7 +557,7 @@ export default function BitcoinRiskMetricPage() {
 
         <p className="spy-footer">Educational tools only · Not financial advice</p>
       </div>
-      <Script src="/btc-risk-engine.js?v=20261120-low-risk-glow" strategy="afterInteractive" />
+      <Script src="/btc-risk-engine.js?v=20261121-cycle-low" strategy="afterInteractive" />
     </main>
   );
 }

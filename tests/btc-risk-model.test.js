@@ -396,3 +396,32 @@ return { classify: riskZoneForScore, color: riskColor };`)();
   assert.equal(classify(0.2499).name, 'Accumulate');
   assert.equal(classify(1).name, 'Euphoria');
 });
+
+test('current bear low retains the verified intraday wick through rebounds and quote outages', () => {
+  const model = loadProductionModel();
+  const source = readFileSync(ENGINE_PATH, 'utf8');
+  const selection = source.slice(source.indexOf('    let lows = findRiskLows(pts);'), source.indexOf("    const tbody = document.getElementById('riskLowsBody');"));
+  const selectLow = new Function('rawData', 'buildDataset', 'dateMs', `
+    const pts = buildDataset(rawData).pts;
+    ${extractFunction(source, 'findRiskLows')}
+    ${extractFunction(source, 'findLatest52WeekClosingLow')}
+    ${selection}
+    return { low: latest52WeekLow, lows };
+  `);
+  const daily = readFileSync(DATA_PATH, 'utf8').trim().split('\n').slice(1)
+    .map(row => { const [date, price] = row.split(','); return [date, Number(price)]; })
+    .filter(([date]) => date < '2026-11-21');
+  for (const quote of [null, 56500, 60000]) {
+    const raw = quote === null ? daily : [...daily, ['2026-11-21', quote]];
+    const { low, lows } = selectLow(raw, model.buildDataset, model.dateMs);
+    assert.equal(low.date, '2026-11-21');
+    assert.equal(low.price, 55500);
+    assert.equal(low._intradayLow, true);
+    assert.equal(lows.at(-1), low);
+    const expected = model.buildDataset([...daily, ['2026-11-21', 55500]]).pts.at(-1);
+    assert.equal(low.riskCombo, expected.riskCombo);
+  }
+  const lower = selectLow([...daily, ['2026-11-21', 54000]], model.buildDataset, model.dateMs).low;
+  assert.equal(lower.price, 54000);
+  assert.equal(lower._intradayLow, undefined);
+});

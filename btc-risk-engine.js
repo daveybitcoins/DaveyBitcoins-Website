@@ -986,7 +986,23 @@ async function main() {
     }
 
     let lows = findRiskLows(pts);
-    const latest52WeekLow = findLatest52WeekClosingLow(pts);
+    let latest52WeekLow = findLatest52WeekClosingLow(pts);
+    // Verified Coinbase BTC-USD UTC daily candle; keep the wick distinct from a close.
+    // Source: api.exchange.coinbase.com/products/BTC-USD/candles, 2026-11-21.
+    const observedIntradayLow = { date: '2026-11-21', price: 55500 };
+    if (latest52WeekLow &&
+        dateMs(observedIntradayLow.date) >= latest52WeekLow._windowStartMs &&
+        observedIntradayLow.price < latest52WeekLow.price) {
+      const lowHistory = rawData.filter(row => row[0] < observedIntradayLow.date);
+      lowHistory.push([observedIntradayLow.date, observedIntradayLow.price]);
+      const lowPoint = buildDataset(lowHistory).pts.at(-1);
+      latest52WeekLow = Object.assign({}, lowPoint, {
+        _idx: pts.findIndex(point => point.date === observedIntradayLow.date) < 0 ? pts.length : pts.findIndex(point => point.date === observedIntradayLow.date),
+        _latest52WeekLow: true,
+        _intradayLow: true,
+        _windowStartMs: latest52WeekLow._windowStartMs
+      });
+    }
     if (latest52WeekLow) {
       lows = lows.filter(low => dateMs(low.date) < latest52WeekLow._windowStartMs);
       lows.push(latest52WeekLow);
@@ -997,14 +1013,15 @@ async function main() {
     lows.forEach(low => {
       const tr = document.createElement('tr');
       const meta = low._latest52WeekLow ? {
-        label: low.date.slice(0, 4) + ' Bear Market Low',
-        info: 'Latest row is anchored to the lowest BTC daily close over the trailing 52 weeks, rather than the lowest model-risk reading. This keeps the current-cycle event tied to the actual recent closing-price low as new daily data arrives.'
+        label: low.date.slice(0, 4) + ' Bear Market Low — In progress',
+        info: 'Current bear market low remains in progress, not a confirmed bottom. The latest row compares the trailing 52-week daily closes, the current quote, and the verified November 21, 2026 Coinbase BTC-USD intraday low of $55,500. Intraday prices are provisional; the risk score is calculated at the displayed price.'
       } : getEventMeta(low.date);
       const price = low.price;
       const pStr = price >= 1e6 ? '$' + (price / 1e6).toFixed(1) + 'M' :
                    price >= 1000 ? '$' + price.toLocaleString(undefined, { maximumFractionDigits: 0 }) :
                    '$' + price.toFixed(2);
       function fwdCell(idx, years) {
+        if (low._intradayLow) return '<td class="rl-return" style="color:var(--text-dimmer)">—</td>';
         var days = years * 365;
         var fIdx = Math.min(idx + days, n - 1);
         var actual = fIdx - idx;
@@ -1027,7 +1044,7 @@ async function main() {
       const eventLabel = meta ? meta.label : '—';
       tr.innerHTML = '<td>' + low.date + '</td>' +
         '<td class="rl-event">' + eventLabel + infoHtml + '</td>' +
-        '<td class="rl-price">' + pStr + '</td>' +
+        '<td class="rl-price">' + pStr + '<div class="rl-risk-sub">' + (low._intradayLow ? 'Intraday low · Coinbase' : (live && low.date === last.date ? 'Live quote · provisional' : 'Daily close')) + '</div></td>' +
         '<td class="rl-risk" style="color:' + riskTextColor(calibratedLowRisk(low)) + '">' + riskLowDisplay(low) + '</td>' +
         fwdCell(low._idx, 1) + fwdCell(low._idx, 2) + fwdCell(low._idx, 3);
       tbody.appendChild(tr);
