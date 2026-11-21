@@ -1013,8 +1013,8 @@ async function main() {
     lows.forEach(low => {
       const tr = document.createElement('tr');
       const meta = low._latest52WeekLow ? {
-        label: low.date.slice(0, 4) + ' Bear Market Low — In progress',
-        info: 'Current bear market low remains in progress, not a confirmed bottom. The latest row compares the trailing 52-week daily closes, the current quote, and the verified November 21, 2026 Coinbase BTC-USD intraday low of $55,500. Intraday prices are provisional; the risk score is calculated at the displayed price.'
+        label: low.date.slice(0, 4) + ' Bear Market Low',
+        info: 'The latest row compares the trailing 52-week daily closes, the current quote, and the verified November 21, 2026 BTC-USD intraday low of $55,500. Intraday prices are provisional; the risk score is calculated at the displayed price.'
       } : getEventMeta(low.date);
       const price = low.price;
       const pStr = price >= 1e6 ? '$' + (price / 1e6).toFixed(1) + 'M' :
@@ -1044,7 +1044,7 @@ async function main() {
       const eventLabel = meta ? meta.label : '—';
       tr.innerHTML = '<td>' + low.date + '</td>' +
         '<td class="rl-event">' + eventLabel + infoHtml + '</td>' +
-        '<td class="rl-price">' + pStr + '<div class="rl-risk-sub">' + (low._intradayLow ? 'Intraday low · Coinbase' : (live && low.date === last.date ? 'Live quote · provisional' : 'Daily close')) + '</div></td>' +
+        '<td class="rl-price">' + pStr + '<div class="rl-risk-sub">' + (low._intradayLow ? 'Intraday low' : (live && low.date === last.date ? 'Live quote · provisional' : 'Daily close')) + '</div></td>' +
         '<td class="rl-risk" style="color:' + riskTextColor(calibratedLowRisk(low)) + '">' + riskLowDisplay(low) + '</td>' +
         fwdCell(low._idx, 1) + fwdCell(low._idx, 2) + fwdCell(low._idx, 3);
       tbody.appendChild(tr);
