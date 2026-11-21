@@ -61,7 +61,7 @@ def require_fresh_date(value, label, max_age_days, today=None):
     return parsed
 
 
-def validate_price_csv(path, min_rows, max_age_days):
+def validate_price_csv(path, min_rows, max_age_days, today=None):
     full_path = os.path.join(ROOT_DIR, path)
     if not os.path.exists(full_path):
         fail(f"{path} is missing")
@@ -99,7 +99,7 @@ def validate_price_csv(path, min_rows, max_age_days):
 
     if count < min_rows:
         fail(f"{path} has only {count} rows; expected at least {min_rows}")
-    require_fresh_date(prev_date, f"{path} latest date", max_age_days)
+    require_fresh_date(prev_date, f"{path} latest date", max_age_days, today)
     print(f"OK {path}: {count} rows through {prev_date}")
 
 
