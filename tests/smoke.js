@@ -89,6 +89,21 @@ const checks = [
         throw new Error('QQQ risk gauge should not appear in market context');
       }
       await expectText(page, 'Data as of ' + scannerData.meta.date);
+      const labelColors = await page.evaluate(() => {
+        const root = document.documentElement;
+        const original = root.getAttribute('data-theme');
+        const colors = ['dark', 'light'].map(theme => {
+          root.setAttribute('data-theme', theme);
+          return getComputedStyle(document.querySelector('.index-ma-label')).color;
+        });
+        if (original === null) root.removeAttribute('data-theme');
+        else root.setAttribute('data-theme', original);
+        return colors;
+      });
+      if (labelColors[0] !== 'rgb(255, 255, 255)' || labelColors[1] !== 'rgb(0, 0, 0)') {
+        throw new Error(`Incorrect weekly label colors: ${labelColors}`);
+      }
+
       for (const symbol of ['SPY']) {
         const gauge = page.locator(`.risk-bar-wrap[data-risk-asset="${symbol}"]`);
         if (await gauge.getAttribute('data-risk-model') !== '200w-trailing20y-weekly') {

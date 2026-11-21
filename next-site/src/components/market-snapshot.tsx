@@ -7,7 +7,7 @@ type Reading = { date: string; value: number; price?: number; live?: boolean };
 type Snapshot = { btc?: Reading; spy?: Reading; breadth?: Reading };
 const definitions = [
   { key: "btc", title: "Bitcoin risk", detail: "Structural + momentum", href: "/risk-metric/" },
-  { key: "spy", title: "SPY cycle risk", detail: "200-week trend percentile · Weekly signal", href: "/spy-risk-metric/" },
+  { key: "spy", title: "SPY cycle risk", detail: "200-week trend percentile", href: "/spy-risk-metric/" },
   { key: "breadth", title: "Market breadth", detail: "Stocks above their 200-day average", href: "/ema-scanner/" },
 ] as const;
 function zone(value: number, symbol: "btc" | "spy") {
@@ -64,9 +64,14 @@ export function MarketSnapshot() {
             if (active && Number.isFinite(point.risk)) setSnapshot(s => ({ ...s, btc: { date: point.date, value: point.risk, price: point.price, live: true } }));
           } catch { /* Keep the saved reading. */ }
         }),
-        fetchData("/data_spy.csv").then(r => r.text()).then(text => {
-          const point = spySnapshot(parsePrices(text));
-          if (active && Number.isFinite(point.risk)) setSnapshot(s => ({ ...s, spy: { date: point.date, value: point.risk, price: point.price } }));
+        fetchData("/data_spy.csv").then(r => r.text()).then(async text => {
+          const rows = parsePrices(text);
+          let quote = null;
+          try {
+            quote = await fetchData("https://daveybitcoins-api.dave-erazo78.workers.dev/api/quote?symbol=SPY").then(r => r.json());
+          } catch { /* Use the saved weekly signal. */ }
+          const point = spySnapshot(rows, quote);
+          if (active && Number.isFinite(point.risk)) setSnapshot(s => ({ ...s, spy: { date: point.date, value: point.risk, price: point.price, live: point.live } }));
         }),
         fetchData("/data/scanner_data.json").then(r => r.json()).then(data => {
           const value = data.breadth_context?.above_200d;

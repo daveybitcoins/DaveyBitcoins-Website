@@ -1440,7 +1440,7 @@
     font-weight: 600;
 }
 .dividend-page .index-context-card .index-ma-label {
-    color: #000;
+    color: #fff;
     font-weight: 800;
 }
 .dividend-page .index-context-card .index-performance {
@@ -1469,6 +1469,8 @@
 .dividend-page .breadth-guidance-metrics span, .dividend-page .breadth-guidance-note { color: var(--text-dim); font-size: .8rem; }
 .dividend-page .breadth-guidance summary { cursor: pointer; font-weight: 600; }
 .dividend-page .breadth-guidance ul { padding-left: 20px; line-height: 1.7; }
+
+[data-theme="light"] .dividend-page .index-context-card .index-ma-label { color: #000; }
 
 /* === PORTFOLIO CONTROLS === */
 .dividend-page .holdings-header {

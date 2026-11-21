@@ -180,7 +180,13 @@ function syncEmaScanner() {
     resolve(repositoryRoot, "js/app.js"),
     "utf8",
   );
+  const modelVersion = createHash("sha256")
+    .update(readFileSync(resolve(repositoryRoot, "btc-risk-engine.js")))
+    .update(readFileSync(resolve(repositoryRoot, "spy-risk-engine.js")))
+    .update(readFileSync(resolve(repositoryRoot, "scripts/sync-risk-assets.mjs")))
+    .digest("hex").slice(0, 16);
   const migratedScript = sourceScript
+    .replaceAll("import('/market-models.js')", `import('/market-models.js?v=${modelVersion}')`)
     .replaceAll(
       '"data/scanner_data.json?v="',
       '"/data/scanner_data.json?v="',
@@ -356,11 +362,15 @@ return raw => {
 };
 })();
 export const spySnapshot = (() => {
-${["upperBound", "assignTrailingPercentiles", "buildDataset"].map(name => extractModelFunction(spySource, name)).join("\n")}
-return raw => {
-  const { pts } = buildDataset(raw, {});
+${["upperBound", "assignTrailingPercentiles", "buildDataset", "riskForCurrentPrice"].map(name => extractModelFunction(spySource, name)).join("\n")}
+return (raw, quote = null) => {
+  const { pts, weekly } = buildDataset(raw, {});
   const point = pts[pts.length - 1];
   if (!point || point.modelWarmup || !Number.isFinite(point.riskCombo)) throw new Error("Insufficient SPY history");
+  if (quote && Number.isFinite(quote.c) && quote.c > 0 && Number.isFinite(quote.t) && quote.t * 1000 >= point.ms) {
+    const risk = riskForCurrentPrice(quote.c, point, weekly);
+    if (Number.isFinite(risk)) return { date: new Date(quote.t * 1000).toISOString().slice(0, 10), price: quote.c, risk, live: true };
+  }
   return { date: point.date, price: point.price, risk: point.riskCombo };
 };
 })();
@@ -374,3 +384,7 @@ copyFileSync(
   resolve(repositoryRoot, "data_qqq.csv"),
   resolve(publicDirectory, "data_qqq.csv"),
 );
+
+for (const directory of [repositoryRoot, publicDirectory]) {
+  copyFileSync(resolve(modelDirectory, "market-models.js"), resolve(directory, "market-models.js"));
+}

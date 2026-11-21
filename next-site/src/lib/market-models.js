@@ -200,10 +200,21 @@ function buildDataset(rawSPY, vixMap) {
 
   return { pts, weekly };
 }
-return raw => {
-  const { pts } = buildDataset(raw, {});
+function riskForCurrentPrice(price, last, weekly) {
+  const cutoff = last.signalWeekMs - 20 * 365.25 * 864e5;
+  const deviations = weekly.filter(p => p.ms >= cutoff && p.ms <= last.signalWeekMs)
+    .map(p => p.dev200W).filter(Number.isFinite).sort((a,b) => a-b);
+  if (!(price > 0) || !(last.ma200W > 0) || !deviations.length) return NaN;
+  return upperBound(deviations, Math.log(price / last.ma200W)) / deviations.length;
+}
+return (raw, quote = null) => {
+  const { pts, weekly } = buildDataset(raw, {});
   const point = pts[pts.length - 1];
   if (!point || point.modelWarmup || !Number.isFinite(point.riskCombo)) throw new Error("Insufficient SPY history");
+  if (quote && Number.isFinite(quote.c) && quote.c > 0 && Number.isFinite(quote.t) && quote.t * 1000 >= point.ms) {
+    const risk = riskForCurrentPrice(quote.c, point, weekly);
+    if (Number.isFinite(risk)) return { date: new Date(quote.t * 1000).toISOString().slice(0, 10), price: quote.c, risk, live: true };
+  }
   return { date: point.date, price: point.price, risk: point.riskCombo };
 };
 })();

@@ -1504,7 +1504,7 @@ footer { font-size: .8125rem; }
     font-weight: 600;
 }
 .index-context-card .index-ma-label {
-    color: #000;
+    color: #fff;
     font-weight: 800;
 }
 .index-context-card .index-performance {
@@ -1533,3 +1533,5 @@ footer { font-size: .8125rem; }
 .breadth-guidance-metrics span, .breadth-guidance-note { color: var(--text-dim); font-size: .8rem; }
 .breadth-guidance summary { cursor: pointer; font-weight: 600; }
 .breadth-guidance ul { padding-left: 20px; line-height: 1.7; }
+
+[data-theme="light"] .index-context-card .index-ma-label { color: #000; }

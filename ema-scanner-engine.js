@@ -137,6 +137,7 @@
                 computeBtcRisk(),
                 computeSpyRisk()
             ]);
+            lastRiskRefreshClose = riskMarketCloseKey(new Date());
             DATA = await scannerResp.json();
             document.getElementById("loading").style.display = "none";
             document.getElementById("data-date").innerHTML =
@@ -336,7 +337,33 @@
     setInterval(function() {
         if (document.visibilityState === 'hidden') return;
         refreshLivePrices();
+        refreshRiskCards();
     }, 60000);
+    // The timer checks eligibility; risk data is fetched only once after each
+    // weekday close. Explicit New York time also handles daylight saving time.
+    function riskMarketCloseKey(now) {
+        const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', {
+            timeZone: 'America/New_York', weekday: 'short', year: 'numeric',
+            month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23'
+        }).formatToParts(now).map(part => [part.type, part.value]));
+        if (parts.weekday === 'Sat' || parts.weekday === 'Sun' || Number(parts.hour) < 16) return null;
+        return `${parts.year}-${parts.month}-${parts.day}`;
+    }
+    let lastRiskRefreshClose = null;
+    let riskRefreshing = false;
+    async function refreshRiskCards() {
+        const closeKey = riskMarketCloseKey(new Date());
+        if (!closeKey || closeKey === lastRiskRefreshClose || !DATA || riskRefreshing || document.visibilityState === 'hidden') return;
+        lastRiskRefreshClose = closeKey;
+        riskRefreshing = true;
+        try {
+            await Promise.all([computeBtcRisk(), computeSpyRisk()]);
+            document.querySelectorAll('.index-context-card').forEach(card => {
+                card.outerHTML = renderIndexCard();
+            });
+        } finally { riskRefreshing = false; }
+    }
+    document.addEventListener('visibilitychange', refreshRiskCards);
 
     function riskColor(r) {
         const stops = [[0,[104,130,156]],[0.16,[80,155,118]],[0.32,[88,197,111]],[0.48,[255,191,99]],[0.64,[247,147,26]],[0.78,[228,96,69]],[0.90,[239,93,79]],[1,[122,32,25]]];
@@ -349,12 +376,12 @@
         return `rgb(${c[0]},${c[1]},${c[2]})`;
     }
 
-    function classifyRisk(risk) {
-        // Risk zone labels for the market context gauges.
-        if (risk < 0.20) return { zone: "Accumulate", zone_color: "#58c56f" };
-        if (risk < 0.50) return { zone: "Neutral", zone_color: "#80b883" };
-        if (risk < 0.80) return { zone: "Caution", zone_color: "#f7931a" };
-        return { zone: "Euphoria", zone_color: "#ef5d4f" };
+    function classifyRisk(risk, symbol = "SPY") {
+        const limits = [0.1, symbol === 'BTC' ? 0.25 : 0.3, 0.5, 0.75, 0.9, Infinity];
+        const names = ['Generational', 'Accumulate', 'Neutral', 'Elevated', 'Caution', 'Euphoria'];
+        const colors = ['#5b9ed1', '#62b582', '#d4b94f', '#d99048', '#d57350', '#d65d65'];
+        const i = limits.findIndex(limit => risk < limit);
+        return { zone: names[i], zone_color: colors[i] };
     }
 
     function renderRiskBar(risk_combo, zone, zone_color, href, label, riskLabel) {
@@ -366,7 +393,7 @@
         return `
             <div class="risk-bar-wrap" data-risk-asset="${label}" data-risk-model="${model}" data-risk-value="${r.toFixed(6)}" style="margin-top:0.5rem;padding:0.4rem 0.5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);">
                 <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;">
-                    <span class="index-risk-label">${riskLabel}${riskLabel === "200W Risk" ? " · prior week" : ""}</span>
+                    <span class="index-risk-label">${riskLabel}</span>
                     <strong style="color:${color};font-family:'JetBrains Mono',monospace;font-size:0.85rem;">${r.toFixed(3)}</strong>
                 </div>
                 <div style="position:relative;height:6px;margin:0.3rem 0;border-radius:3px;background:${barGrad};">
@@ -374,194 +401,53 @@
                 </div>
                 <div style="text-align:center;font-size:0.7rem;font-weight:600;color:${zone_color || color};letter-spacing:0.05em;">${(zone || "").toUpperCase()}</div>
                 <div style="display:flex;justify-content:space-between;margin-top:0.25rem;font-size:0.56rem;color:var(--text-dim);opacity:0.75;">
-                    <span>0.20</span><span>0.50</span><span>0.80</span>
+                    <span>0.10</span><span>${label === "BTC" ? "0.25" : "0.30"}</span><span>0.50</span><span>0.75</span><span>0.90</span>
                 </div>
                 ${href ? `<a href="${href}" style="display:block;text-align:center;margin-top:0.3rem;font-size:0.65rem;color:var(--accent);text-decoration:none;opacity:0.8;">View Full ${label} Metric \u2192</a>` : ''}
             </div>`;
     }
 
     function renderBtcRisk(idx) {
-        const src = btcRiskData || idx;
+        const src = btcRiskData;
+        if (!src) return "";
         return renderRiskBar(src.risk_combo, src.zone, src.zone_color, "/risk-metric/", "BTC", "Combined Risk");
     }
 
     // BTC combined risk — computed client-side from data.csv + live CoinGecko price
     let btcRiskData = null;
 
-    function normCdf(z) {
-        const t = 1.0 / (1.0 + 0.2316419 * Math.abs(z));
-        const d = 0.3989422804 * Math.exp(-z * z / 2);
-        const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.8212560 + t * 1.330274))));
-        return z > 0 ? 1 - p : p;
-    }
-
     async function computeBtcRisk() {
         try {
-            const BTC_GENESIS = new Date('2009-01-03T00:00:00Z').getTime();
-            const WINDOW = 1460;
-            const MIN_REGRESSION_OBSERVATIONS = 30;
-            const ENV_UPPER_A = 4.6, ENV_UPPER_B = -1.10, ENV_LOWER = -0.45, ENV_MIN_MAX = 0.05;
-            const STRUCTURAL_RISK_FLOOR = 0.005;
-
-            // Load historical CSV
+            const { bitcoinSnapshot } = await import('/market-models.js?v=259e5b0d707fbaa0');
             const resp = await fetch('/data.csv?v=' + Date.now());
-            const text = await resp.text();
-            const rows = text.trim().split('\n').slice(1);
-            const raw = rows.map(r => { const [d, p] = r.split(','); return [d, parseFloat(p)]; }).filter(r => !isNaN(r[1]));
-
-            // Fetch live price from CoinGecko
+            if (!resp.ok) throw new Error('BTC history unavailable');
+            const raw = (await resp.text()).trim().split('\n').slice(1).map(row => {
+                const [date, price] = row.split(',');
+                return [date, Number(price)];
+            }).filter(row => Number.isFinite(row[1]) && row[1] > 0);
             try {
-                const liveResp = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_last_updated_at=true', { signal: AbortSignal.timeout(5000) });
-                if (liveResp.ok) {
-                    const data = await liveResp.json();
-                    const price = data.bitcoin.usd;
-                    const dt = new Date(data.bitcoin.last_updated_at * 1000);
-                    const dateStr = dt.toISOString().slice(0, 10);
-                    const lastDate = raw[raw.length - 1][0];
-                    if (dateStr === lastDate) { raw[raw.length - 1][1] = price; }
-                    else if (dateStr > lastDate) { raw.push([dateStr, price]); }
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_last_updated_at=true', { signal: AbortSignal.timeout(5000) });
+                const data = await response.json();
+                const price = data.bitcoin?.usd, timestamp = data.bitcoin?.last_updated_at;
+                if (Number.isFinite(price) && price > 0 && Number.isFinite(timestamp) && timestamp > 0 && timestamp * 1000 <= Date.now() + 60000 && Date.now() - timestamp * 1000 <= 3600000) {
+                    const date = new Date(timestamp * 1000).toISOString().slice(0, 10);
+                    if (date === raw.at(-1)[0]) raw.at(-1)[1] = price;
+                    else if (date > raw.at(-1)[0]) raw.push([date, price]);
                 }
-            } catch (e) { /* use CSV data as-is */ }
-
-            // Build dataset — matches /risk-metric/ buildDataset() exactly
-            const pts = raw.map(([ds, p]) => {
-                const ms = new Date(ds + 'T00:00:00Z').getTime();
-                const days = (ms - BTC_GENESIS) / 864e5;
-                return { days, logDays: Math.log10(days), logPrice: Math.log10(p), price: p };
-            }).filter(p => p.days > 0 && p.price > 0);
-
-            const n = pts.length;
-            if (n < WINDOW) return;
-
-            function fitRegression(endExclusive) {
-                let sx = 0, sy = 0, sxy = 0, sxx = 0;
-                for (let i = 0; i < endExclusive; i++) {
-                    const p = pts[i];
-                    sx += p.logDays; sy += p.logPrice; sxy += p.logDays * p.logPrice; sxx += p.logDays * p.logDays;
-                }
-                const slope = (endExclusive * sxy - sx * sy) / (endExclusive * sxx - sx * sx);
-                const intercept = (sy - slope * sx) / endExclusive;
-                return { slope, intercept };
-            }
-            const fullFit = fitRegression(n);
-
-            pts.forEach((p, i) => {
-                const asOf = fitRegression(Math.max(MIN_REGRESSION_OBSERVATIONS, i + 1));
-                p.regLogPrice = asOf.slope * p.logDays + asOf.intercept;
-                p.residual = p.logPrice - p.regLogPrice;
-                const envMax = Math.max(ENV_MIN_MAX, ENV_UPPER_A + ENV_UPPER_B * p.logDays);
-                const envRange = envMax - ENV_LOWER;
-                const structuralRaw = (p.residual - ENV_LOWER) / envRange;
-                p.riskMM = Math.min(1, Math.max(STRUCTURAL_RISK_FLOOR, structuralRaw));
-            });
-
-            const residuals = pts.map(p => p.residual);
-            let rSum = 0, rSumSq = 0;
-            for (let i = 0; i < n; i++) {
-                const cnt = Math.min(i, WINDOW);
-                if (cnt >= 180) {
-                    const mean = rSum / cnt;
-                    const vari = Math.max(0.0001, rSumSq / cnt - mean * mean);
-                    const std = Math.sqrt(vari);
-                    const z = (residuals[i] - mean) / std;
-                    pts[i].riskZS = normCdf(z);
-                } else {
-                    pts[i].riskZS = 0.5;
-                }
-                rSum += residuals[i]; rSumSq += residuals[i] * residuals[i];
-                if (i >= WINDOW) { rSum -= residuals[i - WINDOW]; rSumSq -= residuals[i - WINDOW] * residuals[i - WINDOW]; }
-            }
-
-            pts.forEach(p => { p.riskCombo = Math.sqrt(p.riskMM * p.riskZS); });
-
-            const last = pts[n - 1];
-            const risk = last.riskCombo;
-            btcRiskData = Object.assign({ risk_combo: risk }, classifyRisk(risk));
+            } catch { /* Use saved history when quotes are unavailable. */ }
+            const point = bitcoinSnapshot(raw);
+            btcRiskData = Object.assign({ risk_combo: point.risk }, classifyRisk(point.risk, 'BTC'));
         } catch (e) {
             console.warn('BTC risk computation failed:', e);
         }
     }
 
-    // SPY 200-week risk — computed from weekly closes and ranked against
-    // the trailing 20-year history, matching their dedicated metric pages.
+    // SPY uses the dashboard weekly model with its live-price overlay.
     let spyRiskData = null;
-
-    function upperBound(values, target) {
-        let lo = 0, hi = values.length;
-        while (lo < hi) {
-            const mid = (lo + hi) >> 1;
-            if (values[mid] <= target) lo = mid + 1;
-            else hi = mid;
-        }
-        return lo;
-    }
-
-    function assignTrailingPercentiles(points, valueKey, outputKey) {
-        const valid = points.filter(p => Number.isFinite(p[valueKey]));
-        const coordinates = Array.from(new Set(valid.map(p => p[valueKey]))).sort((a, b) => a - b);
-        const bit = new Int32Array(coordinates.length + 1);
-        const add = (idx, delta) => {
-            for (let i = idx + 1; i < bit.length; i += i & -i) bit[i] += delta;
-        };
-        const sum = idx => {
-            let total = 0;
-            for (let i = idx; i > 0; i -= i & -i) total += bit[i];
-            return total;
-        };
-        const windowMs = 20 * 365.25 * 864e5;
-        let left = 0;
-        valid.forEach((point, i) => {
-            const cutoff = point.ms - windowMs;
-            while (left < i && valid[left].ms < cutoff) {
-                add(upperBound(coordinates, valid[left][valueKey]) - 1, -1);
-                left++;
-            }
-            add(upperBound(coordinates, point[valueKey]) - 1, 1);
-            point[outputKey] = sum(upperBound(coordinates, point[valueKey])) / (i - left + 1);
-        });
-    }
-
-    function calculate200WeekRisk(raw) {
-        const points = raw.map(([date, price]) => ({
-            date,
-            price,
-            ms: new Date(date + 'T00:00:00Z').getTime()
-        })).filter(p => p.price > 0);
-
-        const weekly = [];
-        const weekKey = point => {
-            const date = new Date(point.ms);
-            const daysFromMonday = (date.getUTCDay() + 6) % 7;
-            date.setUTCDate(date.getUTCDate() - daysFromMonday);
-            return date.toISOString().slice(0, 10);
-        };
-        let activeWeek = null;
-        let activeWeeklyClose = null;
-        points.forEach(point => {
-            const key = weekKey(point);
-            if (activeWeek !== null && key !== activeWeek) weekly.push(activeWeeklyClose);
-            activeWeek = key;
-            activeWeeklyClose = { date: point.date, ms: point.ms, price: point.price };
-        });
-        if (activeWeeklyClose) weekly.push(activeWeeklyClose);
-
-        let weeklySum = 0;
-        weekly.forEach((point, i) => {
-            weeklySum += point.price;
-            if (i >= 200) weeklySum -= weekly[i - 200].price;
-            if (i >= 199) {
-                point.ma200W = weeklySum / 200;
-                point.dev200W = Math.log(point.price / point.ma200W);
-            }
-        });
-        assignTrailingPercentiles(weekly, 'dev200W', 'risk200W');
-        // As on the dedicated SPY page, the active calendar week is provisional.
-        const last = weekly[weekly.length - 2];
-        return last && Number.isFinite(last.risk200W) ? last.risk200W : null;
-    }
 
     async function computeEquityRisk(symbol, csvUrl) {
         const resp = await fetch(csvUrl + '?v=' + Date.now());
+        if (!resp.ok) throw new Error('Risk history unavailable');
         const text = await resp.text();
         const rows = text.trim().split('\n').slice(1);
         const raw = rows.map(row => {
@@ -569,25 +455,14 @@
             return [date, parseFloat(price)];
         }).filter(row => !isNaN(row[1]));
 
+        let quote = null;
         try {
-            const liveResp = await fetch(WORKER_URL + '/api/quote?symbol=' + symbol, { signal: AbortSignal.timeout(5000) });
-            if (liveResp.ok) {
-                const quote = await liveResp.json();
-                if (quote.c && quote.c > 0) {
-                    const quoteDate = quote.t
-                        ? new Date(quote.t * 1000).toISOString().slice(0, 10)
-                        : new Date().toISOString().slice(0, 10);
-                    const lastDate = raw[raw.length - 1][0];
-                    if (quoteDate === lastDate) raw[raw.length - 1][1] = quote.c;
-                    else if (quoteDate > lastDate) raw.push([quoteDate, quote.c]);
-                }
-            }
-        } catch (e) {
-            console.warn(symbol + ' live quote failed:', e);
-        }
-
-        const risk = calculate200WeekRisk(raw);
-        return risk == null ? null : Object.assign({ risk_combo: risk }, classifyRisk(risk));
+            const response = await fetch(WORKER_URL + '/api/quote?symbol=' + symbol, { signal: AbortSignal.timeout(5000) });
+            if (response.ok) quote = await response.json();
+        } catch { /* Fall back to the saved weekly signal. */ }
+        const { spySnapshot } = await import('/market-models.js?v=259e5b0d707fbaa0');
+        const point = spySnapshot(raw, quote);
+        return Object.assign({ risk_combo: point.risk }, classifyRisk(point.risk, symbol));
     }
 
     async function computeSpyRisk() {
