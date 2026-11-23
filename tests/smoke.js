@@ -360,7 +360,58 @@ const checks = [
       await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length === 10, null, { timeout: 20000 });
       await expectText(page, 'Risk Price Scenarios');
       await expectText(page, 'Market Cycle Risk');
-      await assertSectionNavigation(page, 10, 'SPY');
+      await assertSectionNavigation(page, isNextExport ? 11 : 10, 'SPY');
+      if (isNextExport) {
+        const chart = page.locator('#valuation-bands');
+        await chart.locator('.vb-chart').waitFor();
+        if (await chart.locator('.vb-historical-line').count() !== 6 || await chart.locator('.vb-projected-line').count() !== 6) {
+          throw new Error('Expected six historical and projected P/E bands from 12× to 22×');
+        }
+        const assertMarkerValues = async (growth, scale) => {
+          const markers = await chart.locator('.vb-projection-marker, .vb-end-marker').evaluateAll(nodes => nodes.map(node => ({
+            pe: Number(node.dataset.pe), ms: Number(node.dataset.ms),
+            text: node.querySelector('.vb-point-value, .vb-end-value')?.textContent,
+            circles: node.querySelectorAll('circle').length,
+          })));
+          if (markers.length < 12) throw new Error('Missing labeled projection circles');
+          for (const marker of markers) {
+            const eps = spyValuation.forward_12m_eps * Math.pow(1 + growth / 100, (marker.ms - Date.parse(spyValuation.as_of + 'T00:00:00Z')) / (365.2425 * 86400000));
+            const expected = (scale === 0.1 ? '$' : '') + (eps * marker.pe * scale).toLocaleString('en-US', { maximumFractionDigits: 0 });
+            if (marker.circles !== 1 || marker.text !== expected) throw new Error(`Incorrect circle label: ${marker.text}; expected ${expected}`);
+          }
+        };
+        await assertMarkerValues(8, 1);
+        const originalPath = await chart.locator('.vb-projected-line').first().getAttribute('d');
+        await chart.getByLabel('Annual EPS growth').fill('12');
+        if (await chart.locator('.vb-projected-line').first().getAttribute('d') === originalPath) throw new Error('EPS growth did not update valuation bands');
+        await chart.getByRole('button', { name: '3Y', exact: true }).click();
+        await chart.getByRole('button', { name: 'SPY', exact: true }).click();
+        if (!(await chart.locator('.vb-stats strong').first().innerText()).startsWith('$')) throw new Error('SPY chart scale should show dollars');
+        await assertMarkerValues(12, 0.1);
+        await chart.getByRole('button', { name: 'S&P 500 proxy', exact: true }).click();
+        for (const growth of [30, -20]) {
+          await chart.getByLabel('Annual EPS growth').fill(String(growth));
+          await assertMarkerValues(growth, 1);
+          const overlaps = await chart.locator('.vb-projection-marker .vb-point-value, .vb-end-value').evaluateAll(nodes => {
+            const boxes = nodes.map(node => node.getBoundingClientRect());
+            let count = 0;
+            for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
+              const a = boxes[i], b = boxes[j];
+              if (a.left < b.right + 2 && a.right + 2 > b.left && a.top < b.bottom + 2 && a.bottom + 2 > b.top) count++;
+            }
+            return count;
+          });
+          if (overlaps) throw new Error(`Projection circle values overlap at ${growth}% growth`);
+        }
+        await chart.getByLabel('Annual EPS growth').fill('40');
+        if (await chart.getByLabel('Annual EPS growth').getAttribute('aria-invalid') !== 'true') throw new Error('Out-of-range growth should be rejected');
+        await chart.getByLabel('Annual EPS growth').fill('8');
+        await chart.getByRole('button', { name: '2Y', exact: true }).click();
+        await chart.getByRole('button', { name: 'S&P 500 proxy', exact: true }).click();
+        await chart.getByLabel('Inspect date').focus();
+        await page.keyboard.press('End');
+        if (!(await chart.locator('.vb-inspector').innerText()).includes('Projected scenario')) throw new Error('Keyboard date inspection should reach the projection');
+      }
       const riskLevels = (await page.locator('#riskTable .rc-risk').allTextContents()).map(label => label.replace(/^Risk\s+/, ''));
       if (riskLevels.join(',') !== '0.10,0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.00') {
         throw new Error(`unexpected SPY risk scenario intervals: ${riskLevels.join(',')}`);

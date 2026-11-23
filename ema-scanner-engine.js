@@ -418,7 +418,7 @@
 
     async function computeBtcRisk() {
         try {
-            const { bitcoinSnapshot } = await import('/market-models.js?v=259e5b0d707fbaa0');
+            const { bitcoinSnapshot } = await import('/market-models.js?v=41c47baebca28653');
             const resp = await fetch('/data.csv?v=' + Date.now());
             if (!resp.ok) throw new Error('BTC history unavailable');
             const raw = (await resp.text()).trim().split('\n').slice(1).map(row => {
@@ -460,7 +460,7 @@
             const response = await fetch(WORKER_URL + '/api/quote?symbol=' + symbol, { signal: AbortSignal.timeout(5000) });
             if (response.ok) quote = await response.json();
         } catch { /* Fall back to the saved weekly signal. */ }
-        const { spySnapshot } = await import('/market-models.js?v=259e5b0d707fbaa0');
+        const { spySnapshot } = await import('/market-models.js?v=41c47baebca28653');
         const point = spySnapshot(raw, quote);
         return Object.assign({ risk_combo: point.risk }, classifyRisk(point.risk, symbol));
     }

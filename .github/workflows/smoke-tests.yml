@@ -54,6 +54,9 @@ jobs:
       - name: Test investment model corrections
         run: npm run test:investment
 
+      - name: Test valuation band calculations
+        run: node --test tests/valuation-bands.test.cjs
+
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 

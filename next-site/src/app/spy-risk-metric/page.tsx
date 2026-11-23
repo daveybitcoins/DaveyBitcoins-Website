@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { spyRiskEngineSrc } from "@/lib/spy-risk-asset";
 import { RiskSectionNav } from "@/components/risk-section-nav";
+import { ValuationBands } from "@/components/valuation-bands";
 
 export const metadata: Metadata = {
   title: "SPY Risk Metric | DaveyBitcoins",
@@ -43,6 +44,7 @@ const sectionLinks = [
   ["risk-oscillator", "Risk oscillator"],
   ["risk-scenarios", "Risk scenarios"],
   ["downside-scenarios", "Downside scenarios"],
+  ["valuation-bands", "Valuation bands"],
   ["pe-projections", "P/E projections"],
   ["historic-events", "Historic events"],
   ["vix-chart", "VIX chart"],
@@ -190,6 +192,8 @@ export default function SpyRiskMetricPage() {
             market floor.
           </p>
         </section>
+
+        <ValuationBands />
 
         <section className="spy-panel pe-proj-wrap" id="pe-projections">
           <div className="spy-section-heading">
