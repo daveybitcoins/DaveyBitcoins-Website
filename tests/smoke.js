@@ -394,14 +394,16 @@ const checks = [
           await assertMarkerValues(growth, 1);
           const overlaps = await chart.locator('.vb-projection-marker .vb-point-value, .vb-end-value').evaluateAll(nodes => {
             const boxes = nodes.map(node => node.getBoundingClientRect());
-            let count = 0;
+            const pairs = [];
             for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
               const a = boxes[i], b = boxes[j];
-              if (a.left < b.right + 2 && a.right + 2 > b.left && a.top < b.bottom + 2 && a.bottom + 2 > b.top) count++;
+              if (a.left < b.right + 2 && a.right + 2 > b.left && a.top < b.bottom + 2 && a.bottom + 2 > b.top) {
+                pairs.push([nodes[i].textContent, nodes[j].textContent]);
+              }
             }
-            return count;
+            return pairs;
           });
-          if (overlaps) throw new Error(`Projection circle values overlap at ${growth}% growth`);
+          if (overlaps.length) throw new Error(`Projection circle values overlap at ${growth}% growth: ${JSON.stringify(overlaps)}`);
         }
         await chart.getByLabel('Annual EPS growth').fill('40');
         if (await chart.getByLabel('Annual EPS growth').getAttribute('aria-invalid') !== 'true') throw new Error('Out-of-range growth should be rejected');

@@ -83,9 +83,10 @@ function BandChart({ data: { prices, anchor } }: { data: BandData }) {
   const min = Math.max(0, Math.floor((low - (high - low) * 0.08) / tickSize) * tickSize);
   const max = Math.ceil((high + (high - low) * 0.1) / tickSize) * tickSize;
   // Keep every circle value legible: longer horizons need more horizontal
-  // room, and falling-EPS scenarios need more space between their lower bands.
+  // room for six-digit labels in system fallback fonts, and falling-EPS
+  // scenarios need more space between their lower bands.
   const shortestQuarter = Math.min(...projectionMarkers.slice(1).map((point, i) => point.ms - projectionMarkers[i].ms));
-  const plotWidth = Math.max(916, (model.end - model.start) / shortestQuarter * 60);
+  const plotWidth = Math.max(916, (model.end - model.start) / shortestQuarter * 80);
   const tightestBandGap = Math.min(...model.projected.map(point => point.eps)) * (PE_MULTIPLES[1] - minPE) * scale;
   const plotHeight = Math.max(374, (max - min) / tightestBandGap * 30);
   const PLOT = { left: 72, right: 72 + plotWidth, top: 64, bottom: 64 + plotHeight };
