@@ -24,6 +24,12 @@
   font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
 }
 
+.spy-page .historic-event-note a {
+  color: var(--spy-gold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 [data-theme="light"] .spy-page {
   --spy-canvas: #fff9ef;
   --spy-border-soft: #eadcc8;

@@ -485,133 +485,6 @@ async function main() {
     });
   }
 
-  // Valuation-aware downside scenarios. Unlike the 200W risk cards,
-  // these explicitly adjust earnings before applying the assumed P/E floor.
-  {
-    const valuationFloor = 15;
-    const stressScenarios = [
-      { label: 'No EPS decline', shock: 0 },
-      { label: 'Mild recession', shock: -0.10 },
-      { label: 'Recession', shock: -0.20 },
-      { label: 'Severe recession', shock: -0.35 }
-    ];
-    const tbody = document.getElementById('valuationStressBody');
-    stressScenarios.forEach(scenario => {
-      const stressedEPS = fwd12mEPS * (1 + scenario.shock);
-      const impliedSPY = stressedEPS * valuationFloor / 10;
-      const movePct = (impliedSPY / last.price - 1) * 100;
-      const moveColor = movePct >= 0 ? '#58c56f' : '#ef5d4f';
-      const shockText = scenario.shock === 0 ? '0%' : (scenario.shock * 100).toFixed(0) + '%';
-      const moveText = (movePct >= 0 ? '+' : '') + movePct.toFixed(1) + '%';
-      const row = document.createElement('tr');
-      row.innerHTML =
-        '<td>' + scenario.label + '</td>' +
-        '<td>' + shockText + '</td>' +
-        '<td>$' + stressedEPS.toFixed(0) + '</td>' +
-        '<td>' + valuationFloor + '×</td>' +
-        '<td>$' + Math.round(impliedSPY).toLocaleString() + '</td>' +
-        '<td style="color:' + moveColor + '">' + moveText + '</td>';
-      tbody.appendChild(row);
-    });
-  }
-
-  // Forward P/E Price Projection Table (interactive)
-  function buildPEProjectionTable(growthPct) {
-    const scenarioGrowth = growthPct / 100;
-    const consensusYear = Number(valuation.next_year) || 2027;
-    const years = Array.from({ length: 5 }, (_, index) => consensusYear + index);
-    const peMultiples = [16, 17, 18, 19, 20, 21, 22, 23, 24];
-
-    // The current-year consensus is shown in the valuation summary. The table
-    // begins with the next calendar-year consensus, then adjustable scenarios.
-    const epsMap = { [consensusYear]: Number(valuation.next_year_eps) || 410.17 };
-    for (let y = consensusYear + 1; y <= consensusYear + 4; y++) {
-      epsMap[y] = epsMap[y - 1] * (1 + scenarioGrowth);
-    }
-
-    // Build header (highlight the column matching current rounded P/E)
-    const thead = document.getElementById('peProjHead');
-    const exactCurrentPE = spxEstimate / fwd12mEPS;
-    const currentPE = Math.round(exactCurrentPE);
-    const valuationAsOf = valuation.as_of ? ' · FactSet as of ' + valuation.as_of : '';
-    document.getElementById('peCurrentContext').textContent = 'Approximate valuation: ' + exactCurrentPE.toFixed(1) + '× forward P/E' + valuationAsOf + ' · CY' + valuation.current_year + ' growth-derived EPS: $' + Math.round(valuation.current_year_eps) + ' · ' + currentPE + '× is the nearest whole-number scenario';
-    let hRow = '<tr><th>Year</th>';
-    peMultiples.forEach(pe => {
-      const currentLabel = pe === currentPE ? '<span class="pe-current-label">Nearest current</span>' : '';
-      hRow += '<th' + (pe === currentPE ? ' class="pe-highlight"' : '') + '>' + pe + '×' + currentLabel + '</th>';
-    });
-    hRow += '</tr>';
-    thead.innerHTML = hRow;
-
-    // Build body rows
-    const tbody = document.getElementById('peProjBody');
-    tbody.innerHTML = '';
-    const allYears = years;
-
-    allYears.forEach(y => {
-      const eps = epsMap[y];
-      const estimateType = y === consensusYear ? 'Growth-derived' : 'Scenario';
-      const growthLabel = y === consensusYear ? Number(valuation.next_year_growth_pct).toFixed(1) + '%' : growthPct.toFixed(1) + '%';
-      let row = '<tr><td>' + y + ' <span class="pe-eps">' + estimateType + ' EPS $' + eps.toFixed(0) + ' (+' + growthLabel + ')</span></td>';
-      peMultiples.forEach(pe => {
-        const spxPrice = eps * pe;
-        const spyPrice = spxPrice / 10;
-        const isHighlight = (pe === currentPE);
-        const cls = isHighlight ? ' class="pe-highlight"' : '';
-        row += '<td' + cls + '>$' + Math.round(spyPrice).toLocaleString() + '</td>';
-      });
-      row += '</tr>';
-      tbody.innerHTML += row;
-    });
-  }
-
-  document.getElementById('postConsensusYear').textContent = valuation.next_year;
-  document.getElementById('valuationStressDisclosure').textContent =
-    'Approximate forward EPS = report closing index price / rounded forward P/E in FactSet Earnings Insight (as of ' + valuation.as_of + '). Calendar EPS dollar amounts are illustrative growth roll-forwards, not extracted FactSet dollar estimates. The 15× multiple is a scenario, not a guaranteed floor.';
-  const projectionDisclosure = document.getElementById('peProjectionDisclosure');
-  projectionDisclosure.innerHTML = '';
-  const sourceLink = document.createElement('a');
-  sourceLink.textContent = valuation.source + ' ' + valuation.as_of;
-  sourceLink.href = valuation.source_url;
-  sourceLink.target = '_blank';
-  sourceLink.rel = 'noopener';
-  projectionDisclosure.append(
-    valuation.actual_year + ' EPS assumption: $' + Number(valuation.actual_eps).toFixed(2) + ' · ',
-    sourceLink,
-    ' growth rates applied to that assumption: CY' + valuation.current_year + ' +' + Number(valuation.current_year_growth_pct).toFixed(1) + '% (~$' + Math.round(valuation.current_year_eps) + '), CY' + valuation.next_year + ' +' + Number(valuation.next_year_growth_pct).toFixed(1) + '% (~$' + Math.round(valuation.next_year_eps) + ') · ' + (Number(valuation.next_year) + 1) + '+ default scenario: 8% · Updated weekly'
-  );
-
-  // Initial render + bounded input and preset controls
-  const growthInput = document.getElementById('epsGrowthInput');
-  const growthStatus = document.getElementById('epsGrowthStatus');
-  const growthPresets = Array.from(document.querySelectorAll('.pe-growth-preset'));
-  function setScenarioGrowth(rawValue) {
-    const parsed = Number.parseFloat(rawValue);
-    if (!Number.isFinite(parsed)) {
-      growthStatus.textContent = 'Enter 0–20%';
-      return;
-    }
-    const clamped = Math.min(20, Math.max(0, parsed));
-    growthInput.value = clamped;
-    growthStatus.textContent = clamped === parsed ? '' : 'Limited to 0–20%';
-    growthPresets.forEach(button => {
-      const active = Number(button.dataset.growth) === clamped;
-      button.classList.toggle('active', active);
-      button.setAttribute('aria-pressed', active ? 'true' : 'false');
-    });
-    buildPEProjectionTable(clamped);
-  }
-
-  buildPEProjectionTable(8);
-  growthInput.addEventListener('input', function() {
-    setScenarioGrowth(this.value);
-  });
-  growthPresets.forEach(button => {
-    button.addEventListener('click', function() {
-      setScenarioGrowth(this.dataset.growth);
-    });
-  });
-
   // Historical Market Bottoms
   {
     const BOTTOMS = [
@@ -634,6 +507,7 @@ async function main() {
       { date: "2024-08-05", event: "Yen Carry Trade (Peak Fear)", peak: true, vixHigh: 65.7, info: "Bank of Japan rate hike triggered massive yen carry trade unwind. Global equity selloff, Nikkei fell 12% in a day." },
       { date: "2025-04-08", event: "Tariff Fears (Peak Fear)", peak: true, vixHigh: 57.5, info: "Escalating US-China tariffs and trade war fears. Markets sold off on uncertainty over global supply chains and economic growth." },
       { date: "2026-03-27", event: "US-Iran War (Peak Fear)", peak: true, vixHigh: 31.1, info: "US-Israel strikes on Iran and a prolonged Strait of Hormuz disruption pushed oil above $100, reviving inflation and growth fears. VIX closed at 31.05." },
+      { date: "2026-11-20", event: "Jensen Huang resignation", vixHigh: 40.03, info: "NVIDIA announced Jensen Huang's resignation on November 12, 2026. This row records the November 20 closing low during the subsequent selloff, rather than the announcement date. Cboe reported a VIX intraday high of 40.03 that session." },
     ];
 
     const tbody = document.getElementById('riskLowsBody');
@@ -794,73 +668,6 @@ async function main() {
     }
   }
 
-  // Risk oscillator chart
-  function renderRiskChart() {
-    const tc = themeColors();
-    const cv=document.getElementById('riskCanvas'), ctx=cv.getContext('2d');
-    const W=cv.width, H=cv.height;
-    const P={t:16,r:76,b:48,l:80};
-    const cw=W-P.l-P.r, ch=H-P.t-P.b;
-    const { s, e } = getComparisonRange();
-    const S = sampleForRange(s, e);
-    ctx.fillStyle=tc.canvasBg; ctx.fillRect(0,0,W,H);
-    if (s >= e) return;
-    const xOf=i=>P.l+((i-s)/(e-s))*cw;
-    const yOf=r=>P.t+ch*(1-r);
-    // Zone fills
-    SPY_RISK_ZONES.forEach(zone=>{
-      ctx.fillStyle=riskColor(zone.min,0.10);ctx.fillRect(P.l,yOf(zone.max),cw,yOf(zone.min)-yOf(zone.max));
-    });
-    const riskDrawdownBands = shadeDrawdowns(ctx, xOf, P.t, H-P.b, s, e);
-    cv.dataset.comparisonStart = pts[s].date;
-    cv.dataset.drawdownBands = String(riskDrawdownBands);
-    cv.dataset.model = '200W trailing-20-year weekly percentile';
-    SPY_RISK_ZONES.slice(0,-1).map(zone=>zone.max).forEach(v=>{
-      ctx.strokeStyle=tc.zoneDash;ctx.lineWidth=1;ctx.setLineDash([4,4]);
-      ctx.beginPath();ctx.moveTo(P.l,yOf(v));ctx.lineTo(W-P.r,yOf(v));ctx.stroke();ctx.setLineDash([]);
-    });
-    ctx.textAlign='right';ctx.font='10px JetBrains Mono';
-    [0,0.25,0.5,0.75,1.0].forEach(v=>{
-      const y=yOf(v);ctx.strokeStyle=tc.gridLine;ctx.lineWidth=1;
-      ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke();
-      ctx.fillStyle=tc.axisText;ctx.fillText(v.toFixed(2),P.l-8,y+3);
-    });
-    // Year grid — 5-year ticks when zoomed out
-    const seenYr=new Set();ctx.textAlign='center';
-    const span=e-s;
-    const yrInterval=span>5000?5:span>1500?2:1;
-    const showMonth=span<1500;
-    for(let i=s;i<=e;i+=S){
-      const yr=+pts[i].date.slice(0,4);const mo=+pts[i].date.slice(5,7);
-      const key=showMonth?pts[i].date.slice(0,7):''+yr;
-      if(!seenYr.has(key)){
-        const show=showMonth?(mo%3===1):(yr%yrInterval===0);
-        if(show){seenYr.add(key);ctx.strokeStyle=tc.gridLine;
-        ctx.beginPath();ctx.moveTo(xOf(i),P.t);ctx.lineTo(xOf(i),H-P.b);ctx.stroke();
-        ctx.fillStyle=tc.axisText;ctx.font='10px JetBrains Mono';ctx.fillText(showMonth?pts[i].date.slice(0,7):yr,xOf(i),H-P.b+18);}
-      }
-    }
-    // Area fill
-    const riskStart = Math.max(s, pts.findIndex(p => !p.modelWarmup));
-    if (riskStart > e) return;
-    ctx.beginPath();ctx.moveTo(xOf(riskStart),yOf(0));
-    for(let i=riskStart;i<=e;i+=S) ctx.lineTo(xOf(i),yOf(pts[i].riskCombo));
-    ctx.lineTo(xOf(e),yOf(0));ctx.closePath();
-    const grd=ctx.createLinearGradient(0,yOf(1),0,yOf(0));
-    grd.addColorStop(0,tc.areaGrad0);grd.addColorStop(0.5,tc.areaGrad5);grd.addColorStop(1,tc.areaGrad1);
-    ctx.fillStyle=grd;ctx.fill();
-    // Combined line
-    for(let i=s+S;i<=e;i+=S){
-      const prev=Math.max(s,i-S);
-      if (pts[i].modelWarmup || pts[prev].modelWarmup) continue;
-      ctx.strokeStyle=riskColor(pts[i].riskCombo,0.90);ctx.lineWidth=1.8;
-      ctx.beginPath();ctx.moveTo(xOf(prev),yOf(pts[prev].riskCombo));ctx.lineTo(xOf(i),yOf(pts[i].riskCombo));ctx.stroke();
-    }
-    // Zone labels
-    ctx.fillStyle=tc.zoneLabels;ctx.font='9px JetBrains Mono';ctx.textAlign='right';
-    SPY_RISK_ZONES.forEach(zone => ctx.fillText(zone.name.toUpperCase(),W-P.r-4,yOf((zone.min+zone.max)/2)));
-  }
-
   // VIX chart
   function renderVixChart() {
     const tc = themeColors();
@@ -929,13 +736,13 @@ async function main() {
     ctx.fillText('LOW FEAR',W-P.r-4,yOf(7.5));
   }
 
-  function renderAll() { renderPriceChart(); renderRiskChart(); renderVixChart(); syncURL(); }
+  function renderAll() { renderPriceChart(); renderVixChart(); syncURL(); }
 
   // Zoom/pan
   function attachZoomPan(canvasId, tipId) {
     const cv = document.getElementById(canvasId);
     const W = cv.width;
-    const P = { l:80, r: canvasId === 'priceCanvas' ? 60 : canvasId === 'vixCanvas' ? 60 : 76 };
+    const P = { l:80, r:60 };
     const cw = W - P.l - P.r;
     let brushing = false, brushStartX = 0;
     const panel = cv.closest('.chart-panel');
@@ -945,7 +752,7 @@ async function main() {
     function mouseIdxFromEvent(e) {
       const rect = cv.getBoundingClientRect();const scaleX = W / rect.width;
       const mx = (e.clientX - rect.left) * scaleX;
-      let { s, e: end } = (canvasId === 'riskCanvas' || canvasId === 'vixCanvas') ? getComparisonRange() : getVisibleRange();
+      let { s, e: end } = canvasId === 'vixCanvas' ? getComparisonRange() : getVisibleRange();
       return Math.round(s + (mx - P.l) / cw * (end - s));
     }
     function canvasXToPercent(canvasX) { return Math.max(0, Math.min(100, (canvasX / W) * 100)); }
@@ -996,8 +803,7 @@ async function main() {
       tip.querySelector('.tt-date').textContent = p.date;
       if (tip.querySelector('.tt-price')) tip.querySelector('.tt-price').textContent = '$' + p.price.toLocaleString(undefined,{maximumFractionDigits:2});
       const riskEl = tip.querySelector('.tt-risk');
-      if (tipId === 'riskTip') riskEl.textContent = p.modelWarmup ? 'Warmup' : p.riskCombo.toFixed(3);
-      else if (tipId === 'vixTip') riskEl.textContent = (p.vix != null ? p.vix.toFixed(2) : '—');
+      if (tipId === 'vixTip') riskEl.textContent = (p.vix != null ? p.vix.toFixed(2) : '—');
       else riskEl.textContent = p.modelWarmup ? 'Warmup' : p.riskCombo.toFixed(3);
       riskEl.style.color = tipId === 'vixTip' ? (p.vix != null ? vixColor(p.vix) : '') : riskTextColor(p.riskCombo);
       tip.style.display = 'block';
@@ -1028,7 +834,6 @@ async function main() {
   // Init
   renderAll();
   attachZoomPan('priceCanvas', 'priceTip');
-  attachZoomPan('riskCanvas', 'riskTip');
   attachZoomPan('vixCanvas', 'vixTip');
   addZoomButtons();
 

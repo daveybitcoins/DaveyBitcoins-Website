@@ -360,7 +360,7 @@ const checks = [
       await page.waitForFunction(() => document.querySelectorAll('#riskTable .risk-cell').length === 10, null, { timeout: 20000 });
       await expectText(page, 'Risk Price Scenarios');
       await expectText(page, 'Market Cycle Risk');
-      await assertSectionNavigation(page, isNextExport ? 11 : 10, 'SPY');
+      await assertSectionNavigation(page, isNextExport ? 8 : 7, 'SPY');
       if (isNextExport) {
         const chart = page.locator('#valuation-bands');
         await chart.locator('.vb-chart').waitFor();
@@ -420,20 +420,14 @@ const checks = [
         throw new Error(`unexpected SPY risk scenario intervals: ${riskLevels.join(',')}`);
       }
       await expectText(page, 'Risk · 200-Week Trend-Deviation Percentile');
-      await expectText(page, 'Weekly risk only');
       await expectText(page, '200-Week Trend');
-      await expectText(page, 'shaded = ≥10% drawdown windows');
-      await expectText(page, 'Valuation-Aware Downside Scenarios');
-      await expectText(page, 'not a guaranteed floor');
-      await expectText(page, 'Forward P/E Price Projections');
-      await expectText(page, 'FactSet Earnings Insight');
-      await expectText(page, 'Updated weekly');
+      await expectText(page, 'shaded = ≥10% SPY drawdown windows');
       await expectText(page, 'Forward 12M P/E');
-      await expectText(page, 'is the nearest whole-number scenario');
-      await expectText(page, 'Nearest current');
-      await expectText(page, `CY${spyValuation.current_year} growth-derived EPS: $${Math.round(spyValuation.current_year_eps)}`);
-      await expectText(page, `FactSet as of ${spyValuation.as_of}`);
-      const currentForwardPE = Number((await page.locator('#peCurrentContext').innerText()).match(/Approximate valuation: ([0-9.]+)×/)?.[1]);
+      if (isNextExport) await expectText(page, 'FactSet Earnings Insight');
+      if (await page.locator('#risk-oscillator, #riskCanvas, #downside-scenarios, #pe-projections').count()) {
+        throw new Error('Removed SPY sections should not remain in the dashboard');
+      }
+      const currentForwardPE = Number((await page.locator('#vFwdPE').innerText()).match(/forward 12M P\/E: ([0-9.]+)×/i)?.[1]);
       const displayedSpyPrice = Number((await page.locator('#vPrice').innerText()).replace(/[$,]/g, ''));
       const expectedForwardPE = displayedSpyPrice * 10 / spyValuation.forward_12m_eps;
       if (!Number.isFinite(currentForwardPE) || Math.abs(currentForwardPE - expectedForwardPE) > 0.06) {
@@ -455,56 +449,24 @@ const checks = [
       if (Math.abs(currentRisk - risk200W) > 0.002) {
         throw new Error('headline risk does not match the 200W percentile');
       }
-      if (await page.locator('#riskCanvas').getAttribute('data-model') !== '200W trailing-20-year weekly percentile') {
-        throw new Error('risk oscillator is not using the weekly-only model');
-      }
-      const riskStart = await page.locator('#riskCanvas').getAttribute('data-comparison-start');
       const vixStart = await page.locator('#vixCanvas').getAttribute('data-comparison-start');
-      if (!riskStart?.startsWith('1993') || riskStart !== vixStart) {
-        throw new Error(`risk/VIX comparison ranges are not aligned: ${riskStart} vs ${vixStart}`);
+      if (!vixStart?.startsWith('1993')) {
+        throw new Error(`VIX history should start with actual SPY history: ${vixStart}`);
       }
-      const riskDrawdownBands = Number(await page.locator('#riskCanvas').getAttribute('data-drawdown-bands'));
       const vixDrawdownBands = Number(await page.locator('#vixCanvas').getAttribute('data-drawdown-bands'));
-      if (riskDrawdownBands < 5 || riskDrawdownBands !== vixDrawdownBands) {
-        throw new Error(`risk/VIX drawdown bands are not aligned: ${riskDrawdownBands} vs ${vixDrawdownBands}`);
+      if (vixDrawdownBands < 5) throw new Error('VIX drawdown shading should remain available');
+      const recentEvent = page.locator('#riskLowsBody tr').filter({ hasText: 'Jensen Huang resignation' });
+      const recentCells = await recentEvent.locator('td').allTextContents();
+      const eventPrice = spyPrices.find(point => point.date === '2026-11-20');
+      if (recentCells[0] !== eventPrice.date || Number(recentCells[2].replace(/[$,]/g, '')) !== Number(eventPrice.price.toFixed(2)) || recentCells[4] !== '40.0') {
+        throw new Error(`Recent event should use the November 20 close and Cboe VIX high: ${JSON.stringify(recentCells)}`);
       }
-      const stressRows = await page.locator('#valuationStressBody tr').allTextContents();
-      if (stressRows.length !== 4) throw new Error(`expected 4 valuation-aware stress rows, got ${stressRows.length}`);
-      const forwardEpsRounded = Math.round(spyValuation.forward_12m_eps);
-      const noDeclineSpy = Math.round(spyValuation.forward_12m_eps * 15 / 10);
-      if (!stressRows.some((row) => row.includes('No EPS decline') && row.includes(`$${forwardEpsRounded}`) && row.includes('15×') && row.includes(`$${noDeclineSpy}`))) {
-        throw new Error('missing no-decline 15x valuation scenario');
-      }
-      const severeEps = Math.round(spyValuation.forward_12m_eps * 0.65);
-      const severeSpy = Math.round(spyValuation.forward_12m_eps * 0.65 * 15 / 10);
-      if (!stressRows.some((row) => row.includes('Severe recession') && row.includes('-35%') && row.includes(`$${severeEps}`) && row.includes(`$${severeSpy}`))) {
-        throw new Error('missing severe-recession valuation scenario');
-      }
-      const growthInput = page.locator('#epsGrowthInput');
-      if (await growthInput.inputValue() !== '8') throw new Error('expected 8% default post-consensus EPS growth');
-      const projectionRows = await page.locator('#peProjBody tr').allTextContents();
-      if (projectionRows.some((row) => row.includes(String(spyValuation.current_year)))) {
-        throw new Error('current year should be summarized above, not listed as a projection row');
-      }
-      if (!projectionRows.some((row) => row.includes(String(spyValuation.next_year)) && row.includes(`Growth-derived EPS $${Math.round(spyValuation.next_year_eps)}`))) {
-        throw new Error('missing next-year growth-derived EPS');
-      }
-      const firstScenarioYear = spyValuation.next_year + 1;
-      if (!projectionRows.some((row) => row.includes(String(firstScenarioYear)) && row.includes(`Scenario EPS $${Math.round(spyValuation.next_year_eps * 1.08)}`))) {
-        throw new Error('missing post-consensus scenario EPS');
-      }
-      await page.locator('.pe-growth-preset[data-growth="12"]').click();
-      if (await growthInput.inputValue() !== '12') throw new Error('expected 12% growth preset to update the input');
-      let updatedRows = await page.locator('#peProjBody tr').allTextContents();
-      if (!updatedRows.some((row) => row.includes(String(firstScenarioYear)) && row.includes(`Scenario EPS $${Math.round(spyValuation.next_year_eps * 1.12)} (+12.0%)`))) {
-        throw new Error('expected 12% preset to update scenario EPS');
-      }
-      await growthInput.fill('27');
-      if (await growthInput.inputValue() !== '20') throw new Error('expected growth input to clamp at 20%');
-      await expectText(page, 'Limited to 0–20%');
-      updatedRows = await page.locator('#peProjBody tr').allTextContents();
-      if (!updatedRows.some((row) => row.includes(String(firstScenarioYear)) && row.includes(`Scenario EPS $${Math.round(spyValuation.next_year_eps * 1.20)} (+20.0%)`))) {
-        throw new Error('expected clamped input to update scenario EPS consistently');
+      const eventSource = page.locator('.historic-event-note').getByRole('link', { name: 'NVIDIA announcement' });
+      if (!(await eventSource.getAttribute('href')).includes('NVIDIA-Announces-CEO-Transition')) throw new Error('Recent event source is missing');
+      for (let years = 1; years <= 3; years++) {
+        if (spyPrices.at(-1).ms < eventPrice.ms + years * 365.2425 * 864e5 && recentCells[4 + years] !== '—') {
+          throw new Error('Recent event must not invent forward returns before the observation horizon');
+        }
       }
       const covidRow = page.locator('#riskLowsBody tr').filter({ hasText: 'COVID-19 Crash' });
       const covidCells = await covidRow.locator('td').allTextContents();

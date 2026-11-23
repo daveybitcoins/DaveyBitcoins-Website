@@ -41,11 +41,8 @@ function Tooltip({
 const sectionLinks = [
   ["summary", "Summary"],
   ["price-chart", "Price chart"],
-  ["risk-oscillator", "Risk oscillator"],
   ["risk-scenarios", "Risk scenarios"],
-  ["downside-scenarios", "Downside scenarios"],
   ["valuation-bands", "Valuation bands"],
-  ["pe-projections", "P/E projections"],
   ["historic-events", "Historic events"],
   ["vix-chart", "VIX chart"],
   ["dcaSection", "DCA simulator"],
@@ -126,21 +123,6 @@ export default function SpyRiskMetricPage() {
           <div className="legend-bar" id="legendBar" />
         </section>
 
-        <section className="spy-panel chart-panel" id="risk-oscillator">
-          <div className="chart-header">
-            <div>
-              <h2 className="chart-label">200W Risk Oscillator (0 – 1)</h2>
-            </div>
-            <div className="chart-note">
-              Weekly risk only · 1993+ aligned with VIX · shaded = ≥10%
-              drawdown windows
-            </div>
-          </div>
-          <canvas aria-label="Historical risk oscillator" role="img" id="riskCanvas" width="1380" height="340" />
-          <Tooltip id="riskTip" valueLabel="Risk" />
-        </section>
-
-
         <section className="spy-panel risk-table-wrap" id="risk-scenarios">
           <div className="spy-section-heading">
             <div>
@@ -158,108 +140,7 @@ export default function SpyRiskMetricPage() {
           </p>
         </section>
 
-        <section
-          className="spy-panel pe-proj-wrap valuation-stress-wrap"
-          id="downside-scenarios"
-        >
-          <div className="spy-section-heading">
-            <div>
-              <h2>Valuation-Aware Downside Scenarios</h2>
-            </div>
-            <p>
-              15× forward P/E scenario floor · Earnings estimates decline with
-              the severity of the downturn.
-            </p>
-          </div>
-          <div className="spy-table-scroll">
-            <table className="pe-proj-table" id="valuationStressTable">
-              <thead>
-                <tr>
-                  <th>Scenario</th>
-                  <th>EPS Change</th>
-                  <th>Forward EPS</th>
-                  <th>P/E Assumption</th>
-                  <th>Implied SPY</th>
-                  <th>Vs. Current</th>
-                </tr>
-              </thead>
-              <tbody id="valuationStressBody" />
-            </table>
-          </div>
-          <p className="spy-disclosure" id="valuationStressDisclosure">
-            Uses the forward EPS anchor refreshed weekly from FactSet Earnings
-            Insight. The 15× multiple is a valuation scenario—not a guaranteed
-            market floor.
-          </p>
-        </section>
-
         <ValuationBands />
-
-        <section className="spy-panel pe-proj-wrap" id="pe-projections">
-          <div className="spy-section-heading">
-            <div>
-              <h2>Forward P/E Price Projections</h2>
-            </div>
-            <p className="pe-current-context" id="peCurrentContext" />
-          </div>
-          <div className="pe-controls">
-            <label htmlFor="epsGrowthInput">
-              Post-<span id="postConsensusYear">2027</span> EPS growth
-            </label>
-            <div>
-              <input
-                type="number"
-                id="epsGrowthInput"
-                defaultValue="8"
-                min="0"
-                max="20"
-                step="0.5"
-                aria-label="Post-2027 EPS growth percentage"
-              />
-              <span>% Y-o-Y scenario · SPY ≈ SPX ÷ 10</span>
-            </div>
-            <span
-              className="pe-growth-status"
-              id="epsGrowthStatus"
-              aria-live="polite"
-            />
-          </div>
-          <div
-            className="pe-growth-presets"
-            aria-label="Post-2027 EPS growth presets"
-          >
-            <button type="button" className="pe-growth-preset" data-growth="4">
-              4%
-            </button>
-            <button type="button" className="pe-growth-preset" data-growth="6">
-              6%
-            </button>
-            <button
-              type="button"
-              className="pe-growth-preset active"
-              data-growth="8"
-            >
-              8% default
-            </button>
-            <button type="button" className="pe-growth-preset" data-growth="10">
-              10%
-            </button>
-            <button type="button" className="pe-growth-preset" data-growth="12">
-              12%
-            </button>
-          </div>
-          <div className="spy-table-scroll">
-            <table className="pe-proj-table" id="peProjTable">
-              <thead id="peProjHead" />
-              <tbody id="peProjBody" />
-            </table>
-          </div>
-          <p className="spy-disclosure" id="peProjectionDisclosure">
-            Calendar EPS dollar amounts are illustrative growth roll-forwards from
-            a maintained 2025 EPS assumption of $271.23. Report growth rates and
-            the approximate forward EPS anchor load with the saved data.
-          </p>
-        </section>
 
         <section className="spy-panel risk-lows-wrap" id="historic-events">
           <div className="spy-section-heading">
@@ -288,6 +169,12 @@ export default function SpyRiskMetricPage() {
               <tbody id="riskLowsBody" />
             </table>
           </div>
+          <p className="spy-disclosure historic-event-note">
+            The Jensen Huang resignation row records the November 20, 2026 market close
+            following NVIDIA’s November 12 announcement. VIX uses the daily intraday high.{" "}
+            <a href="https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-CEO-Transition/default.aspx" target="_blank" rel="noreferrer">NVIDIA announcement</a>{" · "}
+            <a href="https://www.cboe.com/tradable-products/vix/vix-historical-data" target="_blank" rel="noreferrer">Cboe VIX history</a>
+          </p>
         </section>
 
         <section className="spy-panel chart-panel" id="vix-chart">
@@ -296,7 +183,7 @@ export default function SpyRiskMetricPage() {
               <h2 className="chart-label">VIX — Fear Index</h2>
             </div>
             <div className="chart-note">
-              Same 1993+ time axis · shaded = ≥10% SPY drawdown windows
+              1993+ history · shaded = ≥10% SPY drawdown windows
             </div>
           </div>
           <canvas aria-label="VIX history" role="img" id="vixCanvas" width="1380" height="280" />
@@ -491,12 +378,8 @@ export default function SpyRiskMetricPage() {
               scenarios using the current 200W average—not price targets.
             </p>
             <p>
-              <span className="hl">Risk / VIX Alignment:</span> Both comparison
-              charts use actual SPY history from January 1993 and share the same date range. Prices exclude dividend adjustments; DCA includes reinvested distributions. Pre-inception proxy data is excluded.
-            </p>
-            <p>
-              <span className="hl">Valuation-Aware Downside:</span> Applies a
-              15× forward P/E scenario after explicit earnings shocks.
+              <span className="hl">Price &amp; VIX History:</span> SPY and VIX use
+              actual history from January 1993. Prices exclude dividend adjustments; DCA includes reinvested distributions. Pre-inception proxy data is excluded.
             </p>
           </div>
         </section>
