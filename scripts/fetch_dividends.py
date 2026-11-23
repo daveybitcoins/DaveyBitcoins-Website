@@ -148,7 +148,7 @@ def current_frequency_payments(payments, frequency):
     return recent_payments[-4:]
 
 
-def apply_instrument_status(tickers):
+def apply_instrument_status(tickers, previous_tickers=None):
     """Persist independently sourced closures across provider refreshes."""
     with open(os.path.join(DATA_DIR, "dividend_instrument_status.json")) as source:
         statuses = json.load(source)
@@ -156,6 +156,12 @@ def apply_instrument_status(tickers):
         if symbol not in tickers:
             continue
         data = tickers[symbol]
+        # Delisted symbols can disappear from provider history endpoints.
+        # Preserve previously saved cash events when no replacement is returned.
+        if not data.get("last_payments") and previous_tickers:
+            previous_payments = previous_tickers.get(symbol, {}).get("last_payments", [])
+            if previous_payments:
+                data["last_payments"] = [dict(payment) for payment in previous_payments]
         data["instrument_status"] = status
         data["dividend_rate"] = 0
         data["dividend_yield"] = 0
@@ -731,7 +737,7 @@ def main():
             data["dividend_rate"] = 0
             data["dividend_yield"] = 0
             data["annualization_method"] = "non_recurring_event"
-    apply_instrument_status(tickers)
+    apply_instrument_status(tickers, existing_data)
 
     if massive_payment_refreshes:
         print(f"  Refreshed {massive_payment_refreshes} dividend histories from Massive")

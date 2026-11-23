@@ -213162,7 +213162,56 @@
       "payout_ratio": null,
       "frequency": "weekly",
       "ex_dividend_date": null,
-      "last_payments": [],
+      "last_payments": [
+        {
+          "ex_date": "2026-05-07",
+          "amount": 0.5315,
+          "pay_date": "2026-05-08",
+          "record_date": "2026-05-07",
+          "declaration_date": "2026-01-06"
+        },
+        {
+          "ex_date": "2026-05-14",
+          "amount": 0.4761,
+          "pay_date": "2026-05-15",
+          "record_date": "2026-05-14",
+          "declaration_date": "2026-01-06"
+        },
+        {
+          "ex_date": "2026-05-21",
+          "amount": 0.3402,
+          "pay_date": "2026-05-22",
+          "record_date": "2026-05-21",
+          "declaration_date": "2026-01-06"
+        },
+        {
+          "ex_date": "2026-05-28",
+          "amount": 0.2737,
+          "pay_date": "2026-05-29",
+          "record_date": "2026-05-28",
+          "declaration_date": "2026-01-06"
+        },
+        {
+          "ex_date": "2026-06-04",
+          "amount": 0.3506,
+          "pay_date": "2026-06-05",
+          "record_date": "2026-06-04",
+          "declaration_date": "2026-01-06"
+        },
+        {
+          "ex_date": "2026-06-11",
+          "amount": 0.2492,
+          "pay_date": "2026-06-12",
+          "record_date": "2026-06-11",
+          "declaration_date": "2026-01-06"
+        },
+        {
+          "ex_date": "2026-06-18",
+          "amount": 39.4274,
+          "pay_date": "2026-06-24",
+          "distribution_type": "liquidation"
+        }
+      ],
       "instrument_status": {
         "status": "liquidated",
         "source_url": "https://www.sec.gov/Archives/edgar/data/1924868/000199937126011687/yieldmax_497-052926.htm",
@@ -213190,7 +213239,56 @@
       "payout_ratio": null,
       "frequency": "weekly",
       "ex_dividend_date": null,
-      "last_payments": [],
+      "last_payments": [
+        {
+          "ex_date": "2026-05-05",
+          "amount": 0.1069,
+          "pay_date": "2026-05-06",
+          "record_date": "2026-05-05",
+          "declaration_date": "2026-05-04"
+        },
+        {
+          "ex_date": "2026-05-12",
+          "amount": 0.1229,
+          "pay_date": "2026-05-13",
+          "record_date": "2026-05-12",
+          "declaration_date": "2026-05-11"
+        },
+        {
+          "ex_date": "2026-05-19",
+          "amount": 0.0904,
+          "pay_date": "2026-05-20",
+          "record_date": "2026-05-19",
+          "declaration_date": "2026-05-18"
+        },
+        {
+          "ex_date": "2026-05-27",
+          "amount": 0.0921,
+          "pay_date": "2026-05-28",
+          "record_date": "2026-05-27",
+          "declaration_date": "2026-05-26"
+        },
+        {
+          "ex_date": "2026-06-02",
+          "amount": 0.1065,
+          "pay_date": "2026-06-03",
+          "record_date": "2026-06-02",
+          "declaration_date": "2026-06-01"
+        },
+        {
+          "ex_date": "2026-06-09",
+          "amount": 0.0959,
+          "pay_date": "2026-06-10",
+          "record_date": "2026-06-09",
+          "declaration_date": "2026-06-08"
+        },
+        {
+          "ex_date": "2026-06-17",
+          "amount": 12.7715,
+          "pay_date": "2026-06-18",
+          "distribution_type": "liquidation"
+        }
+      ],
       "instrument_status": {
         "status": "liquidated",
         "source_url": "https://www.sec.gov/Archives/edgar/data/2043954/000199937126011110/rex-497_051926.htm",
@@ -213207,7 +213305,56 @@
       "payout_ratio": null,
       "frequency": "weekly",
       "ex_dividend_date": null,
-      "last_payments": [],
+      "last_payments": [
+        {
+          "ex_date": "2026-05-07",
+          "amount": 0.0631,
+          "pay_date": "2026-05-08",
+          "record_date": "2026-05-07",
+          "declaration_date": "2026-01-06"
+        },
+        {
+          "ex_date": "2026-05-14",
+          "amount": 0.0866,
+          "pay_date": "2026-05-15",
+          "record_date": "2026-05-14",
+          "declaration_date": "2026-01-06"
+        },
+        {
+          "ex_date": "2026-05-21",
+          "amount": 0.0677,
+          "pay_date": "2026-05-22",
+          "record_date": "2026-05-21",
+          "declaration_date": "2026-01-06"
+        },
+        {
+          "ex_date": "2026-05-28",
+          "amount": 0.0684,
+          "pay_date": "2026-05-29",
+          "record_date": "2026-05-28",
+          "declaration_date": "2026-01-06"
+        },
+        {
+          "ex_date": "2026-06-04",
+          "amount": 0.0664,
+          "pay_date": "2026-06-05",
+          "record_date": "2026-06-04",
+          "declaration_date": "2026-01-06"
+        },
+        {
+          "ex_date": "2026-06-11",
+          "amount": 0.0475,
+          "pay_date": "2026-06-12",
+          "record_date": "2026-06-11",
+          "declaration_date": "2026-01-06"
+        },
+        {
+          "ex_date": "2026-06-18",
+          "amount": 9.4598,
+          "pay_date": "2026-06-24",
+          "distribution_type": "liquidation"
+        }
+      ],
       "instrument_status": {
         "status": "liquidated",
         "source_url": "https://www.sec.gov/Archives/edgar/data/1924868/000199937126011687/yieldmax_497-052926.htm",
@@ -213246,7 +213393,56 @@
       "payout_ratio": null,
       "frequency": "weekly",
       "ex_dividend_date": null,
-      "last_payments": [],
+      "last_payments": [
+        {
+          "ex_date": "2026-05-06",
+          "amount": 0.1912,
+          "pay_date": "2026-05-07",
+          "record_date": "2026-05-06",
+          "declaration_date": "2026-05-05"
+        },
+        {
+          "ex_date": "2026-05-13",
+          "amount": 0.2147,
+          "pay_date": "2026-05-14",
+          "record_date": "2026-05-13",
+          "declaration_date": "2026-05-12"
+        },
+        {
+          "ex_date": "2026-05-20",
+          "amount": 0.1587,
+          "pay_date": "2026-05-21",
+          "record_date": "2026-05-20",
+          "declaration_date": "2026-05-19"
+        },
+        {
+          "ex_date": "2026-05-27",
+          "amount": 0.2276,
+          "pay_date": "2026-05-28",
+          "record_date": "2026-05-27",
+          "declaration_date": "2026-05-26"
+        },
+        {
+          "ex_date": "2026-06-03",
+          "amount": 0.1625,
+          "pay_date": "2026-06-04",
+          "record_date": "2026-06-03",
+          "declaration_date": "2026-06-02"
+        },
+        {
+          "ex_date": "2026-06-10",
+          "amount": 0.192,
+          "pay_date": "2026-06-11",
+          "record_date": "2026-06-10",
+          "declaration_date": "2026-06-09"
+        },
+        {
+          "ex_date": "2026-06-17",
+          "amount": 22.3788,
+          "pay_date": "2026-06-18",
+          "distribution_type": "liquidation"
+        }
+      ],
       "instrument_status": {
         "status": "liquidated",
         "source_url": "https://www.sec.gov/Archives/edgar/data/2043954/000199937126011110/rex-497_051926.htm",
@@ -213263,7 +213459,56 @@
       "payout_ratio": null,
       "frequency": "weekly",
       "ex_dividend_date": null,
-      "last_payments": [],
+      "last_payments": [
+        {
+          "ex_date": "2026-05-05",
+          "amount": 0.0623,
+          "pay_date": "2026-05-06",
+          "record_date": "2026-05-05",
+          "declaration_date": "2026-05-04"
+        },
+        {
+          "ex_date": "2026-05-12",
+          "amount": 0.0653,
+          "pay_date": "2026-05-13",
+          "record_date": "2026-05-12",
+          "declaration_date": "2026-05-11"
+        },
+        {
+          "ex_date": "2026-05-19",
+          "amount": 0.0568,
+          "pay_date": "2026-05-20",
+          "record_date": "2026-05-19",
+          "declaration_date": "2026-05-18"
+        },
+        {
+          "ex_date": "2026-05-27",
+          "amount": 0.0536,
+          "pay_date": "2026-05-28",
+          "record_date": "2026-05-27",
+          "declaration_date": "2026-05-26"
+        },
+        {
+          "ex_date": "2026-06-02",
+          "amount": 0.0634,
+          "pay_date": "2026-06-03",
+          "record_date": "2026-06-02",
+          "declaration_date": "2026-06-01"
+        },
+        {
+          "ex_date": "2026-06-09",
+          "amount": 0.0842,
+          "pay_date": "2026-06-10",
+          "record_date": "2026-06-09",
+          "declaration_date": "2026-06-08"
+        },
+        {
+          "ex_date": "2026-06-17",
+          "amount": 11.0587,
+          "pay_date": "2026-06-18",
+          "distribution_type": "liquidation"
+        }
+      ],
       "instrument_status": {
         "status": "liquidated",
         "source_url": "https://www.sec.gov/Archives/edgar/data/2043954/000199937126011110/rex-497_051926.htm",
@@ -213280,7 +213525,56 @@
       "payout_ratio": null,
       "frequency": "weekly",
       "ex_dividend_date": null,
-      "last_payments": [],
+      "last_payments": [
+        {
+          "ex_date": "2026-05-05",
+          "amount": 0.3374,
+          "pay_date": "2026-05-06",
+          "record_date": "2026-05-05",
+          "declaration_date": "2026-05-04"
+        },
+        {
+          "ex_date": "2026-05-12",
+          "amount": 0.3255,
+          "pay_date": "2026-05-13",
+          "record_date": "2026-05-12",
+          "declaration_date": "2026-05-11"
+        },
+        {
+          "ex_date": "2026-05-19",
+          "amount": 0.1754,
+          "pay_date": "2026-05-20",
+          "record_date": "2026-05-19",
+          "declaration_date": "2026-05-18"
+        },
+        {
+          "ex_date": "2026-05-27",
+          "amount": 0.1559,
+          "pay_date": "2026-05-28",
+          "record_date": "2026-05-27",
+          "declaration_date": "2026-05-26"
+        },
+        {
+          "ex_date": "2026-06-02",
+          "amount": 0.1206,
+          "pay_date": "2026-06-03",
+          "record_date": "2026-06-02",
+          "declaration_date": "2026-06-01"
+        },
+        {
+          "ex_date": "2026-06-09",
+          "amount": 0.2477,
+          "pay_date": "2026-06-10",
+          "record_date": "2026-06-09",
+          "declaration_date": "2026-06-08"
+        },
+        {
+          "ex_date": "2026-06-17",
+          "amount": 23.8454,
+          "pay_date": "2026-06-18",
+          "distribution_type": "liquidation"
+        }
+      ],
       "instrument_status": {
         "status": "liquidated",
         "source_url": "https://www.sec.gov/Archives/edgar/data/2043954/000199937126011110/rex-497_051926.htm",
@@ -213308,7 +213602,56 @@
       "payout_ratio": null,
       "frequency": "weekly",
       "ex_dividend_date": null,
-      "last_payments": [],
+      "last_payments": [
+        {
+          "ex_date": "2026-05-05",
+          "amount": 0.0623,
+          "pay_date": "2026-05-06",
+          "record_date": "2026-05-05",
+          "declaration_date": "2026-05-04"
+        },
+        {
+          "ex_date": "2026-05-12",
+          "amount": 0.056,
+          "pay_date": "2026-05-13",
+          "record_date": "2026-05-12",
+          "declaration_date": "2026-05-11"
+        },
+        {
+          "ex_date": "2026-05-19",
+          "amount": 0.0526,
+          "pay_date": "2026-05-20",
+          "record_date": "2026-05-19",
+          "declaration_date": "2026-05-18"
+        },
+        {
+          "ex_date": "2026-05-27",
+          "amount": 0.0536,
+          "pay_date": "2026-05-28",
+          "record_date": "2026-05-27",
+          "declaration_date": "2026-05-26"
+        },
+        {
+          "ex_date": "2026-06-02",
+          "amount": 0.0659,
+          "pay_date": "2026-06-03",
+          "record_date": "2026-06-02",
+          "declaration_date": "2026-06-01"
+        },
+        {
+          "ex_date": "2026-06-09",
+          "amount": 0.0895,
+          "pay_date": "2026-06-10",
+          "record_date": "2026-06-09",
+          "declaration_date": "2026-06-08"
+        },
+        {
+          "ex_date": "2026-06-17",
+          "amount": 14.0163,
+          "pay_date": "2026-06-18",
+          "distribution_type": "liquidation"
+        }
+      ],
       "instrument_status": {
         "status": "liquidated",
         "source_url": "https://www.sec.gov/Archives/edgar/data/2043954/000199937126011110/rex-497_051926.htm",
