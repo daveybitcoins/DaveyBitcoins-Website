@@ -370,13 +370,14 @@ const checks = [
         const assertMarkerValues = async (growth, scale) => {
           const markers = await chart.locator('.vb-projection-marker, .vb-end-marker').evaluateAll(nodes => nodes.map(node => ({
             pe: Number(node.dataset.pe), ms: Number(node.dataset.ms),
-            text: node.querySelector('.vb-point-value, .vb-end-value')?.textContent,
+            text: node.querySelector('.vb-point-value, .vb-band-label')?.textContent,
+            isEndpoint: node.classList.contains('vb-end-marker'),
             circles: node.querySelectorAll('circle').length,
           })));
           if (markers.length < 12) throw new Error('Missing labeled projection circles');
           for (const marker of markers) {
             const eps = spyValuation.forward_12m_eps * Math.pow(1 + growth / 100, (marker.ms - Date.parse(spyValuation.as_of + 'T00:00:00Z')) / (365.2425 * 86400000));
-            const expected = (scale === 0.1 ? '$' : '') + (eps * marker.pe * scale).toLocaleString('en-US', { maximumFractionDigits: 0 });
+            const expected = marker.isEndpoint ? `${marker.pe}×` : (scale === 0.1 ? '$' : '') + (eps * marker.pe * scale).toLocaleString('en-US', { maximumFractionDigits: 0 });
             if (marker.circles !== 1 || marker.text !== expected) throw new Error(`Incorrect circle label: ${marker.text}; expected ${expected}`);
           }
         };
@@ -392,7 +393,7 @@ const checks = [
         for (const growth of [30, -20]) {
           await chart.getByLabel('Annual EPS growth').fill(String(growth));
           await assertMarkerValues(growth, 1);
-          const overlaps = await chart.locator('.vb-projection-marker .vb-point-value, .vb-end-value').evaluateAll(nodes => {
+          const overlaps = await chart.locator('.vb-projection-marker .vb-point-value, .vb-band-label').evaluateAll(nodes => {
             const boxes = nodes.map(node => node.getBoundingClientRect());
             const pairs = [];
             for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {

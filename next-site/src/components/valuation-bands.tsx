@@ -90,7 +90,7 @@ function BandChart({ data: { prices, anchor } }: { data: BandData }) {
   const tightestBandGap = Math.min(...model.projected.map(point => point.eps)) * (PE_MULTIPLES[1] - minPE) * scale;
   const plotHeight = Math.max(374, (max - min) / tightestBandGap * 30);
   const PLOT = { left: 72, right: 72 + plotWidth, top: 64, bottom: 64 + plotHeight };
-  const width = PLOT.right + 112;
+  const width = PLOT.right + 72;
   const height = PLOT.bottom + 62;
   const x = (ms: number) => PLOT.left + (ms - model.start) / (model.end - model.start) * plotWidth;
   const y = (value: number) => PLOT.bottom - (value - min) / (max - min) * (PLOT.bottom - PLOT.top);
@@ -122,7 +122,7 @@ function BandChart({ data: { prices, anchor } }: { data: BandData }) {
 
   return <>
     <div className="vb-stats">
-      <div><span>Latest saved {priceLabel}</span><strong className="vb-teal">{format(model.last.price * 10 * scale)}</strong><small>{date(model.last.ms)} close{unit === "spx" ? " · SPY × 10" : ""}</small></div>
+      <div><span>Latest saved {priceLabel}</span><strong className="vb-current-price">{format(model.last.price * 10 * scale)}</strong><small>{date(model.last.ms)} close{unit === "spx" ? " · SPY × 10" : ""}</small></div>
       <div><span>Approx. forward EPS anchor</span><strong>${number(anchor.eps, 2)}</strong><small>Index EPS · {date(anchor.ms)}</small></div>
       <div><span>Price ÷ modeled forward EPS</span><strong>{number(model.last.price * 10 / currentEps, 2)}<em>×</em></strong><small>At the latest saved close</small></div>
     </div>
@@ -145,7 +145,6 @@ function BandChart({ data: { prices, anchor } }: { data: BandData }) {
     </p>
     <div className="vb-legend" aria-label="Chart legend">
       <span><i className="vb-key-price" />{priceLabel}{unit === "spx" ? " (SPY × 10)" : " close"}</span>
-      <span><i className="vb-key-history" />Reconstructed bands</span>
       <span><i className="vb-key-projection" />Projected bands · {bandRange}</span>
     </div>
     <p className="vb-mobile-hint">Scroll the chart horizontally to explore the full timeline.</p>
@@ -158,16 +157,16 @@ function BandChart({ data: { prices, anchor } }: { data: BandData }) {
           setSelectedMs(model.start + fraction * (model.end - model.start));
         }} onPointerLeave={() => setSelectedMs(null)}>
         <title id={`${uid}-title`}>S&P 500 forward P/E valuation bands</title>
-        <desc id={`${uid}-desc`}>Saved SPY closes{unit === "spx" ? " multiplied by ten as an approximate S&P 500 proxy" : ""}, with modeled {minPE} to {maxPE} times forward EPS bands in 2 times steps. Historical EPS is reconstructed; future EPS uses a {growth}% annual growth scenario. Each projection circle is labeled with its rounded implied price. Use the date slider below for exact values.</desc>
+        <desc id={`${uid}-desc`}>Saved SPY closes{unit === "spx" ? " multiplied by ten as an approximate S&P 500 proxy" : ""}, with modeled {minPE} to {maxPE} times forward EPS bands in 2 times steps. Historical EPS is reconstructed; future EPS uses a {growth}% annual growth scenario. Quarterly projection circles show rounded implied prices; right-edge labels show P/E multiples. Use the date slider below for exact values.</desc>
         <defs>
-          <linearGradient id={`${uid}-fill`} x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="var(--vb-teal)" stopOpacity="0.16" /><stop offset="100%" stopColor="var(--vb-teal)" stopOpacity="0" /></linearGradient>
+          <linearGradient id={`${uid}-fill`} x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="var(--vb-price)" stopOpacity="0.16" /><stop offset="100%" stopColor="var(--vb-price)" stopOpacity="0" /></linearGradient>
           <clipPath id={`${uid}-clip`}><rect x={PLOT.left} y={PLOT.top} width={PLOT.right - PLOT.left} height={PLOT.bottom - PLOT.top} /></clipPath>
         </defs>
         <rect x={x(model.last.ms)} y={PLOT.top} width={PLOT.right - x(model.last.ms)} height={PLOT.bottom - PLOT.top} className="vb-projection-bg" />
         {yTicks.map(value => <g key={value}><line x1={PLOT.left} x2={PLOT.right} y1={y(value)} y2={y(value)} className="vb-grid" /><text x={PLOT.left - 14} y={y(value) + 5} textAnchor="end" className="vb-axis">{number(value)}</text></g>)}
         {xTicks.map(ms => <g key={ms}><line x1={x(ms)} x2={x(ms)} y1={PLOT.top} y2={PLOT.bottom} className="vb-grid vb-grid-vertical" /><text x={x(ms)} y={PLOT.bottom + 27} textAnchor="middle" className="vb-axis">{new Date(ms).toLocaleDateString("en-US", { month: "short", timeZone: "UTC" })}<tspan x={x(ms)} dy="20">{new Date(ms).getUTCFullYear()}</tspan></text></g>)}
         <text x={PLOT.left} y="32" className="vb-region-label">RECONSTRUCTED EPS BANDS</text>
-        <text x={x(model.last.ms) + 16} y="32" className="vb-region-label vb-purple">GROWTH SCENARIO · {growth}% / YEAR</text>
+        <text x={x(model.last.ms) + 16} y="32" className="vb-region-label vb-projection-label">GROWTH SCENARIO · {growth}% / YEAR</text>
         <g clipPath={`url(#${uid}-clip)`}>
           <path d={`${pricePath} L${x(model.last.ms)},${PLOT.bottom} L${x(model.history[0].ms)},${PLOT.bottom} Z`} fill={`url(#${uid}-fill)`} />
           <path d={area(model.projected)} className="vb-band-fill" />
@@ -192,7 +191,7 @@ function BandChart({ data: { prices, anchor } }: { data: BandData }) {
           <title>{date(model.end)} · {pe}× · {format(endEps * pe * scale)}</title>
           <circle cx={PLOT.right} cy={y(endEps * pe * scale)} r="3" className="vb-projection-point" />
           <line x1={PLOT.right + 4} y1={y(endEps * pe * scale)} x2={PLOT.right + 12} y2={position} className="vb-label-leader" />
-          <text x={PLOT.right + 16} y={position + 5} className="vb-band-label">{pe}×<tspan dx="7" className="vb-end-value">{formatMarker(endEps * pe * scale)}</tspan></text>
+          <text x={PLOT.right + 16} y={position + 5} className="vb-band-label">{pe}×</text>
         </g>)}
       </svg>
     </div>
