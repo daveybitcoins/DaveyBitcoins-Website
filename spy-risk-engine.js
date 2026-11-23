@@ -516,6 +516,11 @@ async function main() {
       let idx = pts.findIndex(p => p.date >= b.date);
       if (idx < 0) idx = n - 1;
       const low = pts[idx];
+      // Evaluate the listed event close against the weekly baseline available
+      // then, just like a quote overlay. Leave carried weekly signals intact.
+      const eventRisk = riskForCurrentPrice(low.price, low, weekly);
+      const eventRiskText = low.modelWarmup ? 'Warmup' : Number.isFinite(eventRisk) ? eventRisk.toFixed(3) : '—';
+      const eventRiskColor = Number.isFinite(eventRisk) ? riskTextColor(eventRisk) : 'var(--text-dimmer)';
       const tr = document.createElement('tr');
       const pStr = '$' + low.price.toLocaleString(undefined, { maximumFractionDigits: 2 });
       function fwdCell(fromIdx, years) {
@@ -537,7 +542,7 @@ async function main() {
       tr.innerHTML = '<td>' + low.date + '</td>' +
         '<td class="rl-event">' + b.event + infoHtml + '</td>' +
         '<td class="rl-price">' + pStr + '</td>' +
-        '<td class="rl-risk" style="color:' + riskTextColor(low.riskCombo) + '">' + (low.modelWarmup ? 'Warmup' : low.riskCombo.toFixed(3)) + '</td>' +
+        '<td class="rl-risk" style="color:' + eventRiskColor + '">' + eventRiskText + '</td>' +
         '<td>' + vixVal + '</td>' +
         fwdCell(idx, 1) + fwdCell(idx, 2) + fwdCell(idx, 3);
       tbody.appendChild(tr);

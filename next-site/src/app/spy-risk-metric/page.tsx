@@ -159,7 +159,7 @@ export default function SpyRiskMetricPage() {
                   <th>Date</th>
                   <th>Event</th>
                   <th>SPY Price</th>
-                  <th>Risk</th>
+                  <th>Risk at close</th>
                   <th>VIX High</th>
                   <th>1Y Price Return</th>
                   <th>2Y Price Return</th>
@@ -169,6 +169,10 @@ export default function SpyRiskMetricPage() {
               <tbody id="riskLowsBody" />
             </table>
           </div>
+          <p className="spy-disclosure">
+            Risk uses each event’s closing price against the prior completed
+            week’s 200-week average and trailing weekly history.
+          </p>
           <p className="spy-disclosure historic-event-note">
             The Jensen Huang resignation row records the November 20, 2026 market close
             following NVIDIA’s November 12 announcement. VIX uses the daily intraday high.{" "}

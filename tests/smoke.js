@@ -462,6 +462,9 @@ const checks = [
       if (vixDrawdownBands < 5) throw new Error('VIX drawdown shading should remain available');
       const recentEvent = page.locator('#riskLowsBody tr').filter({ hasText: 'Jensen Huang resignation' });
       const recentCells = await recentEvent.locator('td').allTextContents();
+      if (recentCells[3] !== '0.505') {
+        throw new Error(`Recent event risk must reflect the listed close: ${recentCells[3]}`);
+      }
       const eventPrice = spyPrices.find(point => point.date === '2026-11-20');
       if (recentCells[0] !== eventPrice.date || Number(recentCells[2].replace(/[$,]/g, '')) !== Number(eventPrice.price.toFixed(2)) || recentCells[4] !== '40.0') {
         throw new Error(`Recent event should use the November 20 close and Cboe VIX high: ${JSON.stringify(recentCells)}`);
@@ -475,6 +478,9 @@ const checks = [
       }
       const covidRow = page.locator('#riskLowsBody tr').filter({ hasText: 'COVID-19 Crash' });
       const covidCells = await covidRow.locator('td').allTextContents();
+      if (covidCells[3] !== '0.114') {
+        throw new Error(`COVID-19 event risk must reflect the listed close: ${covidCells[3]}`);
+      }
       const startIndex = spyPrices.findIndex((point) => point.date >= '2020-03-23');
       const targetMs = spyPrices[startIndex].ms + 365.2425 * 864e5;
       const future = spyPrices.find((point, index) => index > startIndex && point.ms >= targetMs);

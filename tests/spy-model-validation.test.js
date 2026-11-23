@@ -11,7 +11,7 @@ function extract(name) {
   while (depth && end < source.length) { if (source[end] === '{') depth++; if (source[end] === '}') depth--; end++; }
   return source.slice(start, end);
 }
-vm.runInContext(['upperBound', 'assignTrailingPercentiles', 'buildDataset', 'simulateFundedDCA'].map(extract).join('\n'), context);
+vm.runInContext(['upperBound', 'assignTrailingPercentiles', 'buildDataset', 'riskForCurrentPrice', 'simulateFundedDCA'].map(extract).join('\n'), context);
 const rows = fs.readFileSync('data_spy.csv', 'utf8').trim().split('\n').slice(1).map(r => { const [d,p,tr] = r.split(','); return [d,+p,+tr]; });
 const full = context.buildDataset(rows, {}).pts;
 
@@ -42,6 +42,52 @@ test('first 200 weeks are marked warmup, not eligible for model allocation', () 
   const first = full.find(p => !p.modelWarmup);
   assert.ok(first.date >= '1996-11-01');
   assert.ok(Number.isFinite(first.riskCombo));
+});
+
+function historicEventRows(raw) {
+  const model = context.buildDataset(raw, {});
+  const before = JSON.stringify(model);
+  const rendered = [];
+  const document = {
+    getElementById: () => ({ appendChild: row => rendered.push(row.innerHTML) }),
+    createElement: () => ({}),
+  };
+  const tableStart = source.indexOf('  // Historical Market Bottoms');
+  const tableEnd = source.indexOf('  // Zoom/pan state', tableStart);
+  assert.ok(tableStart >= 0 && tableEnd > tableStart);
+  vm.runInNewContext(source.slice(tableStart, tableEnd), {
+    ...model, n: model.pts.length, last: model.pts.at(-1), document,
+    riskForCurrentPrice: context.riskForCurrentPrice,
+    riskTextColor: risk => `score-${risk.toFixed(3)}`,
+    vixColor: () => 'gray',
+  });
+  assert.equal(JSON.stringify(model), before, 'event display must not change weekly signals or backtest inputs');
+  return rendered.map(html => ({
+    html,
+    cells: [...html.matchAll(/<td[^>]*>(.*?)<\/td>/g)].map(match => match[1].replace(/<[^>]*>/g, '')),
+  }));
+}
+
+test('historic event risk and color reflect the listed closing price, not the prior weekly close', () => {
+  const events = historicEventRows(rows);
+  for (const [date, expected] of [['2020-03-16', '0.183'], ['2020-03-23', '0.114'], ['2026-11-20', '0.505']]) {
+    const event = events.find(row => row.cells[0] === date);
+    assert.ok(event, date);
+    assert.equal(event.cells[3], expected, date);
+    assert.ok(event.html.includes(`color:score-${expected}`), `${date} risk color`);
+    assert.notEqual(event.cells[3], full.find(point => point.date === date).riskCombo.toFixed(3));
+  }
+});
+
+test('historic event close risk is unchanged by later observations', () => {
+  const events = historicEventRows(rows);
+  // Monday, Thursday, and Friday cover both midweek and completed-week prefixes.
+  for (const date of ['2008-11-20', '2020-03-23', '2026-03-27']) {
+    const prefix = rows.slice(0, rows.findIndex(row => row[0] === date) + 1);
+    const event = historicEventRows(prefix).find(row => row.cells[0] === date);
+    const fullEvent = events.find(row => row.cells[0] === date);
+    assert.equal(event.cells[3], fullEvent.cells[3], date);
+  }
 });
 
 function point(date, tr, priorRisk, currentRisk = 0) {

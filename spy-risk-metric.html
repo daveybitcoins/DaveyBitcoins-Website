@@ -308,10 +308,11 @@
     <h4>Notable Historic Market Events</h4>
     <table class="risk-lows-table" id="riskLowsTable">
       <thead>
-        <tr><th>Date</th><th>Event</th><th>SPY Price</th><th>Risk</th><th>VIX High</th><th>1Y Price Return</th><th>2Y Price Return</th><th>3Y Price Return</th></tr>
+        <tr><th>Date</th><th>Event</th><th>SPY Price</th><th>Risk at close</th><th>VIX High</th><th>1Y Price Return</th><th>2Y Price Return</th><th>3Y Price Return</th></tr>
       </thead>
       <tbody id="riskLowsBody"></tbody>
     </table>
+    <p class="historic-event-note">Risk uses each event’s closing price against the prior completed week’s 200-week average and trailing weekly history.</p>
     <p class="historic-event-note">The Jensen Huang resignation row records the November 20, 2026 market close following NVIDIA’s November 12 announcement. VIX uses the daily intraday high. <a href="https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-CEO-Transition/default.aspx" target="_blank" rel="noreferrer">NVIDIA announcement</a> · <a href="https://www.cboe.com/tradable-products/vix/vix-historical-data" target="_blank" rel="noreferrer">Cboe VIX history</a></p>
   </div>
   <div class="chart-panel" id="price-chart">
@@ -862,6 +863,11 @@ async function main() {
       let idx = pts.findIndex(p => p.date >= b.date);
       if (idx < 0) idx = n - 1;
       const low = pts[idx];
+      // Evaluate the listed event close against the weekly baseline available
+      // then, just like a quote overlay. Leave carried weekly signals intact.
+      const eventRisk = riskForCurrentPrice(low.price, low, weekly);
+      const eventRiskText = low.modelWarmup ? 'Warmup' : Number.isFinite(eventRisk) ? eventRisk.toFixed(3) : '—';
+      const eventRiskColor = Number.isFinite(eventRisk) ? riskTextColor(eventRisk) : 'var(--text-dimmer)';
       const tr = document.createElement('tr');
       const pStr = '$' + low.price.toLocaleString(undefined, { maximumFractionDigits: 2 });
       function fwdCell(fromIdx, years) {
@@ -883,7 +889,7 @@ async function main() {
       tr.innerHTML = '<td>' + low.date + '</td>' +
         '<td class="rl-event">' + b.event + infoHtml + '</td>' +
         '<td class="rl-price">' + pStr + '</td>' +
-        '<td class="rl-risk" style="color:' + riskTextColor(low.riskCombo) + '">' + (low.modelWarmup ? 'Warmup' : low.riskCombo.toFixed(3)) + '</td>' +
+        '<td class="rl-risk" style="color:' + eventRiskColor + '">' + eventRiskText + '</td>' +
         '<td>' + vixVal + '</td>' +
         fwdCell(idx, 1) + fwdCell(idx, 2) + fwdCell(idx, 3);
       tbody.appendChild(tr);
