@@ -44,7 +44,7 @@ export function ValuationBands() {
       <header className="vb-heading">
         <div>
           <p className="vb-eyebrow">Earnings & valuation</p>
-          <h2 id="valuation-bands-heading">S&P 500 Forward P/E Valuation Bands</h2>
+          <h2 id="valuation-bands-heading">SPY Forward P/E Valuation Bands</h2>
           <p className="vb-subtitle">12-month forward EPS × P/E multiples</p>
         </div>
         <span className="vb-model-badge">Modeled EPS bands</span>
@@ -63,19 +63,18 @@ function BandChart({ data: { prices, anchor } }: { data: BandData }) {
   const [growth, setGrowth] = useState(8);
   const [growthInput, setGrowthInput] = useState("8");
   const [horizon, setHorizon] = useState(2);
-  const [unit, setUnit] = useState("spx");
   const [selectedMs, setSelectedMs] = useState<number | null>(null);
   const uid = useId().replaceAll(":", "");
   const model = useMemo(() => buildBandModel(prices, anchor, growth, horizon), [prices, anchor, growth, horizon]);
-  const scale = unit === "spx" ? 1 : 0.1;
-  const priceLabel = unit === "spx" ? "S&P 500 proxy" : "SPY";
-  const format = (value: number) => `${unit === "spy" ? "$" : ""}${number(value, unit === "spy" ? 2 : 0)}`;
-  const formatMarker = (value: number) => `${unit === "spy" ? "$" : ""}${number(value)}`;
+  // Convert index EPS valuation scenarios to approximate SPY prices.
+  const scale = 0.1;
+  const format = (value: number) => `$${number(value, 2)}`;
+  const formatMarker = (value: number) => `$${number(value)}`;
   const minPE = PE_MULTIPLES[0];
   const maxPE = PE_MULTIPLES[PE_MULTIPLES.length - 1];
   const bandRange = `${minPE}×–${maxPE}×`;
   const projectionMarkers = model.projected.filter(point => point.ms < model.end && new Date(point.ms).getUTCMonth() % 3 === 0 && new Date(point.ms).getUTCDate() === 1);
-  const values = [...model.history.map(point => point.price * 10), ...model.samples.flatMap(point => [point.eps * minPE, point.eps * maxPE])].map(value => value * scale);
+  const values = [...model.history.map(point => point.price), ...model.samples.flatMap(point => [point.eps * minPE * scale, point.eps * maxPE * scale])];
   const low = Math.min(...values);
   const high = Math.max(...values);
   const step = Math.pow(10, Math.floor(Math.log10((high - low) / 5)));
@@ -103,7 +102,7 @@ function BandChart({ data: { prices, anchor } }: { data: BandData }) {
   }
   const line = (points: { ms: number; value: number }[]) => points.map((point, index) => `${index ? "L" : "M"}${x(point.ms).toFixed(2)},${y(point.value).toFixed(2)}`).join(" ");
   const bandPath = (points: { ms: number; eps: number }[], pe: number) => line(points.map(point => ({ ms: point.ms, value: point.eps * pe * scale })));
-  const pricePath = line(model.history.map(point => ({ ms: point.ms, value: point.price * 10 * scale })));
+  const pricePath = line(model.history.map(point => ({ ms: point.ms, value: point.price })));
   const area = (points: { ms: number; eps: number }[]) => `${bandPath(points, maxPE)} ${bandPath([...points].reverse(), minPE).replace(/^M/, "L")} Z`;
   const inspectMs = Math.max(model.start, Math.min(model.end, Math.round((selectedMs ?? model.last.ms) / 86400000) * 86400000));
   const selected = inspectMs > model.last.ms ? { ms: inspectMs, price: null } : model.history.reduce((nearest, point) =>
@@ -122,9 +121,9 @@ function BandChart({ data: { prices, anchor } }: { data: BandData }) {
 
   return <>
     <div className="vb-stats">
-      <div><span>Latest saved {priceLabel}</span><strong className="vb-current-price">{format(model.last.price * 10 * scale)}</strong><small>{date(model.last.ms)} close{unit === "spx" ? " · SPY × 10" : ""}</small></div>
+      <div><span>Latest saved SPY</span><strong className="vb-current-price">{format(model.last.price)}</strong><small>{date(model.last.ms)} close</small></div>
       <div><span>Approx. forward EPS anchor</span><strong>${number(anchor.eps, 2)}</strong><small>Index EPS · {date(anchor.ms)}</small></div>
-      <div><span>Price ÷ modeled forward EPS</span><strong>{number(model.last.price * 10 / currentEps, 2)}<em>×</em></strong><small>At the latest saved close</small></div>
+      <div><span>Approx. forward P/E</span><strong>{number(model.last.price * 10 / currentEps, 2)}<em>×</em></strong><small>At the latest saved close</small></div>
     </div>
     <div className="vb-controls">
       <label className="vb-growth" htmlFor="band-growth">Annual EPS growth
@@ -137,14 +136,12 @@ function BandChart({ data: { prices, anchor } }: { data: BandData }) {
       </label>
       <div className="vb-horizon" role="group" aria-label="Projection horizon"><span>Project</span>{[1, 2, 3].map(years =>
         <button type="button" key={years} aria-pressed={horizon === years} onClick={() => { setHorizon(years); setSelectedMs(null); }}>{years}Y</button>)}</div>
-      <div className="vb-unit" role="group" aria-label="Chart price scale">{[["spx", "S&P 500 proxy"], ["spy", "SPY"]].map(([value, label]) =>
-        <button type="button" key={value} aria-pressed={unit === value} onClick={() => setUnit(value)}>{label}</button>)}</div>
     </div>
     <p className={`vb-help${validGrowth ? "" : " vb-invalid"}`} id="band-growth-help" role="status">
       {validGrowth ? `Bands use ${growth}% annual EPS growth for both historical reconstruction and future scenarios.` : "Enter a growth rate from −20% to 30%. The chart keeps the last valid value."}
     </p>
     <div className="vb-legend" aria-label="Chart legend">
-      <span><i className="vb-key-price" />{priceLabel}{unit === "spx" ? " (SPY × 10)" : " close"}</span>
+      <span><i className="vb-key-price" />SPY close</span>
       <span><i className="vb-key-projection" />Projected bands · {bandRange}</span>
     </div>
     <p className="vb-mobile-hint">Scroll the chart horizontally to explore the full timeline.</p>
@@ -156,14 +153,14 @@ function BandChart({ data: { prices, anchor } }: { data: BandData }) {
           const fraction = Math.max(0, Math.min(1, (chartX - PLOT.left) / (PLOT.right - PLOT.left)));
           setSelectedMs(model.start + fraction * (model.end - model.start));
         }} onPointerLeave={() => setSelectedMs(null)}>
-        <title id={`${uid}-title`}>S&P 500 forward P/E valuation bands</title>
-        <desc id={`${uid}-desc`}>Saved SPY closes{unit === "spx" ? " multiplied by ten as an approximate S&P 500 proxy" : ""}, with modeled {minPE} to {maxPE} times forward EPS bands in 2 times steps. Historical EPS is reconstructed; future EPS uses a {growth}% annual growth scenario. Quarterly projection circles show rounded implied prices; right-edge labels show P/E multiples. Use the date slider below for exact values.</desc>
+        <title id={`${uid}-title`}>SPY forward P/E valuation bands</title>
+        <desc id={`${uid}-desc`}>Saved SPY closes, with modeled {minPE} to {maxPE} times forward index EPS bands in 2 times steps, divided by 10 for approximate SPY prices. Historical EPS is reconstructed; future EPS uses a {growth}% annual growth scenario. Quarterly projection circles show rounded implied SPY prices in dollars; right-edge labels show P/E multiples. Use the date slider below for exact values.</desc>
         <defs>
           <linearGradient id={`${uid}-fill`} x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="var(--vb-price)" stopOpacity="0.16" /><stop offset="100%" stopColor="var(--vb-price)" stopOpacity="0" /></linearGradient>
           <clipPath id={`${uid}-clip`}><rect x={PLOT.left} y={PLOT.top} width={PLOT.right - PLOT.left} height={PLOT.bottom - PLOT.top} /></clipPath>
         </defs>
         <rect x={x(model.last.ms)} y={PLOT.top} width={PLOT.right - x(model.last.ms)} height={PLOT.bottom - PLOT.top} className="vb-projection-bg" />
-        {yTicks.map(value => <g key={value}><line x1={PLOT.left} x2={PLOT.right} y1={y(value)} y2={y(value)} className="vb-grid" /><text x={PLOT.left - 14} y={y(value) + 5} textAnchor="end" className="vb-axis">{number(value)}</text></g>)}
+        {yTicks.map(value => <g key={value}><line x1={PLOT.left} x2={PLOT.right} y1={y(value)} y2={y(value)} className="vb-grid" /><text x={PLOT.left - 14} y={y(value) + 5} textAnchor="end" className="vb-axis">{formatMarker(value)}</text></g>)}
         {xTicks.map(ms => <g key={ms}><line x1={x(ms)} x2={x(ms)} y1={PLOT.top} y2={PLOT.bottom} className="vb-grid vb-grid-vertical" /><text x={x(ms)} y={PLOT.bottom + 27} textAnchor="middle" className="vb-axis">{new Date(ms).toLocaleDateString("en-US", { month: "short", timeZone: "UTC" })}<tspan x={x(ms)} dy="20">{new Date(ms).getUTCFullYear()}</tspan></text></g>)}
         <text x={PLOT.left} y="32" className="vb-region-label">RECONSTRUCTED EPS BANDS</text>
         <text x={x(model.last.ms) + 16} y="32" className="vb-region-label vb-projection-label">GROWTH SCENARIO · {growth}% / YEAR</text>
@@ -178,8 +175,8 @@ function BandChart({ data: { prices, anchor } }: { data: BandData }) {
           <line x1={x(model.last.ms)} x2={x(model.last.ms)} y1={PLOT.top} y2={PLOT.bottom} className="vb-cutoff" />
           <line x1={x(selected.ms)} x2={x(selected.ms)} y1={PLOT.top} y2={PLOT.bottom} className="vb-crosshair" />
           {selected.price !== null && <g>
-            <circle cx={x(selected.ms)} cy={y(selected.price * 10 * scale)} r="4.5" className="vb-price-point" />
-            <text x={x(selected.ms) + (x(selected.ms) < PLOT.left + 36 ? 8 : -8)} y={y(selected.price * 10 * scale) - 11} textAnchor={x(selected.ms) < PLOT.left + 36 ? "start" : "end"} className="vb-point-value vb-price-value">{formatMarker(selected.price * 10 * scale)}</text>
+            <circle cx={x(selected.ms)} cy={y(selected.price)} r="4.5" className="vb-price-point" />
+            <text x={x(selected.ms) + (x(selected.ms) < PLOT.left + 36 ? 8 : -8)} y={y(selected.price) - 11} textAnchor={x(selected.ms) < PLOT.left + 36 ? "start" : "end"} className="vb-point-value vb-price-value">{formatMarker(selected.price)}</text>
           </g>}
         </g>
         {PE_MULTIPLES.map(pe => projectionMarkers.map(point => <g key={`${pe}-${point.ms}`} className="vb-projection-marker" data-pe={pe} data-ms={point.ms}>
@@ -197,18 +194,18 @@ function BandChart({ data: { prices, anchor } }: { data: BandData }) {
     </div>
     <div className="vb-inspector" aria-live="off">
       <div><span>{future ? "Projected scenario" : "Saved price / modeled bands"}</span><strong>{date(selected.ms)}</strong></div>
-      <div><span>{priceLabel}</span><strong>{selected.price === null ? "—" : format(selected.price * 10 * scale)}</strong></div>
+      <div><span>SPY</span><strong>{selected.price === null ? "—" : format(selected.price)}</strong></div>
       <div><span>Modeled index EPS</span><strong>${number(selectedEps, 2)}</strong></div>
       <div><span>{bandRange} range</span><strong>{format(selectedEps * minPE * scale)} – {format(selectedEps * maxPE * scale)}</strong></div>
     </div>
     <label className="vb-scrubber" htmlFor="band-inspect">Inspect date
       <input id="band-inspect" type="range" min={model.start} max={model.end} step={86400000} value={inspectMs}
-        aria-valuetext={`${date(selected.ms)}. ${future ? "Projected scenario" : `${priceLabel} ${format(selected.price! * 10 * scale)}`}. Modeled index EPS ${number(selectedEps, 2)}. ${minPE} to ${maxPE} times range ${format(selectedEps * minPE * scale)} to ${format(selectedEps * maxPE * scale)}.`}
+        aria-valuetext={`${date(selected.ms)}. ${future ? "Projected scenario" : `SPY ${format(selected.price!)}`}. Modeled index EPS ${number(selectedEps, 2)}. ${minPE} to ${maxPE} times range ${format(selectedEps * minPE * scale)} to ${format(selectedEps * maxPE * scale)}.`}
         onChange={event => setSelectedMs(Number(event.target.value))} />
     </label>
     <footer className="vb-footer">
-      <p><strong>How to read this:</strong> Each band = modeled 12-month forward index EPS × the labeled P/E multiple{unit === "spy" ? ", divided by 10 for approximate SPY prices" : ""}. Historical bands are reconstructed from the saved EPS anchor using your growth assumption; they are not historical analyst estimates. Future bands are scenarios, not analyst forecasts or price targets.</p>
-      <p>Price data: saved SPY closes{unit === "spx" ? " × 10 (an approximate S&P 500 proxy, not the index itself)" : ""}. EPS anchor: {anchor.sourceUrl ? <a href={anchor.sourceUrl} target="_blank" rel="noreferrer">{anchor.source}</a> : anchor.source}, {date(anchor.ms)}. The anchor is approximate: report reference index close ÷ rounded reported forward P/E.</p>
+      <p><strong>How to read this:</strong> Each band = modeled 12-month forward index EPS × the labeled P/E multiple, divided by 10 for approximate SPY prices. Historical bands are reconstructed from the saved EPS anchor using your growth assumption; they are not historical analyst estimates. Future bands are scenarios, not analyst forecasts or price targets.</p>
+      <p>Price data: saved SPY closes. EPS anchor: {anchor.sourceUrl ? <a href={anchor.sourceUrl} target="_blank" rel="noreferrer">{anchor.source}</a> : anchor.source}, {date(anchor.ms)}. The anchor is approximate: report reference index close ÷ rounded reported forward P/E.</p>
     </footer>
   </>;
 }

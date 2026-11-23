@@ -367,7 +367,11 @@ const checks = [
         if (await chart.locator('.vb-historical-line').count() !== 6 || await chart.locator('.vb-projected-line').count() !== 6) {
           throw new Error('Expected six historical and projected P/E bands from 12× to 22×');
         }
-        const assertMarkerValues = async (growth, scale) => {
+        if (await chart.getByRole('group', { name: 'Chart price scale' }).count()) throw new Error('SPY chart should not offer a proxy toggle');
+        const latestSavedSpy = spyPrices.at(-1).price;
+        const displayedSavedSpy = Number((await chart.locator('.vb-current-price').innerText()).replace(/[$,]/g, ''));
+        if (displayedSavedSpy !== Number(latestSavedSpy.toFixed(2))) throw new Error('Valuation chart must use actual saved SPY prices');
+        const assertMarkerValues = async (growth) => {
           const markers = await chart.locator('.vb-projection-marker, .vb-end-marker').evaluateAll(nodes => nodes.map(node => ({
             pe: Number(node.dataset.pe), ms: Number(node.dataset.ms),
             text: node.querySelector('.vb-point-value, .vb-band-label')?.textContent,
@@ -377,22 +381,20 @@ const checks = [
           if (markers.length < 12) throw new Error('Missing labeled projection circles');
           for (const marker of markers) {
             const eps = spyValuation.forward_12m_eps * Math.pow(1 + growth / 100, (marker.ms - Date.parse(spyValuation.as_of + 'T00:00:00Z')) / (365.2425 * 86400000));
-            const expected = marker.isEndpoint ? `${marker.pe}×` : (scale === 0.1 ? '$' : '') + (eps * marker.pe * scale).toLocaleString('en-US', { maximumFractionDigits: 0 });
+            const expected = marker.isEndpoint ? `${marker.pe}×` : '$' + (eps * marker.pe / 10).toLocaleString('en-US', { maximumFractionDigits: 0 });
             if (marker.circles !== 1 || marker.text !== expected) throw new Error(`Incorrect circle label: ${marker.text}; expected ${expected}`);
           }
         };
-        await assertMarkerValues(8, 1);
+        await assertMarkerValues(8);
         const originalPath = await chart.locator('.vb-projected-line').first().getAttribute('d');
         await chart.getByLabel('Annual EPS growth').fill('12');
         if (await chart.locator('.vb-projected-line').first().getAttribute('d') === originalPath) throw new Error('EPS growth did not update valuation bands');
         await chart.getByRole('button', { name: '3Y', exact: true }).click();
-        await chart.getByRole('button', { name: 'SPY', exact: true }).click();
         if (!(await chart.locator('.vb-stats strong').first().innerText()).startsWith('$')) throw new Error('SPY chart scale should show dollars');
-        await assertMarkerValues(12, 0.1);
-        await chart.getByRole('button', { name: 'S&P 500 proxy', exact: true }).click();
+        await assertMarkerValues(12);
         for (const growth of [30, -20]) {
           await chart.getByLabel('Annual EPS growth').fill(String(growth));
-          await assertMarkerValues(growth, 1);
+          await assertMarkerValues(growth);
           const overlaps = await chart.locator('.vb-projection-marker .vb-point-value, .vb-band-label').evaluateAll(nodes => {
             const boxes = nodes.map(node => node.getBoundingClientRect());
             const pairs = [];
@@ -410,7 +412,6 @@ const checks = [
         if (await chart.getByLabel('Annual EPS growth').getAttribute('aria-invalid') !== 'true') throw new Error('Out-of-range growth should be rejected');
         await chart.getByLabel('Annual EPS growth').fill('8');
         await chart.getByRole('button', { name: '2Y', exact: true }).click();
-        await chart.getByRole('button', { name: 'S&P 500 proxy', exact: true }).click();
         await chart.getByLabel('Inspect date').focus();
         await page.keyboard.press('End');
         if (!(await chart.locator('.vb-inspector').innerText()).includes('Projected scenario')) throw new Error('Keyboard date inspection should reach the projection');
