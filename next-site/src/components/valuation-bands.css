@@ -49,7 +49,7 @@
 .vb-projected-line { fill: none; stroke: var(--vb-projection); stroke-width: 1.2; stroke-dasharray: 3 4; opacity: .8; }
 .vb-projection-point { fill: var(--spy-card); stroke: var(--vb-projection); stroke-width: 1.3; }
 .vb-point-value { fill: var(--vb-projection); font-size: 15px; font-weight: 550; font-variant-numeric: tabular-nums; paint-order: stroke; stroke: var(--spy-card); stroke-width: 4px; stroke-linejoin: round; }
-.vb-point-value.vb-price-value { fill: var(--vb-price); }
+.vb-point-value.vb-price-value { fill: color-mix(in srgb, var(--vb-price) 90%, var(--spy-text)); }
 .vb-price-line { fill: none; stroke: var(--vb-price); stroke-width: 2.3; stroke-linejoin: round; }
 .vb-price-point { fill: var(--vb-price); stroke: var(--spy-card); stroke-width: 2; }
 .vb-cutoff { stroke: var(--vb-projection); stroke-dasharray: 4 5; stroke-width: 1; opacity: .4; }
