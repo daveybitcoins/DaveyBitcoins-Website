@@ -88,7 +88,11 @@ const checks = [
       if (await page.locator('.risk-bar-wrap[data-risk-asset="QQQ"]').count()) {
         throw new Error('QQQ risk gauge should not appear in market context');
       }
-      await expectText(page, 'Data as of ' + scannerData.meta.date);
+      await expectText(page, 'Equities as of ' + scannerData.meta.date + ' (completed session)');
+      const btcSnapshot = scannerData.index_context.find(row => row.symbol === 'BTC');
+      if (btcSnapshot?.as_of) {
+        await expectText(page, 'BTC as of ' + btcSnapshot.as_of + '; refreshes independently.');
+      }
       const labelColors = await page.evaluate(() => {
         const root = document.documentElement;
         const original = root.getAttribute('data-theme');

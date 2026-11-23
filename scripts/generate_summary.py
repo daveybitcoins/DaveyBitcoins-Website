@@ -18,6 +18,11 @@ import urllib.request
 import urllib.error
 from datetime import datetime
 
+if __package__:
+    from .market_sessions import equity_fetch_session
+else:
+    from market_sessions import equity_fetch_session
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(SCRIPT_DIR)
 DATA_FILE = os.path.join(PROJECT_DIR, "data", "scanner_data.json")
@@ -375,6 +380,11 @@ def main():
 
     with open(DATA_FILE, "r") as f:
         data = json.load(f)
+
+    # --force does not turn a BTC-only refresh into a new equity briefing.
+    if data["meta"]["date"] != equity_fetch_session():
+        print("No newly closed equity session today. Keeping the existing AI summary.")
+        return 0
 
     # Check if summary already exists for this date (skip unless --force)
     existing = data.get("ai_summary", {})

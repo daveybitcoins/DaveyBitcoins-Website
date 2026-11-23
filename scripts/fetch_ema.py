@@ -17,7 +17,10 @@ import json
 import os
 import subprocess
 import sys
-from datetime import datetime
+if __package__:
+    from .market_sessions import equity_fetch_session
+else:
+    from market_sessions import equity_fetch_session
 
 try:
     from tradingview_screener import Query, col
@@ -346,12 +349,12 @@ def fetch_vix_data(date_str):
         print(f"  Warning: Failed to fetch VIX: {e}")
 
 
-def run_process_ema():
+def run_process_ema(btc_only=False):
     """Run process_ema.py to generate scanner_data.json."""
     script = os.path.join(SCRIPT_DIR, "process_ema.py")
     print(f"\nRunning process_ema.py...")
     result = subprocess.run(
-        [sys.executable, script],
+        [sys.executable, script] + (["--btc-only"] if btc_only else []),
         capture_output=True,
         text=True,
     )
@@ -362,7 +365,7 @@ def run_process_ema():
     return True
 
 
-def main():
+def main(argv=None, now=None):
     parser = argparse.ArgumentParser(
         description="Fetch Weekly EMA data from TradingView scanner API"
     )
@@ -375,12 +378,17 @@ def main():
         "--date",
         type=str,
         default=None,
-        help="Override date in filename (YYYY-MM-DD). Default: today",
+        help="Assert the completed session date (YYYY-MM-DD); cannot relabel live data",
     )
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
-    # Determine date for filename
-    date_str = args.date or datetime.now().strftime("%Y-%m-%d")
+    date_str = equity_fetch_session(now)
+    if args.date and args.date != date_str:
+        parser.error("--date must match today's completed NYSE session; live data cannot be backdated")
+    if date_str is None:
+        print("No newly closed New York session today — retaining equities and refreshing BTC only")
+        return 0 if not args.process or run_process_ema(btc_only=True) else 1
+
     filename = f"Weekly EMA Values_{date_str}.csv"
     filepath = os.path.join(CSV_DIR, filename)
 
@@ -410,8 +418,8 @@ def main():
     fetch_vix_data(date_str)
 
     # Optionally run the processor
-    if args.process:
-        run_process_ema()
+    if args.process and not run_process_ema():
+        return 1
 
     print("\nDone!")
     return 0

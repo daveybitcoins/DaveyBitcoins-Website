@@ -102,6 +102,29 @@ class ValidateDataTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "scanner meta.date"):
                     validate_data.validate_scanner()
 
+    def test_scanner_session_validation_handles_close_and_long_weekends(self):
+        rows = [self.scanner_row(index) for index in range(100)]
+        scanner = {
+            "meta": {"date": "2026-11-23", "total_stocks": len(rows)},
+            "dashboard": self.scanner_dashboard(rows),
+            "full_scanner": rows,
+            "sector_heatmap": [],
+        }
+        with mock.patch.object(validate_data, "load_json", return_value=scanner), \
+                mock.patch.object(validate_data, "validate_breadth_history"):
+            with self.assertRaisesRegex(ValueError, "completed NYSE session"):
+                validate_data.validate_scanner(now=datetime.fromisoformat("2026-11-23T01:23:00+00:00"))
+            validate_data.validate_scanner(now=datetime.fromisoformat("2026-11-23T21:01:00+00:00"))
+            scanner["meta"]["date"] = "2026-11-22"
+            with self.assertRaisesRegex(ValueError, "completed NYSE session"):
+                validate_data.validate_scanner(now=datetime.fromisoformat("2026-11-23T21:01:00+00:00"))
+            # Tuesday before the close after Labor Day: Friday is still current.
+            scanner["meta"]["date"] = "2026-09-04"
+            validate_data.validate_scanner(now=datetime.fromisoformat("2026-09-08T15:00:00+00:00"))
+            scanner["breadth_context"] = {"guidance": {"as_of": "2026-09-08"}}
+            with self.assertRaisesRegex(ValueError, "guidance must match"):
+                validate_data.validate_scanner(now=datetime.fromisoformat("2026-09-08T15:00:00+00:00"))
+
     def test_dividends_check_every_payment(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

@@ -483,7 +483,7 @@
         return `
             <div class="card index-context-card">
                 <h2>Market Index Context</h2>
-                <p class="index-data-note" style="color:var(--text-dim);font-size:0.75rem;margin:0 0 1rem;">Data as of ${escapeHtml(DATA.meta.date)} · Prices and EMA comparisons use this snapshot. Header quotes refresh live when available.</p>
+                <p class="index-data-note" style="color:var(--text-dim);font-size:0.75rem;margin:0 0 1rem;">Equities as of ${escapeHtml(DATA.meta.date)} (completed session).${DATA.index_context.find(idx => idx.symbol === 'BTC')?.as_of ? ` BTC as of ${escapeHtml(DATA.index_context.find(idx => idx.symbol === 'BTC').as_of)}; refreshes independently.` : ''} Header quotes refresh live when available.</p>
                 <div class="stats-row">
                     ${DATA.index_context.filter(idx => idx.symbol !== 'QQQ').map(idx => `
                         <div class="stat-box">

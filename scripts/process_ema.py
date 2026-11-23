@@ -8,6 +8,7 @@ Usage: python3 scripts/process_ema.py
   - Outputs data/scanner_data.json
 """
 
+import argparse
 import csv
 import json
 import glob
@@ -18,6 +19,11 @@ import re
 from statistics import median
 from datetime import datetime, timedelta, timezone
 from collections import defaultdict, OrderedDict
+
+if __package__:
+    from .market_sessions import exchange_sessions, last_completed_session, utc_now
+else:
+    from market_sessions import exchange_sessions, last_completed_session, utc_now
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(SCRIPT_DIR)
@@ -49,18 +55,26 @@ def _date_from_path(filepath):
     return m.group(1) if m else ""
 
 
-def find_latest_csv():
+def find_latest_csv(now=None):
     pattern = os.path.join(CSV_DIR, "Weekly EMA Values_*.csv")
     files = glob.glob(pattern)
     if not files:
         raise FileNotFoundError(f"No Weekly EMA CSV files found in {CSV_DIR}")
+    completed = last_completed_session(now)
+    dates = [_date_from_path(path) for path in files if _date_from_path(path)]
+    sessions = set(_exchange_sessions(min(dates + [completed]), completed))
+    files = [path for path in files if _date_from_path(path) in sessions]
+    if not files:
+        raise FileNotFoundError(f"No completed-session EMA snapshot available through {completed}")
     return max(files, key=_date_from_path)
 
 
-def find_latest_index_csv():
+def find_latest_index_csv(data_date=None):
     """Find the most recent Index ETF CSV."""
     pattern = os.path.join(CSV_DIR, "Index_ETFs_*.csv")
     files = glob.glob(pattern)
+    if data_date:
+        files = [path for path in files if _date_from_path(path) == data_date]
     if not files:
         return None
     return max(files, key=_date_from_path)
@@ -378,13 +392,11 @@ BREADTH_HISTORY = os.path.join(PROJECT_DIR, "data", "breadth_top300_history.csv"
 
 def _exchange_sessions(start, end):
     """NYSE session dates; no weekend/holiday rows or gap compression."""
-    import exchange_calendars as xcals
-    calendar = xcals.get_calendar("XNYS", start=f"{int(start[:4])-1}-01-01", end=f"{int(end[:4])+1}-12-31")
-    return [d.strftime("%Y-%m-%d") for d in calendar.sessions_in_range(start, end)]
+    return exchange_sessions(start, end)
 
 
 
-def build_breadth_context(stocks, data_date, snapshot_path=None):
+def build_breadth_context(stocks, data_date, snapshot_path=None, now=None):
     """Calculate market breadth: % of stocks above each daily SMA."""
     sma_fields = [
         ("above_5d", "sma5"),
@@ -410,10 +422,10 @@ def build_breadth_context(stocks, data_date, snapshot_path=None):
         current[key] = round(t["above"] / t["valid"] * 100, 1) if t["valid"] > 0 else None
 
     # Append to history CSV (dedup on date)
-    _append_breadth_history(data_date, current, snapshot_path)
+    _append_breadth_history(data_date, current, snapshot_path, now)
 
     # Load history and compute historical stats
-    history = _load_breadth_history()
+    history = [row for row in _load_breadth_history() if row["date"] <= data_date]
     stats = _compute_breadth_stats(history, current)
 
     return {
@@ -662,9 +674,9 @@ def _compute_forward_returns(history, current, fields, indicator_zones):
     return results
 
 
-def _append_breadth_history(data_date, current, snapshot_path=None):
+def _append_breadth_history(data_date, current, snapshot_path=None, now=None):
     """Append today's breadth reading to history CSV, deduplicating on date."""
-    if data_date not in _exchange_sessions(data_date, data_date):
+    if data_date > last_completed_session(now) or data_date not in _exchange_sessions(data_date, data_date):
         return  # Do not turn weekend/holiday snapshots into trading observations.
     fieldnames = ["date", "above_5d", "above_20d", "above_50d", "above_200d"]
     rows = []
@@ -836,9 +848,9 @@ def build_crossover_alerts(stocks):
     return sorted(alerts, key=lambda s: min(s["gap_8_13"], s["gap_13_21"]))
 
 
-def build_index_context():
+def build_index_context(data_date=None):
     """Load and process index ETF data (SPY, QQQ) if available."""
-    index_csv = find_latest_index_csv()
+    index_csv = find_latest_index_csv(data_date)
     if not index_csv:
         print("No index ETF CSV found, skipping index context")
         return []
@@ -1132,6 +1144,7 @@ def build_btc_context():
     result = {
         "symbol": "BTC",
         "name": "Bitcoin",
+        "as_of": daily[-1][0].strftime("%Y-%m-%d"),
         "price": price,
         "ema8": ema8,
         "ema13": ema13,
@@ -1155,10 +1168,12 @@ def build_btc_context():
     return result
 
 
-def build_vix_context():
+def build_vix_context(data_date=None):
     """Load latest VIX data from csv/VIX_*.json if available."""
     pattern = os.path.join(CSV_DIR, "VIX_*.json")
     files = glob.glob(pattern)
+    if data_date:
+        files = [path for path in files if _date_from_path(path) == data_date]
     if not files:
         return None
     latest = max(files, key=_date_from_path)
@@ -1169,8 +1184,43 @@ def build_vix_context():
         return None
 
 
-def main():
-    csv_path = find_latest_csv()
+def _write_output(output):
+    os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
+    with open(OUTPUT_FILE, "w") as handle:
+        json.dump(output, handle, indent=2)
+
+
+def main(argv=None, now=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--btc-only", action="store_true", help="Keep the completed equity snapshot unchanged")
+    args = parser.parse_args(argv)
+    now = utc_now(now)
+    completed = last_completed_session(now)
+    existing = {}
+    if os.path.exists(OUTPUT_FILE):
+        with open(OUTPUT_FILE) as handle:
+            existing = json.load(handle)
+    existing_date = existing.get("meta", {}).get("date")
+    existing_is_completed = bool(
+        existing_date and existing_date <= completed
+        and existing_date in _exchange_sessions(existing_date, existing_date)
+    )
+
+    btc_context = build_btc_context()
+    if btc_context:
+        btc_context["generated_at"] = now.isoformat()
+    if args.btc_only and existing_is_completed:
+        if btc_context:
+            existing["index_context"] = [
+                row for row in existing.get("index_context", []) if row["symbol"] != "BTC"
+            ] + [btc_context]
+            existing["meta"]["index_etfs"] = [row["symbol"] for row in existing["index_context"]]
+            _write_output(existing)
+        print(f"Retained equity snapshot for {existing_date}; refreshed BTC independently")
+        return
+
+    # Also repair a legacy weekend/future-dated payload from a retained snapshot.
+    csv_path = find_latest_csv(now)
     data_date = extract_date_from_filename(csv_path)
     print(f"Processing: {os.path.basename(csv_path)}")
 
@@ -1190,32 +1240,22 @@ def main():
     print(f"Filtered to top {len(stocks)} by market cap")
 
     # Load index ETF context
-    index_context = build_index_context()
+    index_context = build_index_context(data_date)
 
     # Add BTC context from data.csv
-    btc_context = build_btc_context()
     if btc_context:
         index_context.append(btc_context)
         print(f"Added BTC context: {btc_context['signal']} at ${btc_context['price']:,.0f}")
 
     # Add VIX context
-    vix_context = build_vix_context()
+    vix_context = build_vix_context(data_date)
     if vix_context:
         print(f"Added VIX context: {vix_context['level']}")
 
     # Preserve existing ai_summary if present; guard against date regression
-    existing_summary = None
-    existing_date = None
-    if os.path.exists(OUTPUT_FILE):
-        try:
-            with open(OUTPUT_FILE, "r") as f:
-                existing = json.load(f)
-            existing_summary = existing.get("ai_summary")
-            existing_date = existing.get("meta", {}).get("date")
-        except (json.JSONDecodeError, IOError):
-            pass
+    existing_summary = existing.get("ai_summary")
 
-    if existing_date and data_date < existing_date:
+    if existing_is_completed and data_date < existing_date:
         print(f"WARNING: Skipping write — new data ({data_date}) is older than existing ({existing_date})")
         return
 
@@ -1223,7 +1263,7 @@ def main():
         "meta": {
             "date": data_date,
             "total_stocks": len(stocks),
-            "generated_at": datetime.now().isoformat(),
+            "generated_at": now.isoformat(),
             "index_etfs": [s["symbol"] for s in index_context],
         },
         "index_context": index_context,
@@ -1236,7 +1276,7 @@ def main():
         "outperformers": build_outperformers(stocks, index_context),
         "sector_heatmap": build_sector_heatmap(stocks),
         "crossover_alerts": build_crossover_alerts(stocks),
-        "breadth_context": build_breadth_context(stocks, data_date, csv_path),
+        "breadth_context": build_breadth_context(stocks, data_date, csv_path, now),
     }
 
     if vix_context:
@@ -1245,9 +1285,7 @@ def main():
     if existing_summary:
         output["ai_summary"] = existing_summary
 
-    os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
-    with open(OUTPUT_FILE, "w") as f:
-        json.dump(output, f, indent=2)
+    _write_output(output)
 
     print(f"Output: {OUTPUT_FILE}")
     print(f"  Dashboard: {len(output['dashboard']['signals'])} signal categories")

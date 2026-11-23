@@ -148,15 +148,13 @@ def require_keys(obj, keys, label):
         fail(f"{label} missing keys: {', '.join(missing)}")
 
 
-def validate_scanner():
+def validate_scanner(now=None):
     data = load_json("data/scanner_data.json")
     require_keys(data, ["meta", "dashboard", "full_scanner", "sector_heatmap"], "scanner_data.json")
 
     meta = data["meta"]
     require_keys(meta, ["date", "total_stocks"], "scanner meta")
-    require_fresh_date(
-        meta["date"], "scanner meta.date", SCANNER_MAX_AGE_DAYS
-    )
+    parse_date(meta["date"], "scanner meta.date")
     if int(meta["total_stocks"]) < 100:
         fail("scanner meta.total_stocks looks too small")
 
@@ -232,6 +230,20 @@ def validate_scanner():
     if "ai_summary" in data and data["ai_summary"]:
         require_keys(data["ai_summary"], ["market_overview", "risk_warnings"], "ai_summary")
 
+    if __package__:
+        from .market_sessions import exchange_sessions, last_completed_session
+    else:
+        from market_sessions import exchange_sessions, last_completed_session
+    completed = last_completed_session(now)
+    if (meta["date"] > completed
+            or meta["date"] not in exchange_sessions(meta["date"], meta["date"])):
+        fail("scanner meta.date must be a completed NYSE session")
+    # A holiday/weekend cannot make the latest completed session stale.
+    require_fresh_date(meta["date"], "scanner meta.date", SCANNER_MAX_AGE_DAYS,
+                       today=date.fromisoformat(completed))
+    guidance = data.get("breadth_context", {}).get("guidance")
+    if guidance and guidance.get("as_of") != meta["date"]:
+        fail("scanner breadth guidance must match scanner meta.date")
     validate_breadth_history(meta["date"])
     print(f"OK data/scanner_data.json: {len(rows)} scanner rows")
 

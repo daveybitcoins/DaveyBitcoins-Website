@@ -35,15 +35,9 @@ jobs:
           FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
         run: |
           python scripts/fetch_ema.py --process
-          # Only generate AI summary on the evening run (after 20:00 UTC / 4 PM EDT)
-          # or on manual workflow_dispatch triggers
-          HOUR=$(date -u +%H)
-          if [ "$HOUR" -ge 20 ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "Generating AI summary"
-            python scripts/generate_summary.py --force
-          else
-            echo "Morning run — skipping AI summary to save costs"
-          fi
+          # The generator uses the NYSE close (including holidays, DST and early
+          # closes) and preserves the summary during BTC-only refreshes.
+          python scripts/generate_summary.py --force
 
       - name: Update cache-bust timestamps
         run: |
