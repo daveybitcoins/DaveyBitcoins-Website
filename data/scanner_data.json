@@ -77,11 +77,11 @@
       "risk_combo": 0.053,
       "risk_mm": 0.062,
       "risk_zs": 0.046,
-      "fair_value": 150805.98,
+      "fair_value": 150783.47,
       "dev_pct": -59.9,
       "zone": "Accumulate",
       "zone_color": "#2563eb",
-      "generated_at": "2026-11-24T14:52:01.476120+00:00"
+      "generated_at": "2026-11-24T14:54:20.561572+00:00"
     }
   ],
   "dashboard": {
