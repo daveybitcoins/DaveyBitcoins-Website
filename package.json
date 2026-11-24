@@ -11,7 +11,7 @@
     "test:worker": "node --test worker/index.test.js",
     "start": "node server.js",
     "test:refinement": "node tests/refinement.js",
-    "test:investment": "node --test tests/dividend-regressions.cjs tests/spy-model-validation.test.js tests/ema-risk-remediation.test.cjs tests/holdout-protocol.test.cjs"
+    "test:investment": "node --test tests/dividend-regressions.cjs tests/spy-model-validation.test.js tests/ema-risk-remediation.test.cjs tests/ema-summary-regressions.cjs tests/holdout-protocol.test.cjs"
   },
   "repository": {
     "type": "git",

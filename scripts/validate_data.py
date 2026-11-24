@@ -229,6 +229,12 @@ def validate_scanner(now=None):
 
     if "ai_summary" in data and data["ai_summary"]:
         require_keys(data["ai_summary"], ["market_overview", "risk_warnings"], "ai_summary")
+        if __package__:
+            from .scanner_summary import summary_matches_snapshot
+        else:
+            from scanner_summary import summary_matches_snapshot
+        if not summary_matches_snapshot(data["ai_summary"], meta):
+            fail("ai_summary must match the current equity snapshot")
 
     if __package__:
         from .market_sessions import exchange_sessions, last_completed_session

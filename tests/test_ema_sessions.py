@@ -170,6 +170,41 @@ class ProcessorSessions(unittest.TestCase):
         process_ema._append_breadth_history("2026-11-23", {}, now=instant("2026-11-23T17:00:00+00:00"))
         self.assertEqual(self.history.read_bytes(), previous)
 
+    def test_missing_close_is_reported_without_advancing_equities(self):
+        process_ema.main([], now=instant("2026-11-20T22:00:00+00:00"))
+        original = json.loads(self.output.read_text())
+        original["ai_summary"] = {
+            "source_date": original["meta"]["date"],
+            "source_generated_at": original["meta"]["generated_at"],
+            "market_overview": {"bias_label": "Old signal"},
+        }
+        self.output.write_text(json.dumps(original))
+        history = self.history.read_bytes()
+        process_ema.main(["--btc-only"], now=instant("2026-11-24T05:08:00+00:00"))
+        updated = json.loads(self.output.read_text())
+        self.assertEqual(updated["meta"]["date"], "2026-11-20")
+        self.assertEqual(updated["meta"]["latest_completed_session"], "2026-11-23")
+        self.assertEqual(updated["breadth_context"], original["breadth_context"])
+        self.assertEqual(self.history.read_bytes(), history)
+        self.assertNotIn("ai_summary", updated)
+
+    def test_btc_refresh_removes_legacy_summary_even_without_btc_data(self):
+        process_ema.main([], now=instant("2026-11-20T22:00:00+00:00"))
+        payload = json.loads(self.output.read_text())
+        payload["ai_summary"] = {"generated_at": "2026-05-21T22:26:13", "market_overview": {"bias_label": "Strongly Bullish"}}
+        self.output.write_text(json.dumps(payload))
+        with patch.object(process_ema, "build_btc_context", return_value=None):
+            process_ema.main(["--btc-only"], now=instant("2026-11-21T18:00:00+00:00"))
+        self.assertNotIn("ai_summary", json.loads(self.output.read_text()))
+
+    def test_new_equity_snapshot_never_carries_a_prior_summary(self):
+        process_ema.main([], now=instant("2026-11-20T22:00:00+00:00"))
+        payload = json.loads(self.output.read_text())
+        payload["ai_summary"] = {"source_date": payload["meta"]["date"], "source_generated_at": payload["meta"]["generated_at"]}
+        self.output.write_text(json.dumps(payload))
+        process_ema.main([], now=instant("2026-11-20T23:00:00+00:00"))
+        self.assertNotIn("ai_summary", json.loads(self.output.read_text()))
+
 
 class SummarySessions(unittest.TestCase):
     def test_force_cannot_regenerate_equity_briefing_on_btc_only_run(self):

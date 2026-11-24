@@ -93,6 +93,12 @@ const checks = [
       if (btcSnapshot?.as_of) {
         await expectText(page, 'BTC as of ' + btcSnapshot.as_of + '; refreshes independently.');
       }
+      if (scannerData.meta.latest_completed_session > scannerData.meta.date) {
+        await expectText(page, 'Equity update pending · latest close ' + scannerData.meta.latest_completed_session);
+      }
+      if (!scannerData.ai_summary && await page.locator('#data-date .pill-bull, #data-date .pill-bear').count()) {
+        throw new Error('scanner shows a summary signal without a current briefing');
+      }
       const labelColors = await page.evaluate(() => {
         const root = document.documentElement;
         const original = root.getAttribute('data-theme');

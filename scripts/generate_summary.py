@@ -16,12 +16,14 @@ import os
 import sys
 import urllib.request
 import urllib.error
-from datetime import datetime
+from datetime import datetime, timezone
 
 if __package__:
     from .market_sessions import equity_fetch_session
+    from .scanner_summary import summary_matches_snapshot
 else:
     from market_sessions import equity_fetch_session
+    from scanner_summary import summary_matches_snapshot
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(SCRIPT_DIR)
@@ -368,11 +370,6 @@ def validate_summary(summary):
 def main():
     force = "--force" in sys.argv
 
-    # Check for API key
-    if not os.environ.get("OPENAI_API_KEY"):
-        print("Warning: OPENAI_API_KEY not set. Skipping AI summary generation.")
-        return 0
-
     # Load existing scanner data
     if not os.path.exists(DATA_FILE):
         print(f"Warning: {DATA_FILE} not found. Skipping AI summary generation.")
@@ -381,15 +378,25 @@ def main():
     with open(DATA_FILE, "r") as f:
         data = json.load(f)
 
+    # Clean up stale/undated briefings even if generation cannot run today.
+    existing = data.get("ai_summary")
+    if existing is not None and not summary_matches_snapshot(existing, data["meta"]):
+        data.pop("ai_summary", None)
+        with open(DATA_FILE, "w") as f:
+            json.dump(data, f, indent=2)
+        existing = None
+
+    if not os.environ.get("OPENAI_API_KEY"):
+        print("Warning: OPENAI_API_KEY not set. Skipping AI summary generation.")
+        return 0
+
     # --force does not turn a BTC-only refresh into a new equity briefing.
     if data["meta"]["date"] != equity_fetch_session():
         print("No newly closed equity session today. Keeping the existing AI summary.")
         return 0
 
-    # Check if summary already exists for this date (skip unless --force)
-    existing = data.get("ai_summary", {})
-    if not force and existing.get("generated_at", "").startswith(data["meta"]["date"]):
-        print(f"AI summary already generated for {data['meta']['date']}. Skipping. (use --force to override)")
+    if not force and summary_matches_snapshot(existing, data["meta"]):
+        print(f"AI summary already matches the {data['meta']['date']} snapshot. Skipping. (use --force to override)")
         return 0
 
     try:
@@ -407,7 +414,9 @@ def main():
         validate_summary(summary)
 
         # Add metadata
-        summary["generated_at"] = datetime.now().isoformat()
+        summary["generated_at"] = datetime.now(timezone.utc).isoformat()
+        summary["source_date"] = data["meta"]["date"]
+        summary["source_generated_at"] = data["meta"]["generated_at"]
         summary["model"] = MODEL
         summary["provider"] = "openai"
         summary["generated_by"] = "Codex"

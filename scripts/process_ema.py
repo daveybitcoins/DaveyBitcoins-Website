@@ -22,8 +22,10 @@ from collections import defaultdict, OrderedDict
 
 if __package__:
     from .market_sessions import exchange_sessions, last_completed_session, utc_now
+    from .scanner_summary import summary_matches_snapshot
 else:
     from market_sessions import exchange_sessions, last_completed_session, utc_now
+    from scanner_summary import summary_matches_snapshot
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(SCRIPT_DIR)
@@ -1201,6 +1203,10 @@ def main(argv=None, now=None):
         with open(OUTPUT_FILE) as handle:
             existing = json.load(handle)
     existing_date = existing.get("meta", {}).get("date")
+    if existing.get("meta"):
+        existing["meta"]["latest_completed_session"] = completed
+    if "ai_summary" in existing and not summary_matches_snapshot(existing["ai_summary"], existing.get("meta", {})):
+        del existing["ai_summary"]
     existing_is_completed = bool(
         existing_date and existing_date <= completed
         and existing_date in _exchange_sessions(existing_date, existing_date)
@@ -1215,7 +1221,7 @@ def main(argv=None, now=None):
                 row for row in existing.get("index_context", []) if row["symbol"] != "BTC"
             ] + [btc_context]
             existing["meta"]["index_etfs"] = [row["symbol"] for row in existing["index_context"]]
-            _write_output(existing)
+        _write_output(existing)
         print(f"Retained equity snapshot for {existing_date}; refreshed BTC independently")
         return
 
@@ -1252,9 +1258,8 @@ def main(argv=None, now=None):
     if vix_context:
         print(f"Added VIX context: {vix_context['level']}")
 
-    # Preserve existing ai_summary if present; guard against date regression
-    existing_summary = existing.get("ai_summary")
-
+    # Guard against date regression. A newly generated equity snapshot must
+    # receive its own summary; never carry a briefing forward from older inputs.
     if existing_is_completed and data_date < existing_date:
         print(f"WARNING: Skipping write — new data ({data_date}) is older than existing ({existing_date})")
         return
@@ -1262,6 +1267,7 @@ def main(argv=None, now=None):
     output = {
         "meta": {
             "date": data_date,
+            "latest_completed_session": completed,
             "total_stocks": len(stocks),
             "generated_at": now.isoformat(),
             "index_etfs": [s["symbol"] for s in index_context],
@@ -1281,9 +1287,6 @@ def main(argv=None, now=None):
 
     if vix_context:
         output["vix_context"] = vix_context
-
-    if existing_summary:
-        output["ai_summary"] = existing_summary
 
     _write_output(output)
 

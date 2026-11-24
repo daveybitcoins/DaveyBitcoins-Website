@@ -1,19 +1,27 @@
 name: Update EMA Scanner
 
 on:
+  schedule:
+    # Independent close capture and retries; avoid the busiest minute of the hour.
+    # The processor still checks NYSE holidays and actual session closing times.
+    - cron: '17 16,18,20,22 * * 1-5'
+      timezone: 'America/New_York'
   workflow_run:
     workflows: ["Update price data"]
     types: [completed]
+    branches: [main]
   workflow_dispatch:         # manual trigger
 
 concurrency:
   group: ema-scanner-update
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   update:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    # TradingView equity data is independent of the upstream BTC/SPY fetch.
+    # Run even when that job fails, using the last validated BTC history.
+    timeout-minutes: 15
     permissions:
       contents: write
     steps:
@@ -37,7 +45,7 @@ jobs:
           python scripts/fetch_ema.py --process
           # The generator uses the NYSE close (including holidays, DST and early
           # closes) and preserves the summary during BTC-only refreshes.
-          python scripts/generate_summary.py --force
+          python scripts/generate_summary.py
 
       - name: Update cache-bust timestamps
         run: |

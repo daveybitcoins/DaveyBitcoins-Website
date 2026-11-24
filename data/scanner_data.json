@@ -7,7 +7,8 @@
       "SPY",
       "QQQ",
       "BTC"
-    ]
+    ],
+    "latest_completed_session": "2026-11-23"
   },
   "index_context": [
     {
@@ -76,11 +77,11 @@
       "risk_combo": 0.053,
       "risk_mm": 0.062,
       "risk_zs": 0.046,
-      "fair_value": 150783.47,
+      "fair_value": 150805.98,
       "dev_pct": -59.9,
       "zone": "Accumulate",
       "zone_color": "#2563eb",
-      "generated_at": "2026-11-24T05:08:17.299921+00:00"
+      "generated_at": "2026-11-24T14:52:01.476120+00:00"
     }
   ],
   "dashboard": {
@@ -32737,187 +32738,5 @@
   "vix_context": {
     "level": 35.89,
     "change": 26.2
-  },
-  "ai_summary": {
-    "market_overview": {
-      "bias": "bullish",
-      "bias_label": "Strongly Bullish",
-      "headline": "Broad market uptrend remains intact with 47% of stocks in Full Bull mode while BTC shows bearish divergence.",
-      "detail": "SPY and QQQ both sitting in Full Bull structure with QQQ showing superior momentum (15.23% YTD vs 8.31%). BTC's bearish unstacked pattern creates potential rotation divergence to watch.",
-      "index_signals": {
-        "SPY": "Full Bull",
-        "QQQ": "Full Bull",
-        "BTC": "Bearish (unstacked)"
-      }
-    },
-    "reversal_candidates": {
-      "headline": "Bear Rally Reversal Candidates (Crossover Alerts)",
-      "items": [
-        {
-          "symbol": "MSFT",
-          "name": "Microsoft Corporation",
-          "signal": "Bear Rally above 13W",
-          "crossover_detail": "8W just below 13W (0.14%) \u2014 bullish cross potential",
-          "note": "Tech giant showing early reversal signs with price above both 8W and 13W EMAs",
-          "type": "bull"
-        },
-        {
-          "symbol": "META",
-          "name": "Meta Platforms, Inc.",
-          "signal": "Full Bear",
-          "crossover_detail": "8W just below 13W (0.71%) \u2014 bullish cross potential",
-          "note": "Major tech name with potential EMA crossover after -3.91% decline from 21W",
-          "type": "bull"
-        },
-        {
-          "symbol": "JPM",
-          "name": "JP Morgan Chase & Co.",
-          "signal": "Bear Rally above 13W",
-          "crossover_detail": "8W just below 13W (0.02%) \u2014 bullish cross potential; 13W just below 21W (0.05%) \u2014 bullish cross potential",
-          "note": "Banking leader showing imminent dual crossover potential with price rallying above key EMAs",
-          "type": "bull"
-        },
-        {
-          "symbol": "BAC",
-          "name": "Bank of America Corporation",
-          "signal": "Bear Rally above 13W",
-          "crossover_detail": "8W just below 13W (0.07%) \u2014 bullish cross potential; 13W just below 21W (0.12%) \u2014 bullish cross potential",
-          "note": "Bank sector strength with dual crossover setup and price holding above both 8W and 13W",
-          "type": "bull"
-        },
-        {
-          "symbol": "DIS",
-          "name": "Walt Disney Company (The)",
-          "signal": "Bear Rally above 13W",
-          "crossover_detail": "8W just below 13W (0.20%) \u2014 bullish cross potential; 13W just below 21W (0.97%) \u2014 bullish cross potential",
-          "note": "Media giant with strong analyst support and potential dual EMA crossover setup",
-          "type": "bull"
-        }
-      ]
-    },
-    "pullback_setups": {
-      "headline": "Quality Pullback Entries",
-      "items": [
-        {
-          "symbol": "ANET",
-          "name": "Arista Networks, Inc.",
-          "signal": "Bull Pullback \u2192 13W",
-          "price_vs_21w": 3.97,
-          "vol_quality": "Normal Vol",
-          "note": "High-quality networking play with normal volume pullback suggesting orderly profit-taking",
-          "type": "bull"
-        },
-        {
-          "symbol": "ROST",
-          "name": "Ross Stores, Inc.",
-          "signal": "Bull Pullback \u2192 13W",
-          "price_vs_21w": 4.81,
-          "vol_quality": "Normal Vol",
-          "note": "Retail strength with normal volume decline indicates healthy consolidation above 13W support",
-          "type": "bull"
-        },
-        {
-          "symbol": "USB",
-          "name": "U.S. Bancorp",
-          "signal": "Bull Pullback \u2192 13W",
-          "price_vs_21w": 1.1,
-          "vol_quality": "Low Vol",
-          "note": "Low volume pullback in banking sector suggests minimal selling pressure and quality entry",
-          "type": "bull"
-        },
-        {
-          "symbol": "ABNB",
-          "name": "Airbnb, Inc.",
-          "signal": "Bull Pullback \u2192 13W",
-          "price_vs_21w": 1.3,
-          "vol_quality": "Normal Vol",
-          "note": "Travel play showing normal volume consolidation with strong analyst support intact",
-          "type": "bull"
-        }
-      ]
-    },
-    "momentum_themes": {
-      "headline": "Tech Hardware Acceleration",
-      "detail": "Electronic technology sector dominates momentum with semiconductor and storage names showing massive acceleration. Energy minerals also showing uniform strength across the complex.",
-      "top_names": [
-        "INTC",
-        "SNDK",
-        "STX",
-        "MU",
-        "BE"
-      ]
-    },
-    "sector_analysis": {
-      "headline": "Energy Leads, Health Tech Lags",
-      "strongest": [
-        {
-          "sector": "Energy minerals",
-          "net_score": 100.0,
-          "bull_pct": 100.0,
-          "note": "Perfect bullish score with all 15 names in bullish structure"
-        },
-        {
-          "sector": "Industrial services",
-          "net_score": 56.2,
-          "bull_pct": 75.0,
-          "note": "Strong infrastructure and services momentum continues"
-        },
-        {
-          "sector": "Electronic technology",
-          "net_score": 50.0,
-          "bull_pct": 73.9,
-          "note": "Tech hardware driving massive momentum with 23.86% average gain vs 21W"
-        }
-      ],
-      "weakest": [
-        {
-          "sector": "Commercial services",
-          "net_score": -100.0,
-          "bear_pct": 100.0,
-          "note": "All names in bearish structure showing broad sector weakness"
-        },
-        {
-          "sector": "Distribution services",
-          "net_score": -66.6,
-          "bear_pct": 83.3,
-          "note": "Supply chain and distribution under pressure"
-        },
-        {
-          "sector": "Health technology",
-          "net_score": -42.8,
-          "bear_pct": 71.4,
-          "note": "Healthcare continues sector rotation headwinds"
-        }
-      ],
-      "detail": "Clear rotation from defensive healthcare and services into cyclical energy and tech hardware. Energy showing perfect bullish breadth while healthcare suffers broad-based selling."
-    },
-    "risk_warnings": {
-      "headline": "Key Risk Factors",
-      "items": [
-        {
-          "text": "BTC bearish divergence from equity markets could signal risk-off rotation ahead",
-          "type": "caution"
-        },
-        {
-          "text": "25% of market still in Full Bear structure despite broad bullish bias",
-          "type": "caution"
-        },
-        {
-          "text": "High volume pullbacks in CMI and CARR suggest institutional distribution risk",
-          "type": "caution"
-        },
-        {
-          "text": "Healthcare sector showing -4.58% average performance with 71% bearish breadth",
-          "type": "bear"
-        }
-      ]
-    },
-    "news_drivers": {
-      "headline": "What Moved Markets",
-      "summary": "News data unavailable.",
-      "items": []
-    },
-    "generated_at": "2026-05-21T22:26:13.674328",
-    "model": "claude-sonnet-4-20250514"
   }
 }
