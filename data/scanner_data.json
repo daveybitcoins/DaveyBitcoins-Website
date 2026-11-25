@@ -3,7 +3,7 @@
     "date": "2026-11-24",
     "latest_completed_session": "2026-11-24",
     "total_stocks": 300,
-    "generated_at": "2026-11-25T03:56:36.757061+00:00",
+    "generated_at": "2026-11-25T04:17:01.816663+00:00",
     "index_etfs": [
       "SPY",
       "QQQ",
@@ -81,7 +81,7 @@
       "dev_pct": -60.7,
       "zone": "Accumulate",
       "zone_color": "#2563eb",
-      "generated_at": "2026-11-25T03:56:36.757061+00:00"
+      "generated_at": "2026-11-25T04:17:01.816663+00:00"
     }
   ],
   "dashboard": {
